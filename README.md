@@ -1,29 +1,29 @@
 # RestComm jSS7
 
-> RestComm jSS7 is cloned from [RestComm jSS7](https://github.com/RestComm/jss7) from which we have added a set of improvements and new features listed in 
+> RestComm jSS7 is cloned from [RestComm jSS7](https://github.com/RestComm/jss7) from which we have added a set of improvements and new features listed in
 > a later section of this file.
-> 
+>
 
 
 ## Introduction
 
-Open Source Java SS7 stack allows applications to communicate with legacy SS7 communications network nodes. 
+Open Source Java SS7 stack allows applications to communicate with legacy SS7 communications network nodes.
 
-RestComm jSS7 provides implementation of SS7 stack layers `MTP2`, `MTP3`, `ISUP`, `SCCP`, `TCAP`, `CAMEL (Phase I, Phase II, Phase III and Phase IV)` and 
-`MAP`. It also has in-built support for `SIGTRAN (SCTP/M3UA)` over IP and strictly adheres to the standards and specifications defined by the International Telecommunications Union (ITU), the 3rd Generation Partnership Project (3GPP), and the Internet Engineering Task Force (IETF). The 
-platform offers a flexible API set for developers that hides underlying Telecom infrastructure and thus making it easier to implement SS7 services as well as 
+RestComm jSS7 provides implementation of SS7 stack layers `MTP2`, `MTP3`, `ISUP`, `SCCP`, `TCAP`, `CAMEL (Phase I, Phase II, Phase III and Phase IV)` and
+`MAP`. It also has in-built support for `SIGTRAN (SCTP/M3UA)` over IP and strictly adheres to the standards and specifications defined by the International Telecommunications Union (ITU), the 3rd Generation Partnership Project (3GPP), and the Internet Engineering Task Force (IETF). The
+platform offers a flexible API set for developers that hides underlying Telecom infrastructure and thus making it easier to implement SS7 services as well as
 migrating their applications over Time Division Multiplexing (TDM) equipments to SS7 over IP (SIGTRAN). {this-platform}  {this-application}  is based on an easily scalable and configurable load-balancing architecture.
 
 RestComm jSS7 supports TDM hardware offered by major vendors in the market, namely Intel family boards (Dialogic) and  Zaptel/Dahdi (Digium, Sangoma). For production purposes, Dialogic boards with MTP2 and MTP3 on-board are the only ones tested and therefore recommended.
 
 If you intend to use `SIGTRAN` only (recommended), you can install the RestComm jSS7 on any Operating System that supports Java and _Stream Control Transmission Protocol_ (SCTP). Any flavour of Linux OS supports SCTP natively or through an easy installation of Linux Kernel SCTP libraries/dev tools.
 
-RestComm jSS7 makes JAIN-SLEE TCAP, MAP, CAP and ISUP Resource Adaptors (RA) development possible, which enable developers to build SS7 applications with ease. They would only require an understanding of JAIN-SLEE Resource Adaptors and can focus on building applications quickly and efficiently rather than worrying about the underlying SS7 stack. If you wish to use JAIN-SLEE Resource Adaptors, the Command Line Interface (CLI - Shell Management tool) or the Graphic User Interface (GUI) for run-time configuration, then you must have either JBoss or WildFly Application Server installed and running. Anyway, if you do not wish to use the Resource Adaptors, then RestComm jSS7 can work as a standalone library. 
+RestComm jSS7 makes JAIN-SLEE TCAP, MAP, CAP and ISUP Resource Adaptors (RA) development possible, which enable developers to build SS7 applications with ease. They would only require an understanding of JAIN-SLEE Resource Adaptors and can focus on building applications quickly and efficiently rather than worrying about the underlying SS7 stack. If you wish to use JAIN-SLEE Resource Adaptors, the Command Line Interface (CLI - Shell Management tool) or the Graphic User Interface (GUI) for run-time configuration, then you must have either JBoss or WildFly Application Server installed and running. Anyway, if you do not wish to use the Resource Adaptors, then RestComm jSS7 can work as a standalone library.
 
-The Open Source Software gives you the flexibility to understand the readily available source code and customise the product for your Enterprise needs. 
+The Open Source Software gives you the flexibility to understand the readily available source code and customise the product for your Enterprise needs.
 
 
-## Build RestComm jSS7 
+## Build RestComm jSS7
 
 ### Pre-Requisites for Building from Source
 
@@ -54,7 +54,7 @@ Note: For deploying of binaries into a local JBoss AS you need to configure a JB
 To generate a wildfly version of RestComm jSS7 use the following steps
 
 - Download the Restcomm SLEE version 7.2.0-68.76 from WildFly 10.1.0.Final
-- Build the RestComm jSS7 using the command below 
+- Build the RestComm jSS7 using the command below
   ```bash
   cd release
   ant -f build.xml -Drelease.version=8.3.0 -Dsctp.version=2.0.2-12
@@ -68,7 +68,7 @@ To generate a wildfly version of RestComm jSS7 use the following steps
 
 
 ## Build Docker
-To build a docker image you can use the script below. The script below only serves as a guide, and you can modify it by adding or removing as per your 
+To build a docker image you can use the script below. The script below only serves as a guide, and you can modify it by adding or removing as per your
 requirements.
 
 ```dockerfile
@@ -108,10 +108,10 @@ CMD ["-b", "0.0.0.0"]
 
 * Kubernetes template to enable importing RestComm jSS7 Docker images to Kubernetes clusters. It includes a supervisor configured to start the RestComm jSS7 instance automatically.
 
-* Implemented EUtranCgi (**EUTRAN CGI**), RAId (**ROUTEING AREA ID**) and TAId (**TRACKING AREA ID**) in map-api/impl within mobility/subscriberInformation 
+* Implemented EUtranCgi (**EUTRAN CGI**), RAId (**ROUTEING AREA ID**) and TAId (**TRACKING AREA ID**) in map-api/impl within mobility/subscriberInformation
   packages.
 
-* Implemented `polygon` type of shape for additional location estimate for both **MAP PSL** (Provide Subscriber Location) and **MAP SLR** 
+* Implemented `polygon` type of shape for additional location estimate for both **MAP PSL** (Provide Subscriber Location) and **MAP SLR**
   (Subscriber Location Report) operations.
 
 * Upgraded RequestedInfo/Impl to support remaining parameters as per release 15.5.0 of 3GPP TS 29.002 (MAP specification), including locationInformationEPS-Supported.
@@ -120,18 +120,18 @@ CMD ["-b", "0.0.0.0"]
 
 * Implementation of `notificationVerificationOnly` option to Location Estimate Type as per release 15.5.0 of 3GPP TS 29.002 (MAP specification).
 
-* Implemented **M3UA ERR** handling in M3UA Finite State Machine (see bug fixing section for further details), which solved a bug by which whenever an 
+* Implemented **M3UA ERR** handling in M3UA Finite State Machine (see bug fixing section for further details), which solved a bug by which whenever an
   M3UA ERR was received in reply to ASP ACTIVE (ASPAC), the ASP state kept in INACTIVE state forever unless a manual stop/start via CLI or manual restart of the service was carried out. As portrayed in the call flow example below, fixes included successful all the following possibilities:
   - ASPUP resending upon ASPUP timeout
   - ASPUP resending upon any MM3UA ERR occurrence
   - ASPAC resending upon ASPAC timeout
   - ASPAC resending upon any M3UA ERR occurrence
-  
+
   ![m3ua_err_callflow.png](readme_files/m3ua_err_callflow.png)
 
 
-* Implementation of `M3ua_ManagementMessageHandler.xml` configuration file for **M3UA ERR** handling, including retry policy on specific M3UA ERR messages, including 
-  - on/off flag for 
+* Implementation of `M3ua_ManagementMessageHandler.xml` configuration file for **M3UA ERR** handling, including retry policy on specific M3UA ERR messages, including
+  - on/off flag for
   whether there should be retransmission for ASPUP, ASPAC in case of specific M3UA ERR such as `Refused - Management Blocking` `Invalid Routing Context`, etc.
   - how many times such a retransmission should take place before giving up. An example of such configuration is shown next:
 
@@ -147,16 +147,16 @@ CMD ["-b", "0.0.0.0"]
 * `M3ua_ManagementMessageHandler.xml` management via CLI and GUI.
 
 * Several enhancements and additions in jSS7 simulator, namely:
-  - Improved ATI_TEST_SERVER testing task with random answers for all types of location responses with all possible parameters, including error responses 
-    for specific MSISDNs. Some parameters include binary data taken from real networks (obtained from RestComm-GMLC), as well as some others matching 
-    external cell databases such as the one from OpenCellId project. 
-  - Fully implemented MAP_LCS_TEST_SERVER for MAP Location Services Management Services 
+  - Improved ATI_TEST_SERVER testing task with random answers for all types of location responses with all possible parameters, including error responses
+    for specific MSISDNs. Some parameters include binary data taken from real networks (obtained from RestComm-GMLC), as well as some others matching
+    external cell databases such as the one from OpenCellId project.
+  - Fully implemented MAP_LCS_TEST_SERVER for MAP Location Services Management Services
     (MAP SRILCS, MAP PSL and MAP SLR). It also includes all types of location responses with all possible parameters, including error responses for specific MSISDNs. Some parameters include binary data taken from real networks (obtained from RestComm-GMLC), as well as some others matching external cell databases such as the one from [OpenCellId](https://www.opencellid.org/).
 ![LCS_test_task.png](readme_files/LCS_test_task.png)
   - Implemented MAP_PSI_TEST_SERVER testing task with random answers for all types of subscriber information responses with all possible parameters, including error responses for specific MSISDNs. This task includes responses for MAP SRI, MAP SRISM and MAP PSI. Some parameters include binary data taken from real networks (obtained from RestComm-GMLC), as well as some others matching external cell databases such as the one from [OpenCellId](https://www.opencellid.org/).
 ![PSI_test_task.png](readme_files/PSI_test_task.png)
   - Enablement of TP-SRR handling – Delivery confirmation.
-  
+
 * Enhancements on jSS7 Management Console GUI:
   - Dropdown campaigns menu in Metrics
   - Administrator login / logout / security procedures
@@ -170,7 +170,7 @@ CMD ["-b", "0.0.0.0"]
 * Upgraded SCTP version to RestComm-SCTP 2.0.2-13, which above all, now runs over JDK 11, but also includes several enhancements mostly for bad practices, typos/grammar mistakes, xml doc files improperly formatted, and renamed SCTP management configuration file for the following:
   - _extraHostAddresseSize_ parameter is now renamed adequately to _extraHostAddressesSize_.
   - _assoctype_ is now renamed as _associationType_.
-  
+
 * Upgraded Netty version to `4.0.36.Final`.
 
 * Get/Set M3UA variables enabled `statisticsdelay` and `statisticsperiod` via the CLI, which retrieve/adjust the values.
@@ -183,7 +183,7 @@ CMD ["-b", "0.0.0.0"]
 
 * Fixed a bug for HTTP metric integration endpoint termination when restarting the jSS7 container.
 
-* Resolved an issue in memory resource management where the Java Garbage Collector process freed the cache but did not reflect in the available memory, 
+* Resolved an issue in memory resource management where the Java Garbage Collector process freed the cache but did not reflect in the available memory,
   causing Congestion Monitor events.
 
 * Fixed GUI modification of a given _SAP MTP3 Destination_ which resulted in an _IllegalArgumentException_.
@@ -206,12 +206,12 @@ CMD ["-b", "0.0.0.0"]
 Email me: [fernando.mendioroz@gmail.com](fernando.mendioroz@gmail.com).
 
 ## Contribution
-Thank you to the [RestComm](https://github.com/RestComm) community over which shoulders we stand. 
+Thank you to the [RestComm](https://github.com/RestComm) community over which shoulders we stand.
 Main contributors of all the additions, fixes and enhancements detailed at the changelog between July 2018 and September 2021:
 - Fernando Mendioroz
 - James Amo
 
-Other contributors during the same time spam, in strict alphabetical order (as per their surnames):
+Other contributors during the same time span, in strict alphabetical order (as per their surnames):
 - Tanieska Aguirre
 - Giovanni Castillo
 - Alejandro Ferreira
@@ -221,4 +221,3 @@ Other contributors during the same time spam, in strict alphabetical order (as p
 
 ## LICENSE
 [GNU AFFERO GENERAL PUBLIC LICENSE](./LICENSE)
-
