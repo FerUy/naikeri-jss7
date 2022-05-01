@@ -13,7 +13,7 @@
 
     <!--Versions -->
     <property name="asn.version" value="2.2.0-143"/>
-    <property name="sctp.version" value="2.0.2-12"/>
+    <property name="sctp.version" value="2.0.2-13"/>
     <property name="release.version" value="8.2.6-SNAPSHOT"/>
 
     <property name="checkout.asn.version" value="2.2.0-22"/>
@@ -341,8 +341,8 @@
 
 
     <target name="make-final-zip" depends="set-time-stamp">
-        <zip destfile="${base.dir}/Extended-jSS7-${release.version}.zip" filesonly="false">
-            <zipfileset dir="${restcomm.jss7.dist}" prefix="Extended-jSS7-${release.version}">
+        <zip destfile="${base.dir}/Naikeri-jSS7-${release.version}.zip" filesonly="false">
+            <zipfileset dir="${restcomm.jss7.dist}" prefix="Naikeri-jSS7-${release.version}">
                 <include name="**"/>
             </zipfileset>
         </zip>
@@ -437,7 +437,7 @@
         <delete dir="${base.dir}/checkout"/>
 		<delete>
 			<fileset dir="${base.dir}">
-				<include name="Extended-jSS7-*.*" />
+				<include name="Naikeri-jSS7-*.*" />
 			</fileset>
 		</delete>
     </target>
