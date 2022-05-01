@@ -61,8 +61,8 @@ pipeline {
         stage('Push to Repo') {
             when { anyOf { branch 'master'; branch 'release' } }
 		    steps {
-			    sshagent(['ssh_grafana']) {
-				    sh "scp release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip root@127.0.0.1:/var/www/html/NAIKERI/jss7/"
+		        sshagent (credentials: ['d70e33a1-bbe0-4a59-af01-88ac941f127d']) {
+				    sh "scp release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip jenkins@127.0.0.1:/var/www/html/NAIKERI/jss7/"
 	  	        }
 		    }
 	    }
