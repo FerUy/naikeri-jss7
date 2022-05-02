@@ -43,8 +43,6 @@
         <resource-root path="tcap-oam-${project.version}.jar"/>
         <resource-root path="sccp-api-ext-${project.version}.jar"/>
         <resource-root path="sccp-impl-ext-${project.version}.jar"/>
-        <resource-root path="log4j-api-${log4j.version}.jar"/>
-        <resource-root path="log4j-core-${log4j.version}.jar"/>
         <resource-root path="NaikeriLicensor-1.0.0-SNAPSHOT.jar"/>
         <resource-root path="license4j-runtime-library-4.7.3.jar"/>
     </resources>
@@ -55,7 +53,6 @@
         <module name="javax.xml.bind.api"/>
         <module name="org.apache.commons.logging"/>
         <module name="org.apache.commons.pool"/>
-        <module name="org.apache.logging.log4j"/>
         <module name="org.apache.log4j"/>
         <module name="org.apache.xerces"/>
         <module name="org.jboss.staxmapper"/>
