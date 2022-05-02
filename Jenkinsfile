@@ -61,9 +61,9 @@ pipeline {
         stage('Push to Repo') {
             when { anyOf { branch 'master'; branch 'release' } }
 		    steps {
-		        sshagent (credentials: ['d70e33a1-bbe0-4a59-af01-88ac941f127d']) {
-		            sh 'ssh -o StrictHostKeyChecking=no -l jenkins 127.0.0.1 uname -a'
-				    sh "scp release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip jenkins@127.0.0.1:/var/www/html/NAIKERI/jss7/"
+		        sshagent (credentials: ['4e708f2a-8b37-414f-a6d4-787690b87738']) {
+		            sh 'ssh -o StrictHostKeyChecking=no -l fer 127.0.0.1 uname -a'
+				    sh "scp release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip fer@127.0.0.1:/var/www/html/NAIKERI/jss7/"
 	  	        }
 		    }
 	    }
