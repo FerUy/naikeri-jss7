@@ -171,7 +171,7 @@ CMD ["-b", "0.0.0.0"]
   - _extraHostAddresseSize_ parameter is now renamed adequately to _extraHostAddressesSize_.
   - _assoctype_ is now renamed as _associationType_.
 
-* Upgraded Netty version to `4.0.36.Final`.
+* Upgraded Netty version to `4.1.42.Final`.
 
 * Get/Set M3UA variables enabled `statisticsdelay` and `statisticsperiod` via the CLI, which retrieve/adjust the values.
 ```
