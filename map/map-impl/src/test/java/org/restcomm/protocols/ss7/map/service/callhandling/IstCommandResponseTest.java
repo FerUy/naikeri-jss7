@@ -1,7 +1,8 @@
 
 package org.restcomm.protocols.ss7.map.service.callhandling;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -26,7 +27,8 @@ import static org.testng.Assert.assertTrue;
  *
  */
 public class IstCommandResponseTest {
-    Logger logger = Logger.getLogger(IstCommandResponseTest.class);
+
+    Logger logger = LogManager.getLogger(IstCommandResponseTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {

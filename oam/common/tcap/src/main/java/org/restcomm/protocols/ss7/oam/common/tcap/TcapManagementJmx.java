@@ -6,7 +6,8 @@ import java.util.Map;
 
 import javolution.util.FastMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.oam.common.jmx.MBeanHost;
 import org.restcomm.protocols.ss7.oam.common.jmx.MBeanType;
 import org.restcomm.protocols.ss7.oam.common.jmxss7.Ss7Layer;
@@ -47,7 +48,7 @@ public class TcapManagementJmx implements TcapManagementJmxMBean, CounterMediato
         this.ss7Management = ss7Management;
         this.wrappedTCAPStack = wrappedTCAPStack;
 
-        this.logger = Logger.getLogger(TcapManagementJmx.class.getCanonicalName() + "-" + wrappedTCAPStack.getName());
+        this.logger = LogManager.getLogger(TcapManagementJmx.class.getCanonicalName() + "-" + wrappedTCAPStack.getName());
     }
 
     /**

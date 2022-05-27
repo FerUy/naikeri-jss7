@@ -1,7 +1,8 @@
 
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.CAPDialogImpl;
@@ -34,7 +35,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Parameter;
  */
 public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implements CAPServiceCircuitSwitchedCall {
 
-    protected Logger loger = Logger.getLogger(CAPServiceCircuitSwitchedCallImpl.class);
+    protected Logger logger = LogManager.getLogger(CAPServiceCircuitSwitchedCallImpl.class);
 
     public CAPServiceCircuitSwitchedCallImpl(CAPProviderImpl capProviderImpl) {
         super(capProviderImpl);
@@ -512,7 +513,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(ind);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onInitialDPRequest(ind);
             } catch (Exception e) {
-                loger.error("Error processing initialDpRequest: " + e.getMessage(), e);
+                logger.error("Error processing initialDpRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -542,7 +543,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(requestReportBCSMEventRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onRequestReportBCSMEventRequest(requestReportBCSMEventRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing requestReportBCSMEventRequest: " + e.getMessage(), e);
+                logger.error("Error processing requestReportBCSMEventRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -573,7 +574,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(applyChargingRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onApplyChargingRequest(applyChargingRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing requestReportBCSMEventRequest: " + e.getMessage(), e);
+                logger.error("Error processing requestReportBCSMEventRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -604,7 +605,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(eventReportBCSMRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onEventReportBCSMRequest(eventReportBCSMRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing eventReportBCSMRequest: " + e.getMessage(), e);
+                logger.error("Error processing eventReportBCSMRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -622,7 +623,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(continueRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onContinueRequest(continueRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing continueRequest: " + e.getMessage(), e);
+                logger.error("Error processing continueRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -651,7 +652,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(continueWithArgumentRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onContinueWithArgumentRequest(continueWithArgumentRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing continueWithArgumentRequest: " + e.getMessage(), e);
+                logger.error("Error processing continueWithArgumentRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -682,7 +683,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(applyChargingReportRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onApplyChargingReportRequest(applyChargingReportRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing applyChargingReportRequest: " + e.getMessage(), e);
+                logger.error("Error processing applyChargingReportRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -713,7 +714,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(releaseCallRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onReleaseCallRequest(releaseCallRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing applyChargingReportRequest: " + e.getMessage(), e);
+                logger.error("Error processing applyChargingReportRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -743,7 +744,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(connectRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onConnectRequest(connectRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing eventReportBCSMRequest: " + e.getMessage(), e);
+                logger.error("Error processing eventReportBCSMRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -775,7 +776,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(callGapRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onCallGapRequest(callGapRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing callGapRequest: " + e.getMessage(), e);
+                logger.error("Error processing callGapRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -806,7 +807,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(callInformationRequestRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onCallInformationRequestRequest(callInformationRequestRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing eventReportBCSMRequest: " + e.getMessage(), e);
+                logger.error("Error processing eventReportBCSMRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -837,7 +838,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(callInformationReportRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onCallInformationReportRequest(callInformationReportRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing eventReportBCSMRequest: " + e.getMessage(), e);
+                logger.error("Error processing eventReportBCSMRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -855,7 +856,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(activityTestRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onActivityTestRequest(activityTestRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing activityTestRequest: " + e.getMessage(), e);
+                logger.error("Error processing activityTestRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -873,7 +874,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(activityTestResponseIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onActivityTestResponse(activityTestResponseIndication);
             } catch (Exception e) {
-                loger.error("Error processing activityTestResponse: " + e.getMessage(), e);
+                logger.error("Error processing activityTestResponse: " + e.getMessage(), e);
             }
         }
     }
@@ -902,7 +903,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(assistRequestInstructionsRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onAssistRequestInstructionsRequest(assistRequestInstructionsRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing assistRequestInstructionsRequest: " + e.getMessage(), e);
+                logger.error("Error processing assistRequestInstructionsRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -932,7 +933,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(establishTemporaryConnectionRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onEstablishTemporaryConnectionRequest(establishTemporaryConnectionRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing establishTemporaryConnectionRequest: " + e.getMessage(), e);
+                logger.error("Error processing establishTemporaryConnectionRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -950,7 +951,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(disconnectForwardConnectionRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onDisconnectForwardConnectionRequest(disconnectForwardConnectionRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing disconnectForwardConnectionRequest: " + e.getMessage(), e);
+                logger.error("Error processing disconnectForwardConnectionRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -979,7 +980,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(disconnectLegRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onDisconnectLegRequest(disconnectLegRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing disconnectLegRequest: " + e.getMessage(), e);
+                logger.error("Error processing disconnectLegRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -997,7 +998,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(disconnectLegResponseIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onDisconnectLegResponse(disconnectLegResponseIndication);
             } catch (Exception e) {
-                loger.error("Error processing disconnectLegResponse: " + e.getMessage(), e);
+                logger.error("Error processing disconnectLegResponse: " + e.getMessage(), e);
             }
         }
     }
@@ -1026,7 +1027,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(disconnectForwardConnectionWithArgumentRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onDisconnectForwardConnectionWithArgumentRequest(disconnectForwardConnectionWithArgumentRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing dFCWithArgument: " + e.getMessage(), e);
+                logger.error("Error processing dFCWithArgument: " + e.getMessage(), e);
             }
         }
     }
@@ -1056,7 +1057,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(initiateCallAttemptRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onInitiateCallAttemptRequest(initiateCallAttemptRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing initiateCallAttemptRequest: " + e.getMessage(), e);
+                logger.error("Error processing initiateCallAttemptRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1086,7 +1087,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(initiateCallAttemptResponseIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onInitiateCallAttemptResponse(initiateCallAttemptResponseIndication);
             } catch (Exception e) {
-                loger.error("Error processing initiateCallAttemptResponse: " + e.getMessage(), e);
+                logger.error("Error processing initiateCallAttemptResponse: " + e.getMessage(), e);
             }
         }
     }
@@ -1115,7 +1116,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(connectToResourceRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onConnectToResourceRequest(connectToResourceRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing connectToResourceRequest: " + e.getMessage(), e);
+                logger.error("Error processing connectToResourceRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1144,7 +1145,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(resetTimerRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onResetTimerRequest(resetTimerRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing resetTimerRequest: " + e.getMessage(), e);
+                logger.error("Error processing resetTimerRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1174,7 +1175,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(furnishChargingInformationRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onFurnishChargingInformationRequest(furnishChargingInformationRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing furnishChargingInformationRequest: " + e.getMessage(), e);
+                logger.error("Error processing furnishChargingInformationRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1203,7 +1204,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(sendChargingInformationRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onSendChargingInformationRequest(sendChargingInformationRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing sendChargingInformationRequest: " + e.getMessage(), e);
+                logger.error("Error processing sendChargingInformationRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1241,7 +1242,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(specializedResourceReportRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onSpecializedResourceReportRequest(specializedResourceReportRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing specializedResourceReportRequest: " + e.getMessage(), e);
+                logger.error("Error processing specializedResourceReportRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1270,7 +1271,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(playAnnouncementRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onPlayAnnouncementRequest(playAnnouncementRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing playAnnouncementRequest: " + e.getMessage(), e);
+                logger.error("Error processing playAnnouncementRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1299,7 +1300,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(promptAndCollectUserInformationRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onPromptAndCollectUserInformationRequest(promptAndCollectUserInformationRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing promptAndCollectUserInformationRequest: " + e.getMessage(), e);
+                logger.error("Error processing promptAndCollectUserInformationRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1328,7 +1329,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(promptAndCollectUserInformationResponseIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onPromptAndCollectUserInformationResponse(promptAndCollectUserInformationResponseIndication);
             } catch (Exception e) {
-                loger.error("Error processing promptAndCollectUserInformationResponse: " + e.getMessage(), e);
+                logger.error("Error processing promptAndCollectUserInformationResponse: " + e.getMessage(), e);
             }
         }
     }
@@ -1358,7 +1359,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(moveLegRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onMoveLegRequest(moveLegRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing moveLegRequest: " + e.getMessage(), e);
+                logger.error("Error processing moveLegRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1376,7 +1377,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(moveLegResponseIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onMoveLegResponse(moveLegResponseIndication);
             } catch (Exception e) {
-                loger.error("Error processing moveLegResponse: " + e.getMessage(), e);
+                logger.error("Error processing moveLegResponse: " + e.getMessage(), e);
             }
         }
     }
@@ -1406,7 +1407,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(splitLegRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onSplitLegRequest(splitLegRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing splitLegRequest: " + e.getMessage(), e);
+                logger.error("Error processing splitLegRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1424,7 +1425,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(splitLegResponseIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onSplitLegResponse(splitLegResponseIndication);
             } catch (Exception e) {
-                loger.error("Error processing splitLegResponse: " + e.getMessage(), e);
+                logger.error("Error processing splitLegResponse: " + e.getMessage(), e);
             }
         }
     }
@@ -1453,7 +1454,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(cancelRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onCancelRequest(cancelRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing cancelRequest: " + e.getMessage(), e);
+                logger.error("Error processing cancelRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -1471,7 +1472,7 @@ public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implem
                 serLis.onCAPMessage(collectInformationRequestIndication);
                 ((CAPServiceCircuitSwitchedCallListener) serLis).onCollectInformationRequest(collectInformationRequestIndication);
             } catch (Exception e) {
-                loger.error("Error processing collectInformationRequest: " + e.getMessage(), e);
+                logger.error("Error processing collectInformationRequest: " + e.getMessage(), e);
             }
         }
     }

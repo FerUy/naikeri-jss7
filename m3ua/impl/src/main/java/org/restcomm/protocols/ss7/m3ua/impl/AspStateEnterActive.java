@@ -3,7 +3,8 @@ package org.restcomm.protocols.ss7.m3ua.impl;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.m3ua.M3UAManagementEventListener;
 import org.restcomm.protocols.ss7.m3ua.State;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSMState;
@@ -16,7 +17,7 @@ import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSMStateEventHandler;
  */
 public class AspStateEnterActive implements FSMStateEventHandler {
 
-    private static final Logger logger = Logger.getLogger(AspStateEnterActive.class);
+    private static final Logger logger = LogManager.getLogger(AspStateEnterActive.class);
 
     private final AspImpl aspImpl;
 

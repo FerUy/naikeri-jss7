@@ -17,7 +17,8 @@ import javolution.xml.XMLFormat;
 import javolution.xml.XMLSerializable;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.AssociationListener;
 import org.mobicents.protocols.api.IpChannelType;
@@ -69,7 +70,7 @@ import org.restcomm.protocols.ss7.mtp.Mtp3StatusPrimitive;
  */
 public class AspFactoryImpl implements AssociationListener, XMLSerializable, AspFactory {
 
-    private static final Logger logger = Logger.getLogger(AspFactoryImpl.class);
+    private static final Logger logger = LogManager.getLogger(AspFactoryImpl.class);
 
     private static long ASP_ID_COUNT = 1L;
 

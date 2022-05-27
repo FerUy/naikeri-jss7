@@ -1,6 +1,7 @@
 package org.restcomm.ss7.congestion;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javolution.util.FastList;
 
@@ -10,7 +11,8 @@ import javolution.util.FastList;
  *
  */
 public abstract class BaseCongestionMonitor implements CongestionMonitor {
-    protected static final Logger logger = Logger.getLogger(BaseCongestionMonitor.class);
+
+    protected static final Logger logger = LogManager.getLogger(BaseCongestionMonitor.class);
 
     private final FastList<CongestionListener> listeners = new FastList<CongestionListener>();
 

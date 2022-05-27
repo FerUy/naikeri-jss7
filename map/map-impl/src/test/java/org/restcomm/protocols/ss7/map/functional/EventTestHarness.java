@@ -1,6 +1,6 @@
 package org.restcomm.protocols.ss7.map.functional;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
 import org.restcomm.protocols.ss7.map.api.MAPDialogListener;
 import org.restcomm.protocols.ss7.map.api.MAPMessage;

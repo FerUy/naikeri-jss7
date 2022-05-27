@@ -21,7 +21,8 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.AddressIndicator;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.NumberingPlan;
@@ -56,7 +57,7 @@ import org.restcomm.protocols.ss7.sccpext.router.RouterExt;
 *
 */
 public class RouterExtImpl implements RouterExt {
-    private static final Logger logger = Logger.getLogger(RouterImpl.class);
+    private static final Logger logger = LogManager.getLogger(RouterImpl.class);
 
     private static final String SCCP_ROUTER_PERSIST_DIR_KEY = "sccprouter.persist.dir";
     private static final String USER_DIR_KEY = "user.dir";

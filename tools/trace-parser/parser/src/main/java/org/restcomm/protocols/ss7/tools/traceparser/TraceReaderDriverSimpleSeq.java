@@ -56,7 +56,7 @@ public class TraceReaderDriverSimpleSeq extends TraceReaderDriverBase implements
             }
 
         } catch (Throwable e) {
-            this.loger.error("General exception: " + e.getMessage());
+            this.logger.error("General exception: " + e.getMessage());
             e.printStackTrace();
             throw new TraceReaderException("General exception: " + e.getMessage(), e);
         } finally {

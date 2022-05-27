@@ -3,7 +3,7 @@ package org.restcomm.protocols.ss7.tools.simulator.level3;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.restcomm.protocols.ss7.cap.CAPStackImpl;
 import org.restcomm.protocols.ss7.cap.api.CAPProvider;
 import org.restcomm.protocols.ss7.cap.api.CAPStack;

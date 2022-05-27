@@ -1,6 +1,6 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.ati;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;

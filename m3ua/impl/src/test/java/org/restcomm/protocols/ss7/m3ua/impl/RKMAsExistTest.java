@@ -4,7 +4,8 @@ package org.restcomm.protocols.ss7.m3ua.impl;
 import static org.testng.Assert.assertEquals;
 import javolution.util.FastList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.Management;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
@@ -48,7 +49,7 @@ import com.sun.nio.sctp.SctpChannel;
 @SuppressWarnings("restriction")
 public class RKMAsExistTest {
 
-    private static final Logger logger = Logger.getLogger(RKMAsExistTest.class);
+    private static final Logger logger = LogManager.getLogger(RKMAsExistTest.class);
     
     private MessageFactoryImpl messageFactory = new MessageFactoryImpl();
     private ParameterFactoryImpl parmFactory = new ParameterFactoryImpl();

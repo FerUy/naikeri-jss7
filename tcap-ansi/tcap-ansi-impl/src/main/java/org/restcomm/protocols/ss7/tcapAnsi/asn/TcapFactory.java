@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -41,7 +42,7 @@ import org.restcomm.protocols.ss7.tcapAnsi.api.tc.component.InvokeClass;
  */
 public final class TcapFactory {
 
-    private static final Logger logger = Logger.getLogger(TcapFactory.class); // listenres
+    private static final Logger logger = LogManager.getLogger(TcapFactory.class); // listenres
 
     public static DialogPortion createDialogPortion(AsnInputStream ais) throws ParseException {
         DialogPortionImpl dpi = new DialogPortionImpl();

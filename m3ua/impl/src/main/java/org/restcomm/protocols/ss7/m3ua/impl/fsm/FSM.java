@@ -3,7 +3,8 @@ package org.restcomm.protocols.ss7.m3ua.impl.fsm;
 
 import javolution.util.FastMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.m3ua.impl.scheduler.M3UATask;
 
 /**
@@ -11,7 +12,7 @@ import org.restcomm.protocols.ss7.m3ua.impl.scheduler.M3UATask;
  */
 public class FSM extends M3UATask {
 
-    protected static final  Logger logger = Logger.getLogger(FSM.class);
+    protected static final  Logger logger = LogManager.getLogger(FSM.class);
 
     public static final String ATTRIBUTE_MESSAGE = "message";
 

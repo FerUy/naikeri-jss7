@@ -10,8 +10,9 @@ import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.mtp.Mtp3StatusCause;
 import org.restcomm.protocols.ss7.sccp.ConcernedSignalingPointCode;
@@ -81,7 +82,7 @@ public class SccpManagement {
 
     public SccpManagement(String name, SccpProviderImpl sccpProviderImpl, SccpStackImpl sccpStackImpl) {
         this.name = name;
-        this.logger = Logger.getLogger(SccpManagement.class.getCanonicalName() + "-" + this.name);
+        this.logger = LogManager.getLogger(SccpManagement.class.getCanonicalName() + "-" + this.name);
         this.sccpProviderImpl = sccpProviderImpl;
         this.sccpStackImpl = sccpStackImpl;
     }
@@ -136,7 +137,7 @@ public class SccpManagement {
                 }
                 break;
             case SSP:
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(String.format(
                             "Rx : SSP, Affected SSN=%d, Affected PC=%d, Subsystem Multiplicity Ind=%d SeqControl=%d",
                             affectedSsn, affectedPc, subsystemMultiplicity, message.getSls()));
@@ -181,12 +182,12 @@ public class SccpManagement {
 
                 break;
             case SOR:
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn("Received SOR. SOR not yet implemented, dropping message");
                 }
                 break;
             case SOG:
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn("Received SOG. SOG not yet implemented, dropping message");
                 }
                 break;

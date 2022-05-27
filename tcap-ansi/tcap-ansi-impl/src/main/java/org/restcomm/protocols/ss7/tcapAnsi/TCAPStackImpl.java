@@ -14,7 +14,8 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.SccpProvider;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
 import org.restcomm.protocols.ss7.tcapAnsi.api.TCAPCounterEventsListener;
@@ -125,7 +126,7 @@ public class TCAPStackImpl implements TCAPStack {
         super();
         this.name = name;
 
-        this.logger = Logger.getLogger(TCAPStackImpl.class.getCanonicalName() + "-" + this.name);
+        this.logger = LogManager.getLogger(TCAPStackImpl.class.getCanonicalName() + "-" + this.name);
 
         binding.setClassAttribute(CLASS_ATTRIBUTE);
 

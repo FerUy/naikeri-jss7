@@ -3,7 +3,7 @@ package org.restcomm.protocols.ss7.tools.simulator.management;
 
 import javax.management.NotificationEmitter;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.restcomm.protocols.ss7.tools.simulator.common.ConfigurationData;
 import org.restcomm.protocols.ss7.tools.simulator.level1.DialogicMan;
 import org.restcomm.protocols.ss7.tools.simulator.level1.M3uaMan;

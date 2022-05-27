@@ -10,7 +10,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.restcomm.protocols.ss7.tools.traceparser.MainGui;
@@ -30,7 +31,7 @@ public class Main {
     public static final String TRACE_PARSER_DATA = "traceparser.data.dir";
     private static int index = 0;
 
-    private static Logger logger = Logger.getLogger(Main.class);
+    private static Logger logger = LogManager.getLogger(Main.class);
 
 //    private String command = null;
 //    private String appName = "main";

@@ -45,6 +45,8 @@
         <resource-root path="sccp-impl-ext-${project.version}.jar"/>
         <resource-root path="NaikeriLicensor-1.0.0-SNAPSHOT.jar"/>
         <resource-root path="license4j-runtime-library-4.7.3.jar"/>
+        <resource-root path="log4j-api-${log4j.version}.jar"/>
+        <resource-root path="log4j-core-${log4j.version}.jar"/>
     </resources>
 
     <dependencies>

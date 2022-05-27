@@ -1,6 +1,7 @@
 package org.restcomm.protocols.ss7.cap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.CAPApplicationContext;
 import org.restcomm.protocols.ss7.cap.api.CAPDialog;
@@ -36,7 +37,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
  */
 public abstract class CAPDialogImpl implements CAPDialog {
 
-    private static final Logger logger = Logger.getLogger(CAPDialogImpl.class);
+    private static final Logger logger = LogManager.getLogger(CAPDialogImpl.class);
 
     protected Dialog tcapDialog;
     protected CAPProviderImpl capProviderImpl;

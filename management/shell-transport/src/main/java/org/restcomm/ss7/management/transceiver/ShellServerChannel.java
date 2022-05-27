@@ -6,7 +6,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.AbstractSelectableChannel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A selectable channel for Message listening sockets.
@@ -15,9 +16,9 @@ import org.apache.log4j.Logger;
  *
  */
 public class ShellServerChannel extends ShellSelectableChannel {
-    private static final Logger logger = Logger.getLogger(ShellServerChannel.class);
+    private static final Logger logger = LogManager.getLogger(ShellServerChannel.class);
 
-    private ChannelProvider chanProvider = null;
+    private ChannelProvider chanProvider;
 
     protected ShellServerChannel(ChannelProvider chanProvider, AbstractSelectableChannel channel) throws IOException {
         this.channel = channel;

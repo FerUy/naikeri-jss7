@@ -4,8 +4,9 @@ package org.restcomm.protocols.ss7.m3ua.impl;
 import javolution.util.FastList;
 import javolution.util.FastSet;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import org.restcomm.protocols.ss7.m3ua.Asp;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSMState;
@@ -22,7 +23,7 @@ public class AsStatePenTimeout implements FSMStateEventHandler {
 
     private AsImpl asImpl;
     private FSM fsm;
-    private static final Logger logger = Logger.getLogger(AsStatePenTimeout.class);
+    private static final Logger logger = LogManager.getLogger(AsStatePenTimeout.class);
 
     boolean inactive = false;
 
@@ -46,7 +47,7 @@ public class AsStatePenTimeout implements FSMStateEventHandler {
      */
     public void onEvent(FSMState state) {
 
-        if (logger.isEnabledFor(Priority.WARN)) {
+        if (logger.isEnabled(Level.WARN)) {
             logger.warn(String.format("PENDING timed out for As=%s", this.asImpl.getName()));
         }
 

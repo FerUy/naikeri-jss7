@@ -1,8 +1,8 @@
 
 package org.restcomm.protocols.ss7.sccp.impl.message;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
@@ -178,7 +178,7 @@ public class SccpConnCcMessageImpl extends SccpConnReferencedMessageImpl impleme
                 availLen = 130;
             }
             if (bf.length > availLen) { // message is too long
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(String.format(
                             "Failure when sending a CC message: message is too long. SccpMessageSegment=%s", this));
                 }

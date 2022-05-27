@@ -2,7 +2,8 @@
 package org.restcomm.protocols.ss7.map.load.sms.mt;
 
 import com.google.common.util.concurrent.RateLimiter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
@@ -119,7 +120,7 @@ import java.util.GregorianCalendar;
  */
 public class Client extends TestHarnessSmsMt {
 
-    private static Logger logger = Logger.getLogger(Client.class);
+    private static Logger logger = LogManager.getLogger(Client.class);
 
     // TCAP
     private TCAPStack tcapStack;

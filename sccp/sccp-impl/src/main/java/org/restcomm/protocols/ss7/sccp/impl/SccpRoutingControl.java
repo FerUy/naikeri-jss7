@@ -3,8 +3,9 @@ package org.restcomm.protocols.ss7.sccp.impl;
 
 import javolution.util.FastMap;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.mtp.Mtp3;
 import org.restcomm.protocols.ss7.mtp.Mtp3TransferPrimitive;
@@ -88,7 +89,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
         this.messageFactory = sccpStackImpl.messageFactory;
         this.sccpProviderImpl = sccpProviderImpl;
         this.sccpStackImpl = sccpStackImpl;
-        this.logger = Logger.getLogger(SccpRoutingControl.class.getCanonicalName() + "-" + this.sccpStackImpl.name);
+        this.logger = LogManager.getLogger(SccpRoutingControl.class.getCanonicalName() + "-" + this.sccpStackImpl.name);
     }
 
     public SccpManagement getSccpManagement() {
@@ -174,7 +175,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                     // SCCP user with received SSN is not available - Notify Management
                     this.sccpManagement.recdMsgForProhibitedSsn(msg, ssn);
 
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format(
                                 "Received SccpMessage=%s from MTP but the SSN is not available for local routing", msg));
                     }
@@ -200,7 +201,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                     }
 
                 } catch (Exception e) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format(
                                 "Exception from the listener side when delivering SccpData to ssn=%d: Message=%s",
                                 msg.getOriginLocalSsn(), msg), e);
@@ -231,7 +232,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
             // SCCP user with received SSN is not available - Notify Management
             this.sccpManagement.recdMsgForProhibitedSsn(msg, ssn);
 
-            if (logger.isEnabledFor(Level.WARN)) {
+            if (logger.isEnabled(Level.WARN)) {
                 logger.warn(String.format(
                         "Received SccpMessage=%s from MTP but the SSN is not available for local routing", msg));
             }
@@ -307,7 +308,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 
         Mtp3ServiceAccessPoint sap = this.sccpStackImpl.router.findMtp3ServiceAccessPoint(dpc, sls, message.getNetworkId());
         if (sap == null) {
-            if (logger.isEnabledFor(Level.WARN)) {
+            if (logger.isEnabled(Level.WARN)) {
                 logger.warn(String.format("SccpMessage for sending=%s but no matching dpc=%d & sls=%d SAP found", message, dpc,
                         sls));
             }
@@ -317,7 +318,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 
         Mtp3UserPart mup = this.sccpStackImpl.getMtp3UserPart(sap.getMtp3Id());
         if (mup == null) {
-            if (logger.isEnabledFor(Level.WARN)) {
+            if (logger.isEnabled(Level.WARN)) {
                 logger.warn(String.format("SccpMessage for sending=%s but no matching Mtp3UserPart found for Id=%d", message,
                         sap.getMtp3Id()));
             }
@@ -356,7 +357,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
             default:
                 String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult().toString(),
                         message.toString());
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(em);
                 }
                 throw new IOException(em);
@@ -387,7 +388,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 
         Mtp3ServiceAccessPoint sap = this.sccpStackImpl.router.findMtp3ServiceAccessPoint(dpc, sls, message.getNetworkId());
         if (sap == null) {
-            if (logger.isEnabledFor(Level.WARN)) {
+            if (logger.isEnabled(Level.WARN)) {
                 logger.warn(String.format("SccpMessage for sending=%s but no matching dpc=%d & sls=%d SAP found", message, dpc,
                         sls));
             }
@@ -396,7 +397,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 
         Mtp3UserPart mup = this.sccpStackImpl.getMtp3UserPart(sap.getMtp3Id());
         if (mup == null) {
-            if (logger.isEnabledFor(Level.WARN)) {
+            if (logger.isEnabled(Level.WARN)) {
                 logger.warn(String.format("SccpMessage for sending=%s but no matching Mtp3UserPart found for Id=%d", message,
                         sap.getMtp3Id()));
             }
@@ -435,7 +436,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
             default:
                 String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult().toString(),
                         message.toString());
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(em);
                 }
                 throw new IOException(em);
@@ -459,7 +460,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 
         Mtp3ServiceAccessPoint sap = this.sccpStackImpl.router.findMtp3ServiceAccessPoint(dpc, 0);
         if (sap == null) {
-            if (logger.isEnabledFor(Level.WARN)) {
+            if (logger.isEnabled(Level.WARN)) {
                 logger.warn(String.format("Sccp management message for sending=%s but no matching dpc=%d SAP found", message,
                         dpc));
             }
@@ -468,7 +469,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 
         Mtp3UserPart mup = this.sccpStackImpl.getMtp3UserPart(sap.getMtp3Id());
         if (mup == null) {
-            if (logger.isEnabledFor(Level.WARN)) {
+            if (logger.isEnabled(Level.WARN)) {
                 logger.warn(String.format("Sccp management message for sending=%s but no matching Mtp3UserPart found for Id=%d", message,
                         sap.getMtp3Id()));
             }
@@ -488,7 +489,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                     mup.sendMessage(msg);
                 } else {
                     // segmented data - not possible for a management message
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format(
                                 "Sccp management message for sending=%s was encoded with segments, it is forbidded", message));
                     }
@@ -502,7 +503,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
             default:
                 String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult().toString(),
                         message.toString());
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(em);
                 }
                 throw new IOException(em);
@@ -538,7 +539,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 
                     SccpListener listener = this.sccpProviderImpl.getSccpListener(ssn);
                     if (listener == null) {
-                        if (logger.isEnabledFor(Level.WARN)) {
+                        if (logger.isEnabled(Level.WARN)) {
                             logger.warn(String.format(
                                     "Received SccpMessage=%s for routing but the SSN is not available for local routing", msg));
                         }
@@ -571,7 +572,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 //                            conn.receiveMessage(cr);
                         }
                     } catch (Exception e) {
-                        if (logger.isEnabledFor(Level.WARN)) {
+                        if (logger.isEnabled(Level.WARN)) {
                             logger.warn(String.format(
                                     "Exception from the listener side when delivering SccpData to ssn=%d: Message=%s",
                                     msg.getOriginLocalSsn(), msg), e);
@@ -610,7 +611,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                 // Check if the DPC is not prohibited
                 RemoteSignalingPointCode remoteSpc = this.sccpStackImpl.getSccpResource().getRemoteSpcByPC(dpc);
                 if (remoteSpc == null) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format(
                                 "Received SccpMessage=%s for routing but no Remote Signaling Pointcode = %d resource defined ",
                                 msg, dpc));
@@ -619,7 +620,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                     return;
                 }
                 if (remoteSpc.isRemoteSpcProhibited()) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format(
                                 "Received SccpMessage=%s for routing but Remote Signaling Pointcode = %d is prohibited", msg,
                                 dpc));
@@ -638,7 +639,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                         RemoteSubSystem remoteSsn = this.sccpStackImpl.getSccpResource().getRemoteSsn(dpc,
                                 calledPartyAddress.getSubsystemNumber());
                         if (remoteSsn == null) {
-                            if (logger.isEnabledFor(Level.WARN)) {
+                            if (logger.isEnabled(Level.WARN)) {
                                 logger.warn(String.format(
                                         "Received SCCPMessage=%s for routing, but no Remote SubSystem = %d resource defined ",
                                         msg, calledPartyAddress.getSubsystemNumber()));
@@ -649,7 +650,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                         }
 
                         if (remoteSsn.isRemoteSsnProhibited()) {
-                            if (logger.isEnabledFor(Level.WARN)) {
+                            if (logger.isEnabled(Level.WARN)) {
                                 logger.warn(String.format(
                                         "Routing of Sccp Message=%s failed as Remote SubSystem = %d is prohibited ", msg,
                                         calledPartyAddress.getSubsystemNumber()));
@@ -694,7 +695,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 
             if (gt == null) {
                 // No DPC, and no GT. This is insufficient information
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(String
                             .format("Received SccpMessage=%s for routing from local SCCP user part but no pointcode and no GT or SSN included",
                                     msg, dpc));
@@ -814,7 +815,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
 //                }
 //
 //            } catch (Exception e) {
-//                if (logger.isEnabledFor(Level.WARN)) {
+//                if (logger.isEnabled(Level.WARN)) {
 //                    logger.warn(String.format(
 //                            "Exception from the listener side when delivering SccpData to ssn=%d: Message=%s",
 //                            msg.getOriginLocalSsn(), msg), e);
@@ -827,7 +828,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
             // Check if the DPC is not prohibited
             RemoteSignalingPointCode remoteSpc = this.sccpStackImpl.getSccpResource().getRemoteSpcByPC(dpc);
             if (remoteSpc == null) {
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(String.format(
                             "Received SccpMessage=%s for routing but no Remote Signaling Pointcode = %d resource defined ",
                             msg, dpc));
@@ -836,7 +837,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                 return;
             }
             if (remoteSpc.isRemoteSpcProhibited()) {
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(String.format(
                             "Received SccpMessage=%s for routing but Remote Signaling Pointcode = %d is prohibited", msg, dpc));
                 }
@@ -854,7 +855,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                     // If routing based on SSN, check remote SSN is available
                     RemoteSubSystem remoteSsn = this.sccpStackImpl.getSccpResource().getRemoteSsn(dpc, ssn);
                     if (remoteSsn == null) {
-                        if (logger.isEnabledFor(Level.WARN)) {
+                        if (logger.isEnabled(Level.WARN)) {
                             logger.warn(String.format(
                                     "Received SCCPMessage=%s for routing, but no Remote SubSystem = %d resource defined ", msg,
                                     ssn));
@@ -865,7 +866,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                     }
 
                     if (remoteSsn.isRemoteSsnProhibited()) {
-                        if (logger.isEnabledFor(Level.WARN)) {
+                        if (logger.isEnabled(Level.WARN)) {
                             logger.warn(String.format(
                                     "Routing of Sccp Message=%s failed as Remote SubSystem = %d is prohibited ", msg, ssn));
                         }
@@ -995,7 +996,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                         try {
                             listener.onNotice((SccpNoticeMessage)ans);
                         } catch (Exception e) {
-                            if (logger.isEnabledFor(Level.WARN)) {
+                            if (logger.isEnabled(Level.WARN)) {
                                 logger.warn(String.format(
                                         "Exception from the listener side when delivering SccpNotice to ssn=%d: Message=%s",
                                         msg.getOriginLocalSsn(), msg), e);
@@ -1006,7 +1007,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                             SccpConnection conn = sccpStackImpl.getConnection(((SccpConnCrMessageImpl)msg).getSourceLocalReferenceNumber());
                             listener.onDisconnectIndication(conn, ((SccpConnCrefMessageImpl)ans).getRefusalCause(), new byte[]{});
                         } catch (Exception e) {
-                            if (logger.isEnabledFor(Level.WARN)) {
+                            if (logger.isEnabled(Level.WARN)) {
                                 logger.warn(String.format(
                                         "Exception from the listener side when delivering CREF message to ssn=%d: Message=%s",
                                         msg.getOriginLocalSsn(), msg), e);
@@ -1151,7 +1152,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
             }
 
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.WARN)) {
+            if (logger.isEnabled(Level.WARN)) {
                 logger.warn(String.format(
                         "Exception from the listener side when delivering SccpData to ssn=%d: Message=%s",
                         msg.getOriginLocalSsn(), msg), e);
@@ -1194,7 +1195,7 @@ public class SccpRoutingControl implements SccpRoutingCtxInterface {
                         // This message is for local routing
                         SccpListener connListener = sccpProviderImpl.getSccpListener(ssn);
                         if (connListener == null) {
-                            if (logger.isEnabledFor(Level.WARN)) {
+                            if (logger.isEnabled(Level.WARN)) {
                                 logger.warn(String.format(
                                         "Received SccpMessage=%s for routing but the SSN is not available for local routing", msg));
                             }

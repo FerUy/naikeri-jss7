@@ -23,7 +23,8 @@ import javax.naming.NamingException;
 import javolution.util.FastList;
 import javolution.util.FastSet;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jboss.security.SecurityContext;
 import org.jboss.security.SecurityContextFactory;
 import org.jboss.security.audit.AuditEvent;
@@ -45,7 +46,7 @@ import org.restcomm.ss7.management.transceiver.ShellServerChannel;
  *
  */
 public abstract class ShellServer extends Task implements ShellServerMBean {
-    Logger logger = Logger.getLogger(ShellServer.class);
+    Logger logger = LogManager.getLogger(ShellServer.class);
 
     public static final String CONNECTED_MESSAGE = "Connected to %s %s %s";
     public static final String CONNECTED_AUTHENTICATING_MESSAGE = "Authenticating against configured security realm";

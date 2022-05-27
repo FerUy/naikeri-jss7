@@ -2,7 +2,7 @@
 
 package org.restcomm.protocols.ss7.tools.simulator.tests.checkimei;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
 import org.restcomm.protocols.ss7.map.api.MAPDialogListener;
 import org.restcomm.protocols.ss7.map.api.MAPException;

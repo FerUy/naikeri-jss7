@@ -16,7 +16,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 
@@ -50,7 +51,7 @@ public class TestLcsServerParamForm extends JDialog {
 
     private static final long serialVersionUID = 5428271328162943202L;
 
-    private static Logger logger = Logger.getLogger(TestLcsServerParamForm.class);
+    private static Logger logger = LogManager.getLogger(TestLcsServerParamForm.class);
 
     private TestLcsServerManMBean mapLcsServer;
     private JTextField cbAddress;

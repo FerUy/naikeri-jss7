@@ -7,8 +7,9 @@ import java.util.List;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.stream.api.SelectorKey;
 import org.mobicents.protocols.stream.api.SelectorProvider;
 import org.mobicents.protocols.stream.api.StreamSelector;
@@ -66,7 +67,7 @@ public class Mtp3 implements Runnable {
 
     private Scheduler scheduler;
 
-    private static final Logger logger = Logger.getLogger(Mtp3.class);
+    private static final Logger logger = LogManager.getLogger(Mtp3.class);
 
     // public Mtp3Impl(String name, Mtp1 layer1) {
     public Mtp3(String name, Scheduler scheduler) {
@@ -219,8 +220,8 @@ public class Mtp3 implements Runnable {
     /**
      * This method is called when new MSU is detected.
      *
-     * @param sio service information octet.
-     * @param msg service information field;
+     * //@param sio service information octet.
+     * //@param msg service information field;
      */
 
     public void onMessage(Mtp2Buffer rxFrame, Mtp2 mtp2) {
@@ -243,7 +244,7 @@ public class Mtp3 implements Runnable {
 
         // check SSI, Q.704 Figure 25, seems like if its bad, we discard.
         if (this.ni != ni) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isEnabled(Level.ERROR)) {
                 logger.error(String.format("(%s) Received MSSU with bad SSI, discarding! ni:" + ni + " thisni:" + this.ni
                         + " [si=" + serviceIndicator + ",ssi=" + subserviceIndicator + ", dpc=" + dpc + ", opc=" + opc
                         + ", sls=" + sls + "] data: ", mtp2.getName())
@@ -312,13 +313,13 @@ public class Mtp3 implements Runnable {
                             linkUp(mtp2);
                         }
                     } else {
-                        if (logger.isEnabledFor(Level.WARN)) {
+                        if (logger.isEnabled(Level.WARN)) {
                             logger.warn("SLTA pattern does not match: \n" + Arrays.toString(rxFrame.frame) + "\n"
                                     + Arrays.toString(SLTM_PATTERN));
                         }
                     }
                 } else {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format("(%s) Unexpected message type", mtp2.getName()));
                     }
                 }
@@ -361,7 +362,7 @@ public class Mtp3 implements Runnable {
                 }
                 break;
             default:
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn("Received MSU for UNKNOWN SERVICE!!!!!!!!!!!: " + Utils.dump(rxFrame.frame, rxFrame.len, false));
                 }
                 break;
@@ -515,11 +516,6 @@ public class Mtp3 implements Runnable {
         return true;
     }
 
-    /**
-     * @param i
-     * @return
-     */
-
     protected class SLTMTest extends Task {
 
         private Mtp2 link;
@@ -583,10 +579,10 @@ public class Mtp3 implements Runnable {
         /**
          * Sends SLTM message using this link.
          *
-         * @param timeout the amount of time in millesecond for awaiting response.
+         * //@param timeout the amount of time in millisecond for awaiting response.
          */
         public void ping() {
-            // prepearing test message
+            // preparing test message
 
             writeRoutingLabel(sltm, 0x01, ni, link.getSls(), dpc, opc);
             // sltm[0] = (byte) 0x01;

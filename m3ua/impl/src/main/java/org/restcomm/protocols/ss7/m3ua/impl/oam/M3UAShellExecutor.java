@@ -9,7 +9,8 @@ import java.util.Set;
 import javolution.util.FastMap;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.m3ua.As;
 import org.restcomm.protocols.ss7.m3ua.AspFactory;
 import org.restcomm.protocols.ss7.m3ua.ErrorRetryAction;
@@ -34,7 +35,7 @@ import org.restcomm.ss7.management.console.ShellExecutor;
  */
 public class M3UAShellExecutor implements ShellExecutor {
 
-    private static final Logger logger = Logger.getLogger(M3UAShellExecutor.class);
+    private static final Logger logger = LogManager.getLogger(M3UAShellExecutor.class);
 
     private FastMap<String, M3UAManagementImpl> m3uaManagements = new FastMap<String, M3UAManagementImpl>();
 

@@ -132,8 +132,13 @@
 			<version>${concurrent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
@@ -555,15 +560,27 @@
 										</artifactItem>
 
 										<artifactItem>
-											<groupId>log4j</groupId>
-											<artifactId>log4j</artifactId>
+											<groupId>org.apache.logging.log4j</groupId>
+											<artifactId>log4j-core</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${assemble.dir}
 											</outputDirectory>
 											<destFileName>
-												log4j.jar
+												log4j-core-${log4j.version}.jar
+											</destFileName>
+										</artifactItem>
+										<artifactItem>
+											<groupId>org.apache.logging.log4j</groupId>
+											<artifactId>log4j-api</artifactId>
+											<type>jar</type>
+											<overWrite>true</overWrite>
+											<outputDirectory>
+												${assemble.dir}
+											</outputDirectory>
+											<destFileName>
+												log4j-api-${log4j.version}.jar
 											</destFileName>
 										</artifactItem>
 

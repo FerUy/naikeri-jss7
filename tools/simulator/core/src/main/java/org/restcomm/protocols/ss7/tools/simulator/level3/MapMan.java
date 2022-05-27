@@ -3,7 +3,7 @@ package org.restcomm.protocols.ss7.tools.simulator.level3;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.restcomm.protocols.ss7.map.MAPStackImpl;
 import org.restcomm.protocols.ss7.map.api.MAPProvider;
 import org.restcomm.protocols.ss7.map.api.MAPStack;

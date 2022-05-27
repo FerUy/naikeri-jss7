@@ -51,7 +51,7 @@ public class TraceReaderDriverActerna extends TraceReaderDriverBase implements T
                         blockLen = b;
                     }
                     if (stepPos == 15 && b != 0 || stepPos == 17 && b != 0 && b != 1) {
-                        this.loger.error("Error #1, recCnt=" + recCnt);
+                        this.logger.error("Error #1, recCnt=" + recCnt);
                     }
 
                     if (stepPos == 17) {
@@ -126,7 +126,7 @@ public class TraceReaderDriverActerna extends TraceReaderDriverBase implements T
             }
 
         } catch (Throwable e) {
-            this.loger.error("General exception: " + e.getMessage());
+            this.logger.error("General exception: " + e.getMessage());
             e.printStackTrace();
             throw new TraceReaderException("General exception: " + e.getMessage(), e);
         } finally {

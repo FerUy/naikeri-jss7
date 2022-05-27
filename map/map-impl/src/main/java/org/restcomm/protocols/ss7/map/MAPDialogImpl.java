@@ -1,7 +1,8 @@
 
 package org.restcomm.protocols.ss7.map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
@@ -44,7 +45,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
  */
 public abstract class MAPDialogImpl implements MAPDialog {
 
-    private static final Logger logger = Logger.getLogger(MAPDialogImpl.class);
+    private static final Logger logger = LogManager.getLogger(MAPDialogImpl.class);
 
     protected Dialog tcapDialog;
     protected MAPProviderImpl mapProviderImpl;

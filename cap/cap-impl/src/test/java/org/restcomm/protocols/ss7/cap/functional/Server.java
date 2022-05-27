@@ -2,7 +2,8 @@ package org.restcomm.protocols.ss7.cap.functional;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.cap.api.CAPDialog;
 import org.restcomm.protocols.ss7.cap.api.CAPException;
 import org.restcomm.protocols.ss7.cap.api.CAPParameterFactory;
@@ -36,7 +37,7 @@ import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
  */
 public class Server extends EventTestHarness {
 
-    private static Logger logger = Logger.getLogger(Server.class);
+    private static Logger logger = LogManager.getLogger(Server.class);
 
     private CAPFunctionalTest runningTestCase;
     private SccpAddress thisAddress;

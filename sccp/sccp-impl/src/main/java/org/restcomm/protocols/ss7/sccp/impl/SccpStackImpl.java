@@ -9,8 +9,9 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.mtp.Mtp3;
 import org.restcomm.protocols.ss7.mtp.Mtp3EndCongestionPrimitive;
@@ -265,7 +266,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
         binding.setClassAttribute(CLASS_ATTRIBUTE);
 
         this.name = name;
-        this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName() + "-" + this.name);
+        this.logger = LogManager.getLogger(SccpStackImpl.class.getCanonicalName() + "-" + this.name);
 
         this.messageFactory = new MessageFactoryImpl(this);
         this.sccpProvider = new SccpProviderImpl(this);
@@ -1309,20 +1310,20 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                 RemoteSignalingPointCode remoteSpc = this.getSccpResource().getRemoteSpcByPC(dpc);
                 Mtp3ServiceAccessPoint sap = this.router.findMtp3ServiceAccessPoint(opc, sls);
                 if (remoteSpc == null) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d. But RemoteSpc is not found", dpc));
                     }
                     return;
                 }
                 if (remoteSpc.isRemoteSpcProhibited()) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d. But RemoteSpc is Prohibited", dpc));
                     }
                     // TODO: ***** SSP should we send SSP message to a peer ?
                     return;
                 }
                 if (remoteSpc.getCurrentRestrictionLevel() > 1) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d. But RemoteSpc is Congested", dpc));
                     }
                     // TODO: ***** SSC should we send SSC message to a peer ?
@@ -1330,7 +1331,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                 }
                 Mtp3ServiceAccessPoint sap2 = this.router.findMtp3ServiceAccessPoint(dpc, sls);
                 if (sap2 == null) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d / sls=%d. But SAP is not found",
                                 dpc, sls));
                     }
@@ -1338,7 +1339,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                 }
                 Mtp3UserPart mup = this.getMtp3UserPart(sap2.getMtp3Id());
                 if (mup == null) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isEnabled(Level.WARN)) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d / sls=%d. no matching Mtp3UserPart found", dpc, sls));
                     }
                     return;
@@ -1379,7 +1380,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
             Mtp3ServiceAccessPoint sap = this.router.findMtp3ServiceAccessPointForIncMes(dpc, opc, localGtDigits);
             int networkId = 0;
             if (sap == null) {
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isEnabled(Level.WARN)) {
                     logger.warn(String.format("Incoming Mtp3 Message for local address for localPC=%d, remotePC=%d, sls=%d. But SAP is not found for localPC", dpc, opc, mtp3Msg.getSls()));
                 }
             } else {
@@ -1428,7 +1429,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                             if (sgmMsgFst == null) {
                                 // previous segments cache is not found -
                                 // discard a segment
-                                if (logger.isEnabledFor(Level.WARN)) {
+                                if (logger.isEnabled(Level.WARN)) {
                                     logger.warn(String
                                             .format("Reassembly function failure: received a non first segment without the first segement having recieved. SccpMessageSegment=%s",
                                                     msg));
@@ -1443,7 +1444,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                                     if (mspMain != null)
                                         mspMain.stopTimer();
                                 }
-                                if (logger.isEnabledFor(Level.WARN)) {
+                                if (logger.isEnabled(Level.WARN)) {
                                     logger.warn(String
                                             .format("Reassembly function failure: when receiving a next segment message order is missing. SccpMessageSegment=%s",
                                                     msg));

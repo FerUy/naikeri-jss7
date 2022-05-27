@@ -3,7 +3,8 @@ package org.restcomm.protocols.ss7.m3ua.impl;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.m3ua.Asp;
 import org.restcomm.protocols.ss7.m3ua.ExchangeType;
 import org.restcomm.protocols.ss7.m3ua.Functionality;
@@ -27,7 +28,7 @@ import org.restcomm.protocols.ss7.m3ua.parameter.TrafficModeType;
  */
 public class AspTrafficMaintenanceHandler extends MessageHandler {
 
-    private static final Logger logger = Logger.getLogger(AspTrafficMaintenanceHandler.class);
+    private static final Logger logger = LogManager.getLogger(AspTrafficMaintenanceHandler.class);
 
     public AspTrafficMaintenanceHandler(AspFactoryImpl aspFactoryImpl) {
         super(aspFactoryImpl);

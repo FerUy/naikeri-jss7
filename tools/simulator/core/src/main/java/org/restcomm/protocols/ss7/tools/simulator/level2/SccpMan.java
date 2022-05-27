@@ -1,6 +1,6 @@
 package org.restcomm.protocols.ss7.tools.simulator.level2;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.NumberingPlan;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;

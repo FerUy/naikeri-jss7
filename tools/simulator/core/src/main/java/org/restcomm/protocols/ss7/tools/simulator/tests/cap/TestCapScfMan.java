@@ -3,7 +3,7 @@ package org.restcomm.protocols.ss7.tools.simulator.tests.cap;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.restcomm.protocols.ss7.cap.api.CAPDialog;
 import org.restcomm.protocols.ss7.cap.api.CAPDialogListener;
 import org.restcomm.protocols.ss7.cap.api.CAPException;

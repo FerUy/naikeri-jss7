@@ -1,7 +1,8 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.psi;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.LocationNumberImpl;
@@ -182,7 +183,7 @@ import java.util.Random;
  */
 public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBean, Stoppable, MAPServiceMobilityListener, MAPServiceSmsListener, MAPServiceCallHandlingListener {
 
-  private static Logger logger = Logger.getLogger(TestPsiServerMan.class);
+  private static Logger logger = LogManager.getLogger(TestPsiServerMan.class);
 
   public static String SOURCE_NAME = "TestPsiServerMan";
   private final String name;

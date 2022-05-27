@@ -1,7 +1,8 @@
 
 package org.restcomm.protocols.ss7.sccpext.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.SccpCongestionControlAlgo;
 import org.restcomm.protocols.ss7.sccp.impl.RemoteSignalingPointCodeExt;
 import org.restcomm.protocols.ss7.sccp.impl.RemoteSignalingPointCodeImpl;
@@ -16,7 +17,7 @@ import org.restcomm.protocols.ss7.sccpext.impl.congestion.SccpCongestionControl;
 */
 public class RemoteSignalingPointCodeExtImpl implements RemoteSignalingPointCodeExt {
 
-    private Logger logger = Logger.getLogger(RemoteSignalingPointCodeExtImpl.class);
+    private Logger logger = LogManager.getLogger(RemoteSignalingPointCodeExtImpl.class);
 
     private RemoteSignalingPointCodeImpl remoteSignalingPointCodeImpl;
 

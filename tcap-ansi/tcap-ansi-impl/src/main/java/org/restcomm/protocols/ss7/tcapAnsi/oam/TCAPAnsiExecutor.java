@@ -6,7 +6,8 @@ import java.util.Map;
 
 import javolution.util.FastMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.tcapAnsi.TCAPStackImpl;
 import org.restcomm.ss7.management.console.ShellExecutor;
 
@@ -17,7 +18,7 @@ import org.restcomm.ss7.management.console.ShellExecutor;
  */
 public class TCAPAnsiExecutor implements ShellExecutor {
 
-    private static final Logger logger = Logger.getLogger(TCAPAnsiExecutor.class);
+    private static final Logger logger = LogManager.getLogger(TCAPAnsiExecutor.class);
 
     private FastMap<String, TCAPStackImpl> tcapStacks = new FastMap<String, TCAPStackImpl>();
 
