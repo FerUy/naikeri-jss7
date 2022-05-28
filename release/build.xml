@@ -25,7 +25,7 @@
 	<property name="jasn.download.distro.file" value="restcomm-jasn-${asn.version}.zip" />
 	<property name="jasn.download.url" value="${github.url}/jasn/releases/download/${asn.version}/${jasn.download.distro.file}" />
 	<property name="jasn.distro.zip.path" value="${checkout.dir}/${jasn.download.distro.file}" />
-	<property name="sctp.download.distro.file" value="Extended-SCTP-${sctp.version}.zip" />
+	<property name="sctp.download.distro.file" value="Naikeri-SCTP-${sctp.version}.zip" />
 	<property name="sctp.download.url" value="${naikeri.url}/sctp/${sctp.download.distro.file}" />
 	<property name="sctp.distro.zip.path" value="${checkout.dir}/${sctp.download.distro.file}" />
 
