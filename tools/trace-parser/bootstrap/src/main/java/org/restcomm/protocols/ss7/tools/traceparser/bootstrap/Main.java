@@ -45,7 +45,7 @@ public class Main {
         System.setProperty(TRACE_PARSER_DATA, dataDir);
 
         if (!initLOG4JProperties(homeDir) && !initLOG4JXml(homeDir)) {
-            logger.error("Failed to initialize loggin, no configuration. Defaults are used.");
+            logger.error("Failed to initialize logging, no configuration. Defaults are used.");
         }
 
         logger.info("log4j configured");
