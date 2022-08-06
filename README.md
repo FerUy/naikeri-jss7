@@ -1,8 +1,6 @@
-# RestComm jSS7
+# Naikeri jSS7
 
-> RestComm jSS7 is cloned from [RestComm jSS7](https://github.com/RestComm/jss7) from which we have added a set of improvements and new features listed in
-> a later section of this file.
->
+> Naikeri jSS7 is cloned from [RestComm jSS7](https://github.com/RestComm/jss7) from which we have added a set of improvements and new features listed in a later section of this file.
 
 
 ## Introduction
@@ -85,7 +83,7 @@ CMD ["-b", "0.0.0.0"]
 
 ## Changelog by September 2021
 
-* Upgrade RestComm-jSS7 to run over JDK 11.
+* Upgraded Naikeri-jSS7 to run over JDK 11.
 
 * JMX integration with WildFly.
 
