@@ -8,7 +8,7 @@ pipeline {
 	parameters {
 	    string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '8.4.0', description: 'The major version for Naikeri jSS7')
 	    string(name: 'SCTP_MAJOR_VERSION_NUMBER', defaultValue: '2.1.0', description: 'The major version of Naikeri SCTP for Naikeri jSS7')
-	    string(name: 'SCTP_BUILD', defaultValue: '14', description: 'The build number of Naikeri SCTP for Naikeri jSS7 to use for the build')
+	    string(name: 'SCTP_BUILD', defaultValue: '15', description: 'The build number of Naikeri SCTP for Naikeri jSS7 to use for the build')
 	    // booleanParam(name: 'BUILD_ANT', defaultValue: true, description: 'Enable if Binary needs to be generated')
 	}
 

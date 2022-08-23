@@ -48,7 +48,7 @@
 		<!-- restcomm but not strictly ss7 -->
 		<asn.version>2.2.0-143</asn.version>
 		<stream.version>1.0.0.CR1</stream.version>
-		<sctp.version>2.1.0-14</sctp.version>
+		<sctp.version>2.1.0-15</sctp.version>
 		<commons.version>1.0.0.CR1</commons.version>
 		<netty.version>4.1.42.Final</netty.version>
 		<ss7.restcomm.version>8.2.6-SNAPSHOT</ss7.restcomm.version>
