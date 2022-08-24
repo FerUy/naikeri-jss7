@@ -176,8 +176,8 @@
 									<backend>pdf</backend>
 									<outputDirectory>${project.build.directory}/generated-docs/pdf</outputDirectory>
 									<!-- Since 1.5.0-alpha.9 PDF back-end can use 'rouge' as well as 'coderay' source highlighting -->
-									<sourceHighlighter>rouge</sourceHighlighter>
 									<attributes>
+										<sourceHighlighter>rouge</sourceHighlighter>
 										<imagesdir>./images/..</imagesdir>
 										<icons>font</icons>
 										<pagenums/>
