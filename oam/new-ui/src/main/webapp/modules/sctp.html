@@ -1111,7 +1111,7 @@
 																'<button class="btn btn-small btn-' + (sctpServerStarted ? 'success' : 'warning') + '" data-toggle="tooltip" title="Start/stop Server" data-placement="bottom" onclick="changeServerState(\'' + name +  '\',\'' + sctpServerName +  '\',\'' + sctpServerStarted +  '\')">' + (sctpServerStarted ? 'Stop' : 'Start') + '</i></button> ' +
 															    '</td>' +
 																'<td style="font-size: 16px; vertical-align: middle; text-align: center; width: 100px;">' + 
-																'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #8B232E !important;" ' + (sctpServerStarted ? 'disabled' : '') + ' data-toggle="tooltip" title="Remove Server" data-placement="bottom" onclick="' + (sctpServerStarted ? '#' : 'removeServer(\'' + name +  '\',\'' + sctpServerName +  '\')') + '"><i class="icon-remove"> </i></button> ' +
+																'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #223A8B !important;" ' + (sctpServerStarted ? 'disabled' : '') + ' data-toggle="tooltip" title="Remove Server" data-placement="bottom" onclick="' + (sctpServerStarted ? '#' : 'removeServer(\'' + name +  '\',\'' + sctpServerName +  '\')') + '"><i class="icon-remove"> </i></button> ' +
 															    '</td></tr>' 
 														);
 														
@@ -1257,7 +1257,7 @@
 																													'<td><a href="#" onclick="showInternalPageDetails(\''+name+'-assoc-'+assocName+'\',\''+assocName+'\')">' + assocName + '</td>' + 
 																													'<td>' + assocState + '</td>' + 
 																													'<td style="font-size: 16px; vertical-align: middle; text-align: center; width: 100px;">' + 
-																													'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #8B232E !important;" data-toggle="tooltip" title="Remove Association" data-placement="bottom" onclick="removeAssociation(\'' + name +  '\',\'' + assocName +  '\')"><i class="icon-remove"> </i></button> ' +
+																													'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #223A8B !important;" data-toggle="tooltip" title="Remove Association" data-placement="bottom" onclick="removeAssociation(\'' + name +  '\',\'' + assocName +  '\')"><i class="icon-remove"> </i></button> ' +
 																												    '</td></tr>' 
 																											);	
 																										}
@@ -1328,7 +1328,7 @@
 																'<a onclick="' + (assocState ? '' : 'showEditAssociationsDialog(\''+name+'\',\'' + assocName +  '\',\'' + assocPeerAddress +  '\',\'' + assocPeerPort +  '\',\'' + assocIpChannelType +  '\',\'' + assocType +  '\',\'' + assocServerName +  '\',\'' + assocHostAddress +  '\',\'' + assocHostPort +  '\',\'' + assocExtraHostAddresses +  '\')')+'" <button class="btn btn-info btn-small"' + (assocState ? 'disabled' : '') + '>Modify</a>' +
 															    '</td>' +
 																'<td style="font-size: 16px; vertical-align: middle; text-align: center; width: 100px;">' + 
-																'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #8B232E !important;" '+ (assocState ? 'disabled' : '') +' data-toggle="tooltip" title="Remove Association" data-placement="bottom" onclick="removeAssociation(\'' + name +  '\',\'' + assocName +  '\')"><i class="icon-remove"> </i></button> ' +
+																'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #223A8B !important;" '+ (assocState ? 'disabled' : '') +' data-toggle="tooltip" title="Remove Association" data-placement="bottom" onclick="removeAssociation(\'' + name +  '\',\'' + assocName +  '\')"><i class="icon-remove"> </i></button> ' +
 															    '</td></tr>' 
 														);
 														

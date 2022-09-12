@@ -9,7 +9,7 @@
 
 	<artifactId>sccp-api-ext</artifactId>
 
-	<name>Restcomm jSS7 :: Extended-SCCP :: Api-Ext :: ${project.artifactId}</name>
+	<name>Restcomm jSS7 :: SCCP :: Api-Ext :: ${project.artifactId}</name>
 
 
 	<dependencies>

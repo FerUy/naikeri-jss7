@@ -16,6 +16,6 @@
     session.invalidate();
     response.sendRedirect("/jss7-management-console");
 %>
-User has been Logged out sucessfully!!!!
+User has been logged out successfully
 </body>
 </html>

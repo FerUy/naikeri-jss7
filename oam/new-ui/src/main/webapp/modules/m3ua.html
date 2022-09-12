@@ -1116,7 +1116,7 @@
 																		'<button class="btn btn-small btn-'+aspButtonStyle+'" data-toggle="tooltip" title="Start/stop ASP" data-placement="bottom" onclick="changeAspState(\'' + name +  '\',\'' + aspFacName +  '\',\'' + aspFacState +  '\')">'+aspAction+'</i></button> ' +
 																	    '</td>' +
 																		'<td style="font-size: 16px; vertical-align: middle; text-align: center; width: 100px;">' + 
-																		'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #8B232E !important;" data-toggle="tooltip" title="Delete ASP" data-placement="bottom" onclick="destroyAsp(\'' + name +  '\',\'' + aspFacName +  '\')"><i class="icon-remove"> </i></button> ' +
+																		'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #223A8B !important;" data-toggle="tooltip" title="Delete ASP" data-placement="bottom" onclick="destroyAsp(\'' + name +  '\',\'' + aspFacName +  '\')"><i class="icon-remove"> </i></button> ' +
 																	    '</td></tr>' 
 																);
 
@@ -1305,7 +1305,7 @@
 																		'<td><a href="#" onclick="showInternalPageDetails(\''+name+'-app-'+appName+'\',\''+appName+'\')">' + appName + '</a></td>' + 
 																		'<td>' + appState + '</td>' + 
 																		'<td style="font-size: 16px; vertical-align: middle; text-align: center; width: 100px;">' + 
-																		'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #8B232E !important;" data-toggle="tooltip" title="Delete AS" data-placement="bottom" onclick="destroyAs(\'' + name +  '\',\'' + appName +  '\')"><i class="icon-remove"> </i></button> ' +
+																		'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #223A8B !important;" data-toggle="tooltip" title="Delete AS" data-placement="bottom" onclick="destroyAs(\'' + name +  '\',\'' + appName +  '\')"><i class="icon-remove"> </i></button> ' +
 																	    '</td></tr>' 
 																);
 																
@@ -1498,7 +1498,7 @@
 																													'<td>' + appServerAppServerProcessUpTmp + '</td>' + 
 																													'<td>' + appServerAppServerProcessStateTmp + '</td>' + 
 																													'<td style="font-size: 16px; vertical-align: middle; text-align: center; width: 100px;">' + 
-																													'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #8B232E !important;" data-toggle="tooltip" title="Unassign ASP" data-placement="bottom" onclick="unassignAspFromAs(\'' + name +  '\',\'' + appServerNameTmp +  '\',\'' + appServerAppServerProcessNameTmp +  '\')"><i class="icon-remove"> </i></button> ' +
+																													'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #223A8B !important;" data-toggle="tooltip" title="Unassign ASP" data-placement="bottom" onclick="unassignAspFromAs(\'' + name +  '\',\'' + appServerNameTmp +  '\',\'' + appServerAppServerProcessNameTmp +  '\')"><i class="icon-remove"> </i></button> ' +
 																												    '</td>'+
 																												    '</tr>' 
 																											);	
@@ -1553,7 +1553,7 @@
 																jQuery.each(asArray, function() {
 																	var valueTmp = this;
 																	if(valueTmp.name != "" ){
-																		asNames = asNames + valueTmp.name +' <button class="btn btn-small btn-danger" style="background: none !important; background-color: #8B232E !important;" data-toggle="tooltip" title="Delete AS from route" data-placement="bottom" onclick="deleteRoute(\'' + name +  '\',\'' + key + '\',\'' + valueTmp.name +  '\')"><i class="icon-remove"> </i></button>, ';
+																		asNames = asNames + valueTmp.name +' <button class="btn btn-small btn-danger" style="background: none !important; background-color: #223A8B !important;" data-toggle="tooltip" title="Delete AS from route" data-placement="bottom" onclick="deleteRoute(\'' + name +  '\',\'' + key + '\',\'' + valueTmp.name +  '\')"><i class="icon-remove"> </i></button>, ';
 																		if(valueTmp.up){
 																			status = "ACTIVE";
 																		}
@@ -1592,7 +1592,7 @@
 																		'<td>' + errorCode + '</td>' +
 																		'<td>' + retryCount + '</td>' +
 																		'<td style="font-size: 16px; vertical-align: middle; text-align: center; width: 100px;">' +
-																		'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #8B232E !important;" data-toggle="tooltip" title="Delete M3UA error" data-placement="bottom" onclick="deleteM3UAError(\'' + errorName +  '\',\'' + errorCode +  '\',\'' + retryCount +  '\',\'' + name +  '\')"><i class="icon-trash"> </i></button> ' +
+																		'<button class="btn btn-small btn-danger" style="background: none !important; background-color: #223A8B !important;" data-toggle="tooltip" title="Delete M3UA error" data-placement="bottom" onclick="deleteM3UAError(\'' + errorName +  '\',\'' + errorCode +  '\',\'' + retryCount +  '\',\'' + name +  '\')"><i class="icon-trash"> </i></button> ' +
 																	    '</td></tr>'
 																);
 															});
