@@ -18,7 +18,6 @@ import org.restcomm.protocols.ss7.oam.common.jmxss7.Ss7Layer;
 import org.restcomm.protocols.ss7.sccp.RemoteSignalingPointCode;
 import org.restcomm.protocols.ss7.sccp.RemoteSubSystem;
 import org.restcomm.protocols.ss7.sccp.Router;
-import org.restcomm.protocols.ss7.sccp.SccpCongestionControlAlgo;
 import org.restcomm.protocols.ss7.sccp.SccpManagementEventListener;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.SccpProvider;
@@ -341,12 +340,12 @@ public class SccpManagementJmx implements SccpManagementJmxMBean, SccpManagement
     }
 
     @Override
-    public SccpCongestionControlAlgo getCongControl_Algo() {
+    public String getCongControl_Algo() {
         return this.wrappedSccpStack.getCongControl_Algo();
     }
 
     @Override
-    public void setCongControl_Algo(SccpCongestionControlAlgo value) throws Exception {
+    public void setCongControl_Algo(String value) throws Exception {
         this.wrappedSccpStack.setCongControl_Algo(value);
     }
 

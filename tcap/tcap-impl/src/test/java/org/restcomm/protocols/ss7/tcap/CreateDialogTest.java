@@ -5,6 +5,7 @@ import static org.testng.Assert.*;
 
 import java.io.IOException;
 
+import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.restcomm.protocols.ss7.sccp.MaxConnectionCountReached;
@@ -194,6 +195,11 @@ public class CreateDialogTest {
 			// TODO Auto-generated method stub
 			
 		}
+
+        @Override
+        public FastList<SccpManagementEventListener> getManagementEventListeners() {
+            return null;
+        }
     }
 
 }

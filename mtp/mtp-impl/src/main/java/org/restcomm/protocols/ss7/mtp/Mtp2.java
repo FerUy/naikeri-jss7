@@ -2,9 +2,8 @@ package org.restcomm.protocols.ss7.mtp;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.mtp.Mtp3.SLTMTest;
 import org.restcomm.protocols.ss7.scheduler.Scheduler;
 import org.restcomm.protocols.ss7.scheduler.Task;
@@ -30,7 +29,7 @@ public class Mtp2 {
      */
     static final int MTP2_PROVING = 3;
     /**
-     * Etnered on certain condition when T4 fires.
+     * Entered on certain condition when T4 fires.
      */
     static final int MTP2_ALIGNED_READY = 4;
     /**
@@ -219,7 +218,7 @@ public class Mtp2 {
 
     protected Mtp2Listener mtp2Listener = null;
 
-    private static final Logger ROOT_LOGGER = LogManager.getLogger(Mtp2.class);
+    private static final Logger ROOT_LOGGER = Logger.getLogger(Mtp2.class);
     private final Logger logger; // actual logger.
 
     private Scheduler scheduler;
@@ -1056,7 +1055,7 @@ public class Mtp2 {
                     processRx(rxBuffer, bytesRead);
                 }
             } catch (Exception e) {
-                if (logger.isEnabled(Level.ERROR)) {
+                if (logger.isEnabledFor(Level.ERROR)) {
                     logger.error(String.format("(%s) Can not read data from channel", name), e);
                 }
                 this.setState(MTP2_OUT_OF_SERVICE);
@@ -1073,7 +1072,7 @@ public class Mtp2 {
             processTx(this.ioBufferSize);
             channel.write(txBuffer, this.ioBufferSize);
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error(String.format("(%s) Can not write data to channel", name), e);
             }
             this.setState(MTP2_OUT_OF_SERVICE);
@@ -1178,7 +1177,7 @@ public class Mtp2 {
                         if (this.provingAttempts < PROVING_ATTEMPTS_THRESHOLD) {
                             this.futureProving = true;
 
-                            if (this.logger.isEnabled(Level.WARN)) {
+                            if (this.logger.isEnabledFor(Level.WARN)) {
                                 // FIXME: should this remain warn ?
                                 logger.warn("Exceeded AERM threshold[ " + aermThreshold + " ] errors[ " + eCount
                                         + " ], proving attempts[ " + provingAttempts + " ], continue...");
@@ -1261,12 +1260,12 @@ public class Mtp2 {
                 alignmentNotPossible("T2 Expired.");
                 // 2. cancel E
                 emergency = false;
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     // FIXME: should this be debug ?
                     logger.warn("Timer T2 has expired, Alignment not possible. ");
                 }
             } else {
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn("T2 fired in state[ " + STATE_NAMES[tmpState] + " ]");
                 }
             }
@@ -1309,11 +1308,11 @@ public class Mtp2 {
                 alignmentNotPossible("T3 Expired.");
                 // 2.cancel E
                 emergency = false;
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn("Timer T3 has expired, Alignment not possible. ");
                 }
             } else {
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn("T3 fired in state[ " + STATE_NAMES[tmpState] + " ]");
                 }
             }
@@ -1367,7 +1366,7 @@ public class Mtp2 {
                 }
             } else {
 
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn("T4 fired in state[ " + STATE_NAMES[tmpState] + " ]");
                 }
             }

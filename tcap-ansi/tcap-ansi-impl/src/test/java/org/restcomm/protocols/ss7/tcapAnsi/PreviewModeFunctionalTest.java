@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.restcomm.protocols.ss7.sccp.MaxConnectionCountReached;
@@ -595,6 +596,11 @@ public class PreviewModeFunctionalTest {
 			// TODO Auto-generated method stub
 			
 		}
+
+        @Override
+        public FastList<SccpManagementEventListener> getManagementEventListeners() {
+            return null;
+        }
     }
 
     private class TCAPListenerHarness implements TCListener {

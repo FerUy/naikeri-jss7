@@ -56,10 +56,16 @@ function setMenu(element, module) {
 //	$('.advertisement').hide();
 //	$('.advertisement').random().show();
 	$('#loader-modal').modal();
-	$('#content').load('modules/' + module + '.html', function() {
-		$('.nav-list').children('.active').removeClass('active');
-		$(element).parent().addClass('active');
-	});
+    $.ajax({ url: 'modules/' + module + '.html', success: function(result) {
+        if (result && result.includes('<title>Login</title>')) {
+            window.location = "killSession.jsp";
+            return;
+        }
+
+        $('#content').html(result);
+        $('.nav-list').children('.active').removeClass('active');
+        $(element).parent().addClass('active');
+    }});
 }
 
 function showConnectionOptions() {

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -17,10 +16,6 @@ import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.InbandInfo;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.MessageID;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.Tone;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.InbandInfoImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.InformationToSendImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.MessageIDImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.ToneImpl;
 import org.testng.annotations.Test;
 
 /**

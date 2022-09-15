@@ -26,8 +26,8 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.Management;
 import org.restcomm.protocols.ss7.m3ua.As;
@@ -69,7 +69,7 @@ import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterface;
  */
 public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAManagement {
 
-    private static final Logger logger = LogManager.getLogger(M3UAManagementImpl.class);
+    private static final Logger logger = Logger.getLogger(M3UAManagementImpl.class);
     private static final String AS_LIST = "asList";
     private static final String ASP_FACTORY_LIST = "aspFactoryList";
     private static final String DPC_VS_AS_LIST = "route";

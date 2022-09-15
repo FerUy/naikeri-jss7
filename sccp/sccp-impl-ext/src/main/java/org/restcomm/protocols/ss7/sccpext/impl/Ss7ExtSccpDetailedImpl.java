@@ -4,9 +4,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javolution.util.FastMap;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
@@ -53,7 +52,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
 
     @Override
     public void init(SccpStackImpl sccpStackImpl) {
-        this.logger = LogManager.getLogger(Ss7ExtSccpDetailedImpl.class.getCanonicalName() + "-" + sccpStackImpl.getName());
+        this.logger = Logger.getLogger(Ss7ExtSccpDetailedImpl.class.getCanonicalName() + "-" + sccpStackImpl.getName());
         this.sccpStackImpl = sccpStackImpl;
     }
 
@@ -104,7 +103,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
     public void translationFunction(SccpRoutingCtxInterface ctx, SccpAddressedMessageImpl msg) throws Exception {
         // checking for hop counter
         if (!msg.reduceHopCounter()) {
-            if (logger.isEnabled(Level.WARN)) {
+            if (logger.isEnabledFor(Level.WARN)) {
                 logger.warn(String.format(
                         "Received SccpMessage for Translation but hop counter violation detected\nSccpMessage=%s", msg));
             }
@@ -117,7 +116,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
 
         Rule rule = routerExt.findRule(calledPartyAddress, callingPartyAddress, msg.getIsMtpOriginated(), msg.getNetworkId());
         if (rule == null) {
-            if (logger.isEnabled(Level.WARN)) {
+            if (logger.isEnabledFor(Level.WARN)) {
                 logger.warn(String.format(
                         "Received SccpMessage for Translation but no matching Rule found for local routing\nSccpMessage=%s",
                         msg));
@@ -305,7 +304,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
                                                                      SccpAddress translationAddress, String destName) {
 
         if (translationAddress == null) {
-            if (logger.isEnabled(Level.WARN)) {
+            if (logger.isEnabledFor(Level.WARN)) {
                 logger.warn(String.format(
                         "Received SccpMessage=%s for Translation but no matching %s Address defined for Rule=%s for routing",
                         msg, destName, rule));
@@ -315,7 +314,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
 
         if (!translationAddress.getAddressIndicator().isPCPresent()) {
             // destination PC is absent - bad rule
-            if (logger.isEnabled(Level.WARN)) {
+            if (logger.isEnabledFor(Level.WARN)) {
                 logger.warn(String.format("Received SccpMessage=%s for Translation but no PC is present for %s Address ", msg,
                         destName));
             }
@@ -331,7 +330,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
             if (targetSsn == 1 || sccpProviderImpl.getSccpListener(targetSsn) != null) {
                 return TranslationAddressCheckingResult.destinationAvailable;
             } else {
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn(String.format(
                             "Received SccpMessage=%s for Translation but no local SSN is present for %s Address ", msg,
                             destName));
@@ -344,7 +343,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
         RemoteSignalingPointCode remoteSpc = this.sccpStackImpl.getSccpResource().getRemoteSpcByPC(
                 translationAddress.getSignalingPointCode());
         if (remoteSpc == null) {
-            if (logger.isEnabled(Level.WARN)) {
+            if (logger.isEnabledFor(Level.WARN)) {
                 logger.warn(String.format(
                         "Received SccpMessage=%s for Translation but no %s Remote Signaling Pointcode = %d resource defined ",
                         msg, destName, translationAddress.getSignalingPointCode()));
@@ -356,7 +355,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
             Long lastTimeLog = prohibitedSpcs.get(remoteSpc.getRemoteSpc());
             if (lastTimeLog == null || System.currentTimeMillis() - lastTimeLog > sccpStackImpl.getPeriodOfLogging()) {
                 prohibitedSpcs.put(remoteSpc.getRemoteSpc(), System.currentTimeMillis());
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn(String.format(
                             "Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited ", msg,
                             destName, translationAddress.getSignalingPointCode()));
@@ -368,7 +367,7 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
 
         // Check if the DPC is congested
         if (remoteSpc.getCurrentRestrictionLevel() > 1) {
-            if (logger.isEnabled(Level.WARN)) {
+            if (logger.isEnabledFor(Level.WARN)) {
                 logger.warn(String
                         .format("Received SccpMessage=%s for Translation but %s Remote Signaling Point Code = %d is congested with level %d ",
                                 msg, destName, translationAddress.getSignalingPointCode(),
@@ -382,14 +381,14 @@ public class Ss7ExtSccpDetailedImpl implements Ss7ExtSccpDetailedInterface {
                 RemoteSubSystem remoteSubSystem = this.sccpStackImpl.getSccpResource().getRemoteSsn(
                         translationAddress.getSignalingPointCode(), targetSsn);
                 if (remoteSubSystem == null) {
-                    if (logger.isEnabled(Level.WARN)) {
+                    if (logger.isEnabledFor(Level.WARN)) {
                         logger.warn(String.format("Received SccpMessage=%s for Translation but no %s Remote SubSystem = %d (dpc=%d) resource defined ", msg,
                                 destName, targetSsn, translationAddress.getSignalingPointCode()));
                     }
                     return TranslationAddressCheckingResult.translationFailure;
                 }
                 if (remoteSubSystem.isRemoteSsnProhibited()) {
-                    if (logger.isEnabled(Level.WARN)) {
+                    if (logger.isEnabledFor(Level.WARN)) {
                         logger.warn(String.format("Received SccpMessage=%s for Translation but %s Remote SubSystem = %d (dpc=%d) is prohibited ", msg,
                                 destName, targetSsn, translationAddress.getSignalingPointCode()));
                     }

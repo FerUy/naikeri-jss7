@@ -16,9 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javolution.util.FastMap;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -90,7 +89,7 @@ import org.restcomm.ss7.congestion.MemoryCongestionMonitorImpl;
  */
 public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
-    private static final Logger logger = LogManager.getLogger(TCAPProviderImpl.class); // listenres
+    private static final Logger logger = Logger.getLogger(TCAPProviderImpl.class); // listenres
 
     private transient List<TCListener> tcListeners = new CopyOnWriteArrayList<TCListener>();
     protected transient ScheduledExecutorService _EXECUTOR;
@@ -397,7 +396,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCBegin(tcapBeginIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -414,7 +413,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCContinue(tcapContinueIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -431,7 +430,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCEnd(tcapEndIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -447,7 +446,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCPAbort(tcapAbortIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -464,7 +463,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCUserAbort(tcapAbortIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -481,7 +480,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCUni(tcapUniIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -493,7 +492,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCNotice(tcapNoticeIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -528,7 +527,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onDialogReleased(dialog);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering dialog release.", e);
             }
         }
@@ -547,7 +546,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onDialogTimeout(dialog);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering dialog release.", e);
             }
         }
@@ -572,7 +571,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onInvokeTimeout(tapcInvokeRequest);
             }
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Received exception while delivering Begin.", e);
             }
         }
@@ -641,7 +640,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
             }
             this.send(aos.toByteArray(), false, sccpCalledPartyAddress, sccpCallingPartyAddress, seqControl, networkId, sccpCallingPartyAddress.getSubsystemNumber(), remotePc);
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Failed to send message: ", e);
             }
         }
@@ -679,7 +678,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
             }
             this.send(aos.toByteArray(), false, sccpCalledPartyAddress, sccpCallingPartyAddress, seqControl, networkId, sccpCallingPartyAddress.getSubsystemNumber(), remotePc);
         } catch (Exception e) {
-            if (logger.isEnabled(Level.ERROR)) {
+            if (logger.isEnabledFor(Level.ERROR)) {
                 logger.error("Failed to send message: ", e);
             }
         }

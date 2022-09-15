@@ -1,8 +1,8 @@
 
 package org.restcomm.protocols.ss7.map.functional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.map.MAPDialogImpl;
@@ -170,7 +170,7 @@ import static org.testng.Assert.assertNull;
  *
  */
 public class Client extends EventTestHarness {
-    private static Logger logger = LogManager.getLogger(Client.class);
+    private static Logger logger = Logger.getLogger(Client.class);
 
     protected SccpAddress thisAddress;
     protected SccpAddress remoteAddress;

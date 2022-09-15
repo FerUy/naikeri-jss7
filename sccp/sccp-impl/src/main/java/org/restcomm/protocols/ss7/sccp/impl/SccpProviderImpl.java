@@ -9,9 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.mtp.Mtp3UserPart;
 import org.restcomm.protocols.ss7.sccp.MaxConnectionCountReached;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
@@ -45,7 +44,7 @@ import java.util.Map;
  */
 public class SccpProviderImpl implements SccpProvider, Serializable {
 
-    private static final Logger logger = LogManager.getLogger(SccpProviderImpl.class);
+    private static final Logger logger = Logger.getLogger(SccpProviderImpl.class);
 
     private transient SccpStackImpl stack;
     protected FastMap<Integer, SccpListener> ssnToListener = new FastMap<Integer, SccpListener>();
@@ -63,6 +62,10 @@ public class SccpProviderImpl implements SccpProvider, Serializable {
         this.parameterFactory = new ParameterFactoryImpl();
     }
 
+    public FastList<SccpManagementEventListener> getManagementEventListeners() {
+        return this.managementEventListeners;
+    }
+
     public MessageFactory getMessageFactory() {
         return this.messageFactory;
     }
@@ -75,7 +78,7 @@ public class SccpProviderImpl implements SccpProvider, Serializable {
         synchronized (this) {
             SccpListener existingListener = ssnToListener.get(ssn);
             if (existingListener != null) {
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn(String.format("Registering SccpListener=%s for already existing SccpListener=%s for SSN=%d",
                             listener, existingListener, ssn));
                 }
@@ -95,7 +98,7 @@ public class SccpProviderImpl implements SccpProvider, Serializable {
             newListener.putAll(ssnToListener);
             SccpListener existingListener = newListener.remove(ssn);
             if (existingListener == null) {
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn(String.format("No existing SccpListener=%s for SSN=%d", existingListener, ssn));
                 }
             }

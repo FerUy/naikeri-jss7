@@ -15,12 +15,30 @@ import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
  */
 public class SccpCongestionControl {
 
-    private SccpManagement sccpManagement;
-    private SccpStack sccpStack;
+    private final SccpManagement sccpManagement;
+    private final SccpStack sccpStack;
 
     public SccpCongestionControl(SccpManagement sccpManagement, SccpStack sccpStack) {
         this.sccpManagement = sccpManagement;
         this.sccpStack = sccpStack;
+    }
+
+    public static int generateSccpUserCongLevel(int restrictionLevel) {
+        if (restrictionLevel <= 1)
+            return 0;
+        if (restrictionLevel <= 3)
+            return 1;
+        if (restrictionLevel <= 5)
+            return 2;
+        return 3;
+    }
+
+    public static int getMaxRestrictionLevelForMtp3Level(int mtp3Level) {
+        if (mtp3Level == 1)
+            return 3;
+        if (mtp3Level == 2)
+            return 5;
+        return 8;
     }
 
     public void scheduleTimer(Runnable timer, int delay) {
@@ -47,29 +65,11 @@ public class SccpCongestionControl {
         return ((SccpStackImpl) sccpStack).getCongControlM();
     }
 
-    public SccpCongestionControlAlgo getCongControl_Algo() {
-        return sccpStack.getCongControl_Algo();
+    public SccpCongestionControlAlgo getCongControlAlgo() {
+        return SccpCongestionControlAlgo.valueOf(sccpStack.getCongControl_Algo());
     }
 
     public boolean isCongControl_blockingOutgoingSccpMessages() {
         return sccpStack.isCongControl_blockingOutgoingSccpMessages();
-    }
-
-    public static int generateSccpUserCongLevel(int restrictionLevel) {
-        if (restrictionLevel <= 1)
-            return 0;
-        if (restrictionLevel <= 3)
-            return 1;
-        if (restrictionLevel <= 5)
-            return 2;
-        return 3;
-    }
-
-    public static int getMaxRestrictionLevelForMtp3Level(int mtp3Level) {
-        if (mtp3Level == 1)
-            return 3;
-        if (mtp3Level == 2)
-            return 5;
-        return 8;
     }
 }

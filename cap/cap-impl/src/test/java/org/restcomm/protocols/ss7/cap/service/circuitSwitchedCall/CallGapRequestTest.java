@@ -18,7 +18,6 @@ import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsImpl;
 import org.restcomm.protocols.ss7.cap.primitives.ExtensionFieldImpl;
 import org.restcomm.protocols.ss7.cap.primitives.ScfIDImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.CallGapRequestImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.*;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.GenericNumber;

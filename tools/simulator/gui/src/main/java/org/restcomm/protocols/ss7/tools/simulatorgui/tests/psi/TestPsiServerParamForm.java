@@ -15,8 +15,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.tools.simulator.common.AddressNatureType;
@@ -31,7 +31,7 @@ public class TestPsiServerParamForm extends JDialog {
 
   private static final long serialVersionUID = 5928271328162043272L;
 
-  private static Logger logger = LogManager.getLogger(TestPsiServerParamForm.class);
+  private static Logger logger = Logger.getLogger(TestPsiServerParamForm.class);
 
   private TestPsiServerManMBean testPsiServerManMBean;
 

@@ -1,8 +1,7 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.lcs;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
 import java.net.Inet4Address;
@@ -143,7 +142,7 @@ import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostImpl;
  */
 public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBean, Stoppable, MAPServiceLsmListener {
 
-    private static Logger logger = LogManager.getLogger(TestLcsClientMan.class);
+    private static Logger logger = Logger.getLogger(TestLcsClientMan.class);
 
     public static String SOURCE_NAME = "TestLcsClientMan";
     private final String name;
@@ -786,7 +785,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
     public void onProvideSubscriberLocationResponse(
             ProvideSubscriberLocationResponse provideSubscriberLocationResponseIndication) {
         if (!isStarted) {
-            logger.atLevel(Level.INFO);
+            logger.setLevel(Level.INFO);
             String msg = "The tester is not started";
             logger.trace(msg);
         }

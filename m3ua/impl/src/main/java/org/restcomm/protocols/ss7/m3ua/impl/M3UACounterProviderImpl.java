@@ -3,8 +3,8 @@ package org.restcomm.protocols.ss7.m3ua.impl;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.m3ua.M3UACounterProvider;
 import org.restcomm.protocols.ss7.statistics.StatDataCollectionImpl;
 import org.restcomm.protocols.ss7.statistics.api.LongValue;
@@ -14,7 +14,7 @@ import org.restcomm.protocols.ss7.statistics.api.StatResult;
 
 public class M3UACounterProviderImpl implements M3UACounterProvider{
 
-    private static final Logger logger = LogManager.getLogger(M3UACounterProviderImpl.class);
+    private static final Logger logger = Logger.getLogger(M3UACounterProviderImpl.class);
 
     private UUID sessionId = UUID.randomUUID();
 

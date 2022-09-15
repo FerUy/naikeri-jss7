@@ -6,8 +6,7 @@ import static org.testng.Assert.assertNull;
 
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.cap.CAPDialogImpl;
 import org.restcomm.protocols.ss7.cap.CAPProviderImpl;
 import org.restcomm.protocols.ss7.cap.api.CAPApplicationContext;
@@ -47,19 +46,16 @@ import org.restcomm.protocols.ss7.cap.api.service.gprs.primitive.GPRSEventType;
 import org.restcomm.protocols.ss7.cap.api.service.gprs.primitive.PDPID;
 import org.restcomm.protocols.ss7.cap.api.service.sms.CAPDialogSms;
 import org.restcomm.protocols.ss7.cap.api.service.sms.primitive.EventTypeSMS;
-import org.restcomm.protocols.ss7.cap.api.service.sms.primitive.RPCause;
 import org.restcomm.protocols.ss7.cap.api.service.sms.primitive.SMSAddressString;
 import org.restcomm.protocols.ss7.cap.isup.CalledPartyNumberCapImpl;
 import org.restcomm.protocols.ss7.cap.primitives.TimeAndTimezoneImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.InitialDPRequestImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.DestinationRoutingAddressImpl;
 import org.restcomm.protocols.ss7.cap.service.gprs.InitialDpGprsRequestImpl;
 import org.restcomm.protocols.ss7.cap.service.gprs.primitive.ChargingResultImpl;
 import org.restcomm.protocols.ss7.cap.service.gprs.primitive.ElapsedTimeImpl;
 import org.restcomm.protocols.ss7.cap.service.gprs.primitive.GPRSCauseImpl;
 import org.restcomm.protocols.ss7.cap.service.gprs.primitive.GPRSEventSpecificInformationImpl;
 import org.restcomm.protocols.ss7.cap.service.gprs.primitive.PDPIDImpl;
-import org.restcomm.protocols.ss7.cap.service.sms.primitive.RPCauseImpl;
 import org.restcomm.protocols.ss7.inap.api.INAPParameterFactory;
 import org.restcomm.protocols.ss7.inap.api.primitives.LegType;
 import org.restcomm.protocols.ss7.inap.api.primitives.MiscCallInfo;
@@ -67,7 +63,6 @@ import org.restcomm.protocols.ss7.inap.api.primitives.MiscCallInfoMessageType;
 import org.restcomm.protocols.ss7.inap.primitives.MiscCallInfoImpl;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.isup.ISUPParameterFactory;
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.CalledPartyNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.CalledPartyNumber;
 import org.restcomm.protocols.ss7.isup.message.parameter.CauseIndicators;
 import org.restcomm.protocols.ss7.isup.message.parameter.GenericNumber;
@@ -101,7 +96,7 @@ import org.restcomm.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest;
  */
 public class Client extends EventTestHarness {
 
-    private static Logger logger = LogManager.getLogger(Client.class);
+    private static Logger logger = Logger.getLogger(Client.class);
 
     // private CAPFunctionalTest runningTestCase;
     private SccpAddress thisAddress;

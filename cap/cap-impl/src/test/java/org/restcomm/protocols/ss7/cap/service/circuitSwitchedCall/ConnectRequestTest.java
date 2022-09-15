@@ -26,7 +26,6 @@ import org.restcomm.protocols.ss7.cap.isup.LocationNumberCapImpl;
 import org.restcomm.protocols.ss7.cap.isup.OriginalCalledNumberCapImpl;
 import org.restcomm.protocols.ss7.cap.isup.RedirectingPartyIDCapImpl;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsTest;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.ConnectRequestImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.AlertingPatternCapImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.CarrierImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.DestinationRoutingAddressImpl;

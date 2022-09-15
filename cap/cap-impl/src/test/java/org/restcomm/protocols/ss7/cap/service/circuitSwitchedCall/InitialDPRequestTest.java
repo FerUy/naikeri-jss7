@@ -33,7 +33,6 @@ import org.restcomm.protocols.ss7.cap.isup.RedirectingPartyIDCapImpl;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsTest;
 import org.restcomm.protocols.ss7.cap.primitives.CalledPartyBCDNumberImpl;
 import org.restcomm.protocols.ss7.cap.primitives.TimeAndTimezoneImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.InitialDPRequestImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.BearerCapabilityImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.CarrierImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.IPSSPCapabilitiesImpl;

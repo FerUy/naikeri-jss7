@@ -14,7 +14,6 @@ import javolution.xml.XMLObjectWriter;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.isup.BearerCapImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.BearerCapabilityImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.UserServiceInformationImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.UserServiceInformation;
 import org.testng.annotations.Test;

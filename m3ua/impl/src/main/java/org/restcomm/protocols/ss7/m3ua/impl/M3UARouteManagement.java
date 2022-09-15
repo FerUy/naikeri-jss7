@@ -6,8 +6,8 @@ import java.util.Arrays;
 import javolution.util.FastList;
 import javolution.util.FastSet;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.m3ua.As;
 import org.restcomm.protocols.ss7.m3ua.impl.oam.M3UAOAMMessages;
 import org.restcomm.protocols.ss7.m3ua.impl.parameter.TrafficModeTypeImpl;
@@ -40,7 +40,7 @@ import org.restcomm.protocols.ss7.mtp.RoutingLabelFormat;
  */
 public class M3UARouteManagement {
 
-    private static final Logger logger = LogManager.getLogger(M3UARouteManagement.class);
+    private static final Logger logger = Logger.getLogger(M3UARouteManagement.class);
 
     private static final String KEY_SEPARATOR = ":";
     private static final int WILDCARD = -1;

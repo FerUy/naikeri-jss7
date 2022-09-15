@@ -4,7 +4,6 @@ import org.jboss.as.controller.AbstractBoottimeAddStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.PathAddress;
-import org.jboss.as.controller.ServiceVerificationHandler;
 import org.jboss.as.controller.registry.Resource;
 import org.jboss.as.controller.services.path.PathManager;
 import org.jboss.as.controller.services.path.PathManagerService;
@@ -17,8 +16,6 @@ import org.restcomm.ss7.service.SS7ExtensionService;
 import org.restcomm.ss7.service.SS7ServiceInterface;
 
 import javax.management.MBeanServer;
-
-import java.util.List;
 
 /**
  * Handler responsible for adding the subsystem resource to the model
@@ -43,8 +40,7 @@ class SubsystemAdd extends AbstractBoottimeAddStepHandler {
 
   /** {@inheritDoc} */
   @Override
-  public void performBoottime(OperationContext context, ModelNode operation, ModelNode model,
-                              ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
+  public void performBoottime(OperationContext context, ModelNode operation, ModelNode model)
       throws OperationFailedException {
 
     ModelNode fullModel = Resource.Tools.readModel(context.readResource(PathAddress.EMPTY_ADDRESS));
@@ -57,9 +53,7 @@ class SubsystemAdd extends AbstractBoottimeAddStepHandler {
         .addService(name, service)
         .addDependency(PathManagerService.SERVICE_NAME, PathManager.class, service.getPathManagerInjector())
         .addDependency(MBeanServerService.SERVICE_NAME, MBeanServer.class, service.getMbeanServer())
-        .addListener(verificationHandler)
         .setInitialMode(ServiceController.Mode.ACTIVE)
         .install();
-    newControllers.add(controller);
   }
 }

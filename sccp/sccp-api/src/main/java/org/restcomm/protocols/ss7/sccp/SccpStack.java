@@ -422,12 +422,12 @@ public interface SccpStack {
      *         primitive) provides 3 levels of a congestion (1-3) and SCCP congestion will increase to the next level after
      *         MTP-STATUS next level increase (MTP-STATUS 1 to N up to 3, MTP-STATUS 2 to N up to 5, MTP-STATUS 3 to N up to 7)
      */
-    SccpCongestionControlAlgo getCongControl_Algo();
+    String getCongControl_Algo();
 
     /**
      * @param sccpCongestionControlAlgo setting sccp congestion control
      */
-    void setCongControl_Algo(SccpCongestionControlAlgo sccpCongestionControlAlgo) throws Exception;
+    void setCongControl_Algo(String sccpCongestionControlAlgo) throws Exception;
 
     /**
      * @return getting if true outgoing SCCP messages will be blocked (depending on message type, UDP messages from level N=6)

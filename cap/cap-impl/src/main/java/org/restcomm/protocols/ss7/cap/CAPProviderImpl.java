@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
@@ -124,7 +124,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
     public CAPProviderImpl(String name, TCAPProvider tcapProvider) {
         this.tcapProvider = tcapProvider;
 
-        this.logger = LogManager.getLogger(CAPStackImpl.class.getCanonicalName() + "-" + name);
+        this.logger = Logger.getLogger(CAPStackImpl.class.getCanonicalName() + "-" + name);
 
         this.capServices.add(this.capServiceCircuitSwitchedCall);
         this.capServices.add(this.capServiceGprs);

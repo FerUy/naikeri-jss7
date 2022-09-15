@@ -4,8 +4,8 @@ package org.restcomm.protocols.ss7.m3ua.impl;
 import javolution.util.FastList;
 import javolution.util.FastSet;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.m3ua.Asp;
 import org.restcomm.protocols.ss7.m3ua.ExchangeType;
 import org.restcomm.protocols.ss7.m3ua.Functionality;
@@ -28,7 +28,7 @@ public class RemAsStatePenTimeout implements FSMStateEventHandler {
 
     private AsImpl asImpl;
     private FSM fsm;
-    private static final Logger logger = LogManager.getLogger(RemAsStatePenTimeout.class);
+    private static final Logger logger = Logger.getLogger(RemAsStatePenTimeout.class);
 
     boolean inactive = false;
 

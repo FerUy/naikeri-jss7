@@ -10,9 +10,8 @@ import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.mtp.Mtp3StatusCause;
 import org.restcomm.protocols.ss7.sccp.ConcernedSignalingPointCode;
@@ -82,7 +81,7 @@ public class SccpManagement {
 
     public SccpManagement(String name, SccpProviderImpl sccpProviderImpl, SccpStackImpl sccpStackImpl) {
         this.name = name;
-        this.logger = LogManager.getLogger(SccpManagement.class.getCanonicalName() + "-" + this.name);
+        this.logger = Logger.getLogger(SccpManagement.class.getCanonicalName() + "-" + this.name);
         this.sccpProviderImpl = sccpProviderImpl;
         this.sccpStackImpl = sccpStackImpl;
     }
@@ -137,7 +136,7 @@ public class SccpManagement {
                 }
                 break;
             case SSP:
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn(String.format(
                             "Rx : SSP, Affected SSN=%d, Affected PC=%d, Subsystem Multiplicity Ind=%d SeqControl=%d",
                             affectedSsn, affectedPc, subsystemMultiplicity, message.getSls()));
@@ -182,12 +181,12 @@ public class SccpManagement {
 
                 break;
             case SOR:
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn("Received SOR. SOR not yet implemented, dropping message");
                 }
                 break;
             case SOG:
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn("Received SOG. SOG not yet implemented, dropping message");
                 }
                 break;
@@ -539,14 +538,14 @@ public class SccpManagement {
         }
     }
 
-    private void setRemoteSsnState(RemoteSubSystemImpl remoteSsn, boolean isEnabled) {
-        remoteSsn.setRemoteSsnProhibited(!isEnabled);
+    private void setRemoteSsnState(RemoteSubSystemImpl remoteSsn, boolean isEnabledFor) {
+        remoteSsn.setRemoteSsnProhibited(!isEnabledFor);
 
         FastMap<Integer, SccpListener> lstrs = this.sccpProviderImpl.getAllSccpListeners();
 
         for (FastMap.Entry<Integer, SccpListener> e1 = lstrs.head(), end1 = lstrs.tail(); (e1 = e1.getNext()) != end1;) {
             try {
-                e1.getValue().onState(remoteSsn.getRemoteSpc(), remoteSsn.getRemoteSsn(), isEnabled, 0);
+                e1.getValue().onState(remoteSsn.getRemoteSpc(), remoteSsn.getRemoteSsn(), isEnabledFor, 0);
             } catch (Exception ee) {
                 logger.error("Exception while invoking onState", ee);
             }
@@ -554,7 +553,7 @@ public class SccpManagement {
 
         for (SccpManagementEventListener lstr : this.sccpProviderImpl.managementEventListeners) {
             try {
-                if (isEnabled)
+                if (isEnabledFor)
                     lstr.onRemoteSubSystemUp(remoteSsn);
                 else
                     lstr.onRemoteSubSystemDown(remoteSsn);

@@ -7,8 +7,8 @@
         <resource-root path="shell-server-impl-${project.version}.jar"/>
         <resource-root path="shell-transport-${project.version}.jar"/>
         <resource-root path="scheduler-${project.version}.jar"/>
-        <resource-root path="log4j-api-${log4j.version}.jar"/>
-        <resource-root path="log4j-core-${log4j.version}.jar"/>
+        <!--resource-root path="log4j-api-${log4j.version}.jar"/>
+        <resource-root path="log4j-core-${log4j.version}.jar"/-->
     </resources>
 
     <dependencies>

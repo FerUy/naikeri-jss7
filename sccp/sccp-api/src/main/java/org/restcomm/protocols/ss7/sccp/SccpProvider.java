@@ -4,6 +4,7 @@ package org.restcomm.protocols.ss7.sccp;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.restcomm.protocols.ss7.sccp.message.MessageFactory;
@@ -114,5 +115,6 @@ public interface SccpProvider extends Serializable {
 
     void updateSPCongestion(Integer ssn, Integer congestionLevel);
 
+    FastList<SccpManagementEventListener> getManagementEventListeners();
 
 }

@@ -6,8 +6,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.tcapAnsi.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcapAnsi.api.asn.ApplicationContext;
 import org.restcomm.protocols.ss7.tcapAnsi.asn.InvokeImpl;
@@ -19,7 +19,7 @@ import org.restcomm.protocols.ss7.tcapAnsi.asn.InvokeImpl;
  */
 public class PreviewDialogData {
 
-    private static final Logger logger = LogManager.getLogger(PreviewDialogData.class);
+    private static final Logger logger = Logger.getLogger(PreviewDialogData.class);
 
     private ApplicationContext lastACN;
     private InvokeImpl[] operationsSentA;
@@ -156,7 +156,7 @@ public class PreviewDialogData {
 //                provider.removePreviewDialog(pdd);
 ////                int i2 = provider.dialogPreviewList.size();
 //
-//                if (logger.isEnabled(Level.ERROR)) {
+//                if (logger.isEnabledFor(Level.ERROR)) {
 //                    StringBuilder sb = new StringBuilder();
 //                    if (this.pdd.prevewDialogDataKey1 != null) {
 //                        sb.append(", trId1=");

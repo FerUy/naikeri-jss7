@@ -3,8 +3,8 @@ package org.restcomm.protocols.ss7.oam.common.jmxss7;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.oam.common.alarm.AlarmListener;
 import org.restcomm.protocols.ss7.oam.common.alarm.AlarmListenerCollection;
 import org.restcomm.protocols.ss7.oam.common.alarm.AlarmMediator;
@@ -27,7 +27,7 @@ import javolution.util.FastMap;
  *
  */
 public class Ss7Management extends MBeanHostImpl implements Ss7ManagementMBean, AlarmMediator, AlarmListener {
-    protected final Logger logger = LogManager.getLogger(Ss7Management.class.getCanonicalName());
+    protected final Logger logger = Logger.getLogger(Ss7Management.class.getCanonicalName());
 
     private AlarmListenerCollection alc = new AlarmListenerCollection();
     private List<AlarmMediator> alarmMediators = new FastList<AlarmMediator>();

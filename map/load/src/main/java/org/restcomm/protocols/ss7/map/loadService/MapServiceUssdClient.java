@@ -1,8 +1,8 @@
 
 package org.restcomm.protocols.ss7.map.loadService;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
@@ -86,7 +86,7 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
     public MapServiceUssdClient(MAPStack mapStack) {
         this.mapStack = mapStack;
 
-        this.logger = LogManager.getLogger(MapServiceUssdClient.class.getCanonicalName());
+        this.logger = Logger.getLogger(MapServiceUssdClient.class.getCanonicalName());
     }
 
     public void start() throws Exception {

@@ -1,8 +1,7 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.ati;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.LocationNumberImpl;
@@ -127,7 +126,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
 
     public static String SOURCE_NAME = "TestAtiServer";
 
-    private static Logger logger = LogManager.getLogger(TestAtiServerMan.class);
+    private static Logger logger = Logger.getLogger(TestAtiServerMan.class);
 
     private final String name;
     private MapMan mapMan;

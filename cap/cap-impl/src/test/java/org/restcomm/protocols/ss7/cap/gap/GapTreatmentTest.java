@@ -17,7 +17,6 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.api.isup.CauseCap;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.InformationToSend;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.Tone;
-import org.restcomm.protocols.ss7.cap.gap.GapTreatmentImpl;
 import org.restcomm.protocols.ss7.cap.isup.CauseCapImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.InformationToSendImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.ToneImpl;

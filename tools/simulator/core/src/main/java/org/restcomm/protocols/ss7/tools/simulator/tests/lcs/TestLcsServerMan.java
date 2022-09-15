@@ -1,6 +1,6 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.lcs;
 
-import org.apache.logging.log4j.LogManager;
+
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
@@ -133,8 +133,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.tools.simulator.level3.MapMan;
 import org.restcomm.protocols.ss7.tools.simulator.level3.NumberingPlanMapType;
 import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostImpl;
@@ -146,7 +145,7 @@ import java.nio.charset.Charset;
  */
 public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBean, Stoppable, MAPServiceLsmListener {
 
-    private static Logger logger = LogManager.getLogger(TestLcsServerMan.class);
+    private static Logger logger = Logger.getLogger(TestLcsServerMan.class);
 
     public static String SOURCE_NAME = "TestLcsServerMan";
     private final String name;

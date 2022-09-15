@@ -1,8 +1,7 @@
 
 package org.restcomm.protocols.ss7.sccp.impl.message;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
@@ -144,7 +143,7 @@ public class SccpConnRlsdMessageImpl extends SccpConnReferencedMessageImpl imple
                 availLen = 130;
 
             if (bf.length > availLen) { // message is too long
-                if (logger.isEnabled(Level.WARN)) {
+                if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn(String.format(
                             "Failure when sending a RLSD message: message is too long. SccpMessageSegment=%s", this));
                 }

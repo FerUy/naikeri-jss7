@@ -155,8 +155,8 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<span class="brand" style="vertical-align: bottom;color: #FFFFFF !important; font-weight: 500;"><img
-								src="resources/images/naikeri-logo-transparent.png" width="50px" />NAIKERI jSS7 MANAGEMENT CONSOLE</span>
+						<span class="brand" style="vertical-align: bottom;color: #FFFFFF !important; font-weight: 500;"><img id="logo_image"
+								src="resources/images/naikeri-logo-transparent.png" width="50px" /> NAIKERI jSS7 MANAGEMENT CONSOLE</span>
 						<div class="nav-collapse collapse">
 							<p class="navbar-text pull-right" style="font-size: 1.2em;">
 								<span style="margin-top: 15px; vertical-align: sub;">
@@ -200,7 +200,30 @@
 									$("[data-toggle='popover']").popover();
 								});
 							});
+							updateWhiteLabelLogo();
 						});
+						function updateWhiteLabelLogo() {
+
+							mbeanSearch="org.mobicents.smsc:layer=SmscPropertiesManagement,name=SmscManagement";
+							jolokia.request(
+											[
+													{ type: "read", mbean: mbeanSearch },
+											],
+											{ success: [
+													function(response) {
+															if (response.value.WhiteLabelFileBase64) {
+																var imgNode = document.getElementById("logo_image");
+																imgNode.src = response.value.WhiteLabelFileBase64;
+															}
+													}],
+													error: function(value) {
+															errorUID = ("st" + new Date().getTime()).hashCode();
+															createStackTrace(errorUID, value.stacktrace);
+															logToConsole("ERROR", value.error + ". (<a href=\"#" + errorUID + "-modal\" data-toggle=\"modal\">Full Stack Trace</a>)");
+													}
+											}
+									);
+						}
 						</script>
 				</div>
 				<div id="push"></div>

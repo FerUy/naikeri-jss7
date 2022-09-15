@@ -1,7 +1,7 @@
 package org.restcomm.protocols.ss7.map.functional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.map.api.MAPParameterFactory;
 import org.restcomm.protocols.ss7.map.api.MAPProvider;
 import org.restcomm.protocols.ss7.map.api.MAPStack;
@@ -16,7 +16,7 @@ import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
  */
 public class Server extends EventTestHarness {
 
-    private static Logger logger = LogManager.getLogger(Server.class);
+    private static Logger logger = Logger.getLogger(Server.class);
 
     private MAPFunctionalTest runningTestCase;
     private SccpAddress thisAddress;

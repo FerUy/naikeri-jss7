@@ -22,8 +22,7 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -32,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class MBeanHostImpl implements MBeanHost {
 
-    protected static final Logger logger = LogManager.getLogger(MBeanHostImpl.class);
+    protected static final Logger logger = Logger.getLogger(MBeanHostImpl.class);
 
     public static final String DEFAULT_DOMAIN_NAME = "org.restcomm.ss7";
 

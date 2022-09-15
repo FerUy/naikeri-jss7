@@ -17,7 +17,6 @@ import org.restcomm.protocols.ss7.cap.api.isup.GenericNumberCap;
 import org.restcomm.protocols.ss7.cap.isup.GenericNumberCapImpl;
 import org.restcomm.protocols.ss7.cap.isup.LocationNumberCapImpl;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsTest;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.ContinueWithArgumentRequestImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.AlertingPatternCapImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.CarrierImpl;
 import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.ContinueWithArgumentArgExtensionImpl;

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
+import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.restcomm.protocols.ss7.sccp.MaxConnectionCountReached;
@@ -433,6 +434,11 @@ public class DialogPreviewModeMngConcurrentTest {
 			// TODO Auto-generated method stub
 			
 		}
+
+        @Override
+        public FastList<SccpManagementEventListener> getManagementEventListeners() {
+            return null;
+        }
     }
 
 }

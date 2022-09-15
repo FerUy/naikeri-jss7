@@ -26,12 +26,12 @@
 				<include>org.restcomm.protocols.ss7.tools.simulator:simulator-gui</include>
 
 				<!-- Common libraries -->
-				<include>log4j:log4j</include>
 				<include>urbanophile:java-getopt</include>
 				<include>com.sun.jdmk:jmxtools</include>
 				<!-- Apache Log4j -->
-				<include>org.apache.logging.log4j:log4j-core</include>
-				<include>org.apache.logging.log4j:log4j-api</include>
+				<include>log4j:log4j</include>
+				<!--include>org.apache.logging.log4j:log4j-core</include>
+				<include>org.apache.logging.log4j:log4j-api</include-->
 
 				<!-- Not strictly SS7, But needed by SS7 -->
 				<include>javolution:javolution</include>

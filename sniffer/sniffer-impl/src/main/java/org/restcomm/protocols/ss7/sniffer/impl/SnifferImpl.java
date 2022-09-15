@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.m3ua.As;
 import org.restcomm.protocols.ss7.m3ua.Asp;
 import org.restcomm.protocols.ss7.m3ua.AspFactory;
@@ -44,7 +44,7 @@ public class SnifferImpl implements M3UAManagementEventListener, Mtp3UserPartLis
         public String kubernetes_pod_name;
         public String instance;
         public String log_file="/monitor.log";
-        public Logger logger = LogManager.getLogger(SnifferImpl.class);
+        public Logger logger = Logger.getLogger(SnifferImpl.class);
         public long m3uaIn = 0;
         public long m3uaOut = 0;
         public long mtp3Bytes = 0;
@@ -119,7 +119,7 @@ public class SnifferImpl implements M3UAManagementEventListener, Mtp3UserPartLis
 
                 @Override
                 public void run() {
-                        Logger logger = LogManager.getLogger(SnifferImpl.class);
+                        Logger logger = Logger.getLogger(SnifferImpl.class);
                         double asGauge = 0.0;
                         double aspGauge = 0.0;
                         double sctpGauge = 0.0;

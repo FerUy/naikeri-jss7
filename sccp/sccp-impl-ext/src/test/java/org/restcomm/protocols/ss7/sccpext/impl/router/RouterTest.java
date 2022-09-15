@@ -952,7 +952,7 @@ public class RouterTest {
         }
 
         @Override
-        public SccpCongestionControlAlgo getCongControl_Algo() {
+        public String getCongControl_Algo() {
             // TODO Auto-generated method stub
             return null;
         }
@@ -985,9 +985,8 @@ public class RouterTest {
         }
 
         @Override
-        public void setCongControl_Algo(SccpCongestionControlAlgo value) {
+        public void setCongControl_Algo(String value) {
             // TODO Auto-generated method stub
-            
         }
 
         @Override

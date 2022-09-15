@@ -13,7 +13,7 @@
 
     <!--Versions -->
     <property name="asn.version" value="2.2.0-143"/>
-    <property name="sctp.version" value="2.1.0-14"/>
+    <property name="sctp.version" value="2.1.0-16"/>
     <property name="release.version" value="8.4.0-SNAPSHOT"/>
 
     <property name="checkout.asn.version" value="2.2.0-22"/>

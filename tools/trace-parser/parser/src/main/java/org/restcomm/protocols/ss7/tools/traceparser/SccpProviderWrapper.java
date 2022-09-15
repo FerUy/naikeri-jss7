@@ -2,6 +2,7 @@ package org.restcomm.protocols.ss7.tools.traceparser;
 
 import java.io.IOException;
 
+import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.restcomm.protocols.ss7.sccp.MaxConnectionCountReached;
@@ -131,4 +132,8 @@ public class SccpProviderWrapper implements SccpProvider {
 
     }
 
+    @Override
+    public FastList<SccpManagementEventListener> getManagementEventListeners() {
+        return null;
+    }
 }

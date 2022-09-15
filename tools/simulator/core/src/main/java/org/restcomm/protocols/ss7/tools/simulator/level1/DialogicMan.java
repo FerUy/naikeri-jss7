@@ -1,8 +1,7 @@
 
 package org.restcomm.protocols.ss7.tools.simulator.level1;
 
-import org.apache.logging.log4j.Level;
-import org.restcomm.protocols.ss7.mtp.Mtp3UserPart;
+import org.apache.log4j.Level;import org.restcomm.protocols.ss7.mtp.Mtp3UserPart;
 import org.restcomm.protocols.ss7.tools.simulator.Stoppable;
 import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface;
 

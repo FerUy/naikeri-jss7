@@ -10,8 +10,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.restcomm.protocols.ss7.tools.simulator.MainCore;
@@ -31,7 +31,7 @@ public class Main {
     public static final String SIMULATOR_DATA = "simulator.data.dir";
     private static int index = 0;
 
-    protected static Logger logger = LogManager.getLogger(Main.class);
+    protected static Logger logger = Logger.getLogger(Main.class);
 
     protected String command = null;
     protected String appName = "main";

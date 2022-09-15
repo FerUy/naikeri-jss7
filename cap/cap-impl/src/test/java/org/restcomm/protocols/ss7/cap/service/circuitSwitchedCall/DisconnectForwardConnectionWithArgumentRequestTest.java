@@ -13,7 +13,6 @@ import javolution.xml.XMLObjectWriter;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsTest;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.DisconnectForwardConnectionWithArgumentRequestImpl;
 import org.testng.annotations.Test;
 
 /**

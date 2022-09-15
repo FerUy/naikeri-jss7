@@ -3,8 +3,8 @@ package org.restcomm.protocols.ss7.sccp.impl.oam;
 
 import javolution.util.FastMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.apache.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.ConcernedSignalingPointCode;
 import org.restcomm.protocols.ss7.sccp.LongMessageRule;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
@@ -29,7 +29,7 @@ import java.util.Set;
  */
 public class SccpExecutor implements ShellExecutor {
 
-    protected static final Logger logger = LogManager.getLogger(SccpExecutor.class);
+    protected static final Logger logger = Logger.getLogger(SccpExecutor.class);
 
     protected FastMap<String, SccpStackImpl> sccpStacks = new FastMap<String, SccpStackImpl>();
     protected SccpStackImpl sccpStack = null;
@@ -1517,7 +1517,7 @@ public class SccpExecutor implements ShellExecutor {
         } else if (parName.equals("cc_algo")) {
             String vals = options[3];
             SccpCongestionControlAlgo algo = Enum.valueOf(SccpCongestionControlAlgo.class, vals);
-            this.sccpStack.setCongControl_Algo(algo);
+            this.sccpStack.setCongControlAlgo(algo);
         } else if (parName.equals("cc_blockingoutgoungsccpmessages")) {
             boolean valb = Boolean.parseBoolean(options[3]);
             this.sccpStack.setCongControl_blockingOutgoingSccpMessages(valb);
