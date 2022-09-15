@@ -52,8 +52,8 @@
 		<commons.version>1.0.0.CR1</commons.version>
 		<netty.version>4.1.42.Final</netty.version>
 
-		<version.wildfly.as>10.1.0.Final</version.wildfly.as>
-		<version.wildfly.core>2.2.0.Final</version.wildfly.core>
+		<version.wildfly.as>24.0.1.Final</version.wildfly.as>
+		<version.wildfly.core>16.0.1.Final</version.wildfly.core>
 		<dialogic.version>6.7.1</dialogic.version>
 		<!-- lic dep -->
 	</properties>
