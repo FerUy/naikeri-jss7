@@ -6,7 +6,7 @@ pipeline {
         maven 'Maven_3.8.5'
 	}
 	parameters {
-	    string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '8.4.0', description: 'The major version for Naikeri jSS7')
+	    string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '8.5.0', description: 'The major version for Naikeri jSS7')
 	    string(name: 'SCTP_MAJOR_VERSION_NUMBER', defaultValue: '2.1.0', description: 'The major version of Naikeri SCTP for Naikeri jSS7')
 	    string(name: 'SCTP_BUILD', defaultValue: '16', description: 'The build number of Naikeri SCTP for Naikeri jSS7 to use for the build')
 	    // booleanParam(name: 'BUILD_ANT', defaultValue: true, description: 'Enable if Binary needs to be generated')
