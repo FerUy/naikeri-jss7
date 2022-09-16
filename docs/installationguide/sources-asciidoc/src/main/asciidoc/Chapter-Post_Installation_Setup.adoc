@@ -62,7 +62,7 @@ BUILD SUCCESSFUL
 * You have now deployed {this-platform} SS7 Service successfully.
   Note that this procedure will also install the Shell Components (shell scripts and libraries) on this machine.
 
-.Procedure: Installing {this-platform} SS7 Service to WildFly 24.0.1.Final
+.Procedure: Installing {this-platform} SS7 Service to WildFly 10.1.0.Final
 
 . Pre-Requisites:
 +

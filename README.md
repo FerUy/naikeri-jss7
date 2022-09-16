@@ -51,18 +51,18 @@ Note: For deploying of binaries into a local JBoss AS you need to configure a JB
 ## Generate Wildfly Version
 To generate a wildfly version of RestComm jSS7 use the following steps
 
-- Download the Restcomm SLEE version 8.1.0-230 from WildFly 24.0.1.Final
+- Download the Restcomm SLEE version 8.1.0-230 from WildFly 10.1.0.Final
 - Build the RestComm jSS7 using the command below
   ```bash
   cd release
-  ant -f build.xml -Drelease.version=8.5.0 -Dsctp.version=2.0.2-16
+  ant -f build.xml -Drelease.version=8.4.0 -Dsctp.version=2.0.2-16
   ```
 - Unzip the RestComm jSS7 file and run the command below to install it
   ```sh
-  cd RestComm-jSS7-8.5.0/ss7-wildfly
-  ant -f build.xml -Djboss.home=../../wildfly-24.0.1.Final
+  cd RestComm-jSS7-8.4.0/ss7-wildfly
+  ant -f build.xml -Djboss.home=../../wildfly-10.1.0.Final
   ```
-- NOTE: the path `../../wildfly-24.0.1.Final` indicates the path for the Restcomm SLEE downloaded above.
+- NOTE: the path `../../wildfly-10.1.0.Final` indicates the path for the Restcomm SLEE downloaded above.
 
 
 ## Build Docker
@@ -74,9 +74,9 @@ FROM amazoncorretto:8-alpine
 RUN apk add net-tools lksctp-tools supervisor lksctp-tools-dev
 RUN mkdir -p /opt/restcomm/jss7
 WORKDIR /opt/restcomm/jss7
-COPY RestComm-jSS7-8.5.0-wildfly/. .
-RUN chmod +x wildfly-24.0.1.Final/bin/standalone.sh
-ENTRYPOINT ["sh", "wildfly-24.0.1.Final/bin/standalone.sh"]
+COPY RestComm-jSS7-8.4.0-wildfly/. .
+RUN chmod +x wildfly-10.1.0.Final/bin/standalone.sh
+ENTRYPOINT ["sh", "wildfly-10.1.0.Final/bin/standalone.sh"]
 CMD ["-b", "0.0.0.0"]
 ```
 

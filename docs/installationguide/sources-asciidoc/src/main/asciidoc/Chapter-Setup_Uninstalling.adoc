@@ -28,7 +28,7 @@ BUILD SUCCESSFUL
 Total time: 0 seconds
 ----  
 
-.Procedure: Uninstalling {this-platform} SS7 Service from WildFly 24.0.1.Final
+.Procedure: Uninstalling {this-platform} SS7 Service from WildFly 10.1.0.Final
 Undeploy:
 [source,subs="attributes"]
 ----
