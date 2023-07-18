@@ -40,7 +40,6 @@ public abstract class TestHarnessMobilityManagement implements MAPDialogListener
     protected static int SSN = 8;
     protected static int HLR_SSN = 6;
     protected static int VLR_SSN = 7;
-    protected static int SGSN_SSN = 149;
 
     // M3UA details
     protected static String CLIENT_IP = "127.0.0.1";

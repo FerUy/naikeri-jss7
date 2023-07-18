@@ -255,6 +255,7 @@ public class Server extends TestHarnessMobilityManagement {
 
         this.sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
         this.sccpResource.addRemoteSsn(0, CLIENT_SPC, VLR_SSN, 0, false);
+        this.sccpResource.addRemoteSsn(0, CLIENT_SPC, HLR_SSN, 0, false);
 
         this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
         this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
