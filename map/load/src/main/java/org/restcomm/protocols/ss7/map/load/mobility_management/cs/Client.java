@@ -867,9 +867,9 @@ public class Client extends TestHarnessMobilityManagement {
                     originAddressString, serverSccpAddress, destAddressString);
 
             IMSI imsi = new IMSIImpl("901405105682583");
-            ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "12345");
+            ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
             ISDNAddressString roamingNumber = null;
-            ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "12345");
+            ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
             LMSI lmsi = null;
             MAPExtensionContainer mapExtensionContainer = null;
             SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
@@ -943,8 +943,10 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onInsertSubscriberDataResponse(InsertSubscriberDataResponse insertSubscriberDataResponse) {
-        logger.error(String.format("ERROR: received InsertSubscriberDataResponse over DialogId=%d", insertSubscriberDataResponse
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as VLR/SGSN)"));
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onInsertSubscriberDataResponse over DialogId=%d", insertSubscriberDataResponse
+                    .getMAPDialog().getLocalDialogId()));
+        }
     }
 
     @Override
@@ -963,16 +965,12 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onUpdateGprsLocationRequest(UpdateGprsLocationRequest updateGprsLocationRequest) {
-        logger.error(String.format("ERROR: received UpdateGprsLocationRequest over DialogId=%d", updateGprsLocationRequest
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as SGSN)"));
+
     }
 
     @Override
     public void onUpdateGprsLocationResponse(UpdateGprsLocationResponse updateGprsLocationResponse) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onUpdateGprsLocationResponse over DialogId=%d", updateGprsLocationResponse
-                    .getMAPDialog().getLocalDialogId()));
-        }
+
     }
 
     @Override
@@ -996,8 +994,8 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onCancelLocationResponse(CancelLocationResponse cancelLocationResponse) {
-        logger.error(String.format("ERROR: received CancelLocationResponse over DialogId=%d", cancelLocationResponse
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as VLR/SGSN)"));
+        logger.error(String.format("onCancelLocationResponse over DialogId=%d", cancelLocationResponse
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override

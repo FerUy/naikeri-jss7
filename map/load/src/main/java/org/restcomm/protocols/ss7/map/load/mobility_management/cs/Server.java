@@ -656,7 +656,7 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onSendAuthenticationInfoResponse(SendAuthenticationInfoResponse sendAuthenticationInfoResponseIndication) {
         logger.error(String.format("ERROR: received SendAuthenticationInfoResponse over DialogId=%d", sendAuthenticationInfoResponseIndication
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as HLR)"));
+                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
     }
 
     @Override
@@ -779,9 +779,17 @@ public class Server extends TestHarnessMobilityManagement {
     }
 
     @Override
+    public void onUpdateLocationResponse(UpdateLocationResponse updateLocationResponseIndication) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onUpdateLocationResponse for DialogId=%d", updateLocationResponseIndication
+                    .getMAPDialog().getLocalDialogId()));
+        }
+    }
+
+    @Override
     public void onInsertSubscriberDataRequest(InsertSubscriberDataRequest insertSubscriberDataRequest) {
         logger.error(String.format("ERROR: received InsertSubscriberDataRequest over DialogId=%d", insertSubscriberDataRequest
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as HLR)"));
+                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
     }
 
     @Override
@@ -807,15 +815,9 @@ public class Server extends TestHarnessMobilityManagement {
     }
 
     @Override
-    public void onUpdateLocationResponse(UpdateLocationResponse updateLocationResponseIndication) {
-        logger.error(String.format("ERROR: received UpdateLocationResponse over DialogId=%d", updateLocationResponseIndication
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as HLR)"));
-    }
-
-    @Override
     public void onCancelLocationRequest(CancelLocationRequest cancelLocationRequest) {
         logger.error(String.format("ERROR: received CancelLocationRequest over DialogId=%d", cancelLocationRequest
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as HLR)"));
+                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
     }
 
     @Override
@@ -828,17 +830,12 @@ public class Server extends TestHarnessMobilityManagement {
 
     @Override
     public void onUpdateGprsLocationRequest(UpdateGprsLocationRequest updateGprsLocationRequest) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onUpdateGprsLocationRequest for DialogId=%d", updateGprsLocationRequest
-                    .getMAPDialog().getLocalDialogId()));
-        }
-        // TODO?
+
     }
 
     @Override
     public void onUpdateGprsLocationResponse(UpdateGprsLocationResponse updateGprsLocationResponse) {
-        logger.error(String.format("ERROR: received UpdateGprsLocationResponse over DialogId=%d", updateGprsLocationResponse
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as HLR)"));
+
     }
 
     @Override
@@ -870,8 +867,8 @@ public class Server extends TestHarnessMobilityManagement {
 
     @Override
     public void onPurgeMSResponse(PurgeMSResponse purgeMSResponse) {
-        logger.error(String.format("ERROR: received PurgeMSResponse over DialogId=%d", purgeMSResponse
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as HLR)"));
+        logger.error(String.format("onPurgeMSResponse over DialogId=%d", purgeMSResponse
+                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
     }
 
     @Override
