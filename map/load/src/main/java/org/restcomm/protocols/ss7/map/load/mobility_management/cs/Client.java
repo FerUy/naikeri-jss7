@@ -858,8 +858,8 @@ public class Client extends TestHarnessMobilityManagement {
             AddressString destAddressString = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
 
-            SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, SSN, SCCP_CLIENT_ADDRESS);
-            SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, SSN, SCCP_SERVER_ADDRESS);
+            SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+            SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
 
             MAPApplicationContextVersion mapAcnVersion = MAPApplicationContextVersion.version3;
             MAPApplicationContextName mapAcn = MAPApplicationContextName.networkLocUpContext;
