@@ -255,7 +255,6 @@ public class Server extends TestHarnessMobilityManagement {
 
         this.sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
         this.sccpResource.addRemoteSsn(0, CLIENT_SPC, VLR_SSN, 0, false);
-        this.sccpResource.addRemoteSsn(1, CLIENT_SPC, HLR_SSN, 0, false);
 
         this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
         this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
@@ -667,7 +666,6 @@ public class Server extends TestHarnessMobilityManagement {
                     .getMAPDialog().getLocalDialogId()));
         }
         try {
-            // TODO send ISD/returnResultLast and CL
             // Create Dialog for MAP CL
             AddressString clDestinationRef = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
@@ -705,6 +703,7 @@ public class Server extends TestHarnessMobilityManagement {
             SccpAddress isdClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
             SccpAddress isdServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
 
+            long isdInvokeId = updateLocationRequestIndication.getInvokeId() + 1;
             MAPDialogMobility insertSubscriberDataDialog = updateLocationRequestIndication.getMAPDialog();/*this.mapProvider.getMAPServiceMobility().
                     createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.subscriberDataMngtContext, MAPApplicationContextVersion.version3),
                             isdClientSccpAddress, isdOriginRef, isdServerSccpAddress, isdDestinationRef);*/
@@ -764,7 +763,7 @@ public class Server extends TestHarnessMobilityManagement {
             boolean mdtUserConsent = false;
             Long subscribedPeriodicLAUtimer = null;
 
-            insertSubscriberDataDialog.addInsertSubscriberDataRequest(null, msisdn, category, subscriberStatus,
+            insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId,null, msisdn, category, subscriberStatus,
                     bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
                     regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, mapExtensionContainer,
                     naeaPreferredCI, gprsSubscriptionData, roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode,
