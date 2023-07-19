@@ -669,7 +669,7 @@ public class Server extends TestHarnessMobilityManagement {
         try {
             // TODO send ISD/returnResultLast and CL
             // Create Dialog for MAP CL
-            AddressString clDestinationRef = this.mapProvider.getMAPParameterFactory()
+            /*AddressString clDestinationRef = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
             AddressString clOriginRef = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285000008002");
@@ -694,7 +694,7 @@ public class Server extends TestHarnessMobilityManagement {
 
             cancelLocationDialog.addCancelLocationRequest(imsi, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
                     mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, lmsi);
-            cancelLocationDialog.send();
+            cancelLocationDialog.send();*/
 
             // Create Dialog for MAP ISD
             AddressString isdOriginRef = this.mapProvider.getMAPParameterFactory()
@@ -705,9 +705,9 @@ public class Server extends TestHarnessMobilityManagement {
             SccpAddress isdClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
             SccpAddress isdServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
 
-            MAPDialogMobility insertSubscriberDataDialog = this.mapProvider.getMAPServiceMobility().
+            MAPDialogMobility insertSubscriberDataDialog = updateLocationRequestIndication.getMAPDialog();/*this.mapProvider.getMAPServiceMobility().
                     createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.subscriberDataMngtContext, MAPApplicationContextVersion.version3),
-                            isdClientSccpAddress, isdOriginRef, isdServerSccpAddress, isdDestinationRef);
+                            isdClientSccpAddress, isdOriginRef, isdServerSccpAddress, isdDestinationRef);*/
 
             ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
             Category category = new CategoryImpl(CategoryValue.ordinaryCallingSubscriber);
@@ -723,11 +723,12 @@ public class Server extends TestHarnessMobilityManagement {
             ExtSSStatus clipExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
             SSSubscriptionOption clipSubscriptionOption = new SSSubscriptionOptionImpl(OverrideCategory.overrideDisabled);
             ArrayList<ExtBasicServiceCode> basicServiceGroupList = null;
-            ExtSSData extSSDataClip = new ExtSSDataImpl(clip, clipExtSSStatus, clipSubscriptionOption, basicServiceGroupList, extensionContainer);
+            MAPExtensionContainer mapExtensionContainer = null;
+            ExtSSData extSSDataClip = new ExtSSDataImpl(clip, clipExtSSStatus, clipSubscriptionOption, basicServiceGroupList, mapExtensionContainer);
             SSCode clir = new SSCodeImpl(SupplementaryCodeValue.clir);
             ExtSSStatus clirExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
             SSSubscriptionOption clirSubscriptionOption = new SSSubscriptionOptionImpl(CliRestrictionOption.temporaryDefaultAllowed);
-            ExtSSData extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, extensionContainer);
+            ExtSSData extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, mapExtensionContainer);
             ExtSSInfo ssInfoClip = new ExtSSInfoImpl(extSSDataClip);
             ExtSSInfo ssInfoClir = new ExtSSInfoImpl(extSSDataClir);
             provisionedSS.add(ssInfoClip);
@@ -765,7 +766,7 @@ public class Server extends TestHarnessMobilityManagement {
 
             insertSubscriberDataDialog.addInsertSubscriberDataRequest(null, msisdn, category, subscriberStatus,
                     bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
-                    regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, extensionContainer,
+                    regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, mapExtensionContainer,
                     naeaPreferredCI, gprsSubscriptionData, roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode,
                     lsaInformation, lmuIndicator, lcsInformation, istAlertTimer, superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority,
                     sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,
@@ -775,7 +776,7 @@ public class Server extends TestHarnessMobilityManagement {
             insertSubscriberDataDialog.send();
 
         } catch (Exception e) {
-
+            logger.error("ERROR while processing onUpdateLocationRequest ", e);
         }
     }
 
