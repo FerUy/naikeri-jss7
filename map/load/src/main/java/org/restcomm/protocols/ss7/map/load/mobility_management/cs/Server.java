@@ -668,12 +668,12 @@ public class Server extends TestHarnessMobilityManagement {
         try {
             // Create Dialog for MAP CL
             AddressString clDestinationRef = this.mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
             AddressString clOriginRef = this.mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285000008002");
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
 
             SccpAddress clClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
-            SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+            SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, "491710400000");
 
             MAPDialogMobility cancelLocationDialog = this.mapProvider.getMAPServiceMobility().
                     createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
@@ -692,21 +692,19 @@ public class Server extends TestHarnessMobilityManagement {
 
             cancelLocationDialog.addCancelLocationRequest(imsi, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
                     mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, lmsi);
-            //cancelLocationDialog.send();
+            cancelLocationDialog.send();
 
             // Create Dialog for MAP ISD
-            AddressString isdOriginRef = this.mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
+            /*AddressString isdOriginRef = this.mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
             AddressString isdDestinationRef = this.mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285000008002");
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_CLIENT_ADDRESS);
 
             SccpAddress isdClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
-            SccpAddress isdServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+            SccpAddress isdServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);*/
 
             long isdInvokeId = updateLocationRequestIndication.getInvokeId() + 1;
-            MAPDialogMobility insertSubscriberDataDialog = updateLocationRequestIndication.getMAPDialog();/*this.mapProvider.getMAPServiceMobility().
-                    createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.subscriberDataMngtContext, MAPApplicationContextVersion.version3),
-                            isdClientSccpAddress, isdOriginRef, isdServerSccpAddress, isdDestinationRef);*/
+            MAPDialogMobility insertSubscriberDataDialog = updateLocationRequestIndication.getMAPDialog();
 
             ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
             Category category = new CategoryImpl(CategoryValue.ordinaryCallingSubscriber);
