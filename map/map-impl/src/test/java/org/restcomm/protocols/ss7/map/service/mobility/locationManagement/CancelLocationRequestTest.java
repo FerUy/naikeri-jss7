@@ -255,10 +255,11 @@ public class CancelLocationRequestTest {
                 "22229");
         LMSI newLmsi = new LMSIImpl(getDataLmsi());
         long mapProtocolVersion = 3;
+        boolean reattachRequired = false;
 
         CancelLocationRequestImpl asc = new CancelLocationRequestImpl(imsi, null, cancellationType, extensionContainer,
                 typeOfUpdate, mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, newLmsi,
-                mapProtocolVersion);
+                mapProtocolVersion, reattachRequired);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -269,9 +270,10 @@ public class CancelLocationRequestTest {
 
         mtrfSupportedAndAuthorized = true;
         mtrfSupportedAndNotAuthorized = true;
+        reattachRequired = false;
         asc = new CancelLocationRequestImpl(null, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
                 mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, newLmsi,
-                mapProtocolVersion);
+                mapProtocolVersion, reattachRequired);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -281,7 +283,7 @@ public class CancelLocationRequestTest {
         assertTrue(Arrays.equals(rawData, encodedData));
 
         mapProtocolVersion = 2;
-        asc = new CancelLocationRequestImpl(imsi, null, null, null, null, false, false, null, null, null, mapProtocolVersion);
+        asc = new CancelLocationRequestImpl(imsi, null, null, null, null, false, false, null, null, null, mapProtocolVersion, false);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -291,7 +293,7 @@ public class CancelLocationRequestTest {
         assertTrue(Arrays.equals(rawData, encodedData));
 
         asc = new CancelLocationRequestImpl(null, imsiWithLmsi, null, null, null, false, false, null, null, null,
-                mapProtocolVersion);
+                mapProtocolVersion, false);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);

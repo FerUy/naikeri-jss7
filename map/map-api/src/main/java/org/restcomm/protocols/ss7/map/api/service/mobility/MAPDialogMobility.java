@@ -120,11 +120,11 @@ public interface MAPDialogMobility extends MAPDialog {
     Long addCancelLocationRequest(int customInvokeTimeout, IMSI imsi, IMSIWithLMSI imsiWithLmsi,
             CancellationType cancellationType, MAPExtensionContainer extensionContainer, TypeOfUpdate typeOfUpdate,
             boolean mtrfSupportedAndAuthorized, boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber,
-            ISDNAddressString newVLRNumber, LMSI newLmsi) throws MAPException;
+            ISDNAddressString newVLRNumber, LMSI newLmsi, boolean reattachRequired) throws MAPException;
 
     Long addCancelLocationRequest(IMSI imsi, IMSIWithLMSI imsiWithLmsi, CancellationType cancellationType,
             MAPExtensionContainer extensionContainer, TypeOfUpdate typeOfUpdate, boolean mtrfSupportedAndAuthorized,
-            boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber, ISDNAddressString newVLRNumber, LMSI newLmsi)
+            boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber, ISDNAddressString newVLRNumber, LMSI newLmsi, boolean reattachRequired)
             throws MAPException;
 
     void addCancelLocationResponse(long invokeId, MAPExtensionContainer extensionContainer) throws MAPException;

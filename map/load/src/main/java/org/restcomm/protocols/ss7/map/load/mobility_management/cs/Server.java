@@ -689,9 +689,10 @@ public class Server extends TestHarnessMobilityManagement {
             ISDNAddressString newMSCNumber = null; // new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
             ISDNAddressString newVLRNumber = null; // new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
             LMSI lmsi = null;
+            boolean reattachRequired = false;
 
             cancelLocationDialog.addCancelLocationRequest(imsi, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
-                    mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, lmsi);
+                    mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, lmsi, reattachRequired);
             cancelLocationDialog.send();
 
             // Create Dialog for MAP ISD
