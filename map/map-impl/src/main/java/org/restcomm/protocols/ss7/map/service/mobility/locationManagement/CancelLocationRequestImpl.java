@@ -147,8 +147,8 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
     }
 
     @Override
-    public boolean reattachRequired() {
-        return false;
+    public boolean isReattachRequired() {
+        return this.reattachRequired;
     }
 
     @Override

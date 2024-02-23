@@ -85,5 +85,5 @@ public interface CancelLocationRequest extends MobilityMessage {
 
     long getMapProtocolVersion();
 
-    boolean reattachRequired();
+    boolean isReattachRequired();
 }
