@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility;
 
 import java.util.ArrayList;
@@ -98,6 +97,7 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 /**
  *
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public interface MAPDialogMobility extends MAPDialog {

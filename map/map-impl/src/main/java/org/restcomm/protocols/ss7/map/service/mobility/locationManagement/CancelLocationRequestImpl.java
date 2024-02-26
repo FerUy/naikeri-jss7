@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 
 import java.io.IOException;
@@ -29,6 +28,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
 /**
  *
  * @author Lasith Waruna Perera
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class CancelLocationRequestImpl extends MobilityMessageImpl implements CancelLocationRequest {

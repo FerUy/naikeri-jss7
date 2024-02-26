@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility;
 
 import java.util.ArrayList;
@@ -147,6 +146,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 /**
  *
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMobility {
