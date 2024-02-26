@@ -35,6 +35,7 @@ import org.testng.annotations.Test;
 /**
  *
  * @author Lasith Waruna Perera
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class CancelLocationRequestTest {
