@@ -56,6 +56,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiRespons
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSRequest;
@@ -123,6 +124,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
@@ -307,38 +309,7 @@ public class Client extends TestHarnessMobilityManagement {
         this.rateLimiterObj.acquire();
 
         // Send Authentication Info
-        // First create Dialog
-        AddressString origRef = this.mapProvider.getMAPParameterFactory()
-                .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
-        AddressString destRef = this.mapProvider.getMAPParameterFactory()
-                .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
-
-        SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
-        SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
-
-        MAPDialogMobility mapDialogMobility = this.mapProvider.getMAPServiceMobility().
-                createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.infoRetrievalContext, MAPApplicationContextVersion.version3),
-                        clientSccpAddress, origRef, serverSccpAddress, destRef);
-
-        IMSI imsi = new IMSIImpl("901405105682583");
-        int numberOfRequestedVectors = 5;
-        boolean segmentationProhibited = false;
-        boolean immediateResponsePreferred = false;
-        ReSynchronisationInfo reSynchronisationInfo = null;
-        MAPExtensionContainer mapExtensionContainer = null;
-        RequestingNodeType requestingNodeType = RequestingNodeType.vlr;
-        byte[] mccMnc = new byte[] {0x47, (byte) 0xf8, 0x10};
-        PlmnId requestingPlmnId = new PlmnIdImpl(mccMnc);
-        Integer numberOfRequestedAdditionalVectors = 0;
-        boolean additionalVectorsAreForEPS = false;
-
-        mapDialogMobility.addSendAuthenticationInfoRequest(imsi, numberOfRequestedVectors, segmentationProhibited,
-                immediateResponsePreferred, reSynchronisationInfo, mapExtensionContainer, requestingNodeType, requestingPlmnId,
-                numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS);
-
-        mapDialogMobility.send();
-
-        this.csvWriter.incrementCounter(CREATED_DIALOGS);
+        sendAuthenticationInfoRequest("901405105682583");
     }
 
     private SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
@@ -866,7 +837,15 @@ public class Client extends TestHarnessMobilityManagement {
             MAPDialogMobility mapDialogMobility = this.mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
                     originAddressString, serverSccpAddress, destAddressString);
 
-            IMSI imsi = new IMSIImpl("901405105682583");
+            IMSI imsi;
+            byte[] rand = sendAuthenticationInfoResponseIndication.getAuthenticationSetList().getQuintupletList().getAuthenticationQuintuplets().get(0).getRand();
+            if (Arrays.equals(rand, new byte[]{(byte) 0xba, 0x73, 0x31, 0x2e, (byte) 0x8b, (byte) 0xa1, 0x19, 0x75, (byte) 0xe0,
+                    (byte) 0xe7, (byte) 0xae, 0x2b, (byte) 0xd1, 0x44, (byte) 0xa7, 0x75})) {
+                        imsi = new IMSIImpl("901405105682021");
+            } else {
+                imsi = new IMSIImpl("901405105682583");
+            }
+
             ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
             ISDNAddressString roamingNumber = null;
             ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
@@ -986,6 +965,11 @@ public class Client extends TestHarnessMobilityManagement {
             returnResultLast.setInvokeId(invokeId);
             cancelLocationRequestDialog.sendReturnResultLastComponent(returnResultLast);
             cancelLocationRequestDialog.close(false);
+            if (cancelLocationRequest.getCancellationType() == CancellationType.subscriptionWithdraw) {
+                if (cancelLocationRequest.isReattachRequired()) {
+                    sendAuthenticationInfoRequest("901405105682021");
+                }
+            }
 
         } catch (MAPException e) {
             logger.error("Error while processing CancelLocationRequest ", e);
@@ -1110,4 +1094,46 @@ public class Client extends TestHarnessMobilityManagement {
     public void onActivateTraceModeResponse_Mobility(ActivateTraceModeResponse_Mobility activateTraceModeResponseMobilityIndication) {
 
     }
+
+    private void sendAuthenticationInfoRequest(String imsiDigits) {
+        try {
+            // Send Authentication Info
+            // First create Dialog
+            AddressString origRef = this.mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
+            AddressString destRef = this.mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
+
+            SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+            SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
+
+            MAPDialogMobility mapDialogMobility = this.mapProvider.getMAPServiceMobility().
+                    createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.infoRetrievalContext, MAPApplicationContextVersion.version3),
+                            clientSccpAddress, origRef, serverSccpAddress, destRef);
+
+            IMSI imsi = new IMSIImpl(imsiDigits);
+            int numberOfRequestedVectors = 5;
+            boolean segmentationProhibited = false;
+            boolean immediateResponsePreferred = false;
+            ReSynchronisationInfo reSynchronisationInfo = null;
+            MAPExtensionContainer mapExtensionContainer = null;
+            RequestingNodeType requestingNodeType = RequestingNodeType.vlr;
+            byte[] mccMnc = new byte[] {0x47, (byte) 0xf8, 0x10};
+            PlmnId requestingPlmnId = new PlmnIdImpl(mccMnc);
+            Integer numberOfRequestedAdditionalVectors = 0;
+            boolean additionalVectorsAreForEPS = false;
+
+            mapDialogMobility.addSendAuthenticationInfoRequest(imsi, numberOfRequestedVectors, segmentationProhibited,
+                    immediateResponsePreferred, reSynchronisationInfo, mapExtensionContainer, requestingNodeType, requestingPlmnId,
+                    numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS);
+
+            mapDialogMobility.send();
+
+            this.csvWriter.incrementCounter(CREATED_DIALOGS);
+
+        } catch (MAPException e) {
+            logger.error("Error while sending CancelLocationRequest ", e);
+        }
+    }
+
 }

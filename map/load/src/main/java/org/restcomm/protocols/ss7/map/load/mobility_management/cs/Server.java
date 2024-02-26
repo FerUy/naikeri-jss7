@@ -625,7 +625,14 @@ public class Server extends TestHarnessMobilityManagement {
         try {
             long invokeId = sendAuthenticationInfoRequestIndication.getInvokeId();
             MAPDialogMobility mapDialogMobility = sendAuthenticationInfoRequestIndication.getMAPDialog();
-            byte[] rand = new byte[] {(byte) 0xba, 0x73, 0x31, 0x2e, (byte) 0x8b, (byte) 0xa1, 0x19, 0x75, (byte) 0xe0,
+
+            IMSI imsi = sendAuthenticationInfoRequestIndication.getImsi();
+            byte[] rand;
+            if (imsi.getData().equals("901405105682021"))
+                rand = new byte[] {(byte) 0xba, 0x73, 0x31, 0x2e, (byte) 0x8b, (byte) 0xa1, 0x19, 0x75, (byte) 0xe0,
+                        (byte) 0xe7, (byte) 0xae, 0x2b, (byte) 0xd1, 0x44, (byte) 0xa7, 0x75};
+            else
+                rand = new byte[] {(byte) 0xba, 0x73, 0x31, 0x2e, (byte) 0x8b, (byte) 0xa1, 0x19, 0x75, (byte) 0xe0,
                     (byte) 0xe7, (byte) 0xae, 0x2b, (byte) 0xd1, 0x44, (byte) 0xa7, 0x74};
             byte[] xres = new byte[] {(byte) 0xe4, (byte) 0xb9, (byte) 0xca, 0x0c, 0x2b, 0x12, 0x37, (byte) 0xb6};
             byte[] ck = new byte[] {(byte) 0x81, (byte) 0xe8, 0x64, (byte) 0xf0, (byte) 0xc5, 0x0a, 0x53, 0x64, (byte) 0xda,
@@ -679,30 +686,23 @@ public class Server extends TestHarnessMobilityManagement {
                     createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
                             clClientSccpAddress, clOriginRef, clServerSccpAddress, clDestinationRef);
 
-            IMSI imsi = new IMSIImpl("901405105682583");
-            IMSIWithLMSI imsiWithLmsi = null;
-            CancellationType cancellationType = CancellationType.updateProcedure;
-            MAPExtensionContainer extensionContainer = null;
-            TypeOfUpdate typeOfUpdate = null;
-            boolean mtrfSupportedAndAuthorized = false;
-            boolean mtrfSupportedAndNotAuthorized = false;
-            ISDNAddressString newMSCNumber = null; // new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
-            ISDNAddressString newVLRNumber = null; // new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
-            LMSI lmsi = null;
-            boolean reattachRequired = false;
+            IMSI imsi = updateLocationRequestIndication.getImsi();
+            if (!imsi.getData().equals("901405105682021")) {
+                IMSIWithLMSI imsiWithLmsi = null;
+                CancellationType cancellationType = CancellationType.updateProcedure;
+                MAPExtensionContainer extensionContainer = null;
+                TypeOfUpdate typeOfUpdate = null;
+                boolean mtrfSupportedAndAuthorized = false;
+                boolean mtrfSupportedAndNotAuthorized = false;
+                ISDNAddressString newMSCNumber = null; // new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
+                ISDNAddressString newVLRNumber = null; // new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
+                LMSI lmsi = null;
+                boolean reattachRequired = false;
 
-            cancelLocationDialog.addCancelLocationRequest(imsi, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
-                    mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, lmsi, reattachRequired);
-            cancelLocationDialog.send();
-
-            // Create Dialog for MAP ISD
-            /*AddressString isdOriginRef = this.mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
-            AddressString isdDestinationRef = this.mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_CLIENT_ADDRESS);
-
-            SccpAddress isdClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
-            SccpAddress isdServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);*/
+                cancelLocationDialog.addCancelLocationRequest(imsi, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
+                        mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, lmsi, reattachRequired);
+                cancelLocationDialog.send();
+            }
 
             long isdInvokeId = updateLocationRequestIndication.getInvokeId() + 1;
             MAPDialogMobility insertSubscriberDataDialog = updateLocationRequestIndication.getMAPDialog();
@@ -826,6 +826,8 @@ public class Server extends TestHarnessMobilityManagement {
             logger.debug(String.format("onCancelLocationResponse for DialogId=%d", cancelLocationResponse
                     .getMAPDialog().getLocalDialogId()));
         }
+        // Start a new CL with subscription withdraw and reattach procedure (simulating an OSS request)
+        new Thread(new SubscriptionWithdrawReattach(this)).start();
     }
 
     @Override
@@ -979,5 +981,61 @@ public class Server extends TestHarnessMobilityManagement {
             ssn = HLR_SSN;
         }
         return fact.createSccpAddress(ri, gt, dpc, ssn);
+    }
+
+    private class SubscriptionWithdrawReattach implements Runnable {
+
+        private Server server4SubscriptionWithdrawReattach;
+
+        public SubscriptionWithdrawReattach(Server server) {
+            this.server4SubscriptionWithdrawReattach = server;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(1000);
+                logger.debug("On Subscription Withdraw and Reattach command, about to send CL");
+                server4SubscriptionWithdrawReattach.sendCLOnSubWithdrawAndReattach("901405105682021");
+            } catch (InterruptedException e) {
+                logger.error("Error: ", e);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void sendCLOnSubWithdrawAndReattach(String imsiDigits) {
+        try {
+            AddressString clDestinationRef = this.mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
+            AddressString clOriginRef = this.mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
+
+            SccpAddress clClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
+            SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, "491710400000");
+
+            MAPDialogMobility cancelLocationDialog;
+            cancelLocationDialog = this.mapProvider.getMAPServiceMobility().createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
+                    clClientSccpAddress, clOriginRef, clServerSccpAddress, clDestinationRef);
+
+            IMSI imsi = new IMSIImpl(imsiDigits);
+            IMSIWithLMSI imsiWithLmsi = null;
+            CancellationType cancellationType = CancellationType.subscriptionWithdraw;
+            MAPExtensionContainer extensionContainer = null;
+            TypeOfUpdate typeOfUpdate = null;
+            boolean mtrfSupportedAndAuthorized = false;
+            boolean mtrfSupportedAndNotAuthorized = false;
+            ISDNAddressString newMSCNumber = null;
+            ISDNAddressString newVLRNumber = null;
+            LMSI lmsi = null;
+            boolean reattachRequired = true;
+
+            cancelLocationDialog.addCancelLocationRequest(imsi, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
+                    mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, lmsi, reattachRequired);
+            cancelLocationDialog.send();
+
+        } catch (MAPException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
