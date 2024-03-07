@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 
 import java.io.IOException;
@@ -29,6 +28,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
 /**
  *
  * @author Lasith Waruna Perera
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class CancelLocationRequestImpl extends MobilityMessageImpl implements CancelLocationRequest {
@@ -40,6 +40,7 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
     private static final int TAG_newVLRNumber = 4;
     private static final int TAG_newLmsi = 5;
 
+    private static final int TAG_reattachRequired = 6;
     public static final int TAG_cancelLocationRequest = 3;
     public static final String _PrimitiveName = "CancelLocationRequest";
 
@@ -55,6 +56,8 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
     private LMSI newLmsi;
     private long mapProtocolVersion;
 
+    private boolean reattachRequired;
+
     public CancelLocationRequestImpl(long mapProtocolVersion) {
         this.mapProtocolVersion = mapProtocolVersion;
     }
@@ -62,7 +65,7 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
     public CancelLocationRequestImpl(IMSI imsi, IMSIWithLMSI imsiWithLmsi, CancellationType cancellationType,
             MAPExtensionContainer extensionContainer, TypeOfUpdate typeOfUpdate, boolean mtrfSupportedAndAuthorized,
             boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber, ISDNAddressString newVLRNumber,
-            LMSI newLmsi, long mapProtocolVersion) {
+            LMSI newLmsi, long mapProtocolVersion, boolean reattachRequired) {
         super();
         this.imsi = imsi;
         this.imsiWithLmsi = imsiWithLmsi;
@@ -75,6 +78,7 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
         this.newVLRNumber = newVLRNumber;
         this.newLmsi = newLmsi;
         this.mapProtocolVersion = mapProtocolVersion;
+        this.reattachRequired = reattachRequired;
     }
 
     @Override
@@ -135,6 +139,16 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
     @Override
     public LMSI getNewLmsi() {
         return this.newLmsi;
+    }
+
+    @Override
+    public long getMapProtocolVersion() {
+        return this.mapProtocolVersion;
+    }
+
+    @Override
+    public boolean isReattachRequired() {
+        return this.reattachRequired;
     }
 
     @Override
@@ -208,6 +222,7 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
         this.newMSCNumber = null;
         this.newVLRNumber = null;
         this.newLmsi = null;
+        this.reattachRequired = false;
 
         if (this.mapProtocolVersion >= 3) {
             AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
@@ -320,6 +335,15 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
                                     this.newLmsi = new LMSIImpl();
                                     ((LMSIImpl) this.newLmsi).decodeAll(ais);
                                     break;
+                                case CancelLocationRequestImpl.TAG_reattachRequired:
+                                    if (!ais.isTagPrimitive()) {
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ".reattachRequired: is not primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    }
+                                    ais.readNull();
+                                    this.reattachRequired = true;
+                                    break;
                                 default:
                                     ais.advanceElement();
                                     break;
@@ -384,7 +408,7 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
+            throw new MAPException("Exception when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
 
     }
@@ -410,7 +434,7 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
                 } catch (IOException e) {
                     throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter cancellationType", e);
                 } catch (AsnException e) {
-                    throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter cancellationType", e);
+                    throw new MAPException("AsnException while encoding " + _PrimitiveName + " parameter cancellationType", e);
                 }
             }
 
@@ -425,7 +449,7 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
                 } catch (IOException e) {
                     throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter typeOfUpdate", e);
                 } catch (AsnException e) {
-                    throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter typeOfUpdate", e);
+                    throw new MAPException("AsnException while encoding " + _PrimitiveName + " parameter typeOfUpdate", e);
                 }
             }
 
@@ -465,6 +489,18 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
                 ((LMSIImpl) this.newLmsi).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_newLmsi);
             }
 
+            if (this.reattachRequired) {
+                try {
+                    asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_reattachRequired);
+                } catch (IOException e) {
+                    throw new MAPException("IOException while encoding " + _PrimitiveName
+                            + " parameter reattachRequired", e);
+                } catch (AsnException e) {
+                    throw new MAPException("AsnException while encoding " + _PrimitiveName
+                            + " parameter reattachRequired", e);
+                }
+            }
+
         } else {
             if (this.imsi != null) {
                 ((IMSIImpl) this.imsi).encodeData(asnOutputStream);
@@ -477,11 +513,6 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
     }
 
     @Override
-    public long getMapProtocolVersion() {
-        return this.mapProtocolVersion;
-    }
-
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(_PrimitiveName);
@@ -489,27 +520,27 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(imsi.toString());
+            sb.append(imsi);
             sb.append(", ");
         }
         if (this.imsiWithLmsi != null) {
             sb.append("imsiWithLmsi=");
-            sb.append(imsiWithLmsi.toString());
+            sb.append(imsiWithLmsi);
             sb.append(", ");
         }
         if (this.cancellationType != null) {
             sb.append("cancellationType=");
-            sb.append(cancellationType.toString());
+            sb.append(cancellationType);
             sb.append(", ");
         }
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
         if (this.typeOfUpdate != null) {
             sb.append("typeOfUpdate=");
-            sb.append(typeOfUpdate.toString());
+            sb.append(typeOfUpdate);
             sb.append(", ");
         }
         if (this.mtrfSupportedAndAuthorized) {
@@ -520,18 +551,21 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
         }
         if (this.newMSCNumber != null) {
             sb.append("newMSCNumber=");
-            sb.append(newMSCNumber.toString());
+            sb.append(newMSCNumber);
             sb.append(", ");
         }
         if (this.newVLRNumber != null) {
             sb.append("newVLRNumber=");
-            sb.append(newVLRNumber.toString());
+            sb.append(newVLRNumber);
             sb.append(", ");
         }
         if (this.newLmsi != null) {
             sb.append("newLmsi=");
-            sb.append(newLmsi.toString());
+            sb.append(newLmsi);
             sb.append(", ");
+        }
+        if (this.reattachRequired) {
+            sb.append("reattachRequired, ");
         }
 
         sb.append("mapProtocolVersion=");

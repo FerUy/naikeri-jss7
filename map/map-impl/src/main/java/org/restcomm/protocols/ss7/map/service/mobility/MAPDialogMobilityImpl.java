@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility;
 
 import java.util.ArrayList;
@@ -147,6 +146,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 /**
  *
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMobility {
@@ -1290,18 +1290,19 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     @Override
     public Long addCancelLocationRequest(IMSI imsi, IMSIWithLMSI imsiWithLmsi, CancellationType cancellationType,
             MAPExtensionContainer extensionContainer, TypeOfUpdate typeOfUpdate, boolean mtrfSupportedAndAuthorized,
-            boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber, ISDNAddressString newVLRNumber, LMSI newLmsi)
+            boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber, ISDNAddressString newVLRNumber,
+            LMSI newLmsi, boolean reattachRequired)
             throws MAPException {
 
         return this.addCancelLocationRequest(_Timer_Default, imsi, imsiWithLmsi, cancellationType, extensionContainer,
-                typeOfUpdate, mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, newLmsi);
+                typeOfUpdate, mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, newLmsi, reattachRequired);
     }
 
     @Override
     public Long addCancelLocationRequest(int customInvokeTimeout, IMSI imsi, IMSIWithLMSI imsiWithLmsi,
             CancellationType cancellationType, MAPExtensionContainer extensionContainer, TypeOfUpdate typeOfUpdate,
             boolean mtrfSupportedAndAuthorized, boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber,
-            ISDNAddressString newVLRNumber, LMSI newLmsi) throws MAPException {
+            ISDNAddressString newVLRNumber, LMSI newLmsi, boolean reattachRequired) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.locationCancellationContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version1
@@ -1321,7 +1322,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
         CancelLocationRequestImpl cancelLocationRequest = new CancelLocationRequestImpl(imsi, imsiWithLmsi, cancellationType, extensionContainer,
                 typeOfUpdate, mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, newLmsi,
-                this.mapApplicationContext.getApplicationContextVersion().getVersion());
+                this.mapApplicationContext.getApplicationContextVersion().getVersion(), reattachRequired);
 
         AsnOutputStream aos = new AsnOutputStream();
         cancelLocationRequest.encodeData(aos);

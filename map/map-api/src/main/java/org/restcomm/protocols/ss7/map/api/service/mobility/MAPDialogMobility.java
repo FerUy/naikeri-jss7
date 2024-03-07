@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility;
 
 import java.util.ArrayList;
@@ -98,6 +97,7 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 /**
  *
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public interface MAPDialogMobility extends MAPDialog {
@@ -120,11 +120,11 @@ public interface MAPDialogMobility extends MAPDialog {
     Long addCancelLocationRequest(int customInvokeTimeout, IMSI imsi, IMSIWithLMSI imsiWithLmsi,
             CancellationType cancellationType, MAPExtensionContainer extensionContainer, TypeOfUpdate typeOfUpdate,
             boolean mtrfSupportedAndAuthorized, boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber,
-            ISDNAddressString newVLRNumber, LMSI newLmsi) throws MAPException;
+            ISDNAddressString newVLRNumber, LMSI newLmsi, boolean reattachRequired) throws MAPException;
 
     Long addCancelLocationRequest(IMSI imsi, IMSIWithLMSI imsiWithLmsi, CancellationType cancellationType,
             MAPExtensionContainer extensionContainer, TypeOfUpdate typeOfUpdate, boolean mtrfSupportedAndAuthorized,
-            boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber, ISDNAddressString newVLRNumber, LMSI newLmsi)
+            boolean mtrfSupportedAndNotAuthorized, ISDNAddressString newMSCNumber, ISDNAddressString newVLRNumber, LMSI newLmsi, boolean reattachRequired)
             throws MAPException;
 
     void addCancelLocationResponse(long invokeId, MAPExtensionContainer extensionContainer) throws MAPException;

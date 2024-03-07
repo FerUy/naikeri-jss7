@@ -626,8 +626,8 @@ public class Client extends EventTestHarness {
                 AddressNature.network_specific_number, NumberingPlan.national, "999000");
         SMDeliveryOutcome sMDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
         Integer sbsentSubscriberDiagnosticSM = 555;
-        Boolean gprsSupportIndicator = true;
-        Boolean deliveryOutcomeIndicator = true;
+        boolean gprsSupportIndicator = true;
+        boolean deliveryOutcomeIndicator = true;
         SMDeliveryOutcome additionalSMDeliveryOutcome = SMDeliveryOutcome.successfulTransfer;
         Integer additionalAbsentSubscriberDiagnosticSM = 444;
         clientDialogSms.addReportSMDeliveryStatusRequest(msisdn1, serviceCentreAddress, sMDeliveryOutcome,
@@ -718,7 +718,7 @@ public class Client extends EventTestHarness {
 
         this.mapProvider.getMAPServiceMobility().activate();
 
-        MAPApplicationContext appCnt = null;
+        MAPApplicationContext appCnt;
 
         appCnt = MAPApplicationContext.getInstance(MAPApplicationContextName.infoRetrievalContext,
                 MAPApplicationContextVersion.version2);
@@ -738,7 +738,7 @@ public class Client extends EventTestHarness {
 
         this.mapProvider.getMAPServiceMobility().activate();
 
-        MAPApplicationContext appCnt = null;
+        MAPApplicationContext appCnt;
 
         appCnt = MAPApplicationContext.getInstance(MAPApplicationContextName.networkLocUpContext,
                 MAPApplicationContextVersion.version3);
@@ -766,7 +766,7 @@ public class Client extends EventTestHarness {
 
         this.mapProvider.getMAPServiceMobility().activate();
 
-        MAPApplicationContext appCnt = null;
+        MAPApplicationContext appCnt;
 
         appCnt = MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext,
                 MAPApplicationContextVersion.version3);
@@ -795,9 +795,10 @@ public class Client extends EventTestHarness {
         ISDNAddressString newVLRNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                 "22229");
         LMSI newLmsi = this.mapParameterFactory.createLMSI(new byte[] { 0, 3, 98, 39 });
+        boolean reattachRequired = false;
 
         clientDialogMobility.addCancelLocationRequest(imsi, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
-                mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, newLmsi);
+                mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, newLmsi, reattachRequired);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelLocation, null, sequence++));
         clientDialogMobility.send();
@@ -808,7 +809,7 @@ public class Client extends EventTestHarness {
 
         this.mapProvider.getMAPServiceMobility().activate();
 
-        MAPApplicationContext appCnt = null;
+        MAPApplicationContext appCnt;
 
         appCnt = MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext,
                 MAPApplicationContextVersion.version2);
@@ -818,8 +819,9 @@ public class Client extends EventTestHarness {
 
         IMSI imsi = new IMSIImpl("1111122222");
         LMSI lmsi = this.mapParameterFactory.createLMSI(new byte[] { 0, 3, 98, 39 });
+        boolean reattachRequired = false;
 
-        clientDialogMobility.addCancelLocationRequest(imsi, null, null, null, null, false, false, null, null, null);
+        clientDialogMobility.addCancelLocationRequest(imsi, null, null, null, null, false, false, null, null, null, reattachRequired);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelLocation, null, sequence++));
         clientDialogMobility.send();
@@ -1097,9 +1099,9 @@ public class Client extends EventTestHarness {
                 "22225");
 
         clientDialogCallHandling.addProvideRoamingNumberRequest(imsi, mscNumber, msisdn, lmsi, gsmBearerCapability,
-                networkSignalInfo, suppressionOfAnnouncement, gmscAddress, null, orInterrogation, null, null, ccbsCall, null,
-                null, orNotSupportedInGMSC, prePagingSupported, longFTNSupported, suppressVtCsi, null, mtRoamingRetrySupported,
-                null, null, mtrfIndicator, null);
+                networkSignalInfo, suppressionOfAnnouncement, gmscAddress, callReferenceNumber, orInterrogation, extensionContainer, alertingPattern, ccbsCall, supportedCamelPhasesInInterrogatingNode,
+                additionalSignalInfo, orNotSupportedInGMSC, prePagingSupported, longFTNSupported, suppressVtCsi, offeredCamel4CSIsInInterrogatingNode, mtRoamingRetrySupported,
+                pagingArea, callPriority, mtrfIndicator, oldMSCNumber);
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProvideRoamingNumber, null, sequence++));
         clientDialogCallHandling.send();
 
@@ -1109,7 +1111,7 @@ public class Client extends EventTestHarness {
 
         this.mapProvider.getMAPServiceCallHandling().activate();
 
-        MAPApplicationContext appCnt = null;
+        MAPApplicationContext appCnt;
 
         appCnt = MAPApplicationContext.getInstance(MAPApplicationContextName.roamingNumberEnquiryContext,
                 MAPApplicationContextVersion.version2);
@@ -1120,8 +1122,7 @@ public class Client extends EventTestHarness {
         ArrayList<MAPPrivateExtension> al = new ArrayList<MAPPrivateExtension>();
         al.add(this.mapParameterFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 4 }, new byte[] { 11, 12, 13, 14, 15 }));
         al.add(this.mapParameterFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 6 }, null));
-        al.add(this.mapParameterFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 5 }, new byte[] { 21, 22, 23, 24, 25,
-                26 }));
+        al.add(this.mapParameterFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 5 }, new byte[] { 21, 22, 23, 24, 25, 26 }));
 
         IMSI imsi = new IMSIImpl("011220200198227");
         ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22228");
@@ -2094,11 +2095,11 @@ public class Client extends EventTestHarness {
     }
 
     public void debug(String message) {
-        this.logger.debug(message);
+        logger.debug(message);
     }
 
     public void error(String message, Exception e) {
-        this.logger.error(message, e);
+        logger.error(message, e);
     }
 
 }

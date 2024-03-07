@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement;
 
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
@@ -31,19 +30,20 @@ RESULT ERRORS {
 
 
 MAP V3: CancelLocationArg ::= [3] SEQUENCE {
-  identity                       Identity,
-  cancellationType               CancellationType OPTIONAL,
-  extensionContainer             ExtensionContainer OPTIONAL,
-  ...,
-  typeOfUpdate                   [0] TypeOfUpdate OPTIONAL,
-  mtrf-SupportedAndAuthorized    [1] NULL OPTIONAL,
-  mtrf-SupportedAndNotAuthorized [2] NULL OPTIONAL,
-  newMSC-Number                  [3] ISDN-AddressString OPTIONAL,
-  newVLR-Number                  [4] ISDN-AddressString OPTIONAL,
-  new-lmsi                       [5] LMSI OPTIONAL
-}
--- mtrf-SupportedAndAuthorized and mtrf-SupportedAndNotAuthorized shall not
--- both be present
+ identity                       Identity,
+ cancellationType               CancellationType        OPTIONAL,
+ extensionContainer             ExtensionContainer      OPTIONAL,
+ ...,
+ typeOfUpdate                   [0] TypeOfUpdate        OPTIONAL,
+ mtrf-SupportedAndAuthorized    [1] NULL                OPTIONAL,
+ mtrf-SupportedAndNotAuthorized [2] NULL                OPTIONAL,
+ newMSC-Number                  [3] ISDN-AddressString  OPTIONAL,
+ newVLR-Number                  [4] ISDN-AddressString  OPTIONAL,
+ new-lmsi                       [5] LMSI                OPTIONAL,
+ reattach-Required              [6] NULL                OPTIONAL
+ }
+ --mtrf-SupportedAndAuthorized and mtrf-SupportedAndNotAuthorized shall not
+ -- both be present
 
 MAP V2: CancelLocationArg ::= CHOICE {
   imsi            IMSI,
@@ -54,9 +54,10 @@ Identity ::= CHOICE {
   imsi            IMSI,
   imsi-WithLMSI   IMSI-WithLMSI
 }
- *
+
  *
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public interface CancelLocationRequest extends MobilityMessage {
@@ -83,4 +84,5 @@ public interface CancelLocationRequest extends MobilityMessage {
 
     long getMapProtocolVersion();
 
+    boolean isReattachRequired();
 }
