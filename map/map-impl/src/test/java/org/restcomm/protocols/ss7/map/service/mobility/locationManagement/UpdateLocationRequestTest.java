@@ -26,13 +26,6 @@ import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ADDInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.LACImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.LocationAreaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.PagingAreaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.UpdateLocationRequestImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.VLRCapabilityImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -238,7 +231,7 @@ public class UpdateLocationRequestTest {
         VLRCapability vlrCap = new VLRCapabilityImpl(null, null, false, null, null, false, supportedLCSCapabilitySets, null,
                 null, false, false);
         UpdateLocationRequestImpl asc = new UpdateLocationRequestImpl(3, imsi, mscNumber, null, vlrNumber, null, null, vlrCap,
-                false, false, null, null, null, false, false);
+                false, false, null, null, null, false, false, null, null);
         // long mapProtocolVersion, IMSI imsi, ISDNAddressString mscNumber, ISDNAddressString roamingNumber,
         // ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer, VlrCapability vlrCapability,
         // boolean informPreviousNetworkEntity,
@@ -262,7 +255,7 @@ public class UpdateLocationRequestTest {
         LMSIImpl lmsi = new LMSIImpl(getLmsiData());
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
         asc = new UpdateLocationRequestImpl(3, imsi, mscNumber, null, vlrNumber, lmsi, extensionContainer, vlrCap, true, true,
-                null, null, null, true, true);
+                null, null, null, true, true, null, null);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -280,7 +273,7 @@ public class UpdateLocationRequestTest {
         locationAreas.add(la);
         PagingAreaImpl pagingArea = new PagingAreaImpl(locationAreas);
         asc = new UpdateLocationRequestImpl(3, imsi, mscNumber, null, vlrNumber, lmsi, null, vlrCap, true, true, vGmlcAddress,
-                addInfo, pagingArea, true, true);
+                addInfo, pagingArea, true, true, null, null);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -294,7 +287,7 @@ public class UpdateLocationRequestTest {
                 NumberingPlan.ISDN, "22220");
         vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22221");
         asc = new UpdateLocationRequestImpl(1, imsi, null, roamingNumberNumber, vlrNumber, null, null, null, false, false,
-                null, null, null, false, false);
+                null, null, null, false, false, null, null);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);

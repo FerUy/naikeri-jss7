@@ -755,7 +755,7 @@ public class Client extends EventTestHarness {
         IMEI imeisv = this.mapParameterFactory.createIMEI("987654321098765");
         ADDInfo addInfo = this.mapParameterFactory.createADDInfo(imeisv, false);
         clientDialogMobility.addUpdateLocationRequest(imsi, mscNumber, null, vlrNumber, lmsi, null, null, true, false, null,
-                addInfo, null, false, true);
+                addInfo, null, false, true, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.UpdateLocation, null, sequence++));
         clientDialogMobility.send();

@@ -41,7 +41,9 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AD
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
@@ -369,17 +371,19 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     public Long addUpdateLocationRequest(IMSI imsi, ISDNAddressString mscNumber, ISDNAddressString roamingNumber,
             ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer, VLRCapability vlrCapability,
             boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE, GSNAddress vGmlcAddress, ADDInfo addInfo,
-            PagingArea pagingArea, boolean skipSubscriberDataUpdate, boolean restorationIndicator) throws MAPException {
+            PagingArea pagingArea, boolean skipSubscriberDataUpdate, boolean restorationIndicator, EquivalentPLMNList EPLMNList,
+            NetworkNodeDiameterAddress mmeDiameterAddress) throws MAPException {
         return addUpdateLocationRequest(_Timer_Default, imsi, mscNumber, roamingNumber, vlrNumber, lmsi, extensionContainer,
                 vlrCapability, informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
-                skipSubscriberDataUpdate, restorationIndicator);
+                skipSubscriberDataUpdate, restorationIndicator, EPLMNList, mmeDiameterAddress);
     }
 
     public Long addUpdateLocationRequest(int customInvokeTimeout, IMSI imsi, ISDNAddressString mscNumber,
-            ISDNAddressString roamingNumber, ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
-            VLRCapability vlrCapability, boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE,
-            GSNAddress vGmlcAddress, ADDInfo addInfo, PagingArea pagingArea, boolean skipSubscriberDataUpdate,
-            boolean restorationIndicator) throws MAPException {
+                                         ISDNAddressString roamingNumber, ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
+                                         VLRCapability vlrCapability, boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE,
+                                         GSNAddress vGmlcAddress, ADDInfo addInfo, PagingArea pagingArea, boolean skipSubscriberDataUpdate,
+                                         boolean restorationIndicator, EquivalentPLMNList EPLMNList,
+                                         NetworkNodeDiameterAddress mmeDiameterAddress) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.networkLocUpContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version1
@@ -400,7 +404,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         UpdateLocationRequestImpl updateLocationRequest = new UpdateLocationRequestImpl(this.mapApplicationContext.getApplicationContextVersion().getVersion(),
                 imsi, mscNumber, roamingNumber, vlrNumber, lmsi, extensionContainer, vlrCapability,
                 informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
-                skipSubscriberDataUpdate, restorationIndicator);
+                skipSubscriberDataUpdate, restorationIndicator, EPLMNList, mmeDiameterAddress);
         AsnOutputStream aos = new AsnOutputStream();
         updateLocationRequest.encodeData(aos);
 

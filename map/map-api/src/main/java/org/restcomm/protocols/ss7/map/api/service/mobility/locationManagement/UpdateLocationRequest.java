@@ -27,7 +27,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;
  * informPreviousNetworkEntity [11] NULL OPTIONAL, cs-LCS-NotSupportedByUE [12] NULL OPTIONAL, v-gmlc-Address [2] GSN-Address
  * OPTIONAL, add-info [13] ADD-Info OPTIONAL, pagingArea [14] PagingArea OPTIONAL, skipSubscriberDataUpdate [15] NULL OPTIONAL,
  * -- The skipSubscriberDataUpdate parameter in the UpdateLocationArg and the ADD-Info -- structures carry the same semantic.
- * restorationIndicator [16] NULL OPTIONAL }
+ * restorationIndicator [16] NULL OPTIONAL, eplmn-List [3] EPLMN-List OPTIONAL, mme-DiameterAddress [4] NetworkNodeDiameterAddress OPTIONAL}
  *
  * MAP V2: UpdateLocationArg ::= SEQUENCE { imsi IMSI, locationInfo LocationInfo, vlr-Number ISDN-AddressString, lmsi [10] LMSI
  * OPTIONAL, ...}
@@ -36,6 +36,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;
  * msc-Number [1] ISDN-AddressString}
  *
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public interface UpdateLocationRequest extends MobilityMessage {
@@ -68,6 +69,9 @@ public interface UpdateLocationRequest extends MobilityMessage {
 
     boolean getRestorationIndicator();
 
-    long getMapProtocolVersion();
+    EquivalentPLMNList getEPLMNList();
 
+    NetworkNodeDiameterAddress getMmeDiameterAddress();
+
+    long getMapProtocolVersion();
 }

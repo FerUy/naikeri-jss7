@@ -1,8 +1,4 @@
-
-package org.restcomm.protocols.ss7.map.service.mobility.authentication;
-
-import java.io.IOException;
-import java.util.ArrayList;
+package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -11,30 +7,34 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
-import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationQuintuplet;
-import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.QuintupletList;
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
+import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
- * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class QuintupletListImpl implements QuintupletList, MAPAsnPrimitive {
+public class EquivalentPLMNListImpl implements EquivalentPLMNList, MAPAsnPrimitive {
 
-    public static final String _PrimitiveName = "QuintupletList";
+    public static final String _PrimitiveName = "EquivalentPLMNList";
 
-    private ArrayList<AuthenticationQuintuplet> quintupletList;
+    private ArrayList<PlmnId> equivalentPLMNList;
 
-    public QuintupletListImpl() {
+    public EquivalentPLMNListImpl() {
     }
 
-    public QuintupletListImpl(ArrayList<AuthenticationQuintuplet> quintupletList) {
-        this.quintupletList = quintupletList;
+    public EquivalentPLMNListImpl(ArrayList<PlmnId> equivalentPLMNList) {
+        this.equivalentPLMNList = equivalentPLMNList;
     }
 
-    public ArrayList<AuthenticationQuintuplet> getAuthenticationQuintuplets() {
-        return quintupletList;
+    public ArrayList<PlmnId> getEquivalentPLMNList() {
+        return equivalentPLMNList;
     }
 
     public int getTag() throws MAPException {
@@ -75,37 +75,35 @@ public class QuintupletListImpl implements QuintupletList, MAPAsnPrimitive {
     }
 
     private void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
-        this.quintupletList = new ArrayList<AuthenticationQuintuplet>();
+
+        this.equivalentPLMNList = new ArrayList<>();
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
-        while (true) {
-            if (ais.available() == 0)
-                break;
+
+        while (ais.available() != 0) {
 
             int tag = ais.readTag();
             if (ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
 
-                switch (tag) {
-                    case Tag.SEQUENCE:
-                        // authenticationTriplet
-                        if (ais.isTagPrimitive())
-                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter AuthenticationQuintuplet is primitive",
-                                    MAPParsingComponentExceptionReason.MistypedParameter);
-                        AuthenticationQuintupletImpl at = new AuthenticationQuintupletImpl();
-                        at.decodeAll(ais);
-                        this.quintupletList.add(at);
-                        break;
+                if (tag == Tag.SEQUENCE) {
+                    if (ais.isTagPrimitive())
+                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                + ": Parameter EquivalentPLMNList is primitive",
+                                MAPParsingComponentExceptionReason.MistypedParameter);
+                    PlmnIdImpl plmnId = new PlmnIdImpl();
+                    plmnId.decodeAll(ais);
+                    this.equivalentPLMNList.add(plmnId);
+                } else {
+                    ais.advanceElement();
                 }
             } else {
-
                 ais.advanceElement();
             }
         }
 
-        if (this.quintupletList.size() < 1 || this.quintupletList.size() > 5) {
+        if (this.equivalentPLMNList.size() < 1 || this.equivalentPLMNList.size() > 50) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": quintupletList size must be from 1 to 5, found:" + this.quintupletList.size(),
+                    + ": EquivalentPLMNList size must be from 1 to 50, found:" + this.equivalentPLMNList.size(),
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
     }
@@ -126,24 +124,28 @@ public class QuintupletListImpl implements QuintupletList, MAPAsnPrimitive {
     }
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
-        if (this.quintupletList == null || this.quintupletList.size() < 1 || this.quintupletList.size() > 5) {
-            throw new MAPException("QuintupletList list must contain from 1 to 5 elements");
-        }
+        try {
+            if (this.equivalentPLMNList == null || this.equivalentPLMNList.size() < 1 || this.equivalentPLMNList.size() > 50) {
+                throw new MAPException("EquivalentPLMNList list must contain from 1 to 50 elements");
+            }
 
-        for (AuthenticationQuintuplet at : this.quintupletList) {
-            ((AuthenticationQuintupletImpl) at).encodeAll(asnOutputStream);
+            for (PlmnId plmnId : this.equivalentPLMNList) {
+                ((PlmnIdImpl) plmnId).encodeAll(asnOutputStream);
+            }
+        } catch (MAPException e) {
+            throw new MAPException("MAPException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("QuintupletList [");
+        sb.append("EquivalentPLMNList [");
 
-        if (this.quintupletList != null) {
-            for (AuthenticationQuintuplet at : this.quintupletList) {
-                if (at != null) {
-                    sb.append(at);
+        if (this.equivalentPLMNList != null) {
+            for (PlmnId plmnId : this.equivalentPLMNList) {
+                if (plmnId != null) {
+                    sb.append(plmnId);
                     sb.append(", ");
                 }
             }

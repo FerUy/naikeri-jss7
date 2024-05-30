@@ -57,7 +57,9 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AD
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSResponse;
@@ -876,10 +878,12 @@ public class Client extends TestHarnessMobilityManagement {
             PagingArea pagingArea = null;
             boolean skipSubscriberDataUpdate = false;
             boolean restorationIndicator = false;
+            EquivalentPLMNList ePLMNList = null;
+            NetworkNodeDiameterAddress mmeDiameterAddress = null;
 
             mapDialogMobility.addUpdateLocationRequest(imsi, mscNumber, roamingNumber, vlrNumber, lmsi, mapExtensionContainer,
                     vlrCapability, informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
-                    skipSubscriberDataUpdate, restorationIndicator);
+                    skipSubscriberDataUpdate, restorationIndicator, ePLMNList, mmeDiameterAddress);
 
             mapDialogMobility.send();
 
