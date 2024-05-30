@@ -38,6 +38,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
+import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationQuintuplet;
@@ -94,12 +95,15 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
+import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.VLRCapabilityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EquivalentPLMNListImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.NetworkNodeDiameterAddressImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
@@ -499,7 +503,7 @@ public class Client extends TestHarnessMobilityManagement {
             client.terminate();
 
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -732,7 +736,7 @@ public class Client extends TestHarnessMobilityManagement {
                 logger.warn("Completed 10000 Dialogs, dialogs per second: " + (float) (10000 / sec));
             }
         } else {
-            if (this.endCount >= NDIALOGS && !endReportPrinted) {
+            if (!endReportPrinted) {
                 endReportPrinted = true;
                 long current = System.currentTimeMillis();
                 logger.warn("Start Time = " + start);
@@ -878,8 +882,20 @@ public class Client extends TestHarnessMobilityManagement {
             PagingArea pagingArea = null;
             boolean skipSubscriberDataUpdate = false;
             boolean restorationIndicator = false;
-            EquivalentPLMNList ePLMNList = null;
-            NetworkNodeDiameterAddress mmeDiameterAddress = null;
+            ArrayList<PlmnId> PLMNList = new ArrayList<>();
+            PlmnId plmnId1 = new PlmnIdImpl(262,1);
+            PlmnId plmnId2 = new PlmnIdImpl(262,999);
+            PLMNList.add(plmnId1);
+            PLMNList.add(plmnId2);
+            EquivalentPLMNList ePLMNList = new EquivalentPLMNListImpl(PLMNList);
+            byte[] mmeNameBytes = {0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
+                    0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
+                    0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
+            byte[] mmeRealmBytes = {0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34,
+                    0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
+            DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNameBytes);
+            DiameterIdentity mmeRealm = new DiameterIdentityImpl(mmeRealmBytes);
+            NetworkNodeDiameterAddress mmeDiameterAddress = new NetworkNodeDiameterAddressImpl(mmeName, mmeRealm);
 
             mapDialogMobility.addUpdateLocationRequest(imsi, mscNumber, roamingNumber, vlrNumber, lmsi, mapExtensionContainer,
                     vlrCapability, informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
