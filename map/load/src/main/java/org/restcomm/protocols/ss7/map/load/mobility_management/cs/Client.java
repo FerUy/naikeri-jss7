@@ -99,11 +99,13 @@ import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperChargerInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.VLRCapabilityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EquivalentPLMNListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.NetworkNodeDiameterAddressImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
@@ -131,6 +133,8 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
 /**
  * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
@@ -257,6 +261,7 @@ public class Client extends TestHarnessMobilityManagement {
 
         this.router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
         this.router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
+        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -857,21 +862,29 @@ public class Client extends TestHarnessMobilityManagement {
             ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
             LMSI lmsi = null;
             MAPExtensionContainer mapExtensionContainer = null;
-            SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
-            boolean solsaSupportIndicator = false;
-            ISTSupportIndicator istSupportIndicator = null;
-            SuperChargerInfo superChargerSupportedInServingNetworkEntity = null;
-            boolean longFtnSupported = false;
-            SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, true);
-            OfferedCamel4CSIs offeredCamel4CSIs = null;
+            SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, false, false);
+            boolean solsaSupportIndicator = true;
+            ISTSupportIndicator istSupportIndicator = ISTSupportIndicator.istCommandSupported;
+            SuperChargerInfo superChargerSupportedInServingNetworkEntity = new SuperChargerInfoImpl(true);
+            boolean longFtnSupported = true;
+            SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, false);
+            boolean oCsi = false;
+            boolean dCsi = false;
+            boolean vtCsi = false;
+            boolean tCsi = false;
+            boolean mtSMSCsi = true;
+            boolean mgCsi = true;
+            boolean psiEnhancements = true;
+            OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(oCsi,dCsi,vtCsi,tCsi, mtSMSCsi, mgCsi, psiEnhancements);
             boolean utran = true;
             boolean geran = true;
             boolean gan = false;
             boolean i_hspa_evolution = true;
             boolean e_utran = true;
-            SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran);
-            boolean longGroupIDSupported = false;
-            boolean mtRoamingForwardingSupported = false;
+            boolean nb_iot = true;
+            SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
+            boolean longGroupIDSupported = true;
+            boolean mtRoamingForwardingSupported = true;
             VLRCapability vlrCapability = new VLRCapabilityImpl(supportedCamelPhases, mapExtensionContainer, solsaSupportIndicator,
                     istSupportIndicator, superChargerSupportedInServingNetworkEntity, longFtnSupported, supportedLCSCapabilitySets,
                     offeredCamel4CSIs, supportedRATTypesIndicator, longGroupIDSupported, mtRoamingForwardingSupported);

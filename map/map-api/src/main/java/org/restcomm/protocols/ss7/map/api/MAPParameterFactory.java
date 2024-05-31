@@ -667,7 +667,7 @@ public interface MAPParameterFactory {
             boolean mgCsi, boolean psiEnhancements);
 
     SupportedRATTypes createSupportedRATTypes(boolean utran, boolean geran, boolean gan, boolean i_hspa_evolution,
-            boolean e_utran);
+            boolean e_utran, boolean nb_iot);
 
     ADDInfo createADDInfo(IMEI imeisv, boolean skipSubscriberDataUpdate);
 

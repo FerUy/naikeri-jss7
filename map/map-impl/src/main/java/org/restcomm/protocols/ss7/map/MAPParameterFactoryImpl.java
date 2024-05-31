@@ -1077,8 +1077,8 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
     }
 
     public SupportedRATTypes createSupportedRATTypes(boolean utran, boolean geran, boolean gan, boolean i_hspa_evolution,
-            boolean e_utran) {
-        return new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran);
+            boolean e_utran, boolean nb_iot) {
+        return new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
     }
 
     public ADDInfo createADDInfo(IMEI imeisv, boolean skipSubscriberDataUpdate) {

@@ -80,7 +80,7 @@ public class SGSNCapabilityTest {
         SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, true);
         OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(true, true, true, true, true, true, true);
         boolean smsCallBarringSupportIndicator = true;
-        SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(true, true, true, true, true);
+        SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(true, true, true, true, true, false);
         SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(true, true, true, true, true, true, true, true, true,
                 true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
         boolean tAdsDataRetrieval = true;

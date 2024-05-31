@@ -22,10 +22,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPPrivateExtensionImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperChargerInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.VLRCapabilityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.testng.annotations.Test;
@@ -33,7 +29,7 @@ import org.testng.annotations.Test;
 public class VLRCapabilityTest {
 
     private byte[] getEncodedData() {
-        return new byte[] { 48, 11, (byte) 128, 2, 4, (byte) 192, (byte) 129, 1, 1, (byte) 133, 2, 3, (byte) 240 };
+        return new byte[] {48, 11, (byte) 0x80, 2, 4, (byte) 0xc0, (byte) 0x81, 1, 1, (byte) 0x85, 2, 3, (byte) 0xf0};
     }
 
     private byte[] getEncodedDataEC() {
@@ -54,7 +50,8 @@ public class VLRCapabilityTest {
     }
 
     private byte[] getEncodedDataFull() {
-        return new byte[] { 48, 16, -126, 0, -124, 0, -122, 2, 1, 14, -121, 2, 3, 80, -120, 0, -119, 0 };
+        return new byte[] { 48, 16, (byte) 0x82, 0x00, (byte) 0x84, 0x00, (byte) 0x86, 0x02, 0x01, 0x0e,
+                (byte) 0x87, 0x02, 0x02, (byte) 0xdc, (byte) 0x88, 0x00, (byte) 0x89, 0x00};
     }
 
     @Test(groups = { "functional.decode" })
@@ -190,11 +187,12 @@ public class VLRCapabilityTest {
 
         SupportedRATTypes rat = asc.getSupportedRATTypesIndicator();
         // boolean utran, boolean geran, boolean gan, boolean i_hspa_evolution, boolean e_utran
-        assertFalse(rat.getUtran());
+        assertTrue(rat.getUtran());
         assertTrue(rat.getGeran());
         assertFalse(rat.getGan());
         assertTrue(rat.getIHspaEvolution());
-        assertFalse(rat.getEUtran());
+        assertTrue(rat.getEUtran());
+        assertTrue(rat.getNbIot());
 
         assertTrue(asc.getLongGroupIDSupported());
         assertTrue(asc.getMtRoamingForwardingSupported());
@@ -246,7 +244,7 @@ public class VLRCapabilityTest {
         assertTrue(Arrays.equals(rawData, encodedData));
 
         OfferedCamel4CSIsImpl offeredCamel4CSIs = new OfferedCamel4CSIsImpl(false, false, false, false, true, true, true);
-        SupportedRATTypesImpl rat = new SupportedRATTypesImpl(false, true, false, true, false);
+        SupportedRATTypesImpl rat = new SupportedRATTypesImpl(true, true, false, true, true, true);
         asc = new VLRCapabilityImpl(null, null, true, null, null, true, null, offeredCamel4CSIs, rat, true, true);
 
         asnOS = new AsnOutputStream();
