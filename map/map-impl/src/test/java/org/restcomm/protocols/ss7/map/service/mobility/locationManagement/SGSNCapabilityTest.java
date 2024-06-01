@@ -71,16 +71,14 @@ public class SGSNCapabilityTest {
     @Test(groups = { "functional.decode", "primitives" })
     public void testEncode() throws Exception {
         boolean solsaSupportIndicator = true;
-        ;
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
         SuperChargerInfo superChargerSupportedInServingNetworkEntity = new SuperChargerInfoImpl(true);
-        ;
         boolean gprsEnhancementsSupportIndicator = true;
         SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
         SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, true);
         OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(true, true, true, true, true, true, true);
         boolean smsCallBarringSupportIndicator = true;
-        SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(true, true, true, true, true, false);
+        SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(true, true, true, true, true, true);
         SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(true, true, true, true, true, true, true, true, true,
                 true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
         boolean tAdsDataRetrieval = true;
@@ -94,7 +92,6 @@ public class SGSNCapabilityTest {
         prim.encodeAll(asn);
 
         assertTrue(Arrays.equals(asn.toByteArray(), this.getData()));
-
     }
 
 }

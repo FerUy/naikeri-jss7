@@ -46,11 +46,13 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IM
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.TypeOfUpdate;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UESRVCCCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.VLRCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CAMELSubscriptionInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallBarringData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallForwardingData;
@@ -1511,7 +1513,10 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             boolean informPreviousNetworkEntity, boolean psLCSNotSupportedByUE, GSNAddress vGmlcAddress, ADDInfo addInfo,
             EPSInfo epsInfo, boolean servingNodeTypeIndicator, boolean skipSubscriberDataUpdate, UsedRATType usedRATType,
             boolean gprsSubscriptionDataNotNeeded, boolean nodeTypeIndicator, boolean areaRestricted,
-            boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability)
+            boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
+            EquivalentPLMNList ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
+            boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
+            boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList)
             throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.gprsLocationUpdateContext)
@@ -1532,7 +1537,8 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
                 extensionContainer, sgsnCapability, informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo,
                 epsInfo, servingNodeTypeIndicator, skipSubscriberDataUpdate, usedRATType, gprsSubscriptionDataNotNeeded,
                 nodeTypeIndicator, areaRestricted, ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability,
-                this.mapApplicationContext.getApplicationContextVersion().getVersion());
+                ePLMNList, mmeNumberForMTSMS, smsRegisterRequest, smsOnly, sgsnName, sgsnRealm, lgdSupportIndicator,
+                removalOfMMERegistrationForSMS, adjacentPLMNList, this.mapApplicationContext.getApplicationContextVersion().getVersion());
 
         AsnOutputStream aos = new AsnOutputStream();
         updateGprsLocationRequest.encodeData(aos);
@@ -1564,12 +1570,17 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             boolean psLCSNotSupportedByUE, GSNAddress vGmlcAddress, ADDInfo addInfo, EPSInfo epsInfo,
             boolean servingNodeTypeIndicator, boolean skipSubscriberDataUpdate, UsedRATType usedRATType,
             boolean gprsSubscriptionDataNotNeeded, boolean nodeTypeIndicator, boolean areaRestricted,
-            boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability)
+            boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
+            EquivalentPLMNList ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
+            boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
+            boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList)
             throws MAPException {
         return addUpdateGprsLocationRequest(_Timer_Default, imsi, sgsnNumber, sgsnAddress, extensionContainer, sgsnCapability,
                 informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo, epsInfo, servingNodeTypeIndicator,
                 skipSubscriberDataUpdate, usedRATType, gprsSubscriptionDataNotNeeded, nodeTypeIndicator, areaRestricted,
-                ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability);
+                ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability, ePLMNList, mmeNumberForMTSMS,
+                smsRegisterRequest, smsOnly, sgsnName, sgsnRealm, lgdSupportIndicator, removalOfMMERegistrationForSMS,
+                adjacentPLMNList);
     }
 
     @Override

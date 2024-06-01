@@ -1,7 +1,4 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
-
-import java.io.IOException;
 
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -11,45 +8,37 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedRATTypes;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
+
+import java.io.IOException;
 
 /**
  *
- *
- * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive {
+public class SMSRegisterRequestImpl implements SMSRegisterRequest, MAPAsnPrimitive {
 
-    private static final int _INDEX_utran = 0;
-    private static final int _INDEX_geran = 1;
-    private static final int _INDEX_gan = 2;
-    private static final int _INDEX_i_hspa_evolution = 3;
-    private static final int _INDEX_e_utran = 4;
-    private static final int _INDEX_nb_iot = 5;
+    private static final int _INDEX_SmsRegistrationRequired = 0;
+    private static final int _INDEX_SmsRegistrationNotPreferred = 1;
+    private static final int _INDEX_NoPreference = 2;
 
-    public static final String _PrimitiveName = "SupportedRATTypes";
+    public static final String _PrimitiveName = "SMSRegisterRequest";
 
-    private BitSetStrictLength bitString = new BitSetStrictLength(6);
+    private BitSetStrictLength bitString = new BitSetStrictLength(3);
 
-    public SupportedRATTypesImpl() {
+    public SMSRegisterRequestImpl() {
     }
 
-    public SupportedRATTypesImpl(boolean utran, boolean geran, boolean gan, boolean i_hspa_evolution, boolean e_utran,
-                                 boolean nb_iot) {
-        if (utran)
-            this.bitString.set(_INDEX_utran);
-        if (geran)
-            this.bitString.set(_INDEX_geran);
-        if (gan)
-            this.bitString.set(_INDEX_gan);
-        if (i_hspa_evolution)
-            this.bitString.set(_INDEX_i_hspa_evolution);
-        if (e_utran)
-            this.bitString.set(_INDEX_e_utran);
-        if (nb_iot)
-            this.bitString.set(_INDEX_nb_iot);
+    public SMSRegisterRequestImpl(boolean smsRegistrationRequired, boolean smsRegistrationNotPreferred,
+                                  boolean NoPreference) {
+        if (smsRegistrationRequired)
+            this.bitString.set(_INDEX_SmsRegistrationRequired);
+        if (smsRegistrationNotPreferred)
+            this.bitString.set(_INDEX_SmsRegistrationNotPreferred);
+        if (NoPreference)
+            this.bitString.set(_INDEX_NoPreference);
     }
 
     public int getTag() throws MAPException {
@@ -64,28 +53,16 @@ public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive
         return true;
     }
 
-    public boolean getUtran() {
-        return this.bitString.get(_INDEX_utran);
+    public boolean isSmsRegistrationRequired() {
+        return this.bitString.get(_INDEX_SmsRegistrationRequired);
     }
 
-    public boolean getGeran() {
-        return this.bitString.get(_INDEX_geran);
+    public boolean isSmsRegistrationNotPreferred() {
+        return this.bitString.get(_INDEX_SmsRegistrationNotPreferred);
     }
 
-    public boolean getGan() {
-        return this.bitString.get(_INDEX_gan);
-    }
-
-    public boolean getIHspaEvolution() {
-        return this.bitString.get(_INDEX_i_hspa_evolution);
-    }
-
-    public boolean getEUtran() {
-        return this.bitString.get(_INDEX_e_utran);
-    }
-
-    public boolean getNbIot() {
-        return this.bitString.get(_INDEX_nb_iot);
+    public boolean isNoPreference() {
+        return this.bitString.get(_INDEX_NoPreference);
     }
 
     public void decodeAll(AsnInputStream asnInputStream) throws MAPParsingComponentException {
@@ -163,7 +140,7 @@ public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SupportedRATTypesImpl other = (SupportedRATTypesImpl) obj;
+        SMSRegisterRequestImpl other = (SMSRegisterRequestImpl) obj;
         if (bitString == null) {
             if (other.bitString != null)
                 return false;
@@ -177,18 +154,12 @@ public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive
         StringBuilder sb = new StringBuilder();
         sb.append("SupportedRATTypes [");
 
-        if (getUtran())
-            sb.append("utran, ");
-        if (getGeran())
-            sb.append("geran, ");
-        if (getGan())
-            sb.append("gan, ");
-        if (getIHspaEvolution())
-            sb.append("i_hspa_evolution, ");
-        if (getEUtran())
-            sb.append("e-utran, ");
-        if (getNbIot())
-            sb.append("nb-iot");
+        if (isSmsRegistrationRequired())
+            sb.append("sms-registration-required , ");
+        if (isSmsRegistrationNotPreferred())
+            sb.append("sms-registration-not-preferred, ");
+        if (isNoPreference())
+            sb.append("no-preference, ");
 
         sb.append("]");
 

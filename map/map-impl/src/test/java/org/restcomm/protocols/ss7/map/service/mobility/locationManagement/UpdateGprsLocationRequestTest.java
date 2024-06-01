@@ -10,14 +10,18 @@ import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
+import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UESRVCCCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.primitives.GSNAddressImpl;
@@ -25,11 +29,6 @@ import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ADDInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EPSInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ISRInformationImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SGSNCapabilityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.UpdateGprsLocationRequestImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -111,11 +110,23 @@ public class UpdateGprsLocationRequestTest {
         boolean ueReachableIndicator = true;
         boolean epsSubscriptionDataNotNeeded = true;
         UESRVCCCapability uesrvccCapability = UESRVCCCapability.ueSrvccSupported;
+        EquivalentPLMNList ePLMNList = null;
+        ISDNAddressString mmeNumberForMTSMS = null;
+        SMSRegisterRequest smsRegisterRequest = null;
+        boolean smsOnly = false;
+        DiameterIdentity sgsnName = null;
+        DiameterIdentity sgsnRealm = null;
+        boolean lgdSupportIndicator = false;
+        boolean removalOfMMERegistrationForSMS = false;
+        AdjacentPLMNList adjacentPLMNList = null;
+        long mapProtocolVersion = 3;
 
         UpdateGprsLocationRequestImpl prim = new UpdateGprsLocationRequestImpl(imsi, sgsnNumber, sgsnAddress,
                 extensionContainer, sgsnCapability, informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo,
                 epsInfo, servingNodeTypeIndicator, skipSubscriberDataUpdate, usedRATType, gprsSubscriptionDataNotNeeded,
-                nodeTypeIndicator, areaRestricted, ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability, 3);
+                nodeTypeIndicator, areaRestricted, ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability,
+                ePLMNList, mmeNumberForMTSMS, smsRegisterRequest, smsOnly, sgsnName, sgsnRealm,
+                lgdSupportIndicator, removalOfMMERegistrationForSMS, adjacentPLMNList, mapProtocolVersion);
 
         AsnOutputStream asn = new AsnOutputStream();
         prim.encodeAll(asn);

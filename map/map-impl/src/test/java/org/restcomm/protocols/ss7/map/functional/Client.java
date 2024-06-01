@@ -59,13 +59,16 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.Failur
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LocationArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.TypeOfUpdate;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UESRVCCCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
@@ -903,11 +906,21 @@ public class Client extends EventTestHarness {
         boolean ueReachableIndicator = true;
         boolean epsSubscriptionDataNotNeeded = true;
         UESRVCCCapability uesrvccCapability = UESRVCCCapability.ueSrvccSupported;
+        EquivalentPLMNList ePLMNList = null;
+        ISDNAddressString mmeNumberForMTSMS = null;
+        SMSRegisterRequest smsRegisterRequest = null;
+        boolean smsOnly = false;
+        DiameterIdentity sgsnName = null;
+        DiameterIdentity sgsnRealm = null;
+        boolean lgdSupportIndicator = false;
+        boolean removalOfMMERegistrationForSMS = false;
+        AdjacentPLMNList adjacentPLMNList = null;
 
         clientDialogMobility.addUpdateGprsLocationRequest(imsi, sgsnNumber, sgsnAddress, extensionContainer, sgsnCapability,
                 informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo, epsInfo, servingNodeTypeIndicator,
                 skipSubscriberDataUpdate, usedRATType, gprsSubscriptionDataNotNeeded, nodeTypeIndicator, areaRestricted,
-                ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability);
+                ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability,ePLMNList, mmeNumberForMTSMS, smsRegisterRequest, smsOnly, sgsnName, sgsnRealm,
+                lgdSupportIndicator, removalOfMMERegistrationForSMS, adjacentPLMNList);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.UpdateGprsLocation, null, sequence++));
         clientDialogMobility.send();

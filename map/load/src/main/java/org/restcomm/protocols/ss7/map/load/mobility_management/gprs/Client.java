@@ -1,4 +1,4 @@
-package org.restcomm.protocols.ss7.map.load.mobility_management.cs;
+package org.restcomm.protocols.ss7.map.load.mobility_management.gprs;
 
 import com.google.common.util.concurrent.RateLimiter;
 import org.apache.log4j.Logger;
@@ -31,23 +31,22 @@ import org.restcomm.protocols.ss7.map.api.dialog.ServingCheckData;
 import org.restcomm.protocols.ss7.map.api.errors.MAPErrorMessage;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
-import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
-import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationQuintuplet;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoResponse;
-import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportRequest;
-import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ForwardCheckSSIndicationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.RestoreDataRequest;
@@ -55,26 +54,28 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.Restore
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SendIdentificationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SendIdentificationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SuperChargerInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedLCSCapabilitySets;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedRATTypes;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UESRVCCCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateGprsLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateGprsLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateLocationResponse;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.VLRCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.oam.ActivateTraceModeRequest_Mobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.oam.ActivateTraceModeResponse_Mobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeInterrogationRequest;
@@ -83,6 +84,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
@@ -93,18 +95,27 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OfferedCamel4CSIs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.RegionalSubscriptionResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
+import org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement;
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
+import org.restcomm.protocols.ss7.map.primitives.GSNAddressImpl;
+import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperChargerInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ADDInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.AdjacentPLMNListImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EPSInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EquivalentPLMNListImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ISRInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SGSNCapabilityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SMSRegisterRequestImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.VLRCapabilityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EquivalentPLMNListImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.NetworkNodeDiameterAddressImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
@@ -134,12 +145,13 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.restcomm.protocols.ss7.map.load.mobility_management.gprs.TestHarnessMobilityManagement.SGSN_SSN;
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
-public class Client extends TestHarnessMobilityManagement {
+public class Client extends org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement {
 
     private static Logger logger = Logger.getLogger(Client.class);
 
@@ -356,100 +368,100 @@ public class Client extends TestHarnessMobilityManagement {
         System.out.println("IpChannelType=" + ipChannelType);
 
         if (args.length >= 4) {
-            TestHarnessMobilityManagement.CLIENT_IP = args[3];
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.CLIENT_IP = args[3];
         }
 
-        System.out.println("CLIENT_IP=" + TestHarnessMobilityManagement.CLIENT_IP);
+        System.out.println("CLIENT_IP=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.CLIENT_IP);
 
         if (args.length >= 5) {
-            TestHarnessMobilityManagement.CLIENT_PORT = Integer.parseInt(args[4]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.CLIENT_PORT = Integer.parseInt(args[4]);
         }
 
-        System.out.println("CLIENT_PORT=" + TestHarnessMobilityManagement.CLIENT_PORT);
+        System.out.println("CLIENT_PORT=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.CLIENT_PORT);
 
         if (args.length >= 6) {
-            TestHarnessMobilityManagement.SERVER_IP = args[5];
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SERVER_IP = args[5];
         }
 
-        System.out.println("SERVER_IP=" + TestHarnessMobilityManagement.SERVER_IP);
+        System.out.println("SERVER_IP=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SERVER_IP);
 
         if (args.length >= 7) {
-            TestHarnessMobilityManagement.SERVER_PORT = Integer.parseInt(args[6]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SERVER_PORT = Integer.parseInt(args[6]);
         }
 
-        System.out.println("SERVER_PORT=" + TestHarnessMobilityManagement.SERVER_PORT);
+        System.out.println("SERVER_PORT=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SERVER_PORT);
 
         if (args.length >= 8) {
-            TestHarnessMobilityManagement.CLIENT_SPC = Integer.parseInt(args[7]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.CLIENT_SPC = Integer.parseInt(args[7]);
         }
 
-        System.out.println("CLIENT_SPC=" + TestHarnessMobilityManagement.CLIENT_SPC);
+        System.out.println("CLIENT_SPC=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.CLIENT_SPC);
 
         if (args.length >= 9) {
-            TestHarnessMobilityManagement.SERVER_SPC = Integer.parseInt(args[8]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SERVER_SPC = Integer.parseInt(args[8]);
         }
 
-        System.out.println("SERVER_SPC=" + TestHarnessMobilityManagement.SERVER_SPC);
+        System.out.println("SERVER_SPC=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SERVER_SPC);
 
         if (args.length >= 10) {
-            TestHarnessMobilityManagement.NETWORK_INDICATOR = Integer.parseInt(args[9]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.NETWORK_INDICATOR = Integer.parseInt(args[9]);
         }
 
-        System.out.println("NETWORK_INDICATOR=" + TestHarnessMobilityManagement.NETWORK_INDICATOR);
+        System.out.println("NETWORK_INDICATOR=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.NETWORK_INDICATOR);
 
         if (args.length >= 11) {
-            TestHarnessMobilityManagement.SERVICE_INDICATOR = Integer.parseInt(args[10]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SERVICE_INDICATOR = Integer.parseInt(args[10]);
         }
 
-        System.out.println("SERVICE_INDICATOR=" + TestHarnessMobilityManagement.SERVICE_INDICATOR);
+        System.out.println("SERVICE_INDICATOR=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SERVICE_INDICATOR);
 
         if (args.length >= 12) {
-            TestHarnessMobilityManagement.SSN = Integer.parseInt(args[11]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SSN = Integer.parseInt(args[11]);
         }
 
-        System.out.println("SSN=" + TestHarnessMobilityManagement.SSN);
+        System.out.println("SSN=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SSN);
 
         if (args.length >= 13) {
-            TestHarnessMobilityManagement.ROUTING_CONTEXT = Integer.parseInt(args[12]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.ROUTING_CONTEXT = Integer.parseInt(args[12]);
         }
 
-        System.out.println("ROUTING_CONTEXT=" + TestHarnessMobilityManagement.ROUTING_CONTEXT);
+        System.out.println("ROUTING_CONTEXT=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.ROUTING_CONTEXT);
 
         if (args.length >= 14) {
-            TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[13]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[13]);
         }
 
-        System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT=" + TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
+        System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
 
         if (args.length >= 15) {
-            TestHarnessMobilityManagement.RAMP_UP_PERIOD = Integer.parseInt(args[14]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.RAMP_UP_PERIOD = Integer.parseInt(args[14]);
         }
 
-        System.out.println("RAMP_UP_PERIOD=" + TestHarnessMobilityManagement.RAMP_UP_PERIOD);
+        System.out.println("RAMP_UP_PERIOD=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.RAMP_UP_PERIOD);
 
         if (args.length >= 16) {
-            TestHarnessMobilityManagement.SCCP_CLIENT_ADDRESS = args[15];
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SCCP_CLIENT_ADDRESS = args[15];
         }
 
-        System.out.println("SCCP_CLIENT_ADDRESS=" + TestHarnessMobilityManagement.SCCP_CLIENT_ADDRESS);
+        System.out.println("SCCP_CLIENT_ADDRESS=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SCCP_CLIENT_ADDRESS);
 
         if (args.length >= 17) {
-            TestHarnessMobilityManagement.SCCP_SERVER_ADDRESS = args[16];
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SCCP_SERVER_ADDRESS = args[16];
         }
 
-        System.out.println("SCCP_SERVER_ADDRESS=" + TestHarnessMobilityManagement.SCCP_SERVER_ADDRESS);
+        System.out.println("SCCP_SERVER_ADDRESS=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SCCP_SERVER_ADDRESS);
 
         if (args.length >= 18) {
-            TestHarnessMobilityManagement.ROUTING_INDICATOR = RoutingIndicator.valueOf(Integer.parseInt(args[17]));
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.ROUTING_INDICATOR = RoutingIndicator.valueOf(Integer.parseInt(args[17]));
         }
 
-        System.out.println("ROUTING_INDICATOR=" + TestHarnessMobilityManagement.ROUTING_INDICATOR);
+        System.out.println("ROUTING_INDICATOR=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.ROUTING_INDICATOR);
 
         if (args.length >= 19) {
-            TestHarnessMobilityManagement.SENDING_MESSAGE_THREAD_COUNT = Integer.parseInt(args[18]);
+            org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SENDING_MESSAGE_THREAD_COUNT = Integer.parseInt(args[18]);
         }
 
-        System.out.println("SENDING_MESSAGE_THREAD_COUNT=" + TestHarnessMobilityManagement.SENDING_MESSAGE_THREAD_COUNT);
+        System.out.println("SENDING_MESSAGE_THREAD_COUNT=" + org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.SENDING_MESSAGE_THREAD_COUNT);
 
         // logger.info("Number of calls to be completed = " + noOfCalls +
         // " Number of concurrent calls to be maintained = " +
@@ -464,7 +476,7 @@ public class Client extends TestHarnessMobilityManagement {
         System.out.println("MAXCONCURRENTDIALOGS=" + MAXCONCURRENTDIALOGS);
 
         final Client client = new Client();
-        client.endCount = TestHarnessMobilityManagement.RAMP_UP_PERIOD;
+        client.endCount = org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement.RAMP_UP_PERIOD;
 
         try {
             client.initializeStack(ipChannelType);
@@ -835,11 +847,11 @@ public class Client extends TestHarnessMobilityManagement {
 
             // Create Dialog
             AddressString originAddressString = this.mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
             AddressString destAddressString = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
 
-            SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+            SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, SGSN_SSN, SCCP_CLIENT_ADDRESS);
             SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
 
             MAPApplicationContextVersion mapAcnVersion = MAPApplicationContextVersion.version3;
@@ -857,16 +869,21 @@ public class Client extends TestHarnessMobilityManagement {
                 imsi = new IMSIImpl("901405105682583");
             }
 
-            ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
-            ISDNAddressString roamingNumber = null;
-            ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
-            LMSI lmsi = null;
-            MAPExtensionContainer mapExtensionContainer = null;
-            SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, false, false);
+            ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                    "491710490000");
+            GSNAddress sgsnAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
+            MAPExtensionContainer extensionContainer = null;
+            boolean utran = true;
+            boolean geran = true;
+            boolean gan = false;
+            boolean i_hspa_evolution = true;
+            boolean e_utran = true;
+            boolean nb_iot = true;
+            SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
             boolean solsaSupportIndicator = true;
-            ISTSupportIndicator istSupportIndicator = ISTSupportIndicator.istCommandSupported;
-            SuperChargerInfo superChargerSupportedInServingNetworkEntity = new SuperChargerInfoImpl(true);
-            boolean longFtnSupported = true;
+            SuperChargerInfo superChargerSupportedInServingNetworkEntity = null;
+            boolean gprsEnhancementsSupportIndicator = false;
+            SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, false, false);
             SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, false);
             boolean oCsi = false;
             boolean dCsi = false;
@@ -876,43 +893,62 @@ public class Client extends TestHarnessMobilityManagement {
             boolean mgCsi = true;
             boolean psiEnhancements = true;
             OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(oCsi,dCsi,vtCsi,tCsi, mtSMSCsi, mgCsi, psiEnhancements);
-            boolean utran = true;
-            boolean geran = true;
-            boolean gan = false;
-            boolean i_hspa_evolution = true;
-            boolean e_utran = true;
-            boolean nb_iot = true;
-            SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
-            boolean longGroupIDSupported = true;
-            boolean mtRoamingForwardingSupported = true;
-            VLRCapability vlrCapability = new VLRCapabilityImpl(supportedCamelPhases, mapExtensionContainer, solsaSupportIndicator,
-                    istSupportIndicator, superChargerSupportedInServingNetworkEntity, longFtnSupported, supportedLCSCapabilitySets,
-                    offeredCamel4CSIs, supportedRATTypesIndicator, longGroupIDSupported, mtRoamingForwardingSupported);
-            boolean informPreviousNetworkEntity = false;
-            boolean csLCSNotSupportedByUE = false;
-            GSNAddress vGmlcAddress = null;
-            ADDInfo addInfo = null;
-            PagingArea pagingArea = null;
-            boolean skipSubscriberDataUpdate = false;
-            boolean restorationIndicator = false;
+            boolean smsCallBarringSupportIndicator = true;
+            SupportedFeatures supportedFeatures = null;
+            boolean tAdsDataRetrieval = false;
+            Boolean homogeneousSupportOfIMSVoiceOverPSSessions = null;
+            SGSNCapability sgsnCapability = new SGSNCapabilityImpl(solsaSupportIndicator, extensionContainer,
+                    superChargerSupportedInServingNetworkEntity, gprsEnhancementsSupportIndicator, supportedCamelPhases,
+                    supportedLCSCapabilitySets, offeredCamel4CSIs, smsCallBarringSupportIndicator, supportedRATTypesIndicator,
+                    supportedFeatures, tAdsDataRetrieval, homogeneousSupportOfIMSVoiceOverPSSessions);
+            boolean informPreviousNetworkEntity = true;
+            boolean psLCSNotSupportedByUE = false;
+            GSNAddress vGmlcAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
+            ADDInfo addInfo = new ADDInfoImpl(new IMEIImpl("12341234"), false);
+            EPSInfo epsInfo = new EPSInfoImpl(new ISRInformationImpl(true, true, true));
+            boolean servingNodeTypeIndicator = true;
+            boolean skipSubscriberDataUpdate = true;
+            UsedRATType usedRATType = UsedRATType.utran;
+            boolean gprsSubscriptionDataNotNeeded = true;
+            boolean nodeTypeIndicator = true;
+            boolean areaRestricted = true;
+            boolean ueReachableIndicator = true;
+            boolean epsSubscriptionDataNotNeeded = true;
+            UESRVCCCapability uesrvccCapability = UESRVCCCapability.ueSrvccSupported;
             ArrayList<PlmnId> PLMNList = new ArrayList<>();
             PlmnId plmnId1 = new PlmnIdImpl(262,1);
             PlmnId plmnId2 = new PlmnIdImpl(262,999);
             PLMNList.add(plmnId1);
             PLMNList.add(plmnId2);
             EquivalentPLMNList ePLMNList = new EquivalentPLMNListImpl(PLMNList);
-            byte[] mmeNameBytes = {0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
+            ISDNAddressString mmeNumberForMTSMS = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                    "491710490001");
+            boolean smsRegistrationRequired = true;
+            boolean smsRegistrationNotPreferred = false;
+            boolean noPreference = false;
+            SMSRegisterRequest smsRegisterRequest = new SMSRegisterRequestImpl(smsRegistrationRequired, smsRegistrationNotPreferred, noPreference);
+            boolean smsOnly = false;
+            byte[] sgsnNameBytes = {0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
                     0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
                     0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
-            byte[] mmeRealmBytes = {0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34,
+            DiameterIdentity sgsnName = new DiameterIdentityImpl(sgsnNameBytes);
+            byte[] sgsnRealmBytes = {0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34,
                     0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
-            DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNameBytes);
-            DiameterIdentity mmeRealm = new DiameterIdentityImpl(mmeRealmBytes);
-            NetworkNodeDiameterAddress mmeDiameterAddress = new NetworkNodeDiameterAddressImpl(mmeName, mmeRealm);
+            DiameterIdentity sgsnRealm = new DiameterIdentityImpl(sgsnRealmBytes);
+            boolean lgdSupportIndicator = false;
+            boolean removalOfMMERegistrationForSMS = false;
+            ArrayList<PlmnId> PLMNListAdj = new ArrayList<>();
+            PlmnId adjPlmnId1 = new PlmnIdImpl(262,2);
+            PlmnId adjPlmnId2 = new PlmnIdImpl(262,3);
+            PLMNListAdj.add(adjPlmnId1);
+            PLMNListAdj.add(adjPlmnId2);
+            AdjacentPLMNList adjacentPLMNList = new AdjacentPLMNListImpl(PLMNListAdj);
 
-            mapDialogMobility.addUpdateLocationRequest(imsi, mscNumber, roamingNumber, vlrNumber, lmsi, mapExtensionContainer,
-                    vlrCapability, informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
-                    skipSubscriberDataUpdate, restorationIndicator, ePLMNList, mmeDiameterAddress);
+            mapDialogMobility.addUpdateGprsLocationRequest(imsi, sgsnNumber, sgsnAddress, extensionContainer, sgsnCapability,
+                    informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo, epsInfo, servingNodeTypeIndicator,
+                    skipSubscriberDataUpdate, usedRATType, gprsSubscriptionDataNotNeeded, nodeTypeIndicator, areaRestricted,
+                    ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability,ePLMNList, mmeNumberForMTSMS, smsRegisterRequest,
+                    smsOnly, sgsnName, sgsnRealm, lgdSupportIndicator, removalOfMMERegistrationForSMS, adjacentPLMNList);
 
             mapDialogMobility.send();
 
@@ -932,19 +968,29 @@ public class Client extends TestHarnessMobilityManagement {
         try {
             long invokeId = insertSubscriberDataRequest.getInvokeId();
             MAPDialogMobility mapDialogMobility = insertSubscriberDataRequest.getMAPDialog();
-            ArrayList<ExtTeleserviceCode> teleserviceList = null;
-            ArrayList<ExtBearerServiceCode> bearerServiceList = null;
+            ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
+            ExtTeleserviceCode dataTeleservices = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allDataTeleservices);
+            ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
+            ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
+            teleserviceList.add(dataTeleservices);
+            teleserviceList.add(shortMessageMT_PP);
+            teleserviceList.add(shortMessageMO_PP);
+            ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<>();
+            ExtBearerServiceCode extBearerServiceCode1 = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allBearerServices);
+            ExtBearerServiceCode extBearerServiceCode2 = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allDataCDAServices);
+            bearerServiceList.add(extBearerServiceCode1);
+            bearerServiceList.add(extBearerServiceCode2);
             ArrayList<SSCode> ssList = null;
             ODBGeneralData odbGeneralData = null;
             RegionalSubscriptionResponse regionalSubscriptionResponse = null;
             SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
             MAPExtensionContainer extensionContainer = null;
             OfferedCamel4CSIs offeredCamel4CSIs = null;
-            SupportedFeatures supportedFeature = null;
+            SupportedFeatures supportedFeatures = null;
 
             mapDialogMobility.addInsertSubscriberDataResponse(invokeId, teleserviceList, bearerServiceList, ssList,
                     odbGeneralData,regionalSubscriptionResponse, supportedCamelPhases, extensionContainer, offeredCamel4CSIs,
-                    supportedFeature);
+                    supportedFeatures);
 
             mapDialogMobility.close(false);
 
@@ -1133,7 +1179,7 @@ public class Client extends TestHarnessMobilityManagement {
             // Send Authentication Info
             // First create Dialog
             AddressString origRef = this.mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
             AddressString destRef = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
 

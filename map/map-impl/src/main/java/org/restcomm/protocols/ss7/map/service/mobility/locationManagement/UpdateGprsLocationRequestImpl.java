@@ -12,16 +12,21 @@ import org.restcomm.protocols.ss7.map.api.MAPMessageType;
 import org.restcomm.protocols.ss7.map.api.MAPOperationCode;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
+import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UESRVCCCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateGprsLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
+import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.GSNAddressImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
@@ -50,6 +55,15 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
     private static final int TAG_ueReachableIndicator = 12;
     private static final int TAG_epsSubscriptionDataNotNeeded = 13;
     private static final int TAG_uesrvccCapability = 14;
+    private static final int TAG_EPLMN_List = 15;
+    private static final int TAG_mmeNumberForMTSMS = 16;
+    private static final int TAG_smsRegisterRequest = 17;
+    private static final int TAG_sms_Only = 18;
+    private static final int TAG_sgsn_Name = 19;
+    private static final int TAG_sgsn_Realm = 20;
+    private static final int TAF_lgd_supportIndicator = 21;
+    private static final int TAG_removalOfMMERegistrationForSMS = 22;
+    private static final int TAG_adjacentPLMN_List = 23;
 
     public static final String _PrimitiveName = "UpdateGprsLocationRequest";
 
@@ -72,6 +86,15 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
     private boolean ueReachableIndicator;
     private boolean epsSubscriptionDataNotNeeded;
     private UESRVCCCapability uesrvccCapability;
+    private EquivalentPLMNList ePLMNList;
+    private ISDNAddressString mmeNumberForMTSMS;
+    private SMSRegisterRequest smsRegisterRequest;
+    private boolean smsOnly;
+    private DiameterIdentity sgsnName;
+    private DiameterIdentity sgsnRealm;
+    private boolean lgdSupportIndicator;
+    private boolean removalOfMMERegistrationForSMS;
+    private AdjacentPLMNList adjacentPLMNList;
 
     public UpdateGprsLocationRequestImpl() {
         super();
@@ -83,7 +106,9 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
             boolean servingNodeTypeIndicator, boolean skipSubscriberDataUpdate, UsedRATType usedRATType,
             boolean gprsSubscriptionDataNotNeeded, boolean nodeTypeIndicator, boolean areaRestricted,
             boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
-            long mapProtocolVersion) {
+            EquivalentPLMNList ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
+            boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
+            boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList, long mapProtocolVersion) {
         super();
         this.imsi = imsi;
         this.sgsnNumber = sgsnNumber;
@@ -104,6 +129,15 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
         this.ueReachableIndicator = ueReachableIndicator;
         this.epsSubscriptionDataNotNeeded = epsSubscriptionDataNotNeeded;
         this.uesrvccCapability = uesrvccCapability;
+        this.ePLMNList = ePLMNList;
+        this.mmeNumberForMTSMS = mmeNumberForMTSMS;
+        this.smsRegisterRequest = smsRegisterRequest;
+        this.smsOnly = smsOnly;
+        this.sgsnName = sgsnName;
+        this.sgsnRealm = sgsnRealm;
+        this.lgdSupportIndicator = lgdSupportIndicator;
+        this.removalOfMMERegistrationForSMS = removalOfMMERegistrationForSMS;
+        this.adjacentPLMNList = adjacentPLMNList;
     }
 
     @Override
@@ -212,6 +246,51 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
     }
 
     @Override
+    public EquivalentPLMNList getEPLMNList() {
+        return ePLMNList;
+    }
+
+    @Override
+    public ISDNAddressString getMmeNumberForMTSMS() {
+        return mmeNumberForMTSMS;
+    }
+
+    @Override
+    public SMSRegisterRequest getSMSRegisterRequest() {
+        return smsRegisterRequest;
+    }
+
+    @Override
+    public boolean getSmsOnly() {
+        return smsOnly;
+    }
+
+    @Override
+    public DiameterIdentity getSgsnName() {
+        return sgsnName;
+    }
+
+    @Override
+    public DiameterIdentity getSgsnRealm() {
+        return sgsnRealm;
+    }
+
+    @Override
+    public boolean getLgdSupportIndicator() {
+        return lgdSupportIndicator;
+    }
+
+    @Override
+    public boolean getRemovalOfMMERegistrationForSMS() {
+        return removalOfMMERegistrationForSMS;
+    }
+
+    @Override
+    public AdjacentPLMNList getAdjacentPLMNList() {
+        return adjacentPLMNList;
+    }
+
+    @Override
     public int getTag() throws MAPException {
         return Tag.SEQUENCE;
     }
@@ -273,6 +352,15 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
         this.ueReachableIndicator = false;
         this.epsSubscriptionDataNotNeeded = false;
         this.uesrvccCapability = null;
+        this.ePLMNList = null;
+        this.mmeNumberForMTSMS = null;
+        this.smsRegisterRequest = null;
+        this.smsOnly = false;
+        this.sgsnName = null;
+        this.sgsnRealm = null;
+        this.lgdSupportIndicator = false;
+        this.removalOfMMERegistrationForSMS = false;
+        this.adjacentPLMNList = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -446,7 +534,6 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                 this.ueReachableIndicator = true;
                                 break;
                             case TAG_epsSubscriptionDataNotNeeded:
-                                // epsSubscriptionDataNotNeeded
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".epsSubscriptionDataNotNeeded: Parameter is not primitive",
@@ -454,14 +541,81 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                 ais.readNull();
                                 this.epsSubscriptionDataNotNeeded = true;
                                 break;
-                            case TAG_uesrvccCapability: // uesrvccCapability
+                            case TAG_uesrvccCapability:
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".uesrvccCapability: Parameter is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
-                                int vccCapability = (int) ais.readInteger();
-                                this.uesrvccCapability = UESRVCCCapability.getInstance(vccCapability);
+                                int srvccCapability = (int) ais.readInteger();
+                                this.uesrvccCapability = UESRVCCCapability.getInstance(srvccCapability);
                                 break;
+                            case TAG_EPLMN_List:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".eplmn-List: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.ePLMNList = new EquivalentPLMNListImpl();
+                                ((EquivalentPLMNListImpl) this.ePLMNList).decodeAll(ais);
+                                break;
+                            case TAG_mmeNumberForMTSMS:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".mmeNumberForMTSMS: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.mmeNumberForMTSMS = new ISDNAddressStringImpl();
+                                ((ISDNAddressStringImpl) this.mmeNumberForMTSMS).decodeAll(ais);
+                            case TAG_smsRegisterRequest:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".smsRegisterRequest: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.smsRegisterRequest = new SMSRegisterRequestImpl();
+                                ((SMSRegisterRequestImpl) this.smsRegisterRequest).decodeAll(ais);
+                            case TAG_sms_Only:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".sms-Only: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                ais.readNull();
+                                this.smsOnly = true;
+                                break;
+                            case TAG_sgsn_Name:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".sgsn-Name: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.sgsnName = new DiameterIdentityImpl();
+                                ((DiameterIdentityImpl) this.sgsnName).decodeAll(ais);
+                            case TAG_sgsn_Realm:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".sgsn-Realm: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.sgsnRealm = new DiameterIdentityImpl();
+                                ((DiameterIdentityImpl) this.sgsnRealm).decodeAll(ais);
+                            case TAF_lgd_supportIndicator:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".lgd-supportIndicator: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                ais.readNull();
+                                this.lgdSupportIndicator = true;
+                                break;
+                            case TAG_removalOfMMERegistrationForSMS:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".removalOfMMERegistrationForSMS: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                ais.readNull();
+                                this.removalOfMMERegistrationForSMS = true;
+                                break;
+                            case TAG_adjacentPLMN_List:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".adjacentPLMN-List: Parameter is not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.adjacentPLMNList = new AdjacentPLMNListImpl();
+                                ((AdjacentPLMNListImpl) this.adjacentPLMNList).decodeAll(ais);
                             default:
                                 ais.advanceElement();
                                 break;
@@ -500,9 +654,6 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
             asnOutputStream.FinalizeContent(pos);
 
         } catch (AsnException e) {
-            e.printStackTrace();
-            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
-        } catch (Exception e) {
             e.printStackTrace();
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
@@ -572,6 +723,33 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
             if (this.uesrvccCapability != null)
                 asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, TAG_uesrvccCapability, this.uesrvccCapability.getCode());
 
+            if (this.ePLMNList != null)
+                ((EquivalentPLMNListImpl) this.ePLMNList).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_EPLMN_List);
+
+            if (this.mmeNumberForMTSMS != null)
+                ((ISDNAddressStringImpl) this.mmeNumberForMTSMS).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_mmeNumberForMTSMS);
+
+            if (this.smsRegisterRequest != null)
+                ((SMSRegisterRequestImpl) this.smsRegisterRequest).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_smsRegisterRequest);
+
+            if (smsOnly)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_sms_Only);
+
+            if (this.sgsnName != null)
+                ((DiameterIdentityImpl) this.sgsnName).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_sgsn_Name);
+
+            if (this.sgsnRealm != null)
+                ((DiameterIdentityImpl) this.sgsnRealm).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_sgsn_Realm);
+
+            if (lgdSupportIndicator)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAF_lgd_supportIndicator);
+
+            if (removalOfMMERegistrationForSMS)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_removalOfMMERegistrationForSMS);
+
+            if (adjacentPLMNList != null)
+                ((AdjacentPLMNListImpl) this.adjacentPLMNList).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_adjacentPLMN_List);
+
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (AsnException e) {
@@ -587,31 +765,31 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(this.imsi.toString());
+            sb.append(this.imsi);
             sb.append(", ");
         }
 
         if (this.sgsnNumber != null) {
             sb.append("sgsnNumber=");
-            sb.append(this.sgsnNumber.toString());
+            sb.append(this.sgsnNumber);
             sb.append(", ");
         }
 
         if (this.sgsnAddress != null) {
             sb.append("sgsnAddress=");
-            sb.append(this.sgsnAddress.toString());
+            sb.append(this.sgsnAddress);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(", ");
         }
 
         if (this.sgsnCapability != null) {
             sb.append("sgsnCapability=");
-            sb.append(this.sgsnCapability.toString());
+            sb.append(this.sgsnCapability);
             sb.append(", ");
         }
 
@@ -625,19 +803,19 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
 
         if (this.vGmlcAddress != null) {
             sb.append("vGmlcAddress=");
-            sb.append(this.vGmlcAddress.toString());
+            sb.append(this.vGmlcAddress);
             sb.append(", ");
         }
 
         if (this.addInfo != null) {
             sb.append("addInfo=");
-            sb.append(this.addInfo.toString());
+            sb.append(this.addInfo);
             sb.append(", ");
         }
 
         if (this.epsInfo != null) {
             sb.append("epsInfo=");
-            sb.append(this.epsInfo.toString());
+            sb.append(this.epsInfo);
             sb.append(", ");
         }
 
@@ -651,7 +829,7 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
 
         if (this.usedRATType != null) {
             sb.append("usedRATType=");
-            sb.append(this.usedRATType.toString());
+            sb.append(this.usedRATType);
             sb.append(", ");
         }
 
@@ -677,7 +855,55 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
 
         if (this.uesrvccCapability != null) {
             sb.append("uesrvccCapability=");
-            sb.append(this.uesrvccCapability.toString());
+            sb.append(this.uesrvccCapability);
+            sb.append(", ");
+        }
+
+        if (this.ePLMNList != null) {
+            sb.append("EPLMN-List=");
+            sb.append(this.ePLMNList);
+            sb.append(", ");
+        }
+
+        if (this.mmeNumberForMTSMS != null) {
+            sb.append("mmeNumberForMTSMS=");
+            sb.append(this.mmeNumberForMTSMS);
+            sb.append(", ");
+        }
+
+        if (this.smsRegisterRequest != null) {
+            sb.append("smsRegisterRequest=");
+            sb.append(this.smsRegisterRequest);
+            sb.append(", ");
+        }
+
+        if (this.smsOnly) {
+            sb.append("sms-Only, ");
+        }
+
+        if (this.sgsnName != null) {
+            sb.append("sgsnName=");
+            sb.append(this.sgsnName);
+            sb.append(", ");
+        }
+
+        if (this.sgsnRealm != null) {
+            sb.append("sgsnRealm=");
+            sb.append(this.sgsnRealm);
+            sb.append(", ");
+        }
+
+        if (this.lgdSupportIndicator) {
+            sb.append("lgdSupportIndicator, ");
+        }
+
+        if (this.removalOfMMERegistrationForSMS) {
+            sb.append("removalOfMMERegistrationForSMS, ");
+        }
+
+        if (this.adjacentPLMNList != null) {
+            sb.append("adjacentPLMNList=");
+            sb.append(this.adjacentPLMNList);
             sb.append(", ");
         }
 

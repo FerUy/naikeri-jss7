@@ -48,7 +48,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
     protected static final int _TAG_pagingArea = 14;
     protected static final int _TAG_skipSubscriberDataUpdate = 15;
     protected static final int _TAG_restorationIndicator = 16;
-    protected static final int _TAG_EPLMNList = 3;
+    protected static final int _TAG_EPLMN_List = 3;
     protected static final int _TAG_mmeDiameterAddress = 4;
 
     public static final String _PrimitiveName = "UpdateLocationRequest";
@@ -356,7 +356,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 ais.readNull();
                                 this.restorationIndicator = true;
                                 break;
-                            case _TAG_EPLMNList:
+                            case _TAG_EPLMN_List:
                                 //ePLMNList
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -444,31 +444,43 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
 
             if (this.lmsi != null)
                 ((LMSIImpl) this.lmsi).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_lmsi);
+
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
+
             if (this.vlrCapability != null)
                 ((VLRCapabilityImpl) this.vlrCapability).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_vlrCapability);
+
             if (informPreviousNetworkEntity)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_informPreviousNetworkEntity);
+
             if (csLCSNotSupportedByUE)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_csLCSNotSupportedByUE);
+
             if (vGmlcAddress != null) {
                 ((GSNAddressImpl) this.vGmlcAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_vGmlcAddress);
             }
+
             if (addInfo != null) {
                 ((ADDInfoImpl) this.addInfo).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_addInfo);
             }
+
             if (pagingArea != null) {
                 ((PagingAreaImpl) this.pagingArea).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_pagingArea);
             }
+
             if (skipSubscriberDataUpdate)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_skipSubscriberDataUpdate);
+
             if (restorationIndicator)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_restorationIndicator);
+
             if (this.ePLMNList != null)
-                ((EquivalentPLMNListImpl) this.ePLMNList).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_EPLMNList);
+                ((EquivalentPLMNListImpl) this.ePLMNList).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_EPLMN_List);
+
             if (this.mmeDiameterAddress != null)
                 ((NetworkNodeDiameterAddressImpl) this.mmeDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_mmeDiameterAddress);
+
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (AsnException e) {
