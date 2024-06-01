@@ -700,9 +700,11 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             MAPDialogMobility mapDialogMobility = insertSubscriberDataResponse.getMAPDialog();
             ISDNAddressString hlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285000008002");
             MAPExtensionContainer extensionContainer = null;
-            boolean addCapability = false;
-            boolean pagingAreaCapability = false;
-            mapDialogMobility.addUpdateLocationResponse(invokeId, hlrNumber, extensionContainer, addCapability, pagingAreaCapability);
+            boolean addCapability = true;
+            boolean sgsnMmeSeparationSupported = true;
+            boolean mmeRegisteredForSMS = true;
+            mapDialogMobility.addUpdateGprsLocationResponse(invokeId, hlrNumber, extensionContainer, addCapability,
+                    sgsnMmeSeparationSupported, mmeRegisteredForSMS);
 
             mapDialogMobility.close(false);
 

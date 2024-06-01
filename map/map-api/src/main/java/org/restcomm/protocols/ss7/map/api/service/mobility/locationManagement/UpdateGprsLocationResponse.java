@@ -20,8 +20,9 @@ public interface UpdateGprsLocationResponse extends MobilityMessage {
 
     MAPExtensionContainer getExtensionContainer();
 
-    boolean getAddCapability();
+    boolean isAddCapability();
 
-    boolean getSgsnMmeSeparationSupported();
+    boolean isSgsnMmeSeparationSupported();
 
+    boolean isMmeRegisteredForSMS();
 }

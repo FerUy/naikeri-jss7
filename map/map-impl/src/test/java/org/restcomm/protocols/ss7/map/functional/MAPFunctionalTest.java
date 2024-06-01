@@ -7910,8 +7910,9 @@ TC-END + SendRoutingInformationResponse
                 assertTrue(ind.getHlrNumber().getAddress().equals("22228"));
                 assertEquals(ind.getHlrNumber().getAddressNature(), AddressNature.international_number);
                 assertEquals(ind.getHlrNumber().getNumberingPlan(), NumberingPlan.ISDN);
-                assertTrue(ind.getAddCapability());
-                assertTrue(ind.getSgsnMmeSeparationSupported());
+                assertTrue(ind.isAddCapability());
+                assertTrue(ind.isSgsnMmeSeparationSupported());
+                assertFalse(ind.isMmeRegisteredForSMS());
             }
         };
 
@@ -7947,7 +7948,7 @@ TC-END + SendRoutingInformationResponse
 
                 try {
                     d.addUpdateGprsLocationResponse(((UpdateGprsLocationRequestImpl) ind).getInvokeId(), hlrNumber, null, true,
-                            true);
+                            true, false);
                 } catch (MAPException e) {
                     this.error("Error while adding UpdateGprsLocationResponse", e);
                     fail("Error while adding UpdateGprsLocationResponse");

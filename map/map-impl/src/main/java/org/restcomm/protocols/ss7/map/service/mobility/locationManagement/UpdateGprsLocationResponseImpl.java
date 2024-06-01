@@ -27,6 +27,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
 public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implements UpdateGprsLocationResponse {
 
     private static final int TAG_sgsnMmeSeparationSupported = 0;
+    private static final int TAG_mmeRegisteredForSMS = 1;
 
     public static final String _PrimitiveName = "UpdateGprsLocationResponse";
 
@@ -34,18 +35,20 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
     private MAPExtensionContainer extensionContainer;
     private boolean addCapability;
     private boolean sgsnMmeSeparationSupported;
+    private boolean mmeRegisteredForSMS;
 
     public UpdateGprsLocationResponseImpl() {
         super();
     }
 
     public UpdateGprsLocationResponseImpl(ISDNAddressString hlrNumber, MAPExtensionContainer extensionContainer,
-            boolean addCapability, boolean sgsnMmeSeparationSupported) {
+            boolean addCapability, boolean sgsnMmeSeparationSupported, boolean mmeRegisteredForSMS) {
         super();
         this.hlrNumber = hlrNumber;
         this.extensionContainer = extensionContainer;
         this.addCapability = addCapability;
         this.sgsnMmeSeparationSupported = sgsnMmeSeparationSupported;
+        this.mmeRegisteredForSMS = mmeRegisteredForSMS;
     }
 
     @Override
@@ -59,13 +62,18 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
     }
 
     @Override
-    public boolean getAddCapability() {
+    public boolean isAddCapability() {
         return this.addCapability;
     }
 
     @Override
-    public boolean getSgsnMmeSeparationSupported() {
+    public boolean isSgsnMmeSeparationSupported() {
         return this.sgsnMmeSeparationSupported;
+    }
+
+    @Override
+    public boolean isMmeRegisteredForSMS() {
+        return this.mmeRegisteredForSMS;
     }
 
     @Override
@@ -125,6 +133,7 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
         this.extensionContainer = null;
         this.addCapability = false;
         this.sgsnMmeSeparationSupported = false;
+        this.mmeRegisteredForSMS = false;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -171,13 +180,21 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
                     } else if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
 
                         switch (tag) {
-                            case TAG_sgsnMmeSeparationSupported: // sgsnMmeSeparationSupported
+                            case TAG_sgsnMmeSeparationSupported:
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".sgsnMmeSeparationSupported: Parameter is  not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 ais.readNull();
                                 this.sgsnMmeSeparationSupported = true;
+                                break;
+                            case TAG_mmeRegisteredForSMS:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".mmeRegisteredForSMS: Parameter is  not primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                ais.readNull();
+                                this.mmeRegisteredForSMS = true;
                                 break;
                             default:
                                 ais.advanceElement();
@@ -221,7 +238,7 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
+            throw new MAPException("Exception when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
     }
 
@@ -241,6 +258,9 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
 
             if (this.sgsnMmeSeparationSupported)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_sgsnMmeSeparationSupported);
+
+            if (this.mmeRegisteredForSMS)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_mmeRegisteredForSMS);
 
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
@@ -273,6 +293,10 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
 
         if (this.sgsnMmeSeparationSupported) {
             sb.append("sgsnMmeSeparationSupported, ");
+        }
+
+        if (this.mmeRegisteredForSMS) {
+            sb.append("mmeRegisteredForSMS, ");
         }
 
         sb.append("]");

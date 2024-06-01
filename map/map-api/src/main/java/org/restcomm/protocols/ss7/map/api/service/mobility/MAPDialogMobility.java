@@ -174,7 +174,7 @@ public interface MAPDialogMobility extends MAPDialog {
             throws MAPException;
 
     void addUpdateGprsLocationResponse(long invokeId, ISDNAddressString hlrNumber, MAPExtensionContainer extensionContainer,
-            boolean addCapability, boolean sgsnMmeSeparationSupported) throws MAPException;
+            boolean addCapability, boolean sgsnMmeSeparationSupported, boolean mmeRegisteredForSMS) throws MAPException;
 
     Long addPurgeMSRequest(int customInvokeTimeout, IMSI imsi, ISDNAddressString vlrNumber, ISDNAddressString sgsnNumber,
             MAPExtensionContainer extensionContainer) throws MAPException;

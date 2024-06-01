@@ -1584,8 +1584,8 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     }
 
     @Override
-    public void addUpdateGprsLocationResponse(long invokeId, ISDNAddressString hlrNumber,
-            MAPExtensionContainer extensionContainer, boolean addCapability, boolean sgsnMmeSeparationSupported)
+    public void addUpdateGprsLocationResponse(long invokeId, ISDNAddressString hlrNumber, MAPExtensionContainer extensionContainer,
+                                              boolean addCapability, boolean sgsnMmeSeparationSupported, boolean mmeRegisteredForSMS)
             throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.gprsLocationUpdateContext)
@@ -1604,7 +1604,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         resultLast.setOperationCode(operationCode);
 
         UpdateGprsLocationResponseImpl updateGprsLocationResponse = new UpdateGprsLocationResponseImpl(hlrNumber, extensionContainer, addCapability,
-                sgsnMmeSeparationSupported);
+                sgsnMmeSeparationSupported, mmeRegisteredForSMS);
 
         AsnOutputStream aos = new AsnOutputStream();
         updateGprsLocationResponse.encodeData(aos);
