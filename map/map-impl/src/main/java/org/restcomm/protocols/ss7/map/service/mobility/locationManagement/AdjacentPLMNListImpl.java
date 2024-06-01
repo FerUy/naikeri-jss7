@@ -76,28 +76,30 @@ public class AdjacentPLMNListImpl implements AdjacentPLMNList, MAPAsnPrimitive {
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
 
-        while (ais.available() != 0) {
+        while (true) {
+            if (ais.available() == 0)
+                break;
 
             int tag = ais.readTag();
             if (ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
 
-                if (tag == Tag.SEQUENCE) {
-                    if (ais.isTagPrimitive())
-                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                + ": Parameter AdjacentPLMNList is primitive",
-                                MAPParsingComponentExceptionReason.MistypedParameter);
-                    PlmnIdImpl plmnId = new PlmnIdImpl();
-                    plmnId.decodeAll(ais);
-                    this.adjacentPLMNList.add(plmnId);
-                } else {
-                    ais.advanceElement();
+                switch (tag) {
+                    case Tag.SEQUENCE:
+                        if (ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ": Parameter AdjacentPLMNList is primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        PlmnIdImpl plmnId = new PlmnIdImpl();
+                        plmnId.decodeAll(ais);
+                        this.adjacentPLMNList.add(plmnId);
+                        break;
                 }
             } else {
                 ais.advanceElement();
             }
         }
 
-        if (this.adjacentPLMNList.size() < 1 || this.adjacentPLMNList.size() > 50) {
+        if (this.adjacentPLMNList.isEmpty() || this.adjacentPLMNList.size() > 50) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                     + ": AdjacentPLMNList size must be from 1 to 50, found:" + this.adjacentPLMNList.size(),
                     MAPParsingComponentExceptionReason.MistypedParameter);

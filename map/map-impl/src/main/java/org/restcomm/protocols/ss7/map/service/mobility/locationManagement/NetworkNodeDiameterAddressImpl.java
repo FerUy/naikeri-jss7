@@ -62,6 +62,38 @@ public class NetworkNodeDiameterAddressImpl extends SequenceBase implements Netw
         return diameterRealm;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#getTag()
+     */
+    public int getTag() throws MAPException {
+        return Tag.SEQUENCE;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#getTagClass()
+     */
+    public int getTagClass() {
+        return Tag.CLASS_UNIVERSAL;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#getIsPrimitive()
+     */
+    public boolean getIsPrimitive() {
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#decodeAll(org.mobicents.protocols.asn.AsnInputStream)
+     */
     public void decodeAll(AsnInputStream asnInputStream) throws MAPParsingComponentException {
         try {
             int length = asnInputStream.readLength();
@@ -75,6 +107,13 @@ public class NetworkNodeDiameterAddressImpl extends SequenceBase implements Netw
         }
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#decodeData(org.mobicents.protocols.asn.AsnInputStream,
+     * int)
+     */
     public void decodeData(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException {
         try {
             this._decode(asnInputStream, length);
@@ -88,12 +127,15 @@ public class NetworkNodeDiameterAddressImpl extends SequenceBase implements Netw
     }
 
     protected void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
+
         this.diameterName = null;
         this.diameterRealm = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
 
-        while (ais.available() != 0) {
+        while (true) {
+            if (ais.available() == 0)
+                break;
 
             int tag = ais.readTag();
 
@@ -102,7 +144,7 @@ public class NetworkNodeDiameterAddressImpl extends SequenceBase implements Netw
                     case _ID_diameterName:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " diameterName: Parameter is not primitive",
+                                    + ".diameterName: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.diameterName = new DiameterIdentityImpl();
                         ((DiameterIdentityImpl) this.diameterName).decodeAll(ais);
@@ -110,28 +152,41 @@ public class NetworkNodeDiameterAddressImpl extends SequenceBase implements Netw
                     case _ID_diameterRealm:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " diameterRealm: Parameter is not primitive",
+                                    + ".diameterRealm: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.diameterRealm = new DiameterIdentityImpl();
                         ((DiameterIdentityImpl) this.diameterRealm).decodeAll(ais);
                         break;
                     default:
                         ais.advanceElement();
-                        break;
                 }
             } else {
                 ais.advanceElement();
             }
         }
+
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#encodeAll(org.mobicents.protocols.asn.AsnOutputStream)
+     */
     public void encodeAll(AsnOutputStream asnOutputStream) throws MAPException {
         this.encodeAll(asnOutputStream, this.getTagClass(), this.getTag());
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#encodeAll(org.mobicents.protocols.asn.AsnOutputStream,
+     * int, int)
+     */
     public void encodeAll(AsnOutputStream asnOutputStream, int tagClass, int tag) throws MAPException {
         try {
-            asnOutputStream.writeTag(tagClass, false, tag);
+            asnOutputStream.writeTag(tagClass, this.getIsPrimitive(), tag);
             int pos = asnOutputStream.StartContentDefiniteLength();
             this.encodeData(asnOutputStream);
             asnOutputStream.FinalizeContent(pos);
@@ -157,6 +212,37 @@ public class NetworkNodeDiameterAddressImpl extends SequenceBase implements Netw
         } catch (MAPException e) {
             throw new MAPException("MAPException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((diameterName == null) ? 0 : diameterName.hashCode());
+        result = prime * result + ((diameterRealm == null) ? 0 : diameterRealm.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        NetworkNodeDiameterAddressImpl other = (NetworkNodeDiameterAddressImpl) obj;
+        if (diameterName == null) {
+            if (other.diameterName != null)
+                return false;
+        } else if (!diameterName.equals(other.diameterName))
+            return false;
+        if (diameterRealm == null) {
+            if (other.diameterRealm != null)
+                return false;
+        } else if (!diameterRealm.equals(other.diameterRealm))
+            return false;
+        return true;
     }
 
     @Override

@@ -58,7 +58,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AD
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
@@ -103,7 +102,6 @@ import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperC
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.VLRCapabilityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EquivalentPLMNListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.NetworkNodeDiameterAddressImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
@@ -895,12 +893,12 @@ public class Client extends TestHarnessMobilityManagement {
             PagingArea pagingArea = null;
             boolean skipSubscriberDataUpdate = false;
             boolean restorationIndicator = false;
-            ArrayList<PlmnId> PLMNList = new ArrayList<>();
+            ArrayList<PlmnId> ePLMNList = new ArrayList<>();
             PlmnId plmnId1 = new PlmnIdImpl(262,1);
             PlmnId plmnId2 = new PlmnIdImpl(262,999);
-            PLMNList.add(plmnId1);
-            PLMNList.add(plmnId2);
-            EquivalentPLMNList ePLMNList = new EquivalentPLMNListImpl(PLMNList);
+            ePLMNList.add(plmnId1);
+            ePLMNList.add(plmnId2);
+            //EquivalentPLMNList ePLMNList = new EquivalentPLMNListImpl(PLMNList);
             byte[] mmeNameBytes = {0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
                     0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
                     0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};

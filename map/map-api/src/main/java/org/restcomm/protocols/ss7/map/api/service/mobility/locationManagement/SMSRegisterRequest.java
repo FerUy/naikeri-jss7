@@ -1,7 +1,5 @@
 package org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement;
 
-import java.io.Serializable;
-
 /**
  *
  * SMSRegisterRequest::= ENUMERATED {
@@ -13,11 +11,30 @@ import java.io.Serializable;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public interface SMSRegisterRequest extends Serializable {
+public enum SMSRegisterRequest {
 
-    boolean isSmsRegistrationRequired();
+    isSmsRegistrationRequired(0), isSmsRegistrationNotPreferred(1), isNoPreference(2);
 
-    boolean isSmsRegistrationNotPreferred();
+    private int code;
 
-    boolean isNoPreference();
+    private SMSRegisterRequest(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public static SMSRegisterRequest getInstance(int code) {
+        switch (code) {
+            case 0:
+                return SMSRegisterRequest.isSmsRegistrationRequired;
+            case 1:
+                return SMSRegisterRequest.isSmsRegistrationNotPreferred;
+            case 2:
+                return SMSRegisterRequest.isNoPreference;
+            default:
+                return null;
+        }
+    }
 }

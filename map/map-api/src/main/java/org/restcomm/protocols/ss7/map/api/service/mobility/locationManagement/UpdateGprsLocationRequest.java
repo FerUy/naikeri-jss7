@@ -6,7 +6,10 @@ import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -89,7 +92,7 @@ public interface UpdateGprsLocationRequest extends MobilityMessage {
 
     UESRVCCCapability getUESRVCCCapability();
 
-    EquivalentPLMNList getEPLMNList();
+    ArrayList<PlmnId> getEPLMNList();
 
     ISDNAddressString getMmeNumberForMTSMS();
 

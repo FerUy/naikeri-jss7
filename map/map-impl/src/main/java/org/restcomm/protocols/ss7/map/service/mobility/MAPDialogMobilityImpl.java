@@ -41,7 +41,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AD
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
@@ -373,7 +372,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     public Long addUpdateLocationRequest(IMSI imsi, ISDNAddressString mscNumber, ISDNAddressString roamingNumber,
             ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer, VLRCapability vlrCapability,
             boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE, GSNAddress vGmlcAddress, ADDInfo addInfo,
-            PagingArea pagingArea, boolean skipSubscriberDataUpdate, boolean restorationIndicator, EquivalentPLMNList EPLMNList,
+            PagingArea pagingArea, boolean skipSubscriberDataUpdate, boolean restorationIndicator, ArrayList<PlmnId> EPLMNList,
             NetworkNodeDiameterAddress mmeDiameterAddress) throws MAPException {
         return addUpdateLocationRequest(_Timer_Default, imsi, mscNumber, roamingNumber, vlrNumber, lmsi, extensionContainer,
                 vlrCapability, informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
@@ -381,10 +380,11 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     }
 
     public Long addUpdateLocationRequest(int customInvokeTimeout, IMSI imsi, ISDNAddressString mscNumber,
-                                         ISDNAddressString roamingNumber, ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
-                                         VLRCapability vlrCapability, boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE,
+                                         ISDNAddressString roamingNumber, ISDNAddressString vlrNumber, LMSI lmsi,
+                                         MAPExtensionContainer extensionContainer, VLRCapability vlrCapability,
+                                         boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE,
                                          GSNAddress vGmlcAddress, ADDInfo addInfo, PagingArea pagingArea, boolean skipSubscriberDataUpdate,
-                                         boolean restorationIndicator, EquivalentPLMNList EPLMNList,
+                                         boolean restorationIndicator, ArrayList<PlmnId> EPLMNList,
                                          NetworkNodeDiameterAddress mmeDiameterAddress) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.networkLocUpContext)
@@ -1514,7 +1514,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             EPSInfo epsInfo, boolean servingNodeTypeIndicator, boolean skipSubscriberDataUpdate, UsedRATType usedRATType,
             boolean gprsSubscriptionDataNotNeeded, boolean nodeTypeIndicator, boolean areaRestricted,
             boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
-            EquivalentPLMNList ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
+            ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
             boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
             boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList)
             throws MAPException {
@@ -1571,7 +1571,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             boolean servingNodeTypeIndicator, boolean skipSubscriberDataUpdate, UsedRATType usedRATType,
             boolean gprsSubscriptionDataNotNeeded, boolean nodeTypeIndicator, boolean areaRestricted,
             boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
-            EquivalentPLMNList ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
+            ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
             boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
             boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList)
             throws MAPException {

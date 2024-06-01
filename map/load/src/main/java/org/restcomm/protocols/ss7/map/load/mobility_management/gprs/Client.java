@@ -59,7 +59,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Ca
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
@@ -108,10 +107,8 @@ import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ADDInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.AdjacentPLMNListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EPSInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EquivalentPLMNListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ISRInformationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SGSNCapabilityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SMSRegisterRequestImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
@@ -296,7 +293,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
     }
 
     private void initTCAP() throws Exception {
-        this.tcapStack = new TCAPStackImpl("Test", this.sccpStack.getSccpProvider(), VLR_SSN);
+        this.tcapStack = new TCAPStackImpl("Test", this.sccpStack.getSccpProvider(), SGSN_SSN);
         this.tcapStack.start();
         this.tcapStack.setDialogIdleTimeout(60000);
         this.tcapStack.setInvokeTimeout(30000);
@@ -304,7 +301,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
     }
 
     private void initMAP() throws Exception {
-        // this.mapStack = new MAPStackImpl(this.sccpStack.getSccpProvider(), VLR_SSN);
+        // this.mapStack = new MAPStackImpl(this.sccpStack.getSccpProvider(), SGSN_SSN);
         this.mapStack = new MAPStackImpl("TestClient", this.tcapStack.getProvider());
         this.mapProvider = this.mapStack.getMAPProvider();
         this.mapProvider.addMAPDialogListener(this);
@@ -340,7 +337,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
         GlobalTitle gt = fact.createGlobalTitle(address, 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
                 BCDEvenEncodingScheme.INSTANCE, NatureOfAddress.INTERNATIONAL);
         if (ssn < 0) {
-            ssn = VLR_SSN;
+            ssn = SGSN_SSN;
         }
         return fact.createSccpAddress(ri, gt, dpc, ssn);
     }
@@ -855,7 +852,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
 
             MAPApplicationContextVersion mapAcnVersion = MAPApplicationContextVersion.version3;
-            MAPApplicationContextName mapAcn = MAPApplicationContextName.networkLocUpContext;
+            MAPApplicationContextName mapAcn = MAPApplicationContextName.gprsLocationUpdateContext;
             MAPApplicationContext mapAppContext = MAPApplicationContext.getInstance(mapAcn, mapAcnVersion);
             MAPDialogMobility mapDialogMobility = this.mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
                     originAddressString, serverSccpAddress, destAddressString);
@@ -873,13 +870,6 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
                     "491710490000");
             GSNAddress sgsnAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
             MAPExtensionContainer extensionContainer = null;
-            boolean utran = true;
-            boolean geran = true;
-            boolean gan = false;
-            boolean i_hspa_evolution = true;
-            boolean e_utran = true;
-            boolean nb_iot = true;
-            SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
             boolean solsaSupportIndicator = true;
             SuperChargerInfo superChargerSupportedInServingNetworkEntity = null;
             boolean gprsEnhancementsSupportIndicator = false;
@@ -894,9 +884,16 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             boolean psiEnhancements = true;
             OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(oCsi,dCsi,vtCsi,tCsi, mtSMSCsi, mgCsi, psiEnhancements);
             boolean smsCallBarringSupportIndicator = true;
+            boolean utran = true;
+            boolean geran = true;
+            boolean gan = false;
+            boolean i_hspa_evolution = true;
+            boolean e_utran = true;
+            boolean nb_iot = true;
+            SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
             SupportedFeatures supportedFeatures = null;
             boolean tAdsDataRetrieval = false;
-            Boolean homogeneousSupportOfIMSVoiceOverPSSessions = null;
+            Boolean homogeneousSupportOfIMSVoiceOverPSSessions = true;
             SGSNCapability sgsnCapability = new SGSNCapabilityImpl(solsaSupportIndicator, extensionContainer,
                     superChargerSupportedInServingNetworkEntity, gprsEnhancementsSupportIndicator, supportedCamelPhases,
                     supportedLCSCapabilitySets, offeredCamel4CSIs, smsCallBarringSupportIndicator, supportedRATTypesIndicator,
@@ -915,18 +912,14 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             boolean ueReachableIndicator = true;
             boolean epsSubscriptionDataNotNeeded = true;
             UESRVCCCapability uesrvccCapability = UESRVCCCapability.ueSrvccSupported;
-            ArrayList<PlmnId> PLMNList = new ArrayList<>();
+            ArrayList<PlmnId> ePLMNList = new ArrayList<>();
             PlmnId plmnId1 = new PlmnIdImpl(262,1);
             PlmnId plmnId2 = new PlmnIdImpl(262,999);
-            PLMNList.add(plmnId1);
-            PLMNList.add(plmnId2);
-            EquivalentPLMNList ePLMNList = new EquivalentPLMNListImpl(PLMNList);
+            ePLMNList.add(plmnId1);
+            ePLMNList.add(plmnId2);
             ISDNAddressString mmeNumberForMTSMS = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                     "491710490001");
-            boolean smsRegistrationRequired = true;
-            boolean smsRegistrationNotPreferred = false;
-            boolean noPreference = false;
-            SMSRegisterRequest smsRegisterRequest = new SMSRegisterRequestImpl(smsRegistrationRequired, smsRegistrationNotPreferred, noPreference);
+            SMSRegisterRequest smsRegisterRequest = SMSRegisterRequest.isNoPreference;
             boolean smsOnly = false;
             byte[] sgsnNameBytes = {0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
                     0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
@@ -947,7 +940,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             mapDialogMobility.addUpdateGprsLocationRequest(imsi, sgsnNumber, sgsnAddress, extensionContainer, sgsnCapability,
                     informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo, epsInfo, servingNodeTypeIndicator,
                     skipSubscriberDataUpdate, usedRATType, gprsSubscriptionDataNotNeeded, nodeTypeIndicator, areaRestricted,
-                    ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability,ePLMNList, mmeNumberForMTSMS, smsRegisterRequest,
+                    ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability, ePLMNList, mmeNumberForMTSMS, smsRegisterRequest,
                     smsOnly, sgsnName, sgsnRealm, lgdSupportIndicator, removalOfMMERegistrationForSMS, adjacentPLMNList);
 
             mapDialogMobility.send();
@@ -955,7 +948,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             this.csvWriter.incrementCounter(CREATED_DIALOGS);
 
         }  catch (MAPException e) {
-            logger.error("Error while processing SAI response and sending MAP UL ", e);
+            logger.error("Error while processing SAI response and sending MAP UGL request", e);
         }
     }
 
@@ -1183,7 +1176,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             AddressString destRef = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
 
-            SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+            SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, SGSN_SSN, SCCP_CLIENT_ADDRESS);
             SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
 
             MAPDialogMobility mapDialogMobility = this.mapProvider.getMAPServiceMobility().

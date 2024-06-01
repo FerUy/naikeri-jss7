@@ -4,6 +4,7 @@ package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -16,10 +17,10 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UESRVCCCapability;
@@ -110,7 +111,7 @@ public class UpdateGprsLocationRequestTest {
         boolean ueReachableIndicator = true;
         boolean epsSubscriptionDataNotNeeded = true;
         UESRVCCCapability uesrvccCapability = UESRVCCCapability.ueSrvccSupported;
-        EquivalentPLMNList ePLMNList = null;
+        ArrayList<PlmnId> ePLMNList = null;
         ISDNAddressString mmeNumberForMTSMS = null;
         SMSRegisterRequest smsRegisterRequest = null;
         boolean smsOnly = false;

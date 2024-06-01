@@ -36,6 +36,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.MAPPrivateExtension;
 import org.restcomm.protocols.ss7.map.api.primitives.NAEAPreferredCI;
 import org.restcomm.protocols.ss7.map.api.primitives.NetworkResource;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.ProtocolId;
 import org.restcomm.protocols.ss7.map.api.primitives.SignalInfo;
 import org.restcomm.protocols.ss7.map.api.primitives.SubscriberIdentity;
@@ -63,7 +64,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Ad
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EquivalentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LocationArea;
@@ -906,7 +906,7 @@ public class Client extends EventTestHarness {
         boolean ueReachableIndicator = true;
         boolean epsSubscriptionDataNotNeeded = true;
         UESRVCCCapability uesrvccCapability = UESRVCCCapability.ueSrvccSupported;
-        EquivalentPLMNList ePLMNList = null;
+        ArrayList<PlmnId> ePLMNList = null;
         ISDNAddressString mmeNumberForMTSMS = null;
         SMSRegisterRequest smsRegisterRequest = null;
         boolean smsOnly = false;

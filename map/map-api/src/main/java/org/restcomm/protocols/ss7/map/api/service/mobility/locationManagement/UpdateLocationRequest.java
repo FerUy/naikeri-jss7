@@ -6,7 +6,10 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;
+
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -69,7 +72,7 @@ public interface UpdateLocationRequest extends MobilityMessage {
 
     boolean getRestorationIndicator();
 
-    EquivalentPLMNList getEPLMNList();
+    ArrayList<PlmnId> getEPLMNList();
 
     NetworkNodeDiameterAddress getMmeDiameterAddress();
 

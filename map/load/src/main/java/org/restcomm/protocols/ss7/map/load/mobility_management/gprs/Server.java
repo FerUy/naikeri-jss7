@@ -739,7 +739,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
 
             SccpAddress clClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
-            SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, "491710400000");
+            SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, SGSN_SSN, "491710400000");
 
             MAPDialogMobility cancelLocationDialog = this.mapProvider.getMAPServiceMobility().
                     createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
@@ -1018,7 +1018,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
 
             SccpAddress clClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
-            SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, "491710400000");
+            SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, SGSN_SSN, "491710400000");
 
             MAPDialogMobility cancelLocationDialog;
             cancelLocationDialog = this.mapProvider.getMAPServiceMobility().createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
