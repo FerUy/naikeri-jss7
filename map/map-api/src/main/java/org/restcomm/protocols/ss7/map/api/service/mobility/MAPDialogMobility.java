@@ -30,7 +30,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.imei.EquipmentStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIu;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
@@ -157,7 +156,7 @@ public interface MAPDialogMobility extends MAPDialog {
             boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
             ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
             boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
-            boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList)
+            boolean removalOfMMERegistrationForSMS, ArrayList<PlmnId> adjacentPLMNList)
             throws MAPException;
 
 
@@ -169,7 +168,7 @@ public interface MAPDialogMobility extends MAPDialog {
             boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
             ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
             boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
-            boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList)
+            boolean removalOfMMERegistrationForSMS, ArrayList<PlmnId> adjacentPLMNList)
             throws MAPException;
 
     void addUpdateGprsLocationResponse(long invokeId, ISDNAddressString hlrNumber, MAPExtensionContainer extensionContainer,

@@ -60,7 +60,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.Failur
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
@@ -914,7 +913,7 @@ public class Client extends EventTestHarness {
         DiameterIdentity sgsnRealm = null;
         boolean lgdSupportIndicator = false;
         boolean removalOfMMERegistrationForSMS = false;
-        AdjacentPLMNList adjacentPLMNList = null;
+        ArrayList<PlmnId> adjacentPLMNList = null;
 
         clientDialogMobility.addUpdateGprsLocationRequest(imsi, sgsnNumber, sgsnAddress, extensionContainer, sgsnCapability,
                 informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo, epsInfo, servingNodeTypeIndicator,

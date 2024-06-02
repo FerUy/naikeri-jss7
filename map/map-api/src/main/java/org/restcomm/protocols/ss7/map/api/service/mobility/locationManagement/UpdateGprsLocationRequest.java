@@ -108,5 +108,5 @@ public interface UpdateGprsLocationRequest extends MobilityMessage {
 
     boolean getRemovalOfMMERegistrationForSMS();
 
-    AdjacentPLMNList getAdjacentPLMNList();
+    ArrayList<PlmnId> getAdjacentPLMNList();
 }

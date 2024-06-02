@@ -54,7 +54,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.Restore
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
@@ -105,10 +104,10 @@ import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ADDInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.AdjacentPLMNListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EPSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ISRInformationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SGSNCapabilityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperChargerInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
@@ -139,6 +138,7 @@ import org.restcomm.protocols.ss7.tcap.asn.ReturnResultLastImpl;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -869,11 +869,11 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                     "491710490000");
             GSNAddress sgsnAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
-            MAPExtensionContainer extensionContainer = null;
-            boolean solsaSupportIndicator = true;
-            SuperChargerInfo superChargerSupportedInServingNetworkEntity = null;
-            boolean gprsEnhancementsSupportIndicator = false;
-            SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, false, false);
+            boolean solsaSupportIndicator = false;
+            Boolean sendSubscriberData = true;
+            SuperChargerInfo superChargerSupportedInServingNetworkEntity = new SuperChargerInfoImpl(sendSubscriberData);
+            boolean gprsEnhancementsSupportIndicator = true;
+            SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, false);
             SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, false);
             boolean oCsi = false;
             boolean dCsi = false;
@@ -892,8 +892,9 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             boolean nb_iot = true;
             SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
             SupportedFeatures supportedFeatures = null;
-            boolean tAdsDataRetrieval = false;
+            boolean tAdsDataRetrieval = true;
             Boolean homogeneousSupportOfIMSVoiceOverPSSessions = true;
+            MAPExtensionContainer extensionContainer = null;
             SGSNCapability sgsnCapability = new SGSNCapabilityImpl(solsaSupportIndicator, extensionContainer,
                     superChargerSupportedInServingNetworkEntity, gprsEnhancementsSupportIndicator, supportedCamelPhases,
                     supportedLCSCapabilitySets, offeredCamel4CSIs, smsCallBarringSupportIndicator, supportedRATTypesIndicator,
@@ -901,10 +902,13 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             boolean informPreviousNetworkEntity = true;
             boolean psLCSNotSupportedByUE = false;
             GSNAddress vGmlcAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
-            ADDInfo addInfo = new ADDInfoImpl(new IMEIImpl("12341234"), false);
-            EPSInfo epsInfo = new EPSInfoImpl(new ISRInformationImpl(true, true, true));
+            boolean skipSubscriberDataUpdate = false;
+            ADDInfo addInfo = new ADDInfoImpl(new IMEIImpl("356024081653200"), skipSubscriberDataUpdate);
+            boolean updateMME = true;
+            boolean cancelSGSN = true;
+            boolean initialAttachIndicator = true;
+            EPSInfo epsInfo = new EPSInfoImpl(new ISRInformationImpl(updateMME, cancelSGSN, initialAttachIndicator));
             boolean servingNodeTypeIndicator = true;
-            boolean skipSubscriberDataUpdate = true;
             UsedRATType usedRATType = UsedRATType.utran;
             boolean gprsSubscriptionDataNotNeeded = true;
             boolean nodeTypeIndicator = true;
@@ -920,22 +924,18 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             ISDNAddressString mmeNumberForMTSMS = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                     "491710490001");
             SMSRegisterRequest smsRegisterRequest = SMSRegisterRequest.isNoPreference;
-            boolean smsOnly = false;
-            byte[] sgsnNameBytes = {0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
-                    0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
-                    0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
-            DiameterIdentity sgsnName = new DiameterIdentityImpl(sgsnNameBytes);
-            byte[] sgsnRealmBytes = {0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34,
-                    0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
-            DiameterIdentity sgsnRealm = new DiameterIdentityImpl(sgsnRealmBytes);
+            boolean smsOnly = true;
+            byte[] sgsnNameArray = "mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
+            DiameterIdentity sgsnName = new DiameterIdentityImpl(sgsnNameArray);
+            byte[] sgsnRealmArray = "epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
+            DiameterIdentity sgsnRealm = new DiameterIdentityImpl(sgsnRealmArray);
             boolean lgdSupportIndicator = false;
             boolean removalOfMMERegistrationForSMS = false;
-            ArrayList<PlmnId> PLMNListAdj = new ArrayList<>();
+            ArrayList<PlmnId> adjacentPLMNList = new ArrayList<>();
             PlmnId adjPlmnId1 = new PlmnIdImpl(262,2);
             PlmnId adjPlmnId2 = new PlmnIdImpl(262,3);
-            PLMNListAdj.add(adjPlmnId1);
-            PLMNListAdj.add(adjPlmnId2);
-            AdjacentPLMNList adjacentPLMNList = new AdjacentPLMNListImpl(PLMNListAdj);
+            adjacentPLMNList.add(adjPlmnId1);
+            adjacentPLMNList.add(adjPlmnId2);
 
             mapDialogMobility.addUpdateGprsLocationRequest(imsi, sgsnNumber, sgsnAddress, extensionContainer, sgsnCapability,
                     informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo, epsInfo, servingNodeTypeIndicator,

@@ -19,7 +19,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
@@ -119,7 +118,7 @@ public class UpdateGprsLocationRequestTest {
         DiameterIdentity sgsnRealm = null;
         boolean lgdSupportIndicator = false;
         boolean removalOfMMERegistrationForSMS = false;
-        AdjacentPLMNList adjacentPLMNList = null;
+        ArrayList<PlmnId> adjacentPLMNList = null;
         long mapProtocolVersion = 3;
 
         UpdateGprsLocationRequestImpl prim = new UpdateGprsLocationRequestImpl(imsi, sgsnNumber, sgsnAddress,

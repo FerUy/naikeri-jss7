@@ -20,7 +20,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
@@ -96,7 +95,7 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
     private DiameterIdentity sgsnRealm;
     private boolean lgdSupportIndicator;
     private boolean removalOfMMERegistrationForSMS;
-    private AdjacentPLMNList adjacentPLMNList;
+    private ArrayList<PlmnId> adjacentPLMNList;
 
     public UpdateGprsLocationRequestImpl() {
         super();
@@ -110,7 +109,7 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
             boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
             ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
             boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
-            boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList, long mapProtocolVersion) {
+            boolean removalOfMMERegistrationForSMS, ArrayList<PlmnId> adjacentPLMNList, long mapProtocolVersion) {
         super();
         this.imsi = imsi;
         this.sgsnNumber = sgsnNumber;
@@ -288,7 +287,7 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
     }
 
     @Override
-    public AdjacentPLMNList getAdjacentPLMNList() {
+    public ArrayList<PlmnId> getAdjacentPLMNList() {
         return this.adjacentPLMNList;
     }
 
@@ -562,17 +561,17 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                 }
                                 break;
                             case TAG_mmeNumberForMTSMS:
-                                if (ais.isTagPrimitive())
+                                if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".mmeNumberForMTSMS: Parameter is primitive",
+                                            + ".mmeNumberForMTSMS: Parameter is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 this.mmeNumberForMTSMS = new ISDNAddressStringImpl();
                                 ((ISDNAddressStringImpl) this.mmeNumberForMTSMS).decodeAll(ais);
                                 break;
                             case TAG_smsRegisterRequest:
-                                if (ais.isTagPrimitive())
+                                if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".smsRegisterRequest: Parameter is primitive",
+                                            + ".smsRegisterRequest: Parameter is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 int smsRegisterReq = (int) ais.readInteger();
                                 this.smsRegisterRequest = SMSRegisterRequest.getInstance(smsRegisterReq);
@@ -586,19 +585,21 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                 this.smsOnly = true;
                                 break;
                             case TAG_sgsn_Name:
-                                if (ais.isTagPrimitive())
+                                if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".sgsnName: Parameter is primitive",
+                                            + ".sgsnName: Parameter is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 this.sgsnName = new DiameterIdentityImpl();
                                 ((DiameterIdentityImpl) this.sgsnName).decodeAll(ais);
+                                break;
                             case TAG_sgsn_Realm:
-                                if (ais.isTagPrimitive())
+                                if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".sgsnRealm: Parameter is primitive",
+                                            + ".sgsnRealm: Parameter is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 this.sgsnRealm = new DiameterIdentityImpl();
                                 ((DiameterIdentityImpl) this.sgsnRealm).decodeAll(ais);
+                                break;
                             case TAF_lgd_supportIndicator:
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -620,8 +621,23 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".adjacentPLMNList: Parameter is primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
-                                this.adjacentPLMNList = new AdjacentPLMNListImpl();
-                                ((AdjacentPLMNListImpl) this.adjacentPLMNList).decodeAll(ais);
+                                AsnInputStream ais4= ais.readSequenceStream();
+                                PlmnId adjPlmnId;
+                                this.adjacentPLMNList = new ArrayList<>();
+                                while (true) {
+                                    if (ais4.available() == 0)
+                                        break;
+
+                                    int tag2 = ais4.readTag();
+                                    if (tag2 != Tag.STRING_OCTET || ais4.getTagClass() != Tag.CLASS_UNIVERSAL || !ais4.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ": bad tag or tagClass or is not primitive when decoding trackingAreaIdList",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    adjPlmnId = new PlmnIdImpl();
+                                    ((PlmnIdImpl) adjPlmnId).decodeAll(ais4);
+                                    this.adjacentPLMNList.add(adjPlmnId);
+                                }
+                                break;
                             default:
                                 ais.advanceElement();
                                 break;
@@ -762,8 +778,14 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
             if (removalOfMMERegistrationForSMS)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_removalOfMMERegistrationForSMS);
 
-            if (adjacentPLMNList != null)
-                ((AdjacentPLMNListImpl) this.adjacentPLMNList).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_adjacentPLMN_List);
+            if (adjacentPLMNList != null) {
+                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, TAG_adjacentPLMN_List);
+                int pos = asnOutputStream.StartContentDefiniteLength();
+                for (PlmnId plmnId : this.adjacentPLMNList) {
+                    ((PlmnIdImpl) plmnId).encodeAll(asnOutputStream);
+                }
+                asnOutputStream.FinalizeContent(pos);
+            }
 
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);

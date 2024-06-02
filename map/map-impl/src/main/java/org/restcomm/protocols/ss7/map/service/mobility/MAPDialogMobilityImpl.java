@@ -51,7 +51,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Ty
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UESRVCCCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.VLRCapability;
-import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AdjacentPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CAMELSubscriptionInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallBarringData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallForwardingData;
@@ -1516,7 +1515,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
             ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
             boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
-            boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList)
+            boolean removalOfMMERegistrationForSMS, ArrayList<PlmnId> adjacentPLMNList)
             throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.gprsLocationUpdateContext)
@@ -1573,7 +1572,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
             ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
             boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
-            boolean removalOfMMERegistrationForSMS, AdjacentPLMNList adjacentPLMNList)
+            boolean removalOfMMERegistrationForSMS, ArrayList<PlmnId> adjacentPLMNList)
             throws MAPException {
         return addUpdateGprsLocationRequest(_Timer_Default, imsi, sgsnNumber, sgsnAddress, extensionContainer, sgsnCapability,
                 informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo, epsInfo, servingNodeTypeIndicator,
