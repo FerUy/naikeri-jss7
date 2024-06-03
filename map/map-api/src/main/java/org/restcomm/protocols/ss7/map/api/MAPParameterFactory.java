@@ -1105,7 +1105,11 @@ public interface MAPParameterFactory {
             boolean regSub, boolean trace, boolean lcsAllPrivExcep, boolean lcsUniversal, boolean lcsCallSessionRelated,
             boolean lcsCallSessionUnrelated, boolean lcsPLMNOperator, boolean lcsServiceType, boolean lcsAllMOLRSS,
             boolean lcsBasicSelfLocation, boolean lcsAutonomousSelfLocation, boolean lcsTransferToThirdParty, boolean smMoPp,
-            boolean barringOutgoingCalls, boolean baoc, boolean boic, boolean boicExHC);
+            boolean barringOutgoingCalls, boolean baoc, boolean boic, boolean boicExHC, boolean localTimeZoneRetrieval,
+            boolean additionalMsisdn, boolean smsInMME, boolean smsInSGSN, boolean ueReachabilityNotification,
+            boolean stateLocationInformationRetrieval, boolean partialPurge, boolean gddInSGSN, boolean sgsnCAMELCapability,
+            boolean pcscfRestoration, boolean dedicatedCoreNetworks, boolean nonIPPDNTypeAPNs, boolean nonIPPDPTypeAPNs,
+            boolean nrAsSecondaryRAT);
 
     AccessRestrictionData createAccessRestrictionData(boolean utranNotAllowed, boolean geranNotAllowed,
             boolean ganNotAllowed, boolean iHspaEvolutionNotAllowed, boolean eUtranNotAllowed,

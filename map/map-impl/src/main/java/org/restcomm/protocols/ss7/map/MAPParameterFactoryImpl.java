@@ -1912,13 +1912,20 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
             boolean regSub, boolean trace, boolean lcsAllPrivExcep, boolean lcsUniversal, boolean lcsCallSessionRelated,
             boolean lcsCallSessionUnrelated, boolean lcsPLMNOperator, boolean lcsServiceType, boolean lcsAllMOLRSS,
             boolean lcsBasicSelfLocation, boolean lcsAutonomousSelfLocation, boolean lcsTransferToThirdParty, boolean smMoPp,
-            boolean barringOutgoingCalls, boolean baoc, boolean boic, boolean boicExHC) {
+            boolean barringOutgoingCalls, boolean baoc, boolean boic, boolean boicExHC, boolean localTimeZoneRetrieval,
+            boolean additionalMsisdn, boolean smsInMME, boolean smsInSGSN, boolean ueReachabilityNotification,
+            boolean stateLocationInformationRetrieval, boolean partialPurge, boolean gddInSGSN, boolean sgsnCAMELCapability,
+            boolean pcscfRestoration, boolean dedicatedCoreNetworks, boolean nonIPPDNTypeAPNs, boolean nonIPPDPTypeAPNs,
+            boolean nrAsSecondaryRAT) {
         return new SupportedFeaturesImpl(odbAllApn, odbHPLMNApn, odbVPLMNApn, odbAllOg, odbAllInternationalOg,
                 odbAllIntOgNotToHPLMNCountry, odbAllInterzonalOg, odbAllInterzonalOgNotToHPLMNCountry,
                 odbAllInterzonalOgandInternatOgNotToHPLMNCountry, regSub, trace, lcsAllPrivExcep, lcsUniversal,
                 lcsCallSessionRelated, lcsCallSessionUnrelated, lcsPLMNOperator, lcsServiceType, lcsAllMOLRSS,
                 lcsBasicSelfLocation, lcsAutonomousSelfLocation, lcsTransferToThirdParty, smMoPp, barringOutgoingCalls, baoc,
-                boic, boicExHC);
+                boic, boicExHC, localTimeZoneRetrieval, additionalMsisdn, smsInMME, smsInSGSN, ueReachabilityNotification,
+                stateLocationInformationRetrieval, partialPurge, gddInSGSN, sgsnCAMELCapability,
+                pcscfRestoration, dedicatedCoreNetworks, nonIPPDNTypeAPNs, nonIPPDPTypeAPNs,
+                nrAsSecondaryRAT);
     }
 
     @Override

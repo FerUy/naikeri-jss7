@@ -2,6 +2,7 @@
 package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -62,7 +63,6 @@ public class SGSNCapabilityTest {
         assertTrue(prim.getSmsCallBarringSupportIndicator());
         assertTrue(prim.getSupportedRATTypesIndicator().getEUtran());
         assertTrue(prim.getSupportedFeatures().getBaoc());
-
         assertTrue(prim.getTAdsDataRetrieval());
         assertTrue(prim.getHomogeneousSupportOfIMSVoiceOverPSSessions());
 
@@ -80,7 +80,11 @@ public class SGSNCapabilityTest {
         boolean smsCallBarringSupportIndicator = true;
         SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(true, true, true, true, true, true);
         SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(true, true, true, true, true, true, true, true, true,
-                true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+                true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
+                false, false, false, false, false,
+                false, false, false, false,
+                false, false, false, false,
+                false);
         boolean tAdsDataRetrieval = true;
         Boolean homogeneousSupportOfIMSVoiceOverPSSessions = Boolean.TRUE;
 

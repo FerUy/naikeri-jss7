@@ -114,7 +114,8 @@ public class SupportedFeaturesTest {
     public void testEncode() throws Exception {
         // Test one
         SupportedFeaturesImpl prim = new SupportedFeaturesImpl(false, true, false, true, false, true, false, true, false, true,
-                false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true);
+                false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true,
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false);
 
         AsnOutputStream asn = new AsnOutputStream();
         prim.encodeAll(asn);
@@ -122,7 +123,8 @@ public class SupportedFeaturesTest {
 
         // Tes two
         prim = new SupportedFeaturesImpl(true, false, true, false, true, false, true, false, true, false, true, false, true,
-                false, true, false, true, false, true, false, true, false, true, false, true, false);
+                false, true, false, true, false, true, false, true, false, true, false, true, false,
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false);
         asn = new AsnOutputStream();
         prim.encodeAll(asn);
 

@@ -264,7 +264,7 @@ public class InsertSubscriberDataResponseTest {
 
         SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(false, true, false, true, false, true, false, true,
                 false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
-                true);
+                true, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
 
         InsertSubscriberDataResponseImpl prim = new InsertSubscriberDataResponseImpl(3, teleserviceList, bearerServiceList,
                 ssList, odbGeneralData, regionalSubscriptionResponse, supportedCamelPhases, extensionContainer,
