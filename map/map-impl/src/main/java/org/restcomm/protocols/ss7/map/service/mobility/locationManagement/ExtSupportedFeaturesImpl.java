@@ -11,11 +11,11 @@ public class ExtSupportedFeaturesImpl extends BitStringBase implements ExtSuppor
     private static final int _INDEX_unlicensedSpectrumAsSecondaryRAT = 0;
 
     public ExtSupportedFeaturesImpl() {
-        super(1,40,1,"Ext-SupportedFeatures");
+        super(1,40,1,"ExtSupportedFeatures");
     }
 
     public ExtSupportedFeaturesImpl(boolean isUnlicensedSpectrumAsSecondaryRAT) {
-        super(1,40,1,"Ext-SupportedFeatures");
+        super(1,40,1,"ExtSupportedFeatures");
 
         if (isUnlicensedSpectrumAsSecondaryRAT)
             this.bitString.set(_INDEX_unlicensedSpectrumAsSecondaryRAT);

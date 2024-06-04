@@ -58,6 +58,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AD
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
@@ -98,7 +99,9 @@ import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ExtSupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperChargerInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.VLRCapabilityImpl;
@@ -850,7 +853,7 @@ public class Client extends TestHarnessMobilityManagement {
             byte[] rand = sendAuthenticationInfoResponseIndication.getAuthenticationSetList().getQuintupletList().getAuthenticationQuintuplets().get(0).getRand();
             if (Arrays.equals(rand, new byte[]{(byte) 0xba, 0x73, 0x31, 0x2e, (byte) 0x8b, (byte) 0xa1, 0x19, 0x75, (byte) 0xe0,
                     (byte) 0xe7, (byte) 0xae, 0x2b, (byte) 0xd1, 0x44, (byte) 0xa7, 0x75})) {
-                        imsi = new IMSIImpl("901405105682021");
+                imsi = new IMSIImpl("901405105682021");
             } else {
                 imsi = new IMSIImpl("901405105682583");
             }
@@ -937,12 +940,69 @@ public class Client extends TestHarnessMobilityManagement {
             RegionalSubscriptionResponse regionalSubscriptionResponse = null;
             SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
             MAPExtensionContainer extensionContainer = null;
-            OfferedCamel4CSIs offeredCamel4CSIs = null;
-            SupportedFeatures supportedFeature = null;
+            boolean oCsi = false;
+            boolean dCsi = false;
+            boolean vtCsi = false;
+            boolean tCsi = false;
+            boolean mtSMSCsi = true;
+            boolean mgCsi = true;
+            boolean psiEnhancements = true;
+            OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(oCsi,dCsi,vtCsi,tCsi, mtSMSCsi, mgCsi, psiEnhancements);
+            boolean odbAllApn = false;
+            boolean odbHPLMNApn = false;
+            boolean odbVPLMNApn = false;
+            boolean odbAllOg = false;
+            boolean odbAllInternationalOg = false;
+            boolean odbAllIntOgNotToHPLMNCountry = false;
+            boolean odbAllInterzonalOg = false;
+            boolean odbAllInterzonalOgNotToHPLMNCountry = false;
+            boolean odbAllInterzonalOgandInternatOgNotToHPLMNCountry = false;
+            boolean regSub = false;
+            boolean trace = false;
+            boolean lcsAllPrivExcep = true;
+            boolean lcsUniversal = true;
+            boolean lcsCallSessionRelated = true;
+            boolean lcsCallSessionUnrelated = true;
+            boolean lcsPLMNOperator = true;
+            boolean lcsServiceType = true;
+            boolean lcsAllMOLRSS = true;
+            boolean lcsBasicSelfLocation = true;
+            boolean lcsAutonomousSelfLocation = true;
+            boolean lcsTransferToThirdParty = true;
+            boolean smMoPp = true;
+            boolean barringOutgoingCalls = true;
+            boolean baoc = true;
+            boolean boic = true;
+            boolean boicExHC = true;
+            boolean localTimeZoneRetrieval = true;
+            boolean additionalMsisdn = true;
+            boolean smsInMME = true;
+            boolean smsInSGSN = true;
+            boolean ueReachabilityNotification = true;
+            boolean stateLocationInformationRetrieval = true;
+            boolean partialPurge = true;
+            boolean gddInSGSN = true;
+            boolean sgsnCAMELCapability = true;
+            boolean pcscfRestoration = true;
+            boolean dedicatedCoreNetworks = true;
+            boolean nonIPPDNTypeAPNs = true;
+            boolean nonIPPDPTypeAPNs = true;
+            boolean nrAsSecondaryRAT = true;
+            SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(odbAllApn, odbHPLMNApn, odbVPLMNApn, odbAllOg, odbAllInternationalOg,
+                    odbAllIntOgNotToHPLMNCountry, odbAllInterzonalOg, odbAllInterzonalOgNotToHPLMNCountry,
+                    odbAllInterzonalOgandInternatOgNotToHPLMNCountry, regSub, trace, lcsAllPrivExcep, lcsUniversal,
+                    lcsCallSessionRelated, lcsCallSessionUnrelated, lcsPLMNOperator, lcsServiceType, lcsAllMOLRSS,
+                    lcsBasicSelfLocation, lcsAutonomousSelfLocation, lcsTransferToThirdParty, smMoPp, barringOutgoingCalls, baoc,
+                    boic, boicExHC, localTimeZoneRetrieval, additionalMsisdn, smsInMME, smsInSGSN, ueReachabilityNotification,
+                    stateLocationInformationRetrieval, partialPurge, gddInSGSN, sgsnCAMELCapability,
+                    pcscfRestoration, dedicatedCoreNetworks, nonIPPDNTypeAPNs, nonIPPDPTypeAPNs,
+                    nrAsSecondaryRAT);
+            boolean unlicensedSpectrumAsSecondaryRAT = true;
+            ExtSupportedFeatures extSupportedFeatures = new ExtSupportedFeaturesImpl(unlicensedSpectrumAsSecondaryRAT);
 
             mapDialogMobility.addInsertSubscriberDataResponse(invokeId, teleserviceList, bearerServiceList, ssList,
                     odbGeneralData,regionalSubscriptionResponse, supportedCamelPhases, extensionContainer, offeredCamel4CSIs,
-                    supportedFeature);
+                    supportedFeatures, extSupportedFeatures);
 
             mapDialogMobility.close(false);
 

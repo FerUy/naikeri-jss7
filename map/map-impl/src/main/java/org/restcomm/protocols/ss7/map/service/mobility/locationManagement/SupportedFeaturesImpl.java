@@ -82,7 +82,7 @@ public class SupportedFeaturesImpl extends BitStringBase implements SupportedFea
             boolean pcscfRestoration, boolean dedicatedCoreNetworks, boolean nonIPPDNTypeAPNs, boolean nonIPPDPTypeAPNs,
             boolean nrAsSecondaryRAT) {
 
-        super(26, 40, 26, "SupportedFeatures");
+        super(26, 40, 40, "SupportedFeatures");
 
         if (odbAllApn)
             this.bitString.set(_INDEX_odbAllApn);

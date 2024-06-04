@@ -2,6 +2,7 @@
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -12,6 +13,7 @@ import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
@@ -24,6 +26,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ExtSupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
@@ -45,12 +48,11 @@ public class InsertSubscriberDataResponseTest {
         return new byte[] { 48, 81, -95, 3, 4, 1, 16, -94, 3, 4, 1, 38, -93, 3, 4, 1, 0, -124, 5, 3, 74, -43, 85, 80, -123, 1,
                 1, -122, 2, 4, -16, -89, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48,
                 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -120, 2, 1, -2, -119, 5, 6, 85, 85, 85, 64 };
-    };
+    }
 
     public byte[] getData1() {
-        return new byte[] { 48, 25, -95, 3, 4, 1, 16, -94, 3, 4, 1, 38, -93, 3, 4, 1, 0, -124, 5, 3, 74, -43, 85, 80, -123, 1,
-                1 };
-    };
+        return new byte[] { 48, 25, -95, 3, 4, 1, 16, -94, 3, 4, 1, 38, -93, 3, 4, 1, 0, -124, 5, 3, 74, -43, 85, 80, -123, 1, 1 };
+    }
 
     @Test(groups = { "functional.decode", "primitives" })
     public void testDecode() throws Exception {
@@ -85,48 +87,53 @@ public class InsertSubscriberDataResponseTest {
         SSCode ssCode = ssList.get(0);
         assertEquals(ssCode.getSupplementaryCodeValue(), SupplementaryCodeValue.allSS);
 
+        // odbGeneralData
         ODBGeneralData odbGeneralData = prim.getODBGeneralData();
-        assertTrue(!odbGeneralData.getAllOGCallsBarred());
+        assertFalse(odbGeneralData.getAllOGCallsBarred());
         assertTrue(odbGeneralData.getInternationalOGCallsBarred());
-        assertTrue(!odbGeneralData.getInternationalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(odbGeneralData.getInternationalOGCallsNotToHPLMNCountryBarred());
         assertTrue(odbGeneralData.getInterzonalOGCallsBarred());
-        assertTrue(!odbGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(odbGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
         assertTrue(odbGeneralData.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(!odbGeneralData.getPremiumRateInformationOGCallsBarred());
+        assertFalse(odbGeneralData.getPremiumRateInformationOGCallsBarred());
         assertTrue(odbGeneralData.getPremiumRateEntertainementOGCallsBarred());
-        assertTrue(!odbGeneralData.getSsAccessBarred());
+        assertFalse(odbGeneralData.getSsAccessBarred());
         assertTrue(odbGeneralData.getAllECTBarred());
-        assertTrue(!odbGeneralData.getChargeableECTBarred());
+        assertFalse(odbGeneralData.getChargeableECTBarred());
         assertTrue(odbGeneralData.getInternationalECTBarred());
-        assertTrue(!odbGeneralData.getInterzonalECTBarred());
+        assertFalse(odbGeneralData.getInterzonalECTBarred());
         assertTrue(odbGeneralData.getDoublyChargeableECTBarred());
-        assertTrue(!odbGeneralData.getMultipleECTBarred());
+        assertFalse(odbGeneralData.getMultipleECTBarred());
         assertTrue(odbGeneralData.getAllPacketOrientedServicesBarred());
-        assertTrue(!odbGeneralData.getRoamerAccessToHPLMNAPBarred());
+        assertFalse(odbGeneralData.getRoamerAccessToHPLMNAPBarred());
         assertTrue(odbGeneralData.getRoamerAccessToVPLMNAPBarred());
-        assertTrue(!odbGeneralData.getRoamingOutsidePLMNOGCallsBarred());
+        assertFalse(odbGeneralData.getRoamingOutsidePLMNOGCallsBarred());
         assertTrue(odbGeneralData.getAllICCallsBarred());
-        assertTrue(!odbGeneralData.getRoamingOutsidePLMNICCallsBarred());
+        assertFalse(odbGeneralData.getRoamingOutsidePLMNICCallsBarred());
         assertTrue(odbGeneralData.getRoamingOutsidePLMNICountryICCallsBarred());
-        assertTrue(!odbGeneralData.getRoamingOutsidePLMNBarred());
+        assertFalse(odbGeneralData.getRoamingOutsidePLMNBarred());
         assertTrue(odbGeneralData.getRoamingOutsidePLMNCountryBarred());
-        assertTrue(!odbGeneralData.getRegistrationAllCFBarred());
+        assertFalse(odbGeneralData.getRegistrationAllCFBarred());
         assertTrue(odbGeneralData.getRegistrationCFNotToHPLMNBarred());
-        assertTrue(!odbGeneralData.getRegistrationInterzonalCFBarred());
+        assertFalse(odbGeneralData.getRegistrationInterzonalCFBarred());
         assertTrue(odbGeneralData.getRegistrationInterzonalCFNotToHPLMNBarred());
-        assertTrue(!odbGeneralData.getRegistrationInternationalCFBarred());
+        assertFalse(odbGeneralData.getRegistrationInternationalCFBarred());
 
+        // regionalSubscriptionResponse
         assertEquals(prim.getRegionalSubscriptionResponse(), RegionalSubscriptionResponse.tooManyZoneCodes);
 
+        // supportedCamelPhases
         SupportedCamelPhases supportedCamelPhases = prim.getSupportedCamelPhases();
         assertTrue(supportedCamelPhases.getPhase1Supported());
         assertTrue(supportedCamelPhases.getPhase2Supported());
         assertTrue(supportedCamelPhases.getPhase3Supported());
         assertTrue(supportedCamelPhases.getPhase4Supported());
 
+        // extensionContainer
         assertNotNull(prim.getExtensionContainer());
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(prim.getExtensionContainer()));
 
+        // offeredCamel4CSIs
         OfferedCamel4CSIs offeredCamel4CSIs = prim.getOfferedCamel4CSIs();
         assertTrue(offeredCamel4CSIs.getDCsi());
         assertTrue(offeredCamel4CSIs.getMgCsi());
@@ -136,33 +143,39 @@ public class InsertSubscriberDataResponseTest {
         assertTrue(offeredCamel4CSIs.getTCsi());
         assertTrue(offeredCamel4CSIs.getVtCsi());
 
+        // supportedFeatures
         SupportedFeatures supportedFeatures = prim.getSupportedFeatures();
-        assertTrue(!supportedFeatures.getOdbAllApn());
+        assertFalse(supportedFeatures.getOdbAllApn());
         assertTrue(supportedFeatures.getOdbHPLMNApn());
-        assertTrue(!supportedFeatures.getOdbVPLMNApn());
+        assertFalse(supportedFeatures.getOdbVPLMNApn());
         assertTrue(supportedFeatures.getOdbAllOg());
-        assertTrue(!supportedFeatures.getOdbAllInternationalOg());
+        assertFalse(supportedFeatures.getOdbAllInternationalOg());
         assertTrue(supportedFeatures.getOdbAllIntOgNotToHPLMNCountry());
-        assertTrue(!supportedFeatures.getOdbAllInterzonalOg());
+        assertFalse(supportedFeatures.getOdbAllInterzonalOg());
         assertTrue(supportedFeatures.getOdbAllInterzonalOgNotToHPLMNCountry());
-        assertTrue(!supportedFeatures.getOdbAllInterzonalOgandInternatOgNotToHPLMNCountry());
+        assertFalse(supportedFeatures.getOdbAllInterzonalOgandInternatOgNotToHPLMNCountry());
         assertTrue(supportedFeatures.getRegSub());
-        assertTrue(!supportedFeatures.getTrace());
+        assertFalse(supportedFeatures.getTrace());
         assertTrue(supportedFeatures.getLcsAllPrivExcep());
-        assertTrue(!supportedFeatures.getLcsUniversal());
+        assertFalse(supportedFeatures.getLcsUniversal());
         assertTrue(supportedFeatures.getLcsCallSessionRelated());
-        assertTrue(!supportedFeatures.getLcsCallSessionUnrelated());
+        assertFalse(supportedFeatures.getLcsCallSessionUnrelated());
         assertTrue(supportedFeatures.getLcsPLMNOperator());
-        assertTrue(!supportedFeatures.getLcsServiceType());
+        assertFalse(supportedFeatures.getLcsServiceType());
         assertTrue(supportedFeatures.getLcsAllMOLRSS());
-        assertTrue(!supportedFeatures.getLcsBasicSelfLocation());
+        assertFalse(supportedFeatures.getLcsBasicSelfLocation());
         assertTrue(supportedFeatures.getLcsAutonomousSelfLocation());
-        assertTrue(!supportedFeatures.getLcsTransferToThirdParty());
+        assertFalse(supportedFeatures.getLcsTransferToThirdParty());
         assertTrue(supportedFeatures.getSmMoPp());
-        assertTrue(!supportedFeatures.getBarringOutgoingCalls());
+        assertFalse(supportedFeatures.getBarringOutgoingCalls());
         assertTrue(supportedFeatures.getBaoc());
-        assertTrue(!supportedFeatures.getBoic());
+        assertFalse(supportedFeatures.getBoic());
         assertTrue(supportedFeatures.getBoicExHC());
+
+        // extSupportedFeatures
+        ExtSupportedFeatures extSupportedFeatures = prim.getExtSupportedFeatures();
+        if (extSupportedFeatures != null)
+            assertFalse(extSupportedFeatures.isUnlicensedSpectrumAsSecondaryRAT());
 
         // IST Response V2 Test
         data = this.getData();
@@ -195,36 +208,37 @@ public class InsertSubscriberDataResponseTest {
         ssCode = ssList.get(0);
         assertEquals(ssCode.getSupplementaryCodeValue(), SupplementaryCodeValue.allSS);
 
+        //odbGeneralData
         odbGeneralData = prim.getODBGeneralData();
-        assertTrue(!odbGeneralData.getAllOGCallsBarred());
+        assertFalse(odbGeneralData.getAllOGCallsBarred());
         assertTrue(odbGeneralData.getInternationalOGCallsBarred());
-        assertTrue(!odbGeneralData.getInternationalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(odbGeneralData.getInternationalOGCallsNotToHPLMNCountryBarred());
         assertTrue(odbGeneralData.getInterzonalOGCallsBarred());
-        assertTrue(!odbGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(odbGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
         assertTrue(odbGeneralData.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(!odbGeneralData.getPremiumRateInformationOGCallsBarred());
+        assertFalse(odbGeneralData.getPremiumRateInformationOGCallsBarred());
         assertTrue(odbGeneralData.getPremiumRateEntertainementOGCallsBarred());
-        assertTrue(!odbGeneralData.getSsAccessBarred());
+        assertFalse(odbGeneralData.getSsAccessBarred());
         assertTrue(odbGeneralData.getAllECTBarred());
-        assertTrue(!odbGeneralData.getChargeableECTBarred());
+        assertFalse(odbGeneralData.getChargeableECTBarred());
         assertTrue(odbGeneralData.getInternationalECTBarred());
-        assertTrue(!odbGeneralData.getInterzonalECTBarred());
+        assertFalse(odbGeneralData.getInterzonalECTBarred());
         assertTrue(odbGeneralData.getDoublyChargeableECTBarred());
-        assertTrue(!odbGeneralData.getMultipleECTBarred());
+        assertFalse(odbGeneralData.getMultipleECTBarred());
         assertTrue(odbGeneralData.getAllPacketOrientedServicesBarred());
-        assertTrue(!odbGeneralData.getRoamerAccessToHPLMNAPBarred());
+        assertFalse(odbGeneralData.getRoamerAccessToHPLMNAPBarred());
         assertTrue(odbGeneralData.getRoamerAccessToVPLMNAPBarred());
-        assertTrue(!odbGeneralData.getRoamingOutsidePLMNOGCallsBarred());
+        assertFalse(odbGeneralData.getRoamingOutsidePLMNOGCallsBarred());
         assertTrue(odbGeneralData.getAllICCallsBarred());
-        assertTrue(!odbGeneralData.getRoamingOutsidePLMNICCallsBarred());
+        assertFalse(odbGeneralData.getRoamingOutsidePLMNICCallsBarred());
         assertTrue(odbGeneralData.getRoamingOutsidePLMNICountryICCallsBarred());
-        assertTrue(!odbGeneralData.getRoamingOutsidePLMNBarred());
+        assertFalse(odbGeneralData.getRoamingOutsidePLMNBarred());
         assertTrue(odbGeneralData.getRoamingOutsidePLMNCountryBarred());
-        assertTrue(!odbGeneralData.getRegistrationAllCFBarred());
+        assertFalse(odbGeneralData.getRegistrationAllCFBarred());
         assertTrue(odbGeneralData.getRegistrationCFNotToHPLMNBarred());
-        assertTrue(!odbGeneralData.getRegistrationInterzonalCFBarred());
+        assertFalse(odbGeneralData.getRegistrationInterzonalCFBarred());
         assertTrue(odbGeneralData.getRegistrationInterzonalCFNotToHPLMNBarred());
-        assertTrue(!odbGeneralData.getRegistrationInternationalCFBarred());
+        assertFalse(odbGeneralData.getRegistrationInternationalCFBarred());
 
         assertEquals(prim.getRegionalSubscriptionResponse(), RegionalSubscriptionResponse.tooManyZoneCodes);
 
@@ -233,48 +247,57 @@ public class InsertSubscriberDataResponseTest {
     @Test(groups = { "functional.encode", "primitives" })
     public void testEncode() throws Exception {
 
-        // Start ISD Response Vesrion 3 Test
+        // Start ISD Response Version 3 Test
 
         // teleserviceList
-        ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<ExtTeleserviceCode>();
+        ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
         ExtTeleserviceCode extTeleservice = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allSpeechTransmissionServices);
         teleserviceList.add(extTeleservice);
 
         // bearerServiceList
-        ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<ExtBearerServiceCode>();
+        ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<>();
         ExtBearerServiceCodeImpl extBearerServiceCode = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.padAccessCA_9600bps);
         bearerServiceList.add(extBearerServiceCode);
 
         // ssList
-        ArrayList<SSCode> ssList = new ArrayList<SSCode>();
+        ArrayList<SSCode> ssList = new ArrayList<>();
         SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.allSS);
         ssList.add(ssCode);
 
+        // odbGeneralData
         ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true,
                 false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
                 true, false);
 
+        // regionalSubscriptionResponse
         RegionalSubscriptionResponse regionalSubscriptionResponse = RegionalSubscriptionResponse.tooManyZoneCodes;
 
+        // supportedCamelPhases
         SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
 
+        // extensionContainer
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
 
+        // offeredCamel4CSIs
         OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(true, true, true, true, true, true, true);
 
+        // supportedFeatures
         SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(false, true, false, true, false, true, false, true,
                 false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
                 true, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
 
+        // extSupportedFeatures
+        ExtSupportedFeatures extSupportedFeatures = new ExtSupportedFeaturesImpl(false);
+
         InsertSubscriberDataResponseImpl prim = new InsertSubscriberDataResponseImpl(3, teleserviceList, bearerServiceList,
                 ssList, odbGeneralData, regionalSubscriptionResponse, supportedCamelPhases, extensionContainer,
-                offeredCamel4CSIs, supportedFeatures);
+                offeredCamel4CSIs, supportedFeatures, extSupportedFeatures);
         AsnOutputStream asn = new AsnOutputStream();
         prim.encodeAll(asn);
 
         assertTrue(Arrays.equals(asn.toByteArray(), this.getData()));
 
-        // Start ISD Response Vesrion 2 Test
+        // Start ISD Response Version 2 Test
         prim = new InsertSubscriberDataResponseImpl(2, teleserviceList, bearerServiceList, ssList, odbGeneralData,
                 regionalSubscriptionResponse);
 

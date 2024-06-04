@@ -41,6 +41,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AD
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
@@ -1123,14 +1124,15 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             RegionalSubscriptionResponse regionalSubscriptionResponse) throws MAPException {
 
         this.addInsertSubscriberDataResponse(invokeId, teleserviceList, bearerServiceList, ssList, odbGeneralData,
-                regionalSubscriptionResponse, null, null, null, null);
+                regionalSubscriptionResponse);
     }
 
     @Override
     public void addInsertSubscriberDataResponse(long invokeId, ArrayList<ExtTeleserviceCode> teleserviceList,
             ArrayList<ExtBearerServiceCode> bearerServiceList, ArrayList<SSCode> ssList, ODBGeneralData odbGeneralData,
             RegionalSubscriptionResponse regionalSubscriptionResponse, SupportedCamelPhases supportedCamelPhases,
-            MAPExtensionContainer extensionContainer, OfferedCamel4CSIs offeredCamel4CSIs, SupportedFeatures supportedFeatures)
+            MAPExtensionContainer extensionContainer, OfferedCamel4CSIs offeredCamel4CSIs, SupportedFeatures supportedFeatures,
+            ExtSupportedFeatures extSupportedFeatures)
             throws MAPException {
 
         boolean isSubscriberDataMngtContext = false;
@@ -1167,7 +1169,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
                 && this.mapApplicationContext.getApplicationContextVersion().getVersion() != 1) {
             InsertSubscriberDataResponseImpl insertSubscriberDataResponse = new InsertSubscriberDataResponseImpl(this.mapApplicationContext.getApplicationContextVersion().getVersion(),
                     teleserviceList, bearerServiceList, ssList, odbGeneralData, regionalSubscriptionResponse, supportedCamelPhases, extensionContainer,
-                    offeredCamel4CSIs, supportedFeatures);
+                    offeredCamel4CSIs, supportedFeatures, extSupportedFeatures);
             AsnOutputStream aos = new AsnOutputStream();
             insertSubscriberDataResponse.encodeData(aos);
 

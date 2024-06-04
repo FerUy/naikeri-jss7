@@ -102,6 +102,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AD
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSRequest;
@@ -6718,11 +6719,12 @@ TC-END + InsertSubscriberDataRequestResponse
                 SupportedCamelPhases supportedCamelPhases = null;
                 OfferedCamel4CSIs offeredCamel4CSIs = null;
                 SupportedFeatures supportedFeatures = null;
+                ExtSupportedFeatures extSupportedFeatures = null;
 
                 try {
                     d.addInsertSubscriberDataResponse(ind.getInvokeId(), teleserviceList, bearerServiceList, ssList,
                             odbGeneralData, regionalSubscriptionResponse, supportedCamelPhases, extensionContainer,
-                            offeredCamel4CSIs, supportedFeatures);
+                            offeredCamel4CSIs, supportedFeatures, extSupportedFeatures);
                 } catch (MAPException e) {
                     this.error("Error while adding InsertSubscriberDataResponse", e);
                     fail("Error while adding InsertSubscriberDataResponse");
