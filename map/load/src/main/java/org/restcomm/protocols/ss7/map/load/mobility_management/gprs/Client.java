@@ -96,6 +96,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
 import org.restcomm.protocols.ss7.map.load.mobility_management.cs.TestHarnessMobilityManagement;
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
@@ -115,8 +116,10 @@ import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.Suppor
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBGeneralDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
+import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
@@ -1013,20 +1016,24 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             long invokeId = insertSubscriberDataRequest.getInvokeId();
             MAPDialogMobility mapDialogMobility = insertSubscriberDataRequest.getMAPDialog();
             ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
-            ExtTeleserviceCode dataTeleservices = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allDataTeleservices);
             ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
             ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
-            teleserviceList.add(dataTeleservices);
+            ExtTeleserviceCode dataTeleservices = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allDataTeleservices);
             teleserviceList.add(shortMessageMT_PP);
             teleserviceList.add(shortMessageMO_PP);
+            teleserviceList.add(dataTeleservices);
             ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<>();
             ExtBearerServiceCode extBearerServiceCode1 = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allBearerServices);
             ExtBearerServiceCode extBearerServiceCode2 = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allDataCDAServices);
             bearerServiceList.add(extBearerServiceCode1);
             bearerServiceList.add(extBearerServiceCode2);
-            ArrayList<SSCode> ssList = null;
-            ODBGeneralData odbGeneralData = null;
-            RegionalSubscriptionResponse regionalSubscriptionResponse = null;
+            ArrayList<SSCode> ssList = new ArrayList<>();
+            SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.allSS);
+            ssList.add(ssCode);
+            ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true,
+                    false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
+                    true, false);
+            RegionalSubscriptionResponse regionalSubscriptionResponse = RegionalSubscriptionResponse.tooManyZoneCodes;
             SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
             MAPExtensionContainer extensionContainer = null;
             boolean oCsi = false;

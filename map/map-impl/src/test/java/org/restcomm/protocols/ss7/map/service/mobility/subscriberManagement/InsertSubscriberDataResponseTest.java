@@ -45,12 +45,22 @@ import org.testng.annotations.Test;
 public class InsertSubscriberDataResponseTest {
 
     public byte[] getData() {
-        return new byte[] { 48, 81, -95, 3, 4, 1, 16, -94, 3, 4, 1, 38, -93, 3, 4, 1, 0, -124, 5, 3, 74, -43, 85, 80, -123, 1,
+        return new byte[] { 48, 85, -95, 3, 4, 1, 16, -94, 3, 4, 1, 38, -93, 3, 4, 1, 0, -124, 5, 3, 74, -43, 85, 80, -123, 1,
                 1, -122, 2, 4, -16, -89, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48,
-                11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -120, 2, 1, -2, -119, 5, 6, 85, 85, 85, 64 };
+                11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -120, 2, 1, -2, -119, 5, 6, 85, 85, 85, 64,
+                (byte) 0x8a, 0x02, 0x07, (byte) 0x80};
+    }
+    public byte[] getData1() {
+        return new byte[] { 0x30, 54, (byte) 0xa1, 0x09, 0x04, 0x01, 0x21, 0x04,
+                0x01, 0x22, 0x04, 0x01, 0x70, (byte) 0xa2, 0x06, 0x04, 0x01, 0x00, 0x04,
+                0x01, 0x10, (byte) 0xa3, 0x03, 0x04, 0x01, 0x00, (byte) 0x84,
+                0x05, 0x03, 0x4a, (byte) 0xd5, 0x55, 0x50, (byte) 0x85, 0x01,
+                0x01, (byte) 0x86, 0x02, 0x04, (byte) 0xf0, (byte) 0x88, 0x02, 0x01,
+                (byte) 0xce, (byte) 0x89, 0x06, 0x00, (byte) 0xc0, 0x3f, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0x8a, 0x02, 0x07, (byte) 0x80};
     }
 
-    public byte[] getData1() {
+    public byte[] getData2() {
         return new byte[] { 48, 25, -95, 3, 4, 1, 16, -94, 3, 4, 1, 38, -93, 3, 4, 1, 0, -124, 5, 3, 74, -43, 85, 80, -123, 1, 1 };
     }
 
@@ -171,11 +181,25 @@ public class InsertSubscriberDataResponseTest {
         assertTrue(supportedFeatures.getBaoc());
         assertFalse(supportedFeatures.getBoic());
         assertTrue(supportedFeatures.getBoicExHC());
+        assertFalse(supportedFeatures.getLocalTimeZoneRetrieval());
+        assertFalse(supportedFeatures.getAdditionalMsisdn());
+        assertFalse(supportedFeatures.getSmsInMME());
+        assertFalse(supportedFeatures.getSmsInSGSN());
+        assertFalse(supportedFeatures.getUeReachabilityNotification());
+        assertFalse(supportedFeatures.getStateLocationInformationRetrieval());
+        assertFalse(supportedFeatures.getPartialPurge());
+        assertFalse(supportedFeatures.getGddInSGSN());
+        assertFalse(supportedFeatures.getSgsnCAMELCapability());
+        assertFalse(supportedFeatures.getPcscfRestoration());
+        assertFalse(supportedFeatures.getDedicatedCoreNetworks());
+        assertFalse(supportedFeatures.getNonIPPDNTypeAPNs());
+        assertFalse(supportedFeatures.getNonIPPDPTypeAPNs());
+        assertFalse(supportedFeatures.getNrAsSecondaryRAT());
 
         // extSupportedFeatures
         ExtSupportedFeatures extSupportedFeatures = prim.getExtSupportedFeatures();
         if (extSupportedFeatures != null)
-            assertFalse(extSupportedFeatures.isUnlicensedSpectrumAsSecondaryRAT());
+            assertTrue(extSupportedFeatures.isUnlicensedSpectrumAsSecondaryRAT());
 
         // IST Response V2 Test
         data = this.getData();
@@ -251,13 +275,19 @@ public class InsertSubscriberDataResponseTest {
 
         // teleserviceList
         ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
-        ExtTeleserviceCode extTeleservice = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allSpeechTransmissionServices);
-        teleserviceList.add(extTeleservice);
+        ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
+        ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
+        ExtTeleserviceCode dataTeleservices = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allDataTeleservices);
+        teleserviceList.add(shortMessageMT_PP);
+        teleserviceList.add(shortMessageMO_PP);
+        teleserviceList.add(dataTeleservices);
 
         // bearerServiceList
         ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<>();
-        ExtBearerServiceCodeImpl extBearerServiceCode = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.padAccessCA_9600bps);
-        bearerServiceList.add(extBearerServiceCode);
+        ExtBearerServiceCodeImpl extBearerServiceCode0 = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allBearerServices);
+        ExtBearerServiceCodeImpl extBearerServiceCode16 = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allDataCDAServices);
+        bearerServiceList.add(extBearerServiceCode0);
+        bearerServiceList.add(extBearerServiceCode16);
 
         // ssList
         ArrayList<SSCode> ssList = new ArrayList<>();
@@ -276,18 +306,18 @@ public class InsertSubscriberDataResponseTest {
         SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
 
         // extensionContainer
-        MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
+        MAPExtensionContainer extensionContainer = null;
 
         // offeredCamel4CSIs
-        OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(true, true, true, true, true, true, true);
+        OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(true, true, false, false, true, true, true);
 
         // supportedFeatures
-        SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(false, true, false, true, false, true, false, true,
-                false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
-                true, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
+        SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(true, true, false, false, false, false, false, false,
+                false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
+                true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
 
         // extSupportedFeatures
-        ExtSupportedFeatures extSupportedFeatures = new ExtSupportedFeaturesImpl(false);
+        ExtSupportedFeatures extSupportedFeatures = new ExtSupportedFeaturesImpl(true);
 
         InsertSubscriberDataResponseImpl prim = new InsertSubscriberDataResponseImpl(3, teleserviceList, bearerServiceList,
                 ssList, odbGeneralData, regionalSubscriptionResponse, supportedCamelPhases, extensionContainer,
@@ -295,7 +325,14 @@ public class InsertSubscriberDataResponseTest {
         AsnOutputStream asn = new AsnOutputStream();
         prim.encodeAll(asn);
 
-        assertTrue(Arrays.equals(asn.toByteArray(), this.getData()));
+        assertTrue(Arrays.equals(asn.toByteArray(), this.getData1()));
+
+        teleserviceList = new ArrayList<>();
+        ExtTeleserviceCode allSpeechTransmissionServices = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allSpeechTransmissionServices);
+        teleserviceList.add(allSpeechTransmissionServices);
+        bearerServiceList = new ArrayList<>();
+        ExtBearerServiceCodeImpl padAccessCA_9600bps = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.padAccessCA_9600bps);
+        bearerServiceList.add(padAccessCA_9600bps);
 
         // Start ISD Response Version 2 Test
         prim = new InsertSubscriberDataResponseImpl(2, teleserviceList, bearerServiceList, ssList, odbGeneralData,
@@ -304,7 +341,7 @@ public class InsertSubscriberDataResponseTest {
         asn = new AsnOutputStream();
         prim.encodeAll(asn);
 
-        assertTrue(Arrays.equals(asn.toByteArray(), this.getData1()));
+        assertTrue(Arrays.equals(asn.toByteArray(), this.getData2()));
 
     }
 }

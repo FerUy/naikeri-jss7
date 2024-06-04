@@ -1859,11 +1859,10 @@ public class InsertSubscriberDataRequestTest {
         boolean tifCsi = false;
 
         ArrayList<MMCode> mobilityTriggers = new ArrayList<MMCode>();
-        Long serviceKey = new Long(3);
-        ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22235");
-        ;
         mobilityTriggers.add(new MMCodeImpl(MMCodeValue.GPRSAttach));
         mobilityTriggers.add(new MMCodeImpl(MMCodeValue.IMSIAttach));
+        Long serviceKey = new Long(3);
+        ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22235");
 
         MCSI mCsi = new MCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, extensionContainer, notificationToCSE, csiActive);
 
@@ -1931,7 +1930,6 @@ public class InsertSubscriberDataRequestTest {
         APNOIReplacement apnoiReplacement = new APNOIReplacementImpl(this.getAPNOIReplacementData());
         ExtPDPType extpdpType = new ExtPDPTypeImpl(this.getExtPDPTypeData());
         PDPAddress extpdpAddress = new PDPAddressImpl(this.getPDPAddressData2());
-        ;
         SIPTOPermission sipToPermission = SIPTOPermission.siptoAllowed;
         LIPAPermission lipaPermission = LIPAPermission.lipaConditional;
 
