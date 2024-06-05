@@ -115,6 +115,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIuB;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISRInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
@@ -2401,11 +2402,14 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
             SupportedCamelPhases supportedCamelPhases, SupportedLCSCapabilitySets supportedLCSCapabilitySets,
             OfferedCamel4CSIs offeredCamel4CSIs, boolean smsCallBarringSupportIndicator,
             SupportedRATTypes supportedRATTypesIndicator, SupportedFeatures supportedFeatures, boolean tAdsDataRetrieval,
-            Boolean homogeneousSupportOfIMSVoiceOverPSSessions) {
+            Boolean homogeneousSupportOfIMSVoiceOverPSSessions, boolean cancellationTypeInitialAttach,
+            boolean misdnlessOperationSupported, boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions,
+            boolean resetIdsSupported, ExtSupportedFeatures extSupportedFeatures) {
         return new SGSNCapabilityImpl(solsaSupportIndicator, extensionContainer, superChargerSupportedInServingNetworkEntity,
                 gprsEnhancementsSupportIndicator, supportedCamelPhases, supportedLCSCapabilitySets, offeredCamel4CSIs,
                 smsCallBarringSupportIndicator, supportedRATTypesIndicator, supportedFeatures, tAdsDataRetrieval,
-                homogeneousSupportOfIMSVoiceOverPSSessions);
+                homogeneousSupportOfIMSVoiceOverPSSessions, cancellationTypeInitialAttach, misdnlessOperationSupported,
+                updateOfHomogeneousSupportOfIMSVoiceOverPSSessions, resetIdsSupported, extSupportedFeatures);
     }
 
     @Override

@@ -31,6 +31,7 @@ SGSN-Capability ::= SEQUENCE {
  *
  *
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public interface SGSNCapability extends Serializable {
@@ -59,4 +60,13 @@ public interface SGSNCapability extends Serializable {
 
     Boolean getHomogeneousSupportOfIMSVoiceOverPSSessions();
 
+    boolean getCancellationTypeInitialAttach();
+
+    boolean getMsisdnlessOperationSupported();
+
+    boolean getUpdateOfHomogeneousSupportOfIMSVoiceOverPSSessions();
+
+    boolean getResetIdsSupported();
+
+    ExtSupportedFeatures getExtSupportedFeatures();
 }

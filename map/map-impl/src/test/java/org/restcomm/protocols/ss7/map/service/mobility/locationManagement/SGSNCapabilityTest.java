@@ -4,6 +4,7 @@ package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertNull;
 
 import java.util.Arrays;
 
@@ -11,6 +12,7 @@ import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SuperChargerInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedLCSCapabilitySets;
@@ -18,11 +20,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Su
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OfferedCamel4CSIs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SGSNCapabilityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperChargerInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedFeaturesImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.testng.annotations.Test;
@@ -30,6 +27,7 @@ import org.testng.annotations.Test;
 /**
  *
  * @author Lasith Waruna Perera
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class SGSNCapabilityTest {
@@ -65,6 +63,11 @@ public class SGSNCapabilityTest {
         assertTrue(prim.getSupportedFeatures().getBaoc());
         assertTrue(prim.getTAdsDataRetrieval());
         assertTrue(prim.getHomogeneousSupportOfIMSVoiceOverPSSessions());
+        assertFalse(prim.getCancellationTypeInitialAttach());
+        assertFalse(prim.getMsisdnlessOperationSupported());
+        assertFalse(prim.getUpdateOfHomogeneousSupportOfIMSVoiceOverPSSessions());
+        assertFalse(prim.getResetIdsSupported());
+        assertNull(prim.getExtSupportedFeatures());
 
     }
 
@@ -78,7 +81,7 @@ public class SGSNCapabilityTest {
         SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, true);
         OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(true, true, true, true, true, true, true);
         boolean smsCallBarringSupportIndicator = true;
-        SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(true, true, true, true, true, true);
+        SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(true, true, true, true, true, false);
         SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(true, true, true, true, true, true, true, true, true,
                 true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
                 false, false, false, false, false,
@@ -87,11 +90,18 @@ public class SGSNCapabilityTest {
                 false);
         boolean tAdsDataRetrieval = true;
         Boolean homogeneousSupportOfIMSVoiceOverPSSessions = Boolean.TRUE;
+        boolean cancellationTypeInitialAttach = false;
+        boolean misdnlessOperationSupported = false;
+        boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions = false;
+        boolean resetIdsSupported = false;
+        ExtSupportedFeatures extSupportedFeatures = null;
 
         SGSNCapabilityImpl prim = new SGSNCapabilityImpl(solsaSupportIndicator, extensionContainer,
                 superChargerSupportedInServingNetworkEntity, gprsEnhancementsSupportIndicator, supportedCamelPhases,
                 supportedLCSCapabilitySets, offeredCamel4CSIs, smsCallBarringSupportIndicator, supportedRATTypesIndicator,
-                supportedFeatures, tAdsDataRetrieval, homogeneousSupportOfIMSVoiceOverPSSessions);
+                supportedFeatures, tAdsDataRetrieval, homogeneousSupportOfIMSVoiceOverPSSessions, cancellationTypeInitialAttach,
+                misdnlessOperationSupported, updateOfHomogeneousSupportOfIMSVoiceOverPSSessions, resetIdsSupported,
+                extSupportedFeatures);
         AsnOutputStream asn = new AsnOutputStream();
         prim.encodeAll(asn);
 

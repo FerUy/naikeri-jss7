@@ -34,6 +34,7 @@ import org.testng.annotations.Test;
 /**
  *
  * @author Lasith Waruna Perera
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class UpdateGprsLocationRequestTest {
@@ -63,8 +64,8 @@ public class UpdateGprsLocationRequestTest {
         assertEquals(tag, Tag.SEQUENCE);
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
-        assertTrue(prim.getImsi().getData().equals("111222"));
-        assertTrue(prim.getSgsnNumber().getAddress().equals("22228"));
+        assertEquals(prim.getImsi().getData(), "111222");
+        assertEquals(prim.getSgsnNumber().getAddress(), "22228");
         assertEquals(prim.getSgsnNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(prim.getSgsnNumber().getNumberingPlan(), NumberingPlan.ISDN);
         assertTrue(Arrays.equals(prim.getSgsnAddress().getData(), getGSNAddressData()));
@@ -73,7 +74,7 @@ public class UpdateGprsLocationRequestTest {
         assertTrue(prim.getInformPreviousNetworkEntity());
         assertTrue(prim.getPsLCSNotSupportedByUE());
         assertTrue(Arrays.equals(prim.getVGmlcAddress().getData(), getGSNAddressData()));
-        assertTrue(prim.getADDInfo().getImeisv().getIMEI().equals("12341234"));
+        assertEquals(prim.getADDInfo().getImeisv().getIMEI(), "12341234");
         assertTrue(prim.getEPSInfo().getIsrInformation().getCancelSGSN());
         assertTrue(prim.getServingNodeTypeIndicator());
         assertTrue(prim.getSkipSubscriberDataUpdate());
@@ -95,7 +96,7 @@ public class UpdateGprsLocationRequestTest {
         GSNAddress sgsnAddress = new GSNAddressImpl(getGSNAddressData());
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
         SGSNCapability sgsnCapability = new SGSNCapabilityImpl(true, extensionContainer, null, false, null, null, null, false,
-                null, null, false, null);
+                null, null, false, null, false, false, false, false, null);
         boolean informPreviousNetworkEntity = true;
         boolean psLCSNotSupportedByUE = true;
         GSNAddress vGmlcAddress = new GSNAddressImpl(getGSNAddressData());

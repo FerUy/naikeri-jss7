@@ -112,6 +112,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIuB;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISRInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LAC;
@@ -1333,7 +1334,9 @@ public interface MAPParameterFactory {
             SupportedCamelPhases supportedCamelPhases, SupportedLCSCapabilitySets supportedLCSCapabilitySets,
             OfferedCamel4CSIs offeredCamel4CSIs, boolean smsCallBarringSupportIndicator,
             SupportedRATTypes supportedRATTypesIndicator, SupportedFeatures supportedFeatures, boolean tAdsDataRetrieval,
-            Boolean homogeneousSupportOfIMSVoiceOverPSSessions);
+            Boolean homogeneousSupportOfIMSVoiceOverPSSessions, boolean cancellationTypeInitialAttach,
+            boolean misdnlessOperationSupported, boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions,
+            boolean resetIdsSupported, ExtSupportedFeatures extSupportedFeatures);
 
     OfferedCamel4Functionalities createOfferedCamel4Functionalities(boolean initiateCallAttempt, boolean splitLeg, boolean moveLeg, boolean disconnectLeg,
             boolean entityReleased, boolean dfcWithArgument, boolean playTone, boolean dtmfMidCall, boolean chargingIndicator, boolean alertingDP,

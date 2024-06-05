@@ -948,11 +948,19 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
                     nrAsSecondaryRAT);
             boolean tAdsDataRetrieval = true;
             Boolean homogeneousSupportOfIMSVoiceOverPSSessions = true;
+            boolean cancellationTypeInitialAttach = true;
+            boolean misdnlessOperationSupported = false;
+            boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions = true;
+            boolean resetIdsSupported = true;
+            boolean unlicensedSpectrumAsSecondaryRAT = true;
+            ExtSupportedFeatures extSupportedFeatures = new ExtSupportedFeaturesImpl(unlicensedSpectrumAsSecondaryRAT);
             MAPExtensionContainer extensionContainer = null;
             SGSNCapability sgsnCapability = new SGSNCapabilityImpl(solsaSupportIndicator, extensionContainer,
                     superChargerSupportedInServingNetworkEntity, gprsEnhancementsSupportIndicator, supportedCamelPhases,
                     supportedLCSCapabilitySets, offeredCamel4CSIs, smsCallBarringSupportIndicator, supportedRATTypesIndicator,
-                    supportedFeatures, tAdsDataRetrieval, homogeneousSupportOfIMSVoiceOverPSSessions);
+                    supportedFeatures, tAdsDataRetrieval, homogeneousSupportOfIMSVoiceOverPSSessions, cancellationTypeInitialAttach,
+                    misdnlessOperationSupported, updateOfHomogeneousSupportOfIMSVoiceOverPSSessions, resetIdsSupported,
+                    extSupportedFeatures);
             boolean informPreviousNetworkEntity = true;
             boolean psLCSNotSupportedByUE = false;
             GSNAddress vGmlcAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
