@@ -44,12 +44,12 @@ public class ODBGeneralDataTest {
         assertFalse(imp.getAllOGCallsBarred());
         assertTrue(imp.getInternationalOGCallsBarred());
         assertFalse(imp.getInternationalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(imp.getInterzonalOGCallsBarred());
-        assertFalse(imp.getInterzonalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(imp.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
         assertFalse(imp.getPremiumRateInformationOGCallsBarred());
         assertTrue(imp.getPremiumRateEntertainmentOGCallsBarred());
         assertFalse(imp.getSsAccessBarred());
+        assertTrue(imp.getInterzonalOGCallsBarred());
+        assertFalse(imp.getInterzonalOGCallsNotToHPLMNCountryBarred());
+        assertTrue(imp.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
         assertTrue(imp.getAllECTBarred());
         assertFalse(imp.getChargeableECTBarred());
         assertTrue(imp.getInternationalECTBarred());
@@ -115,7 +115,7 @@ public class ODBGeneralDataTest {
     @Test(groups = { "functional.encode", "service.lsm" })
     public void testEncode() throws Exception {
 
-        ODBGeneralDataImpl imp = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true, false,
+        ODBGeneralDataImpl imp = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true, false,
                 true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true,
                 false);
 
@@ -124,7 +124,7 @@ public class ODBGeneralDataTest {
 
         assertTrue(Arrays.equals(getEncodedData(), asnOS.toByteArray()));
 
-        imp = new ODBGeneralDataImpl(true, false, true, false, true, false, true, false, true, false, true, false, true, false,
+        imp = new ODBGeneralDataImpl(true, false, true, true, false, true, false, true, false, false, true, false, true, false,
                 true, false, true, false, true, false, true, false, true, false, true, false, true, false, true);
 
         asnOS = new AsnOutputStream();

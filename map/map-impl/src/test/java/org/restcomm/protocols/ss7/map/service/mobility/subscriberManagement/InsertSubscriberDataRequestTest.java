@@ -1696,7 +1696,7 @@ public class InsertSubscriberDataRequestTest {
         provisionedSS.add(extSSInfo);
 
         // odbData
-        ODBGeneralData oDBGeneralData = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true, false, true, false, true,
+        ODBGeneralData oDBGeneralData = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true, false, true, false, true,
                 false, true, false, true, false, true, false, true, false, true, false, true, false, true, false);
         ODBHPLMNData odbHplmnData = new ODBHPLMNDataImpl(false, true, false, true);
         ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, extensionContainer);

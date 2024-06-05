@@ -14,12 +14,12 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
     private static final int _INDEX_allOGCallsBarred = 0;
     private static final int _INDEX_internationalOGCallsBarred = 1;
     private static final int _INDEX_internationalOGCallsNotToHPLMNCountryBarred = 2;
-    private static final int _INDEX_interzonalOGCallsBarred = 6;
-    private static final int _INDEX_interzonalOGCallsNotToHPLMNCountryBarred = 7;
-    private static final int _INDEX_interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = 8;
     private static final int _INDEX_premiumRateInformationOGCallsBarred = 3;
     private static final int _INDEX_premiumRateEntertainmentOGCallsBarred = 4;
     private static final int _INDEX_ssAccessBarred = 5;
+    private static final int _INDEX_interzonalOGCallsBarred = 6;
+    private static final int _INDEX_interzonalOGCallsNotToHPLMNCountryBarred = 7;
+    private static final int _INDEX_interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = 8;
     private static final int _INDEX_allECTBarred = 9;
     private static final int _INDEX_chargeableECTBarred = 10;
     private static final int _INDEX_internationalECTBarred = 11;
@@ -48,19 +48,15 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
         // because of some trace data contains 1-byte length primitive
     }
 
-    public ODBGeneralDataImpl(boolean allOGCallsBarred, boolean internationalOGCallsBarred,
-            boolean internationalOGCallsNotToHPLMNCountryBarred, boolean interzonalOGCallsBarred,
-            boolean interzonalOGCallsNotToHPLMNCountryBarred,
-            boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred,
-            boolean premiumRateInformationOGCallsBarred, boolean premiumRateEntertainementOGCallsBarred,
-            boolean ssAccessBarred, boolean allECTBarred, boolean chargeableECTBarred, boolean internationalECTBarred,
-            boolean interzonalECTBarred, boolean doublyChargeableECTBarred, boolean multipleECTBarred,
-            boolean allPacketOrientedServicesBarred, boolean roamerAccessToHPLMNAPBarred, boolean roamerAccessToVPLMNAPBarred,
-            boolean roamingOutsidePLMNOGCallsBarred, boolean allICCallsBarred, boolean roamingOutsidePLMNICCallsBarred,
-            boolean roamingOutsidePLMNICountryICCallsBarred, boolean roamingOutsidePLMNBarred,
-            boolean roamingOutsidePLMNCountryBarred, boolean registrationAllCFBarred, boolean registrationCFNotToHPLMNBarred,
-            boolean registrationInterzonalCFBarred, boolean registrationInterzonalCFNotToHPLMNBarred,
-            boolean registrationInternationalCFBarred) {
+    public ODBGeneralDataImpl(boolean allOGCallsBarred, boolean internationalOGCallsBarred, boolean internationalOGCallsNotToHPLMNCountryBarred,
+                              boolean premiumRateInformationOGCallsBarred, boolean premiumRateEntertainementOGCallsBarred, boolean ssAccessBarred,
+                              boolean interzonalOGCallsBarred, boolean interzonalOGCallsNotToHPLMNCountryBarred, boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred,
+                              boolean allECTBarred, boolean chargeableECTBarred, boolean internationalECTBarred, boolean interzonalECTBarred,
+                              boolean doublyChargeableECTBarred, boolean multipleECTBarred, boolean allPacketOrientedServicesBarred, boolean roamerAccessToHPLMNAPBarred, boolean roamerAccessToVPLMNAPBarred,
+                              boolean roamingOutsidePLMNOGCallsBarred, boolean allICCallsBarred, boolean roamingOutsidePLMNICCallsBarred,
+                              boolean roamingOutsidePLMNICountryICCallsBarred, boolean roamingOutsidePLMNBarred, boolean roamingOutsidePLMNCountryBarred,
+                              boolean registrationAllCFBarred, boolean registrationCFNotToHPLMNBarred, boolean registrationInterzonalCFBarred,
+                              boolean registrationInterzonalCFNotToHPLMNBarred, boolean registrationInternationalCFBarred) {
         super(8, 32, 29, "ODBGeneralData");
 
         if (allOGCallsBarred)
@@ -69,18 +65,18 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
             this.bitString.set(_INDEX_internationalOGCallsBarred);
         if (internationalOGCallsNotToHPLMNCountryBarred)
             this.bitString.set(_INDEX_internationalOGCallsNotToHPLMNCountryBarred);
-        if (interzonalOGCallsBarred)
-            this.bitString.set(_INDEX_interzonalOGCallsBarred);
-        if (interzonalOGCallsNotToHPLMNCountryBarred)
-            this.bitString.set(_INDEX_interzonalOGCallsNotToHPLMNCountryBarred);
-        if (interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred)
-            this.bitString.set(_INDEX_interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred);
         if (premiumRateInformationOGCallsBarred)
             this.bitString.set(_INDEX_premiumRateInformationOGCallsBarred);
         if (premiumRateEntertainementOGCallsBarred)
             this.bitString.set(_INDEX_premiumRateEntertainmentOGCallsBarred);
         if (ssAccessBarred)
             this.bitString.set(_INDEX_ssAccessBarred);
+        if (interzonalOGCallsBarred)
+            this.bitString.set(_INDEX_interzonalOGCallsBarred);
+        if (interzonalOGCallsNotToHPLMNCountryBarred)
+            this.bitString.set(_INDEX_interzonalOGCallsNotToHPLMNCountryBarred);
+        if (interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred)
+            this.bitString.set(_INDEX_interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred);
         if (allECTBarred)
             this.bitString.set(_INDEX_allECTBarred);
         if (chargeableECTBarred)
@@ -139,21 +135,6 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
     }
 
     @Override
-    public boolean getInterzonalOGCallsBarred() {
-        return this.bitString.get(_INDEX_interzonalOGCallsBarred);
-    }
-
-    @Override
-    public boolean getInterzonalOGCallsNotToHPLMNCountryBarred() {
-        return this.bitString.get(_INDEX_interzonalOGCallsNotToHPLMNCountryBarred);
-    }
-
-    @Override
-    public boolean getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred() {
-        return this.bitString.get(_INDEX_interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred);
-    }
-
-    @Override
     public boolean getPremiumRateInformationOGCallsBarred() {
         return this.bitString.get(_INDEX_premiumRateInformationOGCallsBarred);
     }
@@ -166,6 +147,21 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
     @Override
     public boolean getSsAccessBarred() {
         return this.bitString.get(_INDEX_ssAccessBarred);
+    }
+
+    @Override
+    public boolean getInterzonalOGCallsBarred() {
+        return this.bitString.get(_INDEX_interzonalOGCallsBarred);
+    }
+
+    @Override
+    public boolean getInterzonalOGCallsNotToHPLMNCountryBarred() {
+        return this.bitString.get(_INDEX_interzonalOGCallsNotToHPLMNCountryBarred);
+    }
+
+    @Override
+    public boolean getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred() {
+        return this.bitString.get(_INDEX_interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred);
     }
 
     @Override
@@ -278,18 +274,18 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
             sb.append("internationalOGCallsBarred, ");
         if (getInternationalOGCallsNotToHPLMNCountryBarred())
             sb.append("internationalOGCallsNotToHPLMNCountryBarred, ");
-        if (getInterzonalOGCallsBarred())
-            sb.append("interzonalOGCallsBarred, ");
-        if (getInterzonalOGCallsNotToHPLMNCountryBarred())
-            sb.append("interzonalOGCallsNotToHPLMNCountryBarred, ");
-        if (getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred())
-            sb.append("interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, ");
         if (getPremiumRateInformationOGCallsBarred())
             sb.append("premiumRateInformationOGCallsBarred, ");
         if (getPremiumRateEntertainmentOGCallsBarred())
             sb.append("premiumRateEntertainementOGCallsBarred, ");
         if (getSsAccessBarred())
             sb.append("ssAccessBarred, ");
+        if (getInterzonalOGCallsBarred())
+            sb.append("interzonalOGCallsBarred, ");
+        if (getInterzonalOGCallsNotToHPLMNCountryBarred())
+            sb.append("interzonalOGCallsNotToHPLMNCountryBarred, ");
+        if (getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred())
+            sb.append("interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, ");
         if (getAllECTBarred())
             sb.append("allECTBarred, ");
         if (getChargeableECTBarred())

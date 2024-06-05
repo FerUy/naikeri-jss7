@@ -1038,7 +1038,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             ArrayList<SSCode> ssList = new ArrayList<>();
             SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.allSS);
             ssList.add(ssCode);
-            ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true,
+            ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true,
                     false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
                     true, false);
             RegionalSubscriptionResponse regionalSubscriptionResponse = RegionalSubscriptionResponse.tooManyZoneCodes;

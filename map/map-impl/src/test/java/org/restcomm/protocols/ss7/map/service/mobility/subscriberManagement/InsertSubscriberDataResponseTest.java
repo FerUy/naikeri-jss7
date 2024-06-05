@@ -290,7 +290,7 @@ public class InsertSubscriberDataResponseTest {
         ssList.add(ssCode);
 
         // odbGeneralData
-        ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true,
+        ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true,
                 false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
                 true, false);
 

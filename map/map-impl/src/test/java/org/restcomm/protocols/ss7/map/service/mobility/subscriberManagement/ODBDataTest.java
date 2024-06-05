@@ -85,7 +85,7 @@ public class ODBDataTest {
     @Test(groups = { "functional.encode", "primitives" })
     public void testEncode() throws Exception {
 
-        ODBGeneralData oDBGeneralData = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true,
+        ODBGeneralData oDBGeneralData = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true,
                 false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
                 true, false);
         ODBHPLMNData odbHplmnData = new ODBHPLMNDataImpl(false, true, false, true);
