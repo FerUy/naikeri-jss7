@@ -33,7 +33,7 @@ import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 /**
  * @author daniel bichara
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implements InsertSubscriberDataResponse {
 

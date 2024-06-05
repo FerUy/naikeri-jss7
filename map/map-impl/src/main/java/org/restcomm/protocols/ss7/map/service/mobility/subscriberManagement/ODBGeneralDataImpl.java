@@ -18,7 +18,7 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
     private static final int _INDEX_interzonalOGCallsNotToHPLMNCountryBarred = 7;
     private static final int _INDEX_interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = 8;
     private static final int _INDEX_premiumRateInformationOGCallsBarred = 3;
-    private static final int _INDEX_premiumRateEntertainementOGCallsBarred = 4;
+    private static final int _INDEX_premiumRateEntertainmentOGCallsBarred = 4;
     private static final int _INDEX_ssAccessBarred = 5;
     private static final int _INDEX_allECTBarred = 9;
     private static final int _INDEX_chargeableECTBarred = 10;
@@ -78,7 +78,7 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
         if (premiumRateInformationOGCallsBarred)
             this.bitString.set(_INDEX_premiumRateInformationOGCallsBarred);
         if (premiumRateEntertainementOGCallsBarred)
-            this.bitString.set(_INDEX_premiumRateEntertainementOGCallsBarred);
+            this.bitString.set(_INDEX_premiumRateEntertainmentOGCallsBarred);
         if (ssAccessBarred)
             this.bitString.set(_INDEX_ssAccessBarred);
         if (allECTBarred)
@@ -159,8 +159,8 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
     }
 
     @Override
-    public boolean getPremiumRateEntertainementOGCallsBarred() {
-        return this.bitString.get(_INDEX_premiumRateEntertainementOGCallsBarred);
+    public boolean getPremiumRateEntertainmentOGCallsBarred() {
+        return this.bitString.get(_INDEX_premiumRateEntertainmentOGCallsBarred);
     }
 
     @Override
@@ -286,7 +286,7 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
             sb.append("interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, ");
         if (getPremiumRateInformationOGCallsBarred())
             sb.append("premiumRateInformationOGCallsBarred, ");
-        if (getPremiumRateEntertainementOGCallsBarred())
+        if (getPremiumRateEntertainmentOGCallsBarred())
             sb.append("premiumRateEntertainementOGCallsBarred, ");
         if (getSsAccessBarred())
             sb.append("ssAccessBarred, ");

@@ -28,18 +28,13 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCod
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ExtSupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedFeaturesImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.InsertSubscriberDataResponseImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBGeneralDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Lasith Waruna Perera
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class InsertSubscriberDataResponseTest {
@@ -106,7 +101,7 @@ public class InsertSubscriberDataResponseTest {
         assertFalse(odbGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
         assertTrue(odbGeneralData.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
         assertFalse(odbGeneralData.getPremiumRateInformationOGCallsBarred());
-        assertTrue(odbGeneralData.getPremiumRateEntertainementOGCallsBarred());
+        assertTrue(odbGeneralData.getPremiumRateEntertainmentOGCallsBarred());
         assertFalse(odbGeneralData.getSsAccessBarred());
         assertTrue(odbGeneralData.getAllECTBarred());
         assertFalse(odbGeneralData.getChargeableECTBarred());
@@ -241,7 +236,7 @@ public class InsertSubscriberDataResponseTest {
         assertFalse(odbGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
         assertTrue(odbGeneralData.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
         assertFalse(odbGeneralData.getPremiumRateInformationOGCallsBarred());
-        assertTrue(odbGeneralData.getPremiumRateEntertainementOGCallsBarred());
+        assertTrue(odbGeneralData.getPremiumRateEntertainmentOGCallsBarred());
         assertFalse(odbGeneralData.getSsAccessBarred());
         assertTrue(odbGeneralData.getAllECTBarred());
         assertFalse(odbGeneralData.getChargeableECTBarred());

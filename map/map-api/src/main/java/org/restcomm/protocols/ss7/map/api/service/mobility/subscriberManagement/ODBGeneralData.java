@@ -65,7 +65,7 @@ public interface ODBGeneralData extends Serializable {
 
     boolean getPremiumRateInformationOGCallsBarred();
 
-    boolean getPremiumRateEntertainementOGCallsBarred();
+    boolean getPremiumRateEntertainmentOGCallsBarred();
 
     boolean getSsAccessBarred();
 

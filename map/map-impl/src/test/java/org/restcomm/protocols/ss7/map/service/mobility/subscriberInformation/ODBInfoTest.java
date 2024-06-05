@@ -52,7 +52,7 @@ public class ODBInfoTest {
         assertTrue(odbGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
         assertTrue(odbGeneralData.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
         assertTrue(odbGeneralData.getPremiumRateInformationOGCallsBarred());
-        assertTrue(odbGeneralData.getPremiumRateEntertainementOGCallsBarred());
+        assertTrue(odbGeneralData.getPremiumRateEntertainmentOGCallsBarred());
         assertTrue(odbGeneralData.getSsAccessBarred());
         assertTrue(odbGeneralData.getAllECTBarred());
         assertTrue(odbGeneralData.getChargeableECTBarred());

@@ -37,33 +37,19 @@ public class SupportedFeaturesImpl extends BitStringBase implements SupportedFea
     private static final int _INDEX_baoc = 23;
     private static final int _INDEX_boic = 24;
     private static final int _INDEX_boicExHC = 25;
-
     private static final int _INDEX_localTimeZoneRetrieval = 26;
-
     private static final int _INDEX_additionalMsisdn = 27;
-
     private static final int _INDEX_smsInMME = 28 ;
-
     private static final int _INDEX_smsInSGSN = 29;
-
     private static final int _INDEX_ueReachabilityNotification = 30;
-
     private static final int _INDEX_stateLocationInformationRetrieval = 31;
-
     private static final int _INDEX_partialPurge = 32;
-
     private static final int _INDEX_gddInSGSN = 33;
-
     private static final int _INDEX_sgsnCAMELCapability = 34;
-
     private static final int _INDEX_pcscfRestoration = 35;
-
     private static final int _INDEX_dedicatedCoreNetworks = 36;
-
     private static final int _INDEX_nonIPPDNTypeAPNs = 37;
-
     private static final int _INDEX_nonIPPDPTypeAPNs = 38;
-
     private static final int _INDEX_nrAsSecondaryRAT = 39;
 
     public SupportedFeaturesImpl() {
