@@ -69,8 +69,6 @@ public interface ODBGeneralData extends Serializable {
 
     boolean getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred();
 
-
-
     boolean getAllECTBarred();
 
     boolean getChargeableECTBarred();

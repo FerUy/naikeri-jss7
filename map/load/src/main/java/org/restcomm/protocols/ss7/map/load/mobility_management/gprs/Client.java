@@ -949,7 +949,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             boolean tAdsDataRetrieval = true;
             Boolean homogeneousSupportOfIMSVoiceOverPSSessions = true;
             boolean cancellationTypeInitialAttach = true;
-            boolean misdnlessOperationSupported = false;
+            boolean misdnlessOperationSupported = true;
             boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions = true;
             boolean resetIdsSupported = true;
             boolean unlicensedSpectrumAsSecondaryRAT = true;
@@ -1038,9 +1038,45 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             ArrayList<SSCode> ssList = new ArrayList<>();
             SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.allSS);
             ssList.add(ssCode);
-            ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true,
-                    false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false,
-                    true, false);
+            boolean allOGCallsBarred= true;
+            boolean internationalOGCallsBarred = true;
+            boolean internationalOGCallsNotToHPLMNCountryBarred= true;
+            boolean premiumRateInformationOGCallsBarred = false;
+            boolean premiumRateEntertainmentOGCallsBarred= true;
+            boolean ssAccessBarred= true;
+            boolean interzonalOGCallsBarred = true;
+            boolean interzonalOGCallsNotToHPLMNCountryBarred= true;
+            boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = true;
+            boolean allECTBarred= true;
+            boolean chargeableECTBarred= true;
+            boolean internationalECTBarred = true;
+            boolean interzonalECTBarred= true;
+            boolean doublyChargeableECTBarred= true;
+            boolean multipleECTBarred = true;
+            boolean allPacketOrientedServicesBarred= true;
+            boolean roamerAccessToHPLMNAPBarred= false;
+            boolean roamerAccessToVPLMNAPBarred = false;
+            boolean roamingOutsidePLMNOGCallsBarred= false;
+            boolean allICCallsBarred= true;
+            boolean roamingOutsidePLMNICCallsBarred = true;
+            boolean roamingOutsidePLMNICountryICCallsBarred= true;
+            boolean roamingOutsidePLMNBarred = false;
+            boolean roamingOutsidePLMNCountryBarred= false;
+            boolean registrationAllCFBarred= true;
+            boolean registrationCFNotToHPLMNBarred = true;
+            boolean registrationInterzonalCFBarred= true;
+            boolean registrationInterzonalCFNotToHPLMNBarred = false;
+            boolean registrationInternationalCFBarred = true;
+            ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred,
+                    internationalOGCallsNotToHPLMNCountryBarred, premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred,
+                    ssAccessBarred, interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred,
+                    interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, allECTBarred, chargeableECTBarred,
+                    internationalECTBarred, interzonalECTBarred, doublyChargeableECTBarred, multipleECTBarred,
+                    allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
+                    roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
+                    roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred,
+                    roamingOutsidePLMNCountryBarred, registrationAllCFBarred, registrationCFNotToHPLMNBarred,
+                    registrationInterzonalCFBarred, registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
             RegionalSubscriptionResponse regionalSubscriptionResponse = RegionalSubscriptionResponse.tooManyZoneCodes;
             SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
             MAPExtensionContainer extensionContainer = null;

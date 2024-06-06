@@ -49,7 +49,7 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
     }
 
     public ODBGeneralDataImpl(boolean allOGCallsBarred, boolean internationalOGCallsBarred, boolean internationalOGCallsNotToHPLMNCountryBarred,
-                              boolean premiumRateInformationOGCallsBarred, boolean premiumRateEntertainementOGCallsBarred, boolean ssAccessBarred,
+                              boolean premiumRateInformationOGCallsBarred, boolean premiumRateEntertainmentOGCallsBarred, boolean ssAccessBarred,
                               boolean interzonalOGCallsBarred, boolean interzonalOGCallsNotToHPLMNCountryBarred, boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred,
                               boolean allECTBarred, boolean chargeableECTBarred, boolean internationalECTBarred, boolean interzonalECTBarred,
                               boolean doublyChargeableECTBarred, boolean multipleECTBarred, boolean allPacketOrientedServicesBarred, boolean roamerAccessToHPLMNAPBarred, boolean roamerAccessToVPLMNAPBarred,
@@ -67,7 +67,7 @@ public class ODBGeneralDataImpl extends BitStringBase implements ODBGeneralData 
             this.bitString.set(_INDEX_internationalOGCallsNotToHPLMNCountryBarred);
         if (premiumRateInformationOGCallsBarred)
             this.bitString.set(_INDEX_premiumRateInformationOGCallsBarred);
-        if (premiumRateEntertainementOGCallsBarred)
+        if (premiumRateEntertainmentOGCallsBarred)
             this.bitString.set(_INDEX_premiumRateEntertainmentOGCallsBarred);
         if (ssAccessBarred)
             this.bitString.set(_INDEX_ssAccessBarred);
