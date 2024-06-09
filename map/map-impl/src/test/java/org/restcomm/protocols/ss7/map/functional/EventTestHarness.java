@@ -524,14 +524,14 @@ public class EventTestHarness implements MAPDialogListener, MAPServiceSupplement
 
     @Override
     public void onSendRoutingInfoForLCSRequest(SendRoutingInfoForLCSRequest request) {
-        this.logger.debug("onSendRoutingInforForLCSRequest");
+        this.logger.debug("onSendRoutingInfoForLCSRequest");
         TestEvent te = TestEvent.createReceivedEvent(EventType.SendRoutingInfoForLCS, request, sequence++);
         this.observerdEvents.add(te);
     }
 
     @Override
     public void onSendRoutingInfoForLCSResponse(SendRoutingInfoForLCSResponse response) {
-        this.logger.debug("onSendRoutingInforForLCSResponse");
+        this.logger.debug("onSendRoutingInfoForLCSResponse");
         TestEvent te = TestEvent.createReceivedEvent(EventType.SendRoutingInfoForLCSResp, response, sequence++);
         this.observerdEvents.add(te);
     }

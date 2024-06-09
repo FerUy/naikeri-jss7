@@ -273,6 +273,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
@@ -4122,8 +4123,10 @@ public class MAPFunctionalTest extends SccpHarness {
         // Action_Sms_MoForwardSM
 
         Client_TestMsgLength client = new Client_TestMsgLength(stack1, this, peer1Address, peer2Address, 170);
+        stack1.getTCAPStack().getSccpStack().getRouter().removeLongMessageRule(0);
 
         Server_TestMsgLength server = new Server_TestMsgLength(this.stack2, this, peer2Address, peer1Address);
+        stack2.getTCAPStack().getSccpStack().getRouter().removeLongMessageRule(0);
 
         long stamp = System.currentTimeMillis();
         int count = 0;
@@ -4176,6 +4179,8 @@ public class MAPFunctionalTest extends SccpHarness {
         waitForEnd();
         client.compareEvents(clientExpectedEvents);
         server.compareEvents(serverExpectedEvents);
+        stack1.getTCAPStack().getSccpStack().getRouter().addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
+        stack2.getTCAPStack().getSccpStack().getRouter().addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
     }
 
@@ -6799,6 +6804,7 @@ TC-END + InsertSubscriberDataRequestResponse
      */
     @Test(groups = { "functional.flow", "dialog" })
     public void testInsertSubscriberData_V2() throws Exception {
+
 
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
 
