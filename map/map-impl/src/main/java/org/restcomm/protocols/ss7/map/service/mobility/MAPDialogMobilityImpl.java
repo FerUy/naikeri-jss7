@@ -380,12 +380,10 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     }
 
     public Long addUpdateLocationRequest(int customInvokeTimeout, IMSI imsi, ISDNAddressString mscNumber,
-                                         ISDNAddressString roamingNumber, ISDNAddressString vlrNumber, LMSI lmsi,
-                                         MAPExtensionContainer extensionContainer, VLRCapability vlrCapability,
-                                         boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE,
-                                         GSNAddress vGmlcAddress, ADDInfo addInfo, PagingArea pagingArea, boolean skipSubscriberDataUpdate,
-                                         boolean restorationIndicator, ArrayList<PlmnId> EPLMNList,
-                                         NetworkNodeDiameterAddress mmeDiameterAddress) throws MAPException {
+            ISDNAddressString roamingNumber, ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
+            VLRCapability vlrCapability, boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE,
+            GSNAddress vGmlcAddress, ADDInfo addInfo, PagingArea pagingArea, boolean skipSubscriberDataUpdate,
+            boolean restorationIndicator, ArrayList<PlmnId> EPLMNList, NetworkNodeDiameterAddress mmeDiameterAddress) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.networkLocUpContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version1
@@ -1586,8 +1584,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
     @Override
     public void addUpdateGprsLocationResponse(long invokeId, ISDNAddressString hlrNumber, MAPExtensionContainer extensionContainer,
-                                              boolean addCapability, boolean sgsnMmeSeparationSupported, boolean mmeRegisteredForSMS)
-            throws MAPException {
+            boolean addCapability, boolean sgsnMmeSeparationSupported, boolean mmeRegisteredForSMS) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.gprsLocationUpdateContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3))
