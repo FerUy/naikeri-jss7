@@ -1124,7 +1124,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             RegionalSubscriptionResponse regionalSubscriptionResponse) throws MAPException {
 
         this.addInsertSubscriberDataResponse(invokeId, teleserviceList, bearerServiceList, ssList, odbGeneralData,
-                regionalSubscriptionResponse);
+                regionalSubscriptionResponse, null, null, null, null, null);
     }
 
     @Override
