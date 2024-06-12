@@ -16,10 +16,16 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationEPSImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationGPRSImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationImpl;
 
 /**
  *
@@ -30,7 +36,9 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
 
     protected static final int _TAG_vlrNumber = 0;
     protected static final int _TAG_sgsnNumber = 1;
-
+    public static final int _TAG_locationInformation = 2;
+    public static final int _TAG_locationInformationGPRS = 3;
+    public static final int _TAG_locationInformationEPS = 4;
     public static final int _TAG_PurgeMSRequest = 3;
 
     public static final String _PrimitiveName = "PurgeMSRequest";
@@ -39,6 +47,9 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
     private ISDNAddressString vlrNumber;
     private ISDNAddressString sgsnNumber;
     private MAPExtensionContainer extensionContainer;
+    private LocationInformation locationInformation;
+    private LocationInformationGPRS locationInformationGPRS;
+    private LocationInformationEPS locationInformationEPS;
     private long mapProtocolVersion;
 
     public PurgeMSRequestImpl(long mapProtocolVersion) {
@@ -47,12 +58,17 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
     }
 
     public PurgeMSRequestImpl(IMSI imsi, ISDNAddressString vlrNumber, ISDNAddressString sgsnNumber,
-            MAPExtensionContainer extensionContainer, long mapProtocolVersion) {
+            MAPExtensionContainer extensionContainer, LocationInformation locationInformation,
+            LocationInformationGPRS locationInformationGPRS, LocationInformationEPS locationInformationEPS,
+            long mapProtocolVersion) {
         super();
         this.imsi = imsi;
         this.vlrNumber = vlrNumber;
         this.sgsnNumber = sgsnNumber;
         this.extensionContainer = extensionContainer;
+        this.locationInformation = locationInformation;
+        this.locationInformationGPRS = locationInformationGPRS;
+        this.locationInformationEPS = locationInformationEPS;
         this.mapProtocolVersion = mapProtocolVersion;
     }
 
@@ -84,6 +100,21 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
     @Override
     public MAPExtensionContainer getExtensionContainer() {
         return this.extensionContainer;
+    }
+
+    @Override
+    public LocationInformation getLocationInformation() {
+        return this.locationInformation;
+    }
+
+    @Override
+    public LocationInformationGPRS getLocationInformationGPRS() {
+        return this.locationInformationGPRS;
+    }
+
+    @Override
+    public LocationInformationEPS getLocationInformationEPS() {
+        return this.locationInformationEPS;
     }
 
     @Override
@@ -141,6 +172,9 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
         this.vlrNumber = null;
         this.sgsnNumber = null;
         this.extensionContainer = null;
+        this.locationInformation = null;
+        this.locationInformationGPRS = null;
+        this.locationInformationEPS = locationInformationEPS;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -194,7 +228,7 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
 
                         case Tag.CLASS_CONTEXT_SPECIFIC:
                             switch (tag) {
-                                case PurgeMSRequestImpl._TAG_vlrNumber:
+                                case _TAG_vlrNumber:
                                     if (!ais.isTagPrimitive()) {
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                                 + ".vlrNumber: is not primitive",
@@ -203,7 +237,7 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
                                     this.vlrNumber = new ISDNAddressStringImpl();
                                     ((ISDNAddressStringImpl) this.vlrNumber).decodeAll(ais);
                                     break;
-                                case PurgeMSRequestImpl._TAG_sgsnNumber:
+                                case _TAG_sgsnNumber:
                                     if (!ais.isTagPrimitive()) {
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                                 + ".sgsnNumber: is not primitive",
@@ -211,6 +245,30 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
                                     }
                                     this.sgsnNumber = new ISDNAddressStringImpl();
                                     ((ISDNAddressStringImpl) this.sgsnNumber).decodeAll(ais);
+                                    break;
+                                case _TAG_locationInformation:
+                                    if (ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + " locationInformation: Parameter is primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    this.locationInformation = new LocationInformationImpl();
+                                    ((LocationInformationImpl) this.locationInformation).decodeAll(ais);
+                                    break;
+                                case _TAG_locationInformationGPRS:
+                                    if (ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + " locationInformationGPRS: Parameter is primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    locationInformationGPRS = new LocationInformationGPRSImpl();
+                                    ((LocationInformationGPRSImpl) locationInformationGPRS).decodeAll(ais);
+                                    break;
+                                case _TAG_locationInformationEPS:
+                                    if (ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + " locationInformationEPS: Parameter is primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    this.locationInformationEPS = new LocationInformationEPSImpl();
+                                    ((LocationInformationEPSImpl) this.locationInformationEPS).decodeAll(ais);
                                     break;
                                 default:
                                     ais.advanceElement();
@@ -277,6 +335,15 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
 
+            if (this.locationInformation != null)
+                ((LocationInformationImpl) this.locationInformation).encodeAll(asnOutputStream);
+
+            if (this.locationInformationGPRS != null)
+                ((LocationInformationGPRSImpl) this.locationInformationGPRS).encodeAll(asnOutputStream);
+
+            if (this.locationInformationEPS != null)
+                ((LocationInformationEPSImpl) this.locationInformationEPS).encodeAll(asnOutputStream);
+
         } else {
 
             if (this.vlrNumber == null) {
@@ -299,25 +366,43 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(imsi.toString());
+            sb.append(imsi);
             sb.append(", ");
         }
 
         if (this.vlrNumber != null) {
             sb.append("vlrNumber=");
-            sb.append(vlrNumber.toString());
+            sb.append(vlrNumber);
             sb.append(", ");
         }
 
         if (this.sgsnNumber != null) {
             sb.append("sgsnNumber=");
-            sb.append(sgsnNumber.toString());
+            sb.append(sgsnNumber);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
+            sb.append(", ");
+        }
+
+        if (this.locationInformation != null) {
+            sb.append("locationInformation=");
+            sb.append(locationInformation);
+            sb.append(", ");
+        }
+
+        if (this.locationInformationGPRS != null) {
+            sb.append("locationInformationGPRS=");
+            sb.append(locationInformationGPRS);
+            sb.append(", ");
+        }
+
+        if (this.locationInformationEPS != null) {
+            sb.append("locationInformationEPS=");
+            sb.append(locationInformationEPS);
             sb.append(", ");
         }
 

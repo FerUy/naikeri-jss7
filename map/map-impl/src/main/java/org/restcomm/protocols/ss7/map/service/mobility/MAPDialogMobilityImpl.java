@@ -60,6 +60,9 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClipData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClirData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EctData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSISDNBS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ODBInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
@@ -1620,7 +1623,9 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
     @Override
     public Long addPurgeMSRequest(int customInvokeTimeout, IMSI imsi, ISDNAddressString vlrNumber,
-            ISDNAddressString sgsnNumber, MAPExtensionContainer extensionContainer) throws MAPException {
+            ISDNAddressString sgsnNumber, MAPExtensionContainer extensionContainer,
+            LocationInformation locationInformation, LocationInformationGPRS locationInformationGPRS,
+            LocationInformationEPS locationInformationEPS) throws MAPException {
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.msPurgingContext)
                 || ((this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3)
                 && (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2)))
@@ -1637,8 +1642,8 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         operationCode.setLocalOperationCode((long) MAPOperationCode.purgeMS);
         invoke.setOperationCode(operationCode);
 
-        PurgeMSRequestImpl purgeMSRequest = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, this.mapApplicationContext
-                .getApplicationContextVersion().getVersion());
+        PurgeMSRequestImpl purgeMSRequest = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer,
+                locationInformation, locationInformationGPRS, locationInformationEPS, this.mapApplicationContext.getApplicationContextVersion().getVersion());
 
         AsnOutputStream aos = new AsnOutputStream();
         purgeMSRequest.encodeData(aos);
@@ -1666,8 +1671,10 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
     @Override
     public Long addPurgeMSRequest(IMSI imsi, ISDNAddressString vlrNumber, ISDNAddressString sgsnNumber,
-            MAPExtensionContainer extensionContainer) throws MAPException {
-        return addPurgeMSRequest(_Timer_Default, imsi, vlrNumber, sgsnNumber, extensionContainer);
+            MAPExtensionContainer extensionContainer, LocationInformation locationInformation, LocationInformationGPRS locationInformationGPRS,
+            LocationInformationEPS locationInformationEPS) throws MAPException {
+        return addPurgeMSRequest(_Timer_Default, imsi, vlrNumber, sgsnNumber, extensionContainer, locationInformation,
+                locationInformationGPRS, locationInformationEPS);
     }
 
     @Override

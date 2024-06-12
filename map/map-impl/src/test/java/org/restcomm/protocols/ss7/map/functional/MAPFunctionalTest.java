@@ -8048,8 +8048,8 @@ TC-END + SendRoutingInformationResponse
 
                 MAPDialogMobility d = ((PurgeMSRequestImpl) request).getMAPDialog();
 
-                assertTrue(request.getImsi().getData().equals("111222"));
-                assertTrue(request.getSgsnNumber().getAddress().equals("22228"));
+                assertEquals(request.getImsi().getData(), "111222");
+                assertEquals(request.getSgsnNumber().getAddress(), "22228");
 
                 try {
                     d.addPurgeMSResponse(((PurgeMSRequestImpl) request).getInvokeId(), true, true, null, true);
@@ -8144,8 +8144,8 @@ TC-END + SendRoutingInformationResponse
 
                 MAPDialogMobility d = ((PurgeMSRequestImpl) request).getMAPDialog();
 
-                assertTrue(request.getImsi().getData().equals("111222"));
-                assertTrue(request.getVlrNumber().getAddress().equals("22228"));
+                assertEquals(request.getImsi().getData(), "111222");
+                assertEquals(request.getVlrNumber().getAddress(), "22228");
 
                 try {
                     d.addPurgeMSResponse(((PurgeMSRequestImpl) request).getInvokeId(), false, false, null, false);

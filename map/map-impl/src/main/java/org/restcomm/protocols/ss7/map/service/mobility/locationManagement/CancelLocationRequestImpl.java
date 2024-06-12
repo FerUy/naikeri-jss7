@@ -39,7 +39,6 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
     private static final int TAG_newMSCNumber = 3;
     private static final int TAG_newVLRNumber = 4;
     private static final int TAG_newLmsi = 5;
-
     private static final int TAG_reattachRequired = 6;
     public static final int TAG_cancelLocationRequest = 3;
     public static final String _PrimitiveName = "CancelLocationRequest";

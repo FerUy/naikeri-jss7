@@ -3,6 +3,7 @@ package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertNull;
 
 import java.util.Arrays;
 
@@ -16,7 +17,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.PurgeMSRequestImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -34,7 +34,7 @@ public class PurgeMSRequestTest {
         return new byte[] { -93, 60, 4, 5, 17, 17, 33, 34, 34, -128, 4, -111, 34, 50, -12, -127, 4, -111, 34, 50, -11, 48, 39,
                 -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23,
                 24, 25, 26, -95, 3, 31, 32, 33 };
-    };
+    }
 
     @Test(groups = { "functional.decode" })
     public void testDecode() throws Exception {
@@ -49,10 +49,10 @@ public class PurgeMSRequestTest {
         assertEquals(tag, Tag.SEQUENCE);
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
-        assertTrue(prim.getImsi().getData().equals("1111122222"));
+        assertEquals(prim.getImsi().getData(), "1111122222");
 
         ISDNAddressString vlrNumber = prim.getVlrNumber();
-        assertTrue(vlrNumber.getAddress().equals("22234"));
+        assertEquals(vlrNumber.getAddress(), "22234");
         assertEquals(vlrNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(vlrNumber.getNumberingPlan(), NumberingPlan.ISDN);
 
@@ -67,20 +67,23 @@ public class PurgeMSRequestTest {
         assertEquals(tag, PurgeMSRequestImpl._TAG_PurgeMSRequest);
         assertEquals(asn.getTagClass(), Tag.CLASS_CONTEXT_SPECIFIC);
 
-        assertTrue(prim.getImsi().getData().equals("1111122222"));
+        assertEquals(prim.getImsi().getData(), "1111122222");
 
         vlrNumber = prim.getVlrNumber();
-        assertTrue(vlrNumber.getAddress().equals("22234"));
+        assertEquals(vlrNumber.getAddress(), "22234");
         assertEquals(vlrNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(vlrNumber.getNumberingPlan(), NumberingPlan.ISDN);
 
         ISDNAddressString sgsnNumber = prim.getSgsnNumber();
-        assertTrue(sgsnNumber.getAddress().equals("22235"));
+        assertEquals(sgsnNumber.getAddress(), "22235");
         assertEquals(sgsnNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(sgsnNumber.getNumberingPlan(), NumberingPlan.ISDN);
 
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(prim.getExtensionContainer()));
 
+        assertNull(prim.getLocationInformation());
+        assertNull(prim.getLocationInformationGPRS());
+        assertNull(prim.getLocationInformationEPS());
     }
 
     @Test(groups = { "functional.encode" })
@@ -90,7 +93,7 @@ public class PurgeMSRequestTest {
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
         IMSIImpl imsi = new IMSIImpl("1111122222");
 
-        PurgeMSRequestImpl prim = new PurgeMSRequestImpl(imsi, vlrNumber, null, extensionContainer, 2);
+        PurgeMSRequestImpl prim = new PurgeMSRequestImpl(imsi, vlrNumber, null, extensionContainer, null, null, null, 2);
 
         AsnOutputStream asn = new AsnOutputStream();
         prim.encodeAll(asn);
@@ -100,7 +103,7 @@ public class PurgeMSRequestTest {
         // version 3
         ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                 "22235");
-        prim = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, 3);
+        prim = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, null, null, null, 3);
 
         asn = new AsnOutputStream();
         prim.encodeAll(asn);

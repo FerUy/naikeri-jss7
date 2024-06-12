@@ -82,7 +82,9 @@ public interface CancelLocationRequest extends MobilityMessage {
 
     LMSI getNewLmsi();
 
+    boolean isReattachRequired();
+
     long getMapProtocolVersion();
 
-    boolean isReattachRequired();
+
 }

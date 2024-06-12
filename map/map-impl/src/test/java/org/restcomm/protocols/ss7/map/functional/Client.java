@@ -941,7 +941,7 @@ public class Client extends EventTestHarness {
         ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                 "22228");
         
-        clientDialogMobility.addPurgeMSRequest(imsi, null, sgsnNumber, null);
+        clientDialogMobility.addPurgeMSRequest(imsi, null, sgsnNumber, null, null, null, null);
         
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.PurgeMS, null, sequence++));
         clientDialogMobility.send();
@@ -963,7 +963,7 @@ public class Client extends EventTestHarness {
         ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                 "22228");
         
-        clientDialogMobility.addPurgeMSRequest(imsi, vlrNumber, null, null);
+        clientDialogMobility.addPurgeMSRequest(imsi, vlrNumber, null, null, null, null, null);
         
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.PurgeMS, null, sequence++));
         clientDialogMobility.send();

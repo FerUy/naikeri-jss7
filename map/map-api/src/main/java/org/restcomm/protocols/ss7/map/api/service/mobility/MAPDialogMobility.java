@@ -52,6 +52,9 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClipData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClirData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EctData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSISDNBS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ODBInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
@@ -176,10 +179,12 @@ public interface MAPDialogMobility extends MAPDialog {
             boolean addCapability, boolean sgsnMmeSeparationSupported, boolean mmeRegisteredForSMS) throws MAPException;
 
     Long addPurgeMSRequest(int customInvokeTimeout, IMSI imsi, ISDNAddressString vlrNumber, ISDNAddressString sgsnNumber,
-            MAPExtensionContainer extensionContainer) throws MAPException;
+            MAPExtensionContainer extensionContainer, LocationInformation locationInformation, LocationInformationGPRS locationInformationGPRS,
+            LocationInformationEPS locationInformationEPS) throws MAPException;
 
     Long addPurgeMSRequest(IMSI imsi, ISDNAddressString vlrNumber, ISDNAddressString sgsnNumber,
-            MAPExtensionContainer extensionContainer) throws MAPException;
+            MAPExtensionContainer extensionContainer, LocationInformation locationInformation, LocationInformationGPRS locationInformationGPRS,
+            LocationInformationEPS locationInformationEPS) throws MAPException;
 
     void addPurgeMSResponse(long invokeId, boolean freezeTMSI, boolean freezePTMSI, MAPExtensionContainer extensionContainer,
             boolean freezeMTMSI) throws MAPException;
