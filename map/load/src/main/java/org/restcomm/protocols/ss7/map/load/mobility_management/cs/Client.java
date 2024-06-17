@@ -6,6 +6,8 @@ import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
+import org.restcomm.protocols.ss7.isup.impl.message.parameter.LocationNumberImpl;
+import org.restcomm.protocols.ss7.isup.message.parameter.LocationNumber;
 import org.restcomm.protocols.ss7.m3ua.Asp;
 import org.restcomm.protocols.ss7.m3ua.ExchangeType;
 import org.restcomm.protocols.ss7.m3ua.Functionality;
@@ -31,6 +33,8 @@ import org.restcomm.protocols.ss7.map.api.dialog.ServingCheckData;
 import org.restcomm.protocols.ss7.map.api.errors.MAPErrorMessage;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdFixedLength;
+import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdOrLAI;
 import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
@@ -81,20 +85,34 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EUtranCgi;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeodeticInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeographicalInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationNumberMap;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TAId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ODBGeneralData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OfferedCamel4CSIs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.RegionalSubscriptionResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
+import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
+import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdOrLAIImpl;
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
@@ -106,6 +124,14 @@ import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.Suppor
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.VLRCapabilityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.NetworkNodeDiameterAddressImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.EUtranCgiImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeodeticInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeographicalInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationEPSImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationNumberMapImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RAIdentityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TAIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
@@ -134,6 +160,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
@@ -176,6 +203,8 @@ public class Client extends TestHarnessMobilityManagement {
     private RateLimiter rateLimiterObj = null;
 
     private CsvWriter csvWriter;
+
+    Long imsiForPurge = 901405105680000L;
 
     protected void initializeStack(IpChannelType ipChannelType) throws Exception {
 
@@ -1062,6 +1091,8 @@ public class Client extends TestHarnessMobilityManagement {
                 }
             }
 
+            new Thread(new org.restcomm.protocols.ss7.map.load.mobility_management.cs.Client.PurgeMSSender(this)).start();
+
         } catch (MAPException e) {
             logger.error("Error while processing CancelLocationRequest ", e);
         }
@@ -1227,4 +1258,320 @@ public class Client extends TestHarnessMobilityManagement {
         }
     }
 
+    private class PurgeMSSender implements Runnable {
+
+        private Client client;
+
+        public PurgeMSSender(Client client) {
+            this.client = client;
+        }
+
+        @Override
+        public void run() {
+            ++imsiForPurge;
+            logger.warn("**************************************************************************");
+            logger.warn("imsiForPurge="+imsiForPurge);
+            logger.warn("**************************************************************************");
+
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ie) {
+                logger.error(ie.getMessage());
+            }
+            try {
+                // Create Dialog
+                AddressString originAddressString = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                AddressString destAddressString = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
+
+                SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+                SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
+
+                MAPApplicationContextVersion mapAcnVersion = MAPApplicationContextVersion.version3;
+                MAPApplicationContextName mapAcn = MAPApplicationContextName.msPurgingContext;
+                MAPApplicationContext mapAppContext = MAPApplicationContext.getInstance(mapAcn, mapAcnVersion);
+                MAPDialogMobility mapDialogMobility = mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
+                        originAddressString, serverSccpAddress, destAddressString);
+
+                IMSI imsi = new IMSIImpl(String.valueOf(imsiForPurge));
+                ISDNAddressString vlrNumber = null;
+                ISDNAddressString sgsnNumber = null;
+                MAPExtensionContainer extensionContainer = null;
+                Random rand = new Random();
+                int randLoc = rand.nextInt(10) + 1;
+                int ageOfLocationInformation;
+                boolean currentLocationRetrieved;
+                LocationInformation locationInformation;
+                LocationInformationEPS locationInformationEPS = null;
+                LocationInformationGPRS locationInformationGPRS;
+                boolean saiPresent = false;
+                int mcc, mnc, lac, cellId;
+                CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
+                CellGlobalIdOrServiceAreaIdFixedLength cellGlobalIdOrServiceAreaIdFixedLength = null;
+                LocationNumber locationNumber;
+                LocationNumberMap locationNumberMap;
+                ISDNAddressString mscNumber =  new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                        "491710490000");
+                GeographicalInformation geographicalInformation;
+                GeodeticInformation geodeticInformation;
+                byte[] lteCgi;
+                EUtranCgi eUtranCgi;
+                byte[] trackingAreaId;
+                TAId taId;
+                RAIdentity routeingAreaIdentity;
+                UserCSGInformation userCSGInformation = null;
+                TypeOfShape geographicalTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
+                double geographicalLatitude;
+                double geographicalLongitude;
+                double geographicalUncertainty;
+                TypeOfShape geodeticTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
+                double geodeticLatitude;
+                double geodeticLongitude;
+                double geodeticUncertainty;
+                int geodeticConfidence = 1;
+                int screeningAndPresentationIndicators = 3;
+                int natureOfAddressIndicator = 4;
+                String locationNumberAddressDigits= "819203961904";
+                int numberingPlanIndicator = 1;
+                int internalNetworkNumberIndicator = 1;
+                int addressRepresentationRestrictedIndicator = 1;
+                int screeningIndicator = 3;
+                locationNumber = new LocationNumberImpl(natureOfAddressIndicator, locationNumberAddressDigits, numberingPlanIndicator,
+                        internalNetworkNumberIndicator, addressRepresentationRestrictedIndicator, screeningIndicator);
+                locationNumberMap = null;
+                try {
+                    locationNumberMap = new LocationNumberMapImpl(locationNumber);
+                } catch (MAPException e) {
+                    logger.error(e.getMessage());
+                }
+                String mmneNameStr;
+                byte[] mme;
+                DiameterIdentity mmeName;
+                byte[] raId;
+                byte[] lsaId = {49, 51, 50};
+                LSAIdentity selectedLSAId = new LSAIdentityImpl(lsaId);
+
+                switch(randLoc) {
+                    case 1:
+                        ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 101;
+                        cellId = 10263;
+                        geographicalLatitude = -34.909744;
+                        geographicalLongitude = -56.146317;
+                        geographicalUncertainty = 1.0;
+                        geographicalInformation = new GeographicalInformationImpl(geographicalTypeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+                        geodeticInformation = null;
+                        try {
+                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+                        } catch (MAPException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
+                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                        break;
+                    case 2:
+                        ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
+                        geographicalInformation = null;
+                        geodeticLatitude = -34.910349;
+                        geodeticLongitude = -56.149832;
+                        geodeticUncertainty = 2.0;
+                        geodeticConfidence = 2;
+                        screeningAndPresentationIndicators = 1;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        lteCgi = hexStringToByteArray("47f81000095f02"); // ECGI = 748-1-614146; TBCD encoded: 47f81000095f02
+                        trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
+                        eUtranCgi = new EUtranCgiImpl(lteCgi);
+                        taId = new TAIdImpl(trackingAreaId);
+                        mmneNameStr = "mmec03.mmeer3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
+                        mme = mmneNameStr.getBytes();
+                        mmeName = new DiameterIdentityImpl(mme);
+                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
+                                geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                        break;
+                    case 3:
+                        ageOfLocationInformation = 125;
+                        currentLocationRetrieved = false;
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 118;
+                        cellId = 292;
+                        geographicalInformation = null;
+                        geodeticInformation = null;
+                        try {
+                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+                        } catch (MAPException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        raId = hexStringToByteArray("47f810006517");
+                        routeingAreaIdentity = new RAIdentityImpl(raId);
+                        locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
+                                routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, extensionContainer, saiPresent, geodeticInformation,
+                                currentLocationRetrieved, ageOfLocationInformation);
+                        break;
+                    case 4:
+                        ageOfLocationInformation = 1;
+                        currentLocationRetrieved = false;
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 109;
+                        cellId = 10175;
+                        geographicalInformation = null;
+                        geodeticInformation = null;
+                        try {
+                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+                        } catch (MAPException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
+                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                        break;
+                    case 5:
+                        ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 11;
+                        cellId = 4812;
+                        geographicalInformation = null;
+                        geodeticInformation = null;
+                        try {
+                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+                        } catch (MAPException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
+                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                        break;
+                    case 6:
+                        ageOfLocationInformation = 5;
+                        currentLocationRetrieved = false;
+                        mcc = 748;
+                        mnc = 7;
+                        lac = 8820;
+                        cellId = 9748;
+                        geographicalInformation = null;
+                        geodeticInformation = null;
+                        lteCgi = hexStringToByteArray("47f87000477304"); // ECGI = 748-7-4682500; TBCD encoded: 47f87000477304
+                        trackingAreaId = hexStringToByteArray("47f8701b6c"); // TAI = 748-7-7020; TBCD encoded: 47f8701b6c
+                        eUtranCgi = new EUtranCgiImpl(lteCgi);
+                        taId = new TAIdImpl(trackingAreaId);
+                        mmneNameStr = "mmec03.mmeer3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
+                        mme = mmneNameStr.getBytes();
+                        mmeName = new DiameterIdentityImpl(mme);
+                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
+                                geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                        try {
+                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+                        } catch (MAPException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
+                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                        locationInformationEPS = null;
+                        break;
+                    case 7:
+                        ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
+                        mcc = 748;
+                        mnc = 7;
+                        lac = 8552;
+                        cellId = 8239;
+                        geographicalInformation = null;
+                        geodeticLatitude = -34.910349;
+                        geodeticLongitude = -56.149832;
+                        geodeticUncertainty = 2.0;
+                        geodeticConfidence = 3;
+                        screeningAndPresentationIndicators = 2;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        try {
+                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+                        } catch (MAPException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
+                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                        break;
+                    case 8:
+                        ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
+                        mcc = 748;
+                        mnc = 10;
+                        lac = 9501;
+                        cellId = 35100;
+                        geographicalInformation = null;
+                        geodeticLatitude = -34.905624;
+                        geodeticLongitude = -55.042191;
+                        geodeticUncertainty = 4.0;
+                        geodeticConfidence = 10;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        try {
+                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+                        } catch (MAPException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        raId = hexStringToByteArray("47f810006516");
+                        routeingAreaIdentity = new RAIdentityImpl(raId);
+                        locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
+                                routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, extensionContainer, saiPresent, geodeticInformation,
+                                currentLocationRetrieved, ageOfLocationInformation);
+                        break;
+                    case 9:
+                        sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                                "491710490000");
+                        break;
+                    case 10:
+                        vlrNumber = mscNumber;
+                        break;
+                    default:
+                        locationInformation = null;
+                        locationInformationEPS = null;
+                        locationInformationGPRS = null;
+                        break;
+                }
+                // temporal as Wireshark is not recognizing the following in PMS
+                locationInformation = null;
+                locationInformationGPRS = null;
+                locationInformationEPS = null;
+                vlrNumber = mscNumber;
+                sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+
+                int customInvokeTimeout = 30;
+
+                mapDialogMobility.addPurgeMSRequest(customInvokeTimeout, imsi, vlrNumber, sgsnNumber, null, locationInformation,
+                        locationInformationGPRS, locationInformationEPS);
+                mapDialogMobility.send();
+
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+        }
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
+    }
 }

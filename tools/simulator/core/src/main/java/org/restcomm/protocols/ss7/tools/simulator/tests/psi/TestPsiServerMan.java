@@ -338,7 +338,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
         curDialog.sendRejectComponent(invokeId, problem);
         curDialog.close(false);
       } catch (MAPException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
       logger.debug("\nRejectComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
@@ -351,7 +351,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
         curDialog.sendErrorComponent(invokeId, mapErrorMessageAbsentSubscriber);
         curDialog.close(false);
       } catch (MAPException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
       logger.debug("\nErrorComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
@@ -489,7 +489,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
         curDialog.sendRejectComponent(invokeId, problem);
         curDialog.close(false);
       } catch (MAPException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
       logger.debug("\nRejectComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
@@ -502,7 +502,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
         curDialog.sendErrorComponent(invokeId, mapErrorMessage1);
         curDialog.close(false);
       } catch (MAPException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
       logger.debug("\nErrorComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
@@ -545,7 +545,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       try {
         Thread.sleep(sriLcsResponseDelay);
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
 
       curDialog.addSendRoutingInformationResponse(invokeId, imsi, extRoutingInfo, cugCheckInfo, cugSubscriptionFlag, subscriberInfo, ssList,
@@ -635,7 +635,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
         Thread.sleep(15000);
         return;
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
     } else if (provideSubscriberInfoRequest.getImsi().getData().equals("502153100826899")) {
       InvokeProblemType invokeProblemType = InvokeProblemType.ResourceLimitation;
@@ -645,7 +645,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
         curDialog.sendRejectComponent(invokeId, problem);
         curDialog.close(false);
       } catch (MAPException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
       logger.debug("\nRejectComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
@@ -657,7 +657,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
         curDialog.sendErrorComponent(invokeId, mapErrorMessage1);
         curDialog.close(false);
       } catch (MAPException e) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
       logger.debug("\nErrorComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
@@ -794,10 +794,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
             TypeOfShape geodeticTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
             Double geodeticLatitude;
             Double geodeticLongitude;
-            Double geodeticlUncertainty;
+            Double geodeticUncertainty;
             int geodeticConfidence = 1;
             int screeningAndPresentationIndicators = 3;
-            //geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+            //geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
             Integer randLoc = rand.nextInt(10) + 1;
             switch(randLoc) {
               case 1:
@@ -821,10 +821,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geographicalInformation = null;
                 geodeticLatitude = -34.910349;
                 geodeticLongitude = -56.149832;
-                geodeticlUncertainty = 2.0;
+                geodeticUncertainty = 2.0;
                 geodeticConfidence = 1;
                 screeningAndPresentationIndicators = 3;
-                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                 lteCgi = hexStringToByteArray("47f81000095f02"); // ECGI = 748-1-614146; TBCD encoded: 47f81000095f02
                 trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
                 break;
@@ -886,10 +886,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geographicalInformation = null;
                 geodeticLatitude = -34.905624;
                 geodeticLongitude = -55.042191;
-                geodeticlUncertainty = 4.0;
+                geodeticUncertainty = 4.0;
                 geodeticConfidence = 10;
                 screeningAndPresentationIndicators = 3;
-                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                 lteCgi = hexStringToByteArray("47f81000004802"); // ECGI = 748-1-18434; TBCD encoded: 47f81000004802
                 trackingAreaId = hexStringToByteArray("47f8100002"); // TAI = 748-1-2; TBCD encoded: 47f8100002
                 break;
@@ -901,10 +901,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geographicalInformation = null;
                 geodeticLatitude = -34.891032;
                 geodeticLongitude = -56.0008102;
-                geodeticlUncertainty = 4.0;
+                geodeticUncertainty = 4.0;
                 geodeticConfidence = 2;
                 screeningAndPresentationIndicators = 1;
-                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                 lteCgi = hexStringToByteArray("47f81000089700"); // ECGI = 748-1-562944; TBCD encoded: 47f81000089700
                 trackingAreaId = hexStringToByteArray("47f8100067"); // TAI = 748-1-103; TBCD encoded: 47f8100067
                 break;
@@ -926,10 +926,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geographicalInformation = null;
                 geodeticLatitude = -34.905624;
                 geodeticLongitude = -55.042190;
-                geodeticlUncertainty = 4.0;
+                geodeticUncertainty = 4.0;
                 geodeticConfidence = 10;
                 screeningAndPresentationIndicators = 3;
-                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                 lteCgi = hexStringToByteArray("47f81000004802"); // ECGI = 748-1-18434; TBCD encoded: 47f81000004802
                 trackingAreaId = hexStringToByteArray("47f8100002"); // TAI = 748-1-2; TBCD encoded: 47f8100002
                 break;
@@ -950,7 +950,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               try {
                 locationNumberMap = new LocationNumberMapImpl(locationNumber);
               } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
               }
               eUtranCgi = new EUtranCgiImpl(lteCgi);
               taId = new TAIdImpl(trackingAreaId);
@@ -966,7 +966,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               try {
                 cgiOrSai = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdFixedLength(mcc, mnc, lac, cellId);
               } catch (MAPException ex) {
-                ex.printStackTrace();
+                logger.error(ex.getMessage());
               }
               cellGlobalIdOrServiceAreaIdOrLAI = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdOrLAI(cgiOrSai);
               if (subscriberStateChoice == SubscriberStateChoice.assumedIdle) {
@@ -1066,10 +1066,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geographicalInformation = null;
                   geodeticLatitude = -34.910349;
                   geodeticLongitude = -56.149832;
-                  geodeticlUncertainty = 2.0;
+                  geodeticUncertainty = 2.0;
                   geodeticConfidence = 1;
                   screeningAndPresentationIndicators = 3;
-                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                   break;
                 case 3:
                   mcc = 748;
@@ -1119,10 +1119,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geographicalInformation = null;
                   geodeticLatitude = -34.905624;
                   geodeticLongitude = -55.042191;
-                  geodeticlUncertainty = 4.0;
+                  geodeticUncertainty = 4.0;
                   geodeticConfidence = 10;
                   screeningAndPresentationIndicators = 3;
-                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                   break;
                 case 9:
                   mcc = 748;
@@ -1132,10 +1132,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geographicalInformation = null;
                   geodeticLatitude = -34.891032;
                   geodeticLongitude = -56.0008102;
-                  geodeticlUncertainty = 4.0;
+                  geodeticUncertainty = 4.0;
                   geodeticConfidence = 2;
                   screeningAndPresentationIndicators = 1;
-                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                   break;
                 case 10:
                   mcc = 748;
@@ -1153,10 +1153,10 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geographicalInformation = null;
                   geodeticLatitude = -34.905624;
                   geodeticLongitude = -55.042190;
-                  geodeticlUncertainty = 4.0;
+                  geodeticUncertainty = 4.0;
                   geodeticConfidence = 10;
                   screeningAndPresentationIndicators = 3;
-                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticlUncertainty, geodeticConfidence);
+                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                   break;
               }
               byte[] raId = hexStringToByteArray("47f810006517");
@@ -1353,7 +1353,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
             sb.append(",\nCI=");
             sb.append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode());
           } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
           }
         }
         if (subscriberInfo.getLocationInformation().getLocationNumber() != null) {
@@ -1374,7 +1374,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
             sb.append(",\nLocation number ScreeningIndicator=");
             sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getScreeningIndicator());
           } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
           }
         }
       }
@@ -1472,7 +1472,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
             sb.append(",\nCI=");
             sb.append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode());
           } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
           }
         }
       }
@@ -1557,11 +1557,11 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   /*
    * VLR SCCP Address creation
    */
-  private SccpAddress getVLRSCCPAddress(String address) {
+  private SccpAddress getVLRSCCPAddress(String vlrAddress) {
     ParameterFactory sccpParam = new ParameterFactoryImpl();
     int translationType = 0; // Translation Type = 0 : Unknown
     EncodingScheme encodingScheme = null;
-    GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
+    GlobalTitle gt = sccpParam.createGlobalTitle(vlrAddress, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
     int vlrSsn = 7;
     return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, vlrSsn);
   }
@@ -1569,11 +1569,11 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   /*
    * MSC SCCP Address creation
    */
-  private SccpAddress getMSCSCCPAddress(String address) {
+  private SccpAddress getMSCSCCPAddress(String mscAddress) {
     ParameterFactory sccpParam = new ParameterFactoryImpl();
     int translationType = 0; // Translation Type = 0 : Unknown
     EncodingScheme encodingScheme = null;
-    GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
+    GlobalTitle gt = sccpParam.createGlobalTitle(mscAddress, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
     int mscSsn = 8;
     return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, mscSsn);
   }
@@ -1581,11 +1581,11 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   /*
    * SGSN SCCP Address creation
    */
-  private SccpAddress getSGSNSCCPAddress(String address) {
+  private SccpAddress getSGSNSCCPAddress(String sgsnAddress) {
     ParameterFactory sccpParam = new ParameterFactoryImpl();
     int translationType = 0; // Translation Type = 0 : Unknown
     EncodingScheme encodingScheme = null;
-    GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
+    GlobalTitle gt = sccpParam.createGlobalTitle(sgsnAddress, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
     int sgsnSsn = 149;
     return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, sgsnSsn);
   }
@@ -1604,7 +1604,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     try {
       Thread.sleep(delay);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage());
     }
   }
 
@@ -1647,7 +1647,6 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   @Override
   public void putAddressNature(String val) {
     AddressNatureType x = AddressNatureType.createInstance(val);
-    if (x != null)
       this.setAddressNature(x);
   }
 
@@ -1663,7 +1662,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public String getNetworkNodeNumber() {
-    return new String(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getNetworkNodeNumber());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getNetworkNodeNumber();
   }
 
   @Override
@@ -1674,7 +1673,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public String getVmscAddress() {
-    return new String(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getVmscAddress());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getVmscAddress();
   }
 
   @Override
@@ -1685,7 +1684,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public String getImsi() {
-    return new String(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getImsi());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getImsi();
   }
 
   @Override
@@ -1696,7 +1695,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public String getLmsi() {
-    return new String(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getLmsi());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getLmsi();
   }
 
   @Override
@@ -1707,7 +1706,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public int getMcc() {
-    return new Integer(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getMcc());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getMcc();
   }
 
   @Override
@@ -1718,7 +1717,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public int getMnc() {
-    return new Integer(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getMnc());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getMnc();
   }
 
   @Override
@@ -1729,7 +1728,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public int getLac() {
-    return new Integer(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getLac());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getLac();
   }
 
   @Override
@@ -1740,7 +1739,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public int getCi() {
-    return new Integer(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getCi());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getCi();
   }
 
   @Override
@@ -1751,7 +1750,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public int getAol() {
-    return new Integer(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getAol());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getAol();
   }
 
   @Override
@@ -1762,7 +1761,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public boolean isSaiPresent() {
-    return new Boolean(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().isSaiPresent());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().isSaiPresent();
   }
 
   @Override
@@ -1773,7 +1772,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public double getGeographicalLatitude() {
-    return new Double(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeographicalLatitude());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeographicalLatitude();
   }
 
   @Override
@@ -1784,7 +1783,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public double getGeographicalLongitude() {
-    return new Double(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeographicalLongitude());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeographicalLongitude();
   }
 
   @Override
@@ -1795,7 +1794,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public double getGeographicalUncertainty() {
-    return new Double(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeographicalUncertainty());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeographicalUncertainty();
   }
 
   @Override
@@ -1806,7 +1805,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public int getScreeningAndPresentationIndicators() {
-    return new Integer(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getScreeningAndPresentationIndicators());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getScreeningAndPresentationIndicators();
   }
 
   @Override
@@ -1817,7 +1816,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public double getGeodeticLatitude() {
-    return new Double(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeodeticLatitude());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeodeticLatitude();
   }
 
   @Override
@@ -1828,7 +1827,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public double getGeodeticLongitude() {
-    return new Double(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeodeticLongitude());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeodeticLongitude();
   }
 
   @Override
@@ -1839,7 +1838,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public double getGeodeticUncertainty() {
-    return new Double(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeodeticUncertainty());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeodeticUncertainty();
   }
 
   @Override
@@ -1850,7 +1849,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public int getGeodeticConfidence() {
-    return new Integer(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeodeticConfidence());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getGeodeticConfidence();
   }
 
   @Override
@@ -1861,7 +1860,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public boolean isCurrentLocationRetrieved() {
-    return new Boolean(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().isCurrentLocationRetrieved());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().isCurrentLocationRetrieved();
   }
 
   @Override
@@ -1872,7 +1871,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public String getImei() {
-    return new String(this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getImei());
+    return this.testerHost.getConfigurationData().getTestPsiServerConfigurationData().getImei();
   }
 
   @Override
@@ -1904,7 +1903,6 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   @Override
   public void putSRIReaction(String val) {
     SRIReaction x = SRIReaction.createInstance(val);
-    if (x != null)
       this.setSRIReaction(x);
   }
 
@@ -1927,7 +1925,6 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   @Override
   public void putPSIReaction(String val) {
     PSIReaction x = PSIReaction.createInstance(val);
-    if (x != null)
       this.setPSIReaction(x);
   }
 
