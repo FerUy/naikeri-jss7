@@ -37,6 +37,7 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
     protected static final int _TAG_requestingPLMNId = 4;
     protected static final int _TAG_numberOfRequestedAdditionalVectors = 5;
     protected static final int _TAG_additionalVectorsAreForEPS = 6;
+    protected static final int _TAG_ueUsageTypeRequestIndication = 7;
 
     public static final String _PrimitiveName = "SendAuthenticationInfoRequest";
 
@@ -50,6 +51,7 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
     private PlmnId requestingPlmnId;
     private Integer numberOfRequestedAdditionalVectors;
     private boolean additionalVectorsAreForEPS;
+    private boolean ueUsageTypeRequestIndication;
     private long mapProtocolVersion;
 
     public SendAuthenticationInfoRequestImpl(long mapProtocolVersion) {
@@ -59,7 +61,7 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
     public SendAuthenticationInfoRequestImpl(long mapProtocolVersion, IMSI imsi, int numberOfRequestedVectors,
             boolean segmentationProhibited, boolean immediateResponsePreferred, ReSynchronisationInfo reSynchronisationInfo,
             MAPExtensionContainer extensionContainer, RequestingNodeType requestingNodeType, PlmnId requestingPlmnId,
-            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS) {
+            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS, boolean ueUsageTypeRequestIndication) {
         this.mapProtocolVersion = mapProtocolVersion;
         this.imsi = imsi;
         this.numberOfRequestedVectors = numberOfRequestedVectors;
@@ -71,6 +73,7 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
         this.requestingPlmnId = requestingPlmnId;
         this.numberOfRequestedAdditionalVectors = numberOfRequestedAdditionalVectors;
         this.additionalVectorsAreForEPS = additionalVectorsAreForEPS;
+        this.ueUsageTypeRequestIndication = ueUsageTypeRequestIndication;
     }
 
     public MAPMessageType getMessageType() {
@@ -119,6 +122,10 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
 
     public boolean getAdditionalVectorsAreForEPS() {
         return additionalVectorsAreForEPS;
+    }
+
+    public boolean getUeUsageTypeRequestIndication() {
+        return ueUsageTypeRequestIndication;
     }
 
     public long getMapProtocolVersion() {
@@ -181,6 +188,7 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
         requestingPlmnId = null;
         numberOfRequestedAdditionalVectors = null;
         additionalVectorsAreForEPS = false;
+        ueUsageTypeRequestIndication = false;
 
         if (mapProtocolVersion >= 3) {
             AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
@@ -265,6 +273,15 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
                                                 MAPParsingComponentExceptionReason.MistypedParameter);
                                     ais.readNull();
                                     this.additionalVectorsAreForEPS = true;
+                                    break;
+                                case _TAG_ueUsageTypeRequestIndication:
+                                    // ueUsageTypeRequestIndication
+                                    if (!ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ".ueUsageTypeRequestIndication: Parameter is not primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    ais.readNull();
+                                    this.ueUsageTypeRequestIndication = true;
                                     break;
 
                                 default:
@@ -369,6 +386,8 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
                             numberOfRequestedAdditionalVectors);
                 if (additionalVectorsAreForEPS)
                     asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_additionalVectorsAreForEPS);
+                if(ueUsageTypeRequestIndication)
+                    asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_ueUsageTypeRequestIndication);
 
             } catch (IOException e) {
                 throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
@@ -386,7 +405,7 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(imsi.toString());
+            sb.append(imsi);
             sb.append(", ");
         }
         sb.append("numberOfRequestedVectors=");
@@ -400,31 +419,34 @@ public class SendAuthenticationInfoRequestImpl extends MobilityMessageImpl imple
         }
         if (this.reSynchronisationInfo != null) {
             sb.append("reSynchronisationInfo=");
-            sb.append(reSynchronisationInfo.toString());
+            sb.append(reSynchronisationInfo);
             sb.append(", ");
         }
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
         if (this.requestingNodeType != null) {
             sb.append("requestingNodeType=");
-            sb.append(requestingNodeType.toString());
+            sb.append(requestingNodeType);
             sb.append(", ");
         }
         if (this.requestingPlmnId != null) {
             sb.append("requestingPlmnId=");
-            sb.append(requestingPlmnId.toString());
+            sb.append(requestingPlmnId);
             sb.append(", ");
         }
         if (this.numberOfRequestedAdditionalVectors != null) {
             sb.append("numberOfRequestedAdditionalVectors=");
-            sb.append(numberOfRequestedAdditionalVectors.toString());
+            sb.append(numberOfRequestedAdditionalVectors);
             sb.append(", ");
         }
         if (this.additionalVectorsAreForEPS) {
             sb.append("additionalVectorsAreForEPS, ");
+        }
+        if (this.ueUsageTypeRequestIndication) {
+            sb.append("ueUsageTypeRequestIndication, ");
         }
         sb.append("mapProtocolVersion=");
         sb.append(mapProtocolVersion);

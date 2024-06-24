@@ -165,16 +165,18 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     public Long addSendAuthenticationInfoRequest(IMSI imsi, int numberOfRequestedVectors, boolean segmentationProhibited,
             boolean immediateResponsePreferred, ReSynchronisationInfo reSynchronisationInfo,
             MAPExtensionContainer extensionContainer, RequestingNodeType requestingNodeType, PlmnId requestingPlmnId,
-            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS) throws MAPException {
+            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS,
+            boolean ueUsageTypeRequestIndication) throws MAPException {
         return this.addSendAuthenticationInfoRequest(_Timer_Default, imsi, numberOfRequestedVectors, segmentationProhibited,
                 immediateResponsePreferred, reSynchronisationInfo, extensionContainer, requestingNodeType, requestingPlmnId,
-                numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS);
+                numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndication);
     }
 
     public Long addSendAuthenticationInfoRequest(int customInvokeTimeout, IMSI imsi, int numberOfRequestedVectors,
             boolean segmentationProhibited, boolean immediateResponsePreferred, ReSynchronisationInfo reSynchronisationInfo,
             MAPExtensionContainer extensionContainer, RequestingNodeType requestingNodeType, PlmnId requestingPlmnId,
-            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS) throws MAPException {
+            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS,
+            boolean ueUsageTypeRequestIndication) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.infoRetrievalContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2 && this.mapApplicationContext
@@ -192,11 +194,11 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         invoke.setOperationCode(operationCode);
 
         if (imsi != null) {
-            // parameter is optional: is no imsi is included we will not add a parameter
+            // parameter is optional: if no IMSI is included we will not add a parameter
             SendAuthenticationInfoRequestImpl sendAuthenticationInfoRequest = new SendAuthenticationInfoRequestImpl(this.mapApplicationContext
                     .getApplicationContextVersion().getVersion(), imsi, numberOfRequestedVectors, segmentationProhibited,
                     immediateResponsePreferred, reSynchronisationInfo, extensionContainer, requestingNodeType,
-                    requestingPlmnId, numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS);
+                    requestingPlmnId, numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndication);
             AsnOutputStream aos = new AsnOutputStream();
             sendAuthenticationInfoRequest.encodeData(aos);
 
@@ -222,19 +224,21 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     }
 
     public void addSendAuthenticationInfoResponse(long invokeId, AuthenticationSetList authenticationSetList,
-            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList) throws MAPException {
+            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
+            byte[] ueUsageType) throws MAPException {
         doAddSendAuthenticationInfoResponse(false, invokeId, authenticationSetList, extensionContainer,
-                epsAuthenticationSetList);
+                epsAuthenticationSetList, ueUsageType);
     }
 
     public void addSendAuthenticationInfoResponse_NonLast(long invokeId, AuthenticationSetList authenticationSetList,
-            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList) throws MAPException {
-        doAddSendAuthenticationInfoResponse(true, invokeId, authenticationSetList, extensionContainer, epsAuthenticationSetList);
+            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
+            byte[] ueUsageType) throws MAPException {
+        doAddSendAuthenticationInfoResponse(true, invokeId, authenticationSetList, extensionContainer, epsAuthenticationSetList, ueUsageType);
     }
 
     protected void doAddSendAuthenticationInfoResponse(boolean nonLast, long invokeId,
             AuthenticationSetList authenticationSetList, MAPExtensionContainer extensionContainer,
-            EpsAuthenticationSetList epsAuthenticationSetList) throws MAPException {
+            EpsAuthenticationSetList epsAuthenticationSetList, byte[] ueUsageType) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.infoRetrievalContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2 && this.mapApplicationContext
@@ -253,7 +257,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
             SendAuthenticationInfoResponseImpl sendAuthenticationInfoResponse = new SendAuthenticationInfoResponseImpl(this.mapApplicationContext
                     .getApplicationContextVersion().getVersion(), authenticationSetList, extensionContainer,
-                    epsAuthenticationSetList);
+                    epsAuthenticationSetList, ueUsageType);
             AsnOutputStream aos = new AsnOutputStream();
             sendAuthenticationInfoResponse.encodeData(aos);
 

@@ -679,9 +679,10 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             AuthenticationSetList authenticationSetList = new AuthenticationSetListImpl(quintupletList);
             MAPExtensionContainer mapExtensionContainer = null;
             EpsAuthenticationSetList epsAuthenticationSetList = null;
+            byte[] ueUsageType = null;
 
             mapDialogMobility.addSendAuthenticationInfoResponse(invokeId, authenticationSetList, mapExtensionContainer,
-                    epsAuthenticationSetList);
+                    epsAuthenticationSetList, ueUsageType);
 
             mapDialogMobility.close(false);
 

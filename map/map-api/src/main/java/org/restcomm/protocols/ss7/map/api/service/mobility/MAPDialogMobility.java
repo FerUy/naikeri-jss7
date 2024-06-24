@@ -193,18 +193,22 @@ public interface MAPDialogMobility extends MAPDialog {
     Long addSendAuthenticationInfoRequest(IMSI imsi, int numberOfRequestedVectors, boolean segmentationProhibited,
             boolean immediateResponsePreferred, ReSynchronisationInfo reSynchronisationInfo,
             MAPExtensionContainer extensionContainer, RequestingNodeType requestingNodeType, PlmnId requestingPlmnId,
-            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS) throws MAPException;
+            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS,
+            boolean ueUsageTypeRequestIndication) throws MAPException;
 
     Long addSendAuthenticationInfoRequest(int customInvokeTimeout, IMSI imsi, int numberOfRequestedVectors,
             boolean segmentationProhibited, boolean immediateResponsePreferred, ReSynchronisationInfo reSynchronisationInfo,
             MAPExtensionContainer extensionContainer, RequestingNodeType requestingNodeType, PlmnId requestingPlmnId,
-            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS) throws MAPException;
+            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS,
+            boolean ueUsageTypeRequestIndication) throws MAPException;
 
     void addSendAuthenticationInfoResponse(long invokeId, AuthenticationSetList authenticationSetList,
-            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList) throws MAPException;
+            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
+            byte[] ueUsageType) throws MAPException;
 
     void addSendAuthenticationInfoResponse_NonLast(long invokeId, AuthenticationSetList authenticationSetList,
-            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList) throws MAPException;
+            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
+            byte[] ueUsageType) throws MAPException;
 
     Long addAuthenticationFailureReportRequest(IMSI imsi, FailureCause failureCause, MAPExtensionContainer extensionContainer, Boolean reAttempt,
             AccessType accessType, byte[] rand, ISDNAddressString vlrNumber, ISDNAddressString sgsnNumber) throws MAPException;

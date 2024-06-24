@@ -709,7 +709,7 @@ public class Client extends EventTestHarness {
 
         IMSI imsi = this.mapParameterFactory.createIMSI("4567890");
         clientDialogMobility.addSendAuthenticationInfoRequest(imsi, 3, true, true, null, null, RequestingNodeType.sgsn, null,
-                5, false);
+                5, false, false);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendAuthenticationInfo_V3, null, sequence++));
         clientDialogMobility.send();
@@ -729,7 +729,7 @@ public class Client extends EventTestHarness {
                 this.remoteAddress, null);
 
         IMSI imsi = this.mapParameterFactory.createIMSI("456789000");
-        clientDialogMobility.addSendAuthenticationInfoRequest(imsi, 0, false, false, null, null, null, null, null, false);
+        clientDialogMobility.addSendAuthenticationInfoRequest(imsi, 0, false, false, null, null, null, null, null, false, false);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendAuthenticationInfo_V2, null, sequence++));
         clientDialogMobility.send();

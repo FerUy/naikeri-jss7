@@ -152,7 +152,7 @@ import java.util.ArrayList;
  */
 public class Server extends TestHarnessMobilityManagement {
 
-    private static Logger logger = Logger.getLogger(org.restcomm.protocols.ss7.map.load.mobility_management.cs.Server.class);
+    private static Logger logger = Logger.getLogger(Server.class);
 
     // MAP
     private MAPStackImpl mapStack;
@@ -648,9 +648,10 @@ public class Server extends TestHarnessMobilityManagement {
             AuthenticationSetList authenticationSetList = new AuthenticationSetListImpl(quintupletList);
             MAPExtensionContainer mapExtensionContainer = null;
             EpsAuthenticationSetList epsAuthenticationSetList = null;
+            byte[] ueUsageType = null;
 
             mapDialogMobility.addSendAuthenticationInfoResponse(invokeId, authenticationSetList, mapExtensionContainer,
-                    epsAuthenticationSetList);
+                    epsAuthenticationSetList, ueUsageType);
 
             mapDialogMobility.close(false);
 

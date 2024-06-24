@@ -4361,6 +4361,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 Assert.assertNull(asl.getQuintupletList());
                 Assert.assertNull(ind.getEpsAuthenticationSetList());
                 Assert.assertNull(ind.getExtensionContainer());
+                Assert.assertNull(ind.getUeUsageType());
             }
 
         };
@@ -4375,7 +4376,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 IMSI imsi = ind.getImsi();
 
                 Assert.assertEquals(ind.getMapProtocolVersion(), 3);
-                Assert.assertTrue(imsi.getData().equals("4567890"));
+                assertEquals(imsi.getData(), "4567890");
                 Assert.assertEquals(ind.getNumberOfRequestedVectors(), 3);
                 Assert.assertTrue(ind.getSegmentationProhibited());
                 Assert.assertTrue(ind.getImmediateResponsePreferred());
@@ -4385,6 +4386,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 Assert.assertNull(ind.getRequestingPlmnId());
                 Assert.assertEquals((int) ind.getNumberOfRequestedAdditionalVectors(), 5);
                 Assert.assertFalse(ind.getAdditionalVectorsAreForEPS());
+                Assert.assertFalse(ind.getUeUsageTypeRequestIndication());
 
                 ArrayList<AuthenticationTriplet> authenticationTriplets = new ArrayList<AuthenticationTriplet>();
                 AuthenticationTriplet at = this.mapParameterFactory.createAuthenticationTriplet(TripletListTest.getRandData(),
@@ -4394,7 +4396,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 AuthenticationSetList asl = this.mapParameterFactory.createAuthenticationSetList(tripletList);
 
                 try {
-                    d.addSendAuthenticationInfoResponse(ind.getInvokeId(), asl, null, null);
+                    d.addSendAuthenticationInfoResponse(ind.getInvokeId(), asl, null, null, null);
                 } catch (MAPException e) {
                     this.error("Error while adding SendAuthenticationInfoResponse", e);
                     fail("Error while adding SendAuthenticationInfoResponse");
@@ -4484,6 +4486,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 Assert.assertNull(asl.getQuintupletList());
                 Assert.assertNull(ind.getEpsAuthenticationSetList());
                 Assert.assertNull(ind.getExtensionContainer());
+                Assert.assertNull(ind.getUeUsageType());
             }
 
         };
@@ -4498,7 +4501,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 IMSI imsi = ind.getImsi();
 
                 Assert.assertEquals(ind.getMapProtocolVersion(), 2);
-                Assert.assertTrue(imsi.getData().equals("456789000"));
+                assertEquals(imsi.getData(), "456789000");
                 Assert.assertEquals(ind.getNumberOfRequestedVectors(), 0);
                 Assert.assertFalse(ind.getSegmentationProhibited());
                 Assert.assertFalse(ind.getImmediateResponsePreferred());
@@ -4508,6 +4511,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 Assert.assertNull(ind.getRequestingPlmnId());
                 Assert.assertNull(ind.getNumberOfRequestedAdditionalVectors());
                 Assert.assertFalse(ind.getAdditionalVectorsAreForEPS());
+                Assert.assertFalse(ind.getUeUsageTypeRequestIndication());
 
                 ArrayList<AuthenticationTriplet> authenticationTriplets = new ArrayList<AuthenticationTriplet>();
                 AuthenticationTriplet at = this.mapParameterFactory.createAuthenticationTriplet(TripletListTest.getRandData(),
@@ -4517,7 +4521,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 AuthenticationSetList asl = this.mapParameterFactory.createAuthenticationSetList(tripletList);
 
                 try {
-                    d.addSendAuthenticationInfoResponse(ind.getInvokeId(), asl, null, null);
+                    d.addSendAuthenticationInfoResponse(ind.getInvokeId(), asl, null, null, null);
                 } catch (MAPException e) {
                     this.error("Error while adding SendAuthenticationInfoResponse", e);
                     fail("Error while adding SendAuthenticationInfoResponse");
@@ -4599,7 +4603,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
                 Assert.assertEquals(hlrNumber.getAddressNature(), AddressNature.international_number);
                 Assert.assertEquals(hlrNumber.getNumberingPlan(), NumberingPlan.ISDN);
-                Assert.assertTrue(hlrNumber.getAddress().equals("765765765"));
+                assertEquals(hlrNumber.getAddress(), "765765765");
                 Assert.assertNull(ind.getExtensionContainer());
                 Assert.assertTrue(ind.getAddCapability());
                 Assert.assertFalse(ind.getPagingAreaCapability());

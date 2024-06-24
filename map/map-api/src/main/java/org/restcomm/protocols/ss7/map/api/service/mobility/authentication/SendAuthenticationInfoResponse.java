@@ -10,7 +10,8 @@ MAP V3: SendAuthenticationInfoRes ::= [3] SEQUENCE {
   authenticationSetList AuthenticationSetList OPTIONAL,
   extensionContainer ExtensionContainer OPTIONAL,
   ...,
-  eps-AuthenticationSetList [2] EPS-AuthenticationSetList OPTIONAL
+  eps-AuthenticationSetList [2] EPS-AuthenticationSetList OPTIONAL,
+  ueUsageType               [3] UE-UsageType              OPTIONAL
 }
 
 MAP V2: SendAuthenticationInfoRes ::= AuthenticationSetList
@@ -26,6 +27,8 @@ public interface SendAuthenticationInfoResponse extends MobilityMessage {
     MAPExtensionContainer getExtensionContainer();
 
     EpsAuthenticationSetList getEpsAuthenticationSetList();
+
+    byte[] getUeUsageType();
 
     long getMapProtocolVersion();
 

@@ -1244,10 +1244,11 @@ public class Client extends TestHarnessMobilityManagement {
             PlmnId requestingPlmnId = new PlmnIdImpl(mccMnc);
             Integer numberOfRequestedAdditionalVectors = 0;
             boolean additionalVectorsAreForEPS = false;
+            boolean ueUsageTypeRequestIndication = false;
 
             mapDialogMobility.addSendAuthenticationInfoRequest(imsi, numberOfRequestedVectors, segmentationProhibited,
                     immediateResponsePreferred, reSynchronisationInfo, mapExtensionContainer, requestingNodeType, requestingPlmnId,
-                    numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS);
+                    numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndication);
 
             mapDialogMobility.send();
 
