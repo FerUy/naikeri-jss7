@@ -11,22 +11,32 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
  *
 <code>
 SGSN-Capability ::= SEQUENCE {
-  solsaSupportIndicator                          NULL OPTIONAL,
-  extensionContainer                             [1] ExtensionContainer OPTIONAL,
+  solsaSupportIndicator                             NULL OPTIONAL,
+  extensionContainer                                 [1] ExtensionContainer OPTIONAL,
   ...,
-  superChargerSupportedInServingNetworkEntity    [2] SuperChargerInfo OPTIONAL,
-  gprsEnhancementsSupportIndicator               [3] NULL OPTIONAL,
-  supportedCamelPhases                           [4] SupportedCamelPhases OPTIONAL,
-  supportedLCS-CapabilitySets                    [5] SupportedLCS-CapabilitySets OPTIONAL,
-  offeredCamel4CSIs                              [6] OfferedCamel4CSIs OPTIONAL,
-  smsCallBarringSupportIndicator                 [7] NULL OPTIONAL,
-  supportedRAT-TypesIndicator                    [8] SupportedRAT-Types OPTIONAL,
-  supportedFeatures                              [9] SupportedFeatures OPTIONAL,
-  t-adsDataRetrieval                             [10] NULL OPTIONAL,
-  homogeneousSupportOfIMSVoiceOverPSSessions     [11] BOOLEAN OPTIONAL
+  superChargerSupportedInServingNetworkEntity        [2] SuperChargerInfo OPTIONAL,
+  gprsEnhancementsSupportIndicator                   [3] NULL OPTIONAL,
+  supportedCamelPhases                               [4] SupportedCamelPhases OPTIONAL,
+  supportedLCS-CapabilitySets                        [5] SupportedLCS-CapabilitySets OPTIONAL,
+  offeredCamel4CSIs                                  [6] OfferedCamel4CSIs OPTIONAL,
+  smsCallBarringSupportIndicator                     [7] NULL OPTIONAL,
+  supportedRAT-TypesIndicator                        [8] SupportedRAT-Types OPTIONAL,
+  supportedFeatures                                  [9] SupportedFeatures OPTIONAL,
+  t-adsDataRetrieval                                 [10] NULL OPTIONAL,
+  homogeneousSupportOfIMSVoiceOverPSSessions         [11] BOOLEAN OPTIONAL
   -- "true" indicates homogeneous support, "false" indicates homogeneous non-support
   -- in the complete SGSN area
-}
+  cancellationTypeInitialAttach                      [12] NULL OPTIONAL,
+  msisdn-lessOperation-Supported                     [14] NULL OPTIONAL,
+  updateofHomogeneousSupportOfIMSVoiceOverPSSessions [15] NULL OPTIONAL,
+  reset-ids-Supported                                [16] NULL OPTIONAL,
+  ext-SupportedFeatures                              [17] Ext-SupportedFeatures OPTIONAL
+ }
+ -- the supportedFeatures, t-adsDataRetrieval,
+ -- homogeneousSupportOfIMSVoiceOverPSSessions
+ -- /updateofHomogeneousSupportOfIMSVoiceOverPSSessions and
+ --ext-SupportedFeatures are also applied to the MME/IWF
+
 </code>
  *
  *
