@@ -98,6 +98,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TAId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
@@ -109,7 +110,9 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OfferedCamel4CSIs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.RegionalSubscriptionResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
 import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
 import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdOrLAIImpl;
@@ -131,9 +134,13 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.Loc
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationNumberMapImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RAIdentityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TAIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBGeneralDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
+import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
@@ -939,11 +946,57 @@ public class Client extends TestHarnessMobilityManagement {
         try {
             long invokeId = insertSubscriberDataRequest.getInvokeId();
             MAPDialogMobility mapDialogMobility = insertSubscriberDataRequest.getMAPDialog();
-            ArrayList<ExtTeleserviceCode> teleserviceList = null;
-            ArrayList<ExtBearerServiceCode> bearerServiceList = null;
-            ArrayList<SSCode> ssList = null;
-            ODBGeneralData odbGeneralData = null;
-            RegionalSubscriptionResponse regionalSubscriptionResponse = null;
+            ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<>();
+            ExtBearerServiceCode extBearerServiceCode = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allBearerServices);
+            bearerServiceList.add(extBearerServiceCode);
+            ArrayList<SSCode> ssList = new ArrayList<>();
+            SSCode clir = new SSCodeImpl(SupplementaryCodeValue.clir);
+            ssList.add(clir);
+            ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
+            ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
+            ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
+            teleserviceList.add(shortMessageMT_PP);
+            teleserviceList.add(shortMessageMO_PP);
+            boolean allOGCallsBarred= true;
+            boolean internationalOGCallsBarred = true;
+            boolean internationalOGCallsNotToHPLMNCountryBarred= true;
+            boolean premiumRateInformationOGCallsBarred = false;
+            boolean premiumRateEntertainmentOGCallsBarred= true;
+            boolean ssAccessBarred= true;
+            boolean interzonalOGCallsBarred = true;
+            boolean interzonalOGCallsNotToHPLMNCountryBarred= true;
+            boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = true;
+            boolean allECTBarred= true;
+            boolean chargeableECTBarred= true;
+            boolean internationalECTBarred = true;
+            boolean interzonalECTBarred= true;
+            boolean doublyChargeableECTBarred= true;
+            boolean multipleECTBarred = true;
+            boolean allPacketOrientedServicesBarred= true;
+            boolean roamerAccessToHPLMNAPBarred= false;
+            boolean roamerAccessToVPLMNAPBarred = false;
+            boolean roamingOutsidePLMNOGCallsBarred= false;
+            boolean allICCallsBarred= true;
+            boolean roamingOutsidePLMNICCallsBarred = true;
+            boolean roamingOutsidePLMNICountryICCallsBarred= true;
+            boolean roamingOutsidePLMNBarred = false;
+            boolean roamingOutsidePLMNCountryBarred= false;
+            boolean registrationAllCFBarred= true;
+            boolean registrationCFNotToHPLMNBarred = true;
+            boolean registrationInterzonalCFBarred= true;
+            boolean registrationInterzonalCFNotToHPLMNBarred = false;
+            boolean registrationInternationalCFBarred = true;
+            ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred,
+                    internationalOGCallsNotToHPLMNCountryBarred, premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred,
+                    ssAccessBarred, interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred,
+                    interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, allECTBarred, chargeableECTBarred,
+                    internationalECTBarred, interzonalECTBarred, doublyChargeableECTBarred, multipleECTBarred,
+                    allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
+                    roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
+                    roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred,
+                    roamingOutsidePLMNCountryBarred, registrationAllCFBarred, registrationCFNotToHPLMNBarred,
+                    registrationInterzonalCFBarred, registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
+            RegionalSubscriptionResponse regionalSubscriptionResponse = RegionalSubscriptionResponse.networkNodeAreaRestricted;
             SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
             MAPExtensionContainer extensionContainer = null;
             boolean oCsi = false;
@@ -1007,7 +1060,7 @@ public class Client extends TestHarnessMobilityManagement {
             ExtSupportedFeatures extSupportedFeatures = new ExtSupportedFeaturesImpl(unlicensedSpectrumAsSecondaryRAT);
 
             mapDialogMobility.addInsertSubscriberDataResponse(invokeId, teleserviceList, bearerServiceList, ssList,
-                    odbGeneralData,regionalSubscriptionResponse, supportedCamelPhases, extensionContainer, offeredCamel4CSIs,
+                    odbGeneralData, regionalSubscriptionResponse, supportedCamelPhases, extensionContainer, offeredCamel4CSIs,
                     supportedFeatures, extSupportedFeatures);
 
             mapDialogMobility.close(false);

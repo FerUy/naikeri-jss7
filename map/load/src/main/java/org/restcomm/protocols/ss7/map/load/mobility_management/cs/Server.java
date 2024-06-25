@@ -77,8 +77,16 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LIPAPermission;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SIPTOPermission;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AMBR;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNConfiguration;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNConfigurationProfile;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNOIReplacement;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AllocationRetentionPriority;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSAllocationRetentionPriority;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGSubscriptionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Category;
@@ -87,6 +95,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ChargingCharacteristics;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSQoSSubscribed;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSSubscriptionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
@@ -102,7 +111,14 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MCSSInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.NetworkAccessMode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ODBData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDNGWAllocationType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDNGWIdentity;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDNType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDNTypeValue;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPAddress;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.QoSClassIdentifier;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SGSNCAMELSubscriptionInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SpecificAPNInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SubscriberStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.VlrCamelSubscriptionInfo;
@@ -114,6 +130,7 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.OverrideCategory
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSSubscriptionOption;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
+import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationQuintupletImpl;
@@ -122,11 +139,21 @@ import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpcAvImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpsAuthenticationSetListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.QuintupletListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.UEUsageTypeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AMBRImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationProfileImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AccessRestrictionDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AllocationRetentionPriorityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CategoryImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ChargingCharacteristicsImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSQoSSubscribedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSSubscriptionDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSStatusImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDNTypeImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSSubscriptionOptionImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
@@ -150,6 +177,7 @@ import org.restcomm.protocols.ss7.tcap.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
@@ -770,18 +798,68 @@ public class Server extends TestHarnessMobilityManagement {
             MCSSInfo mcSsInfo = null;
             CSAllocationRetentionPriority csAllocationRetentionPriority = null;
             SGSNCAMELSubscriptionInfo sgsnCamelSubscriptionInfo = null;
-            ChargingCharacteristics chargingCharacteristics = null;
-            AccessRestrictionData accessRestrictionData = null;
-            Boolean icsIndicator = null;
-            EPSSubscriptionData epsSubscriptionData = null;
+            boolean isNormalCharging = false;
+            boolean isPrepaidCharging = false;
+            boolean isFlatRateCharging = true;
+            boolean isChargingByHotBillingCharging = false;
+            ChargingCharacteristics chargingCharacteristics =
+                    new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+            boolean utranNotAllowed = false;
+            boolean geranNotAllowed = false;
+            boolean ganNotAllowed = true;
+            boolean eUtranNotAllowed = false;
+            boolean iHspaEvolutionNotAllowed = false;
+            boolean hoToNon3GppAccessNotAllowed = true;
+            AccessRestrictionData accessRestrictionData =
+                    new AccessRestrictionDataImpl(utranNotAllowed, geranNotAllowed, ganNotAllowed, iHspaEvolutionNotAllowed, eUtranNotAllowed, hoToNon3GppAccessNotAllowed);
+            Boolean icsIndicator = Boolean.TRUE;
+            int defaultContext = 1;
+            boolean completeDataListIncluded = true;
+            PDNType pDNType = new PDNTypeImpl(PDNTypeValue.IPv4v6);
+            PDPAddress servedPartyIPIPv4Address = null;
+            APN apn = new APNImpl("internet");
+            QoSClassIdentifier qci = QoSClassIdentifier.QCI_5;
+            int priorityLevel = 9;
+            Boolean preEmptionCapability = true;
+            Boolean preEmptionVulnerability = false;
+            AllocationRetentionPriority arp = new AllocationRetentionPriorityImpl(priorityLevel, preEmptionCapability, preEmptionVulnerability, mapExtensionContainer);
+            EPSQoSSubscribed ePSQoSSubscribed = new EPSQoSSubscribedImpl(qci, arp, mapExtensionContainer);
+            PDNGWIdentity pdnGwIdentity = null;
+            PDNGWAllocationType pdnGwAllocationType = null;
+            boolean vplmnAddressAllowed = true;
+            AMBR ambr = new AMBRImpl(2048, 4096, null);
+            ArrayList<SpecificAPNInfo> specificAPNInfoList = null;
+            APNOIReplacement apnOiReplacement = null;
+            SIPTOPermission siptoPermission = null;
+            LIPAPermission lipaPermission = null;
+            int contextId = 1;
+            PDPAddress servedPartyIPIPv6Address = null;
+            APNConfiguration apnConfiguration = new APNConfigurationImpl(contextId, pDNType, servedPartyIPIPv4Address, apn,
+                    ePSQoSSubscribed, pdnGwIdentity, pdnGwAllocationType, vplmnAddressAllowed, chargingCharacteristics, ambr,
+                    specificAPNInfoList, mapExtensionContainer,
+                    servedPartyIPIPv6Address, apnOiReplacement, siptoPermission,
+                    lipaPermission);
+            ArrayList<APNConfiguration> ePSDataList = new ArrayList<>();
+            ePSDataList.add(apnConfiguration);
+            APNConfigurationProfile apnConfigurationProfile = new APNConfigurationProfileImpl(defaultContext, completeDataListIncluded,
+                    ePSDataList,  mapExtensionContainer);
+            Integer rfspId = 0;
+            ISDNAddressString stnSr = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                    "491710490000");
+            boolean mpsCSPriority = true;
+            boolean mpsEPSPriority = true;
+            EPSSubscriptionData epsSubscriptionData = new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
+                    stnSr, mapExtensionContainer, mpsCSPriority, mpsEPSPriority);
             ArrayList<CSGSubscriptionData> csgSubscriptionDataList = null;
             boolean ueReachabilityRequestIndicator = false;
-            ISDNAddressString sgsnNumber = null;
-            DiameterIdentity mmeName = null;
-            Long subscribedPeriodicRAUTAUtimer = null;
-            boolean vplmnLIPAAllowed = false;
+            ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                    "491710490000");
+            byte[] mmeNameArray = "mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
+            DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNameArray);
+            Long subscribedPeriodicRAUTAUtimer = 300L;
+            boolean vplmnLIPAAllowed = true;
             boolean mdtUserConsent = false;
-            Long subscribedPeriodicLAUtimer = null;
+            Long subscribedPeriodicLAUtimer = 360L;
 
             insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId,null, msisdn, category, subscriberStatus,
                     bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
