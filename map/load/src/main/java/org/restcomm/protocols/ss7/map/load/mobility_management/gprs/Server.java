@@ -695,8 +695,8 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
     @Override
     public void onSendAuthenticationInfoResponse(SendAuthenticationInfoResponse sendAuthenticationInfoResponseIndication) {
-        logger.error(String.format("ERROR: received SendAuthenticationInfoResponse over DialogId=%d", sendAuthenticationInfoResponseIndication
-                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
+        logger.error(String.format("ERROR: received SendAuthenticationInfoResponse at the server (acting as HLR) over DialogId=%d", sendAuthenticationInfoResponseIndication
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -715,8 +715,8 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
     @Override
     public void onInsertSubscriberDataRequest(InsertSubscriberDataRequest insertSubscriberDataRequest) {
-        logger.error(String.format("ERROR: received InsertSubscriberDataRequest over DialogId=%d", insertSubscriberDataRequest
-                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
+        logger.error(String.format("ERROR: received InsertSubscriberDataRequest at the server (acting as HLR) over DialogId=%d", insertSubscriberDataRequest
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -745,8 +745,8 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
     @Override
     public void onCancelLocationRequest(CancelLocationRequest cancelLocationRequest) {
-        logger.error(String.format("ERROR: received CancelLocationRequest over DialogId=%d", cancelLocationRequest
-                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
+        logger.error(String.format("ERROR: received CancelLocationRequest at the server (acting as HLR) over DialogId=%d", cancelLocationRequest
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -922,8 +922,8 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
     @Override
     public void onUpdateGprsLocationResponse(UpdateGprsLocationResponse updateGprsLocationResponse) {
-        logger.error(String.format("ERROR: received UpdateGprsLocationResponse over DialogId=%d", updateGprsLocationResponse
-                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
+        logger.error(String.format("ERROR: received UpdateGprsLocationResponse at the server (acting as HLR) over DialogId=%d", updateGprsLocationResponse
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -955,8 +955,8 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
     @Override
     public void onPurgeMSResponse(PurgeMSResponse purgeMSResponse) {
-        logger.error(String.format("onPurgeMSResponse over DialogId=%d", purgeMSResponse
-                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
+        logger.error(String.format("onPurgeMSResponse received at the server (acting as HLR) over DialogId=%d", purgeMSResponse
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -1084,8 +1084,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
                 logger.debug("On Subscription Withdraw and Reattach command, about to send CL");
                 server4SubscriptionWithdrawReattach.sendCLOnSubWithdrawAndReattach("901405105682021");
             } catch (InterruptedException e) {
-                logger.error("Error: ", e);
-                e.printStackTrace();
+                logger.error("Error: " + e.getMessage());
             }
         }
     }

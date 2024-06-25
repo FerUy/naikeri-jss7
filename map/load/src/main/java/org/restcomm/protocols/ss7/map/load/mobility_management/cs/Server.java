@@ -1019,8 +1019,7 @@ public class Server extends TestHarnessMobilityManagement {
                 logger.debug("On Subscription Withdraw and Reattach command, about to send CL");
                 server4SubscriptionWithdrawReattach.sendCLOnSubWithdrawAndReattach("901405105682021");
             } catch (InterruptedException e) {
-                logger.error("Error: ", e);
-                e.printStackTrace();
+                logger.error("Error: " + e.getMessage());
             }
         }
     }

@@ -123,6 +123,7 @@ import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.authentication.ReSynchronisationInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ADDInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EPSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ExtSupportedFeaturesImpl;
@@ -854,7 +855,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
         try {
             ArrayList<AuthenticationQuintuplet> authenticationQuintuplets = sendAuthenticationInfoResponseIndication.
                     getAuthenticationSetList().getQuintupletList().getAuthenticationQuintuplets();
-            SccpAddress hlrAddress = sendAuthenticationInfoResponseIndication.getMAPDialog().getRemoteAddress();
+            // SccpAddress hlrAddress = sendAuthenticationInfoResponseIndication.getMAPDialog().getRemoteAddress();
 
             // Create Dialog
             AddressString originAddressString = this.mapProvider.getMAPParameterFactory()
@@ -905,55 +906,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             boolean e_utran = true;
             boolean nb_iot = true;
             SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
-            boolean odbAllApn = false;
-            boolean odbHPLMNApn = false;
-            boolean odbVPLMNApn = false;
-            boolean odbAllOg = false;
-            boolean odbAllInternationalOg = false;
-            boolean odbAllIntOgNotToHPLMNCountry = false;
-            boolean odbAllInterzonalOg = false;
-            boolean odbAllInterzonalOgNotToHPLMNCountry = false;
-            boolean odbAllInterzonalOgandInternatOgNotToHPLMNCountry = false;
-            boolean regSub = false;
-            boolean trace = false;
-            boolean lcsAllPrivExcep = true;
-            boolean lcsUniversal = true;
-            boolean lcsCallSessionRelated = true;
-            boolean lcsCallSessionUnrelated = true;
-            boolean lcsPLMNOperator = true;
-            boolean lcsServiceType = true;
-            boolean lcsAllMOLRSS = true;
-            boolean lcsBasicSelfLocation = true;
-            boolean lcsAutonomousSelfLocation = true;
-            boolean lcsTransferToThirdParty = true;
-            boolean smMoPp = true;
-            boolean barringOutgoingCalls = true;
-            boolean baoc = false;
-            boolean boic = false;
-            boolean boicExHC = false;
-            boolean localTimeZoneRetrieval = true;
-            boolean additionalMsisdn = true;
-            boolean smsInMME = true;
-            boolean smsInSGSN = true;
-            boolean ueReachabilityNotification = true;
-            boolean stateLocationInformationRetrieval = true;
-            boolean partialPurge = true;
-            boolean gddInSGSN = true;
-            boolean sgsnCAMELCapability = true;
-            boolean pcscfRestoration = true;
-            boolean dedicatedCoreNetworks = true;
-            boolean nonIPPDNTypeAPNs = true;
-            boolean nonIPPDPTypeAPNs = true;
-            boolean nrAsSecondaryRAT = true;
-            SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(odbAllApn, odbHPLMNApn, odbVPLMNApn, odbAllOg, odbAllInternationalOg,
-                    odbAllIntOgNotToHPLMNCountry, odbAllInterzonalOg, odbAllInterzonalOgNotToHPLMNCountry,
-                    odbAllInterzonalOgandInternatOgNotToHPLMNCountry, regSub, trace, lcsAllPrivExcep, lcsUniversal,
-                    lcsCallSessionRelated, lcsCallSessionUnrelated, lcsPLMNOperator, lcsServiceType, lcsAllMOLRSS,
-                    lcsBasicSelfLocation, lcsAutonomousSelfLocation, lcsTransferToThirdParty, smMoPp, barringOutgoingCalls, baoc,
-                    boic, boicExHC, localTimeZoneRetrieval, additionalMsisdn, smsInMME, smsInSGSN, ueReachabilityNotification,
-                    stateLocationInformationRetrieval, partialPurge, gddInSGSN, sgsnCAMELCapability,
-                    pcscfRestoration, dedicatedCoreNetworks, nonIPPDNTypeAPNs, nonIPPDPTypeAPNs,
-                    nrAsSecondaryRAT);
+            SupportedFeatures supportedFeatures = getSupportedFeatures();
             boolean tAdsDataRetrieval = true;
             Boolean homogeneousSupportOfIMSVoiceOverPSSessions = true;
             boolean cancellationTypeInitialAttach = true;
@@ -1096,55 +1049,7 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             boolean mgCsi = true;
             boolean psiEnhancements = true;
             OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(oCsi,dCsi,vtCsi,tCsi, mtSMSCsi, mgCsi, psiEnhancements);
-            boolean odbAllApn = false;
-            boolean odbHPLMNApn = false;
-            boolean odbVPLMNApn = false;
-            boolean odbAllOg = false;
-            boolean odbAllInternationalOg = false;
-            boolean odbAllIntOgNotToHPLMNCountry = false;
-            boolean odbAllInterzonalOg = false;
-            boolean odbAllInterzonalOgNotToHPLMNCountry = false;
-            boolean odbAllInterzonalOgandInternatOgNotToHPLMNCountry = false;
-            boolean regSub = false;
-            boolean trace = false;
-            boolean lcsAllPrivExcep = true;
-            boolean lcsUniversal = true;
-            boolean lcsCallSessionRelated = true;
-            boolean lcsCallSessionUnrelated = true;
-            boolean lcsPLMNOperator = true;
-            boolean lcsServiceType = true;
-            boolean lcsAllMOLRSS = true;
-            boolean lcsBasicSelfLocation = true;
-            boolean lcsAutonomousSelfLocation = true;
-            boolean lcsTransferToThirdParty = true;
-            boolean smMoPp = true;
-            boolean barringOutgoingCalls = true;
-            boolean baoc = true;
-            boolean boic = true;
-            boolean boicExHC = true;
-            boolean localTimeZoneRetrieval = true;
-            boolean additionalMsisdn = true;
-            boolean smsInMME = true;
-            boolean smsInSGSN = true;
-            boolean ueReachabilityNotification = true;
-            boolean stateLocationInformationRetrieval = true;
-            boolean partialPurge = true;
-            boolean gddInSGSN = true;
-            boolean sgsnCAMELCapability = true;
-            boolean pcscfRestoration = true;
-            boolean dedicatedCoreNetworks = true;
-            boolean nonIPPDNTypeAPNs = true;
-            boolean nonIPPDPTypeAPNs = true;
-            boolean nrAsSecondaryRAT = true;
-            SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(odbAllApn, odbHPLMNApn, odbVPLMNApn, odbAllOg, odbAllInternationalOg,
-                    odbAllIntOgNotToHPLMNCountry, odbAllInterzonalOg, odbAllInterzonalOgNotToHPLMNCountry,
-                    odbAllInterzonalOgandInternatOgNotToHPLMNCountry, regSub, trace, lcsAllPrivExcep, lcsUniversal,
-                    lcsCallSessionRelated, lcsCallSessionUnrelated, lcsPLMNOperator, lcsServiceType, lcsAllMOLRSS,
-                    lcsBasicSelfLocation, lcsAutonomousSelfLocation, lcsTransferToThirdParty, smMoPp, barringOutgoingCalls, baoc,
-                    boic, boicExHC, localTimeZoneRetrieval, additionalMsisdn, smsInMME, smsInSGSN, ueReachabilityNotification,
-                    stateLocationInformationRetrieval, partialPurge, gddInSGSN, sgsnCAMELCapability,
-                    pcscfRestoration, dedicatedCoreNetworks, nonIPPDNTypeAPNs, nonIPPDPTypeAPNs,
-                    nrAsSecondaryRAT);
+            SupportedFeatures supportedFeatures = getSupportedFeatures();
             boolean unlicensedSpectrumAsSecondaryRAT = true;
             ExtSupportedFeatures extSupportedFeatures = new ExtSupportedFeaturesImpl(unlicensedSpectrumAsSecondaryRAT);
 
@@ -1358,9 +1263,9 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
             int numberOfRequestedVectors = 5;
             boolean segmentationProhibited = false;
             boolean immediateResponsePreferred = false;
-            ReSynchronisationInfo reSynchronisationInfo = null;
+            ReSynchronisationInfo reSynchronisationInfo = getReSynchronisationInfo();
             MAPExtensionContainer mapExtensionContainer = null;
-            RequestingNodeType requestingNodeType = RequestingNodeType.vlr;
+            RequestingNodeType requestingNodeType = RequestingNodeType.sgsn;
             byte[] mccMnc = new byte[] {0x47, (byte) 0xf8, 0x10};
             PlmnId requestingPlmnId = new PlmnIdImpl(mccMnc);
             Integer numberOfRequestedAdditionalVectors = 0;
@@ -1378,6 +1283,66 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
         } catch (MAPException e) {
             logger.error("Error while sending CancelLocationRequest ", e);
         }
+    }
+
+    private static ReSynchronisationInfo getReSynchronisationInfo() {
+        byte[] rand = new byte[] {(byte) 0xf6, (byte) 0xe2, (byte) 0xc3, (byte) 0xdc, (byte) 0xa4, (byte) 0xca,
+                (byte) 0xae, (byte) 0x9e, 0x4c, (byte) 0xba, 0x0f, (byte) 0xd3, 0x42, 0x72, (byte) 0xee, 0x46};
+        byte[] auts = new byte[] {(byte) 0xe9, 0x15, (byte) 0x97, (byte) 0x88, (byte) 0xbc, (byte) 0xeb, (byte) 0x80,
+                0x00, (byte) 0x81, 0x3f, (byte) 0xc0, 0x40, (byte) 0xff, 0x53};
+        return new ReSynchronisationInfoImpl(rand, auts);
+    }
+
+    private static SupportedFeatures getSupportedFeatures() {
+        boolean odbAllApn = false;
+        boolean odbHPLMNApn = false;
+        boolean odbVPLMNApn = false;
+        boolean odbAllOg = false;
+        boolean odbAllInternationalOg = false;
+        boolean odbAllIntOgNotToHPLMNCountry = false;
+        boolean odbAllInterzonalOg = false;
+        boolean odbAllInterzonalOgNotToHPLMNCountry = false;
+        boolean odbAllInterzonalOgandInternatOgNotToHPLMNCountry = false;
+        boolean regSub = false;
+        boolean trace = false;
+        boolean lcsAllPrivExcep = true;
+        boolean lcsUniversal = true;
+        boolean lcsCallSessionRelated = true;
+        boolean lcsCallSessionUnrelated = true;
+        boolean lcsPLMNOperator = true;
+        boolean lcsServiceType = true;
+        boolean lcsAllMOLRSS = true;
+        boolean lcsBasicSelfLocation = true;
+        boolean lcsAutonomousSelfLocation = true;
+        boolean lcsTransferToThirdParty = true;
+        boolean smMoPp = true;
+        boolean barringOutgoingCalls = true;
+        boolean baoc = false;
+        boolean boic = false;
+        boolean boicExHC = false;
+        boolean localTimeZoneRetrieval = true;
+        boolean additionalMsisdn = true;
+        boolean smsInMME = true;
+        boolean smsInSGSN = true;
+        boolean ueReachabilityNotification = true;
+        boolean stateLocationInformationRetrieval = true;
+        boolean partialPurge = true;
+        boolean gddInSGSN = true;
+        boolean sgsnCAMELCapability = true;
+        boolean pcscfRestoration = true;
+        boolean dedicatedCoreNetworks = true;
+        boolean nonIPPDNTypeAPNs = true;
+        boolean nonIPPDPTypeAPNs = true;
+        boolean nrAsSecondaryRAT = true;
+        return new SupportedFeaturesImpl(odbAllApn, odbHPLMNApn, odbVPLMNApn, odbAllOg, odbAllInternationalOg,
+                odbAllIntOgNotToHPLMNCountry, odbAllInterzonalOg, odbAllInterzonalOgNotToHPLMNCountry,
+                odbAllInterzonalOgandInternatOgNotToHPLMNCountry, regSub, trace, lcsAllPrivExcep, lcsUniversal,
+                lcsCallSessionRelated, lcsCallSessionUnrelated, lcsPLMNOperator, lcsServiceType, lcsAllMOLRSS,
+                lcsBasicSelfLocation, lcsAutonomousSelfLocation, lcsTransferToThirdParty, smMoPp, barringOutgoingCalls, baoc,
+                boic, boicExHC, localTimeZoneRetrieval, additionalMsisdn, smsInMME, smsInSGSN, ueReachabilityNotification,
+                stateLocationInformationRetrieval, partialPurge, gddInSGSN, sgsnCAMELCapability,
+                pcscfRestoration, dedicatedCoreNetworks, nonIPPDNTypeAPNs, nonIPPDPTypeAPNs,
+                nrAsSecondaryRAT);
     }
 
     private class PurgeMSSender implements Runnable {
