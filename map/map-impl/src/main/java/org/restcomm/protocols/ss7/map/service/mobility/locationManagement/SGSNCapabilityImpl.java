@@ -416,9 +416,6 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
                 ((SupportedFeaturesImpl) this.supportedFeatures).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                         TAG_supportedFeatures);
 
-            if (this.smsCallBarringSupportIndicator)
-                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_smsCallBarringSupportIndicator);
-
             if (this.tAdsDataRetrieval)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_tAdsDataRetrieval);
 
