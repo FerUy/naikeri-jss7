@@ -97,7 +97,7 @@ public class LMSIImpl implements LMSI, MAPAsnPrimitive {
             throw new MAPException("Error while encoding the LMSI: data is not defined");
 
         if (this.data.length != 4)
-            throw new MAPException("Error while encoding the LMSI: data field length must equale 4");
+            throw new MAPException("Error while encoding the LMSI: data field length must equal 4");
 
         asnOutputStream.write(this.data);
     }

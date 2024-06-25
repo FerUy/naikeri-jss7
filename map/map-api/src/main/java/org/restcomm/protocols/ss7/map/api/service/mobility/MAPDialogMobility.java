@@ -26,6 +26,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpsAut
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.FailureCause;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.EquipmentStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIu;
@@ -204,11 +205,11 @@ public interface MAPDialogMobility extends MAPDialog {
 
     void addSendAuthenticationInfoResponse(long invokeId, AuthenticationSetList authenticationSetList,
             MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
-            byte[] ueUsageType) throws MAPException;
+            UEUsageType ueUsageType) throws MAPException;
 
     void addSendAuthenticationInfoResponse_NonLast(long invokeId, AuthenticationSetList authenticationSetList,
             MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
-            byte[] ueUsageType) throws MAPException;
+            UEUsageType ueUsageType) throws MAPException;
 
     Long addAuthenticationFailureReportRequest(IMSI imsi, FailureCause failureCause, MAPExtensionContainer extensionContainer, Boolean reAttempt,
             AccessType accessType, byte[] rand, ISDNAddressString vlrNumber, ISDNAddressString sgsnNumber) throws MAPException;

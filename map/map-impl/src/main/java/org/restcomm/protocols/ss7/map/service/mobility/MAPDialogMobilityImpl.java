@@ -34,6 +34,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpsAut
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.FailureCause;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.EquipmentStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIu;
@@ -225,20 +226,20 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
     public void addSendAuthenticationInfoResponse(long invokeId, AuthenticationSetList authenticationSetList,
             MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
-            byte[] ueUsageType) throws MAPException {
+            UEUsageType ueUsageType) throws MAPException {
         doAddSendAuthenticationInfoResponse(false, invokeId, authenticationSetList, extensionContainer,
                 epsAuthenticationSetList, ueUsageType);
     }
 
     public void addSendAuthenticationInfoResponse_NonLast(long invokeId, AuthenticationSetList authenticationSetList,
             MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
-            byte[] ueUsageType) throws MAPException {
+            UEUsageType ueUsageType) throws MAPException {
         doAddSendAuthenticationInfoResponse(true, invokeId, authenticationSetList, extensionContainer, epsAuthenticationSetList, ueUsageType);
     }
 
     protected void doAddSendAuthenticationInfoResponse(boolean nonLast, long invokeId,
             AuthenticationSetList authenticationSetList, MAPExtensionContainer extensionContainer,
-            EpsAuthenticationSetList epsAuthenticationSetList, byte[] ueUsageType) throws MAPException {
+            EpsAuthenticationSetList epsAuthenticationSetList, UEUsageType ueUsageType) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.infoRetrievalContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2 && this.mapApplicationContext

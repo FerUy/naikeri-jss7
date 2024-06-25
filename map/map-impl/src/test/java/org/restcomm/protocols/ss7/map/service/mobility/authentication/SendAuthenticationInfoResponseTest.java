@@ -16,6 +16,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.Authen
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationTriplet;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpcAv;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpsAuthenticationSetList;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationSetListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationTripletImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpcAvImpl;
@@ -127,7 +128,7 @@ public class SendAuthenticationInfoResponseTest {
         authenticationSetList.setMapProtocolVersion(mapProtocolVersion);
         MAPExtensionContainer extensionContainer = null;
         EpsAuthenticationSetList epsAuthenticationSetList = null;
-        byte[] ueUsageType = null;
+        UEUsageType ueUsageType = null;
         SendAuthenticationInfoResponseImpl asc = new SendAuthenticationInfoResponseImpl(mapProtocolVersion, authenticationSetList, extensionContainer,
                 epsAuthenticationSetList, ueUsageType);
 

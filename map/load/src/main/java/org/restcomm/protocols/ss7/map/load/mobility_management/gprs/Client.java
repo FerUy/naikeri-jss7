@@ -526,33 +526,12 @@ public class Client extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
             while (client.endCount < NDIALOGS) {
                 Thread.sleep(100);
-                // while (client.nbConcurrentDialogs.intValue() >= MAXCONCURRENTDIALOGS) {
-
-                // logger.warn("Number of concurrent MAP dialog's = " +
-                // client.nbConcurrentDialogs.intValue()
-                // + " Waiting for max dialog count to go down!");
-
-                // synchronized (client) {
-                // try {
-                // client.wait();
-                // } catch (Exception ex) {
-                // }
-                // }
-                // }// end of while (client.nbConcurrentDialogs.intValue() >= MAXCONCURRENTDIALOGS)
-
-                //if (client.endCount < 0) {
-                //    client.start = System.currentTimeMillis();
-                //    client.prev = client.start;
-                // logger.warn("StartTime = " + client.start);
-                //}
-
-                // client.initiateUSSD();
             }
 
             client.terminate();
 
         } catch (Exception e) {
-
+            logger.error("Exception: " + e.getMessage());
         }
     }
 

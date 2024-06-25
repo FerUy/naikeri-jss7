@@ -2,7 +2,6 @@
 package org.restcomm.protocols.ss7.map.service.mobility.authentication;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -17,6 +16,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationSetList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpsAuthenticationSetList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
 
@@ -36,7 +36,7 @@ public class SendAuthenticationInfoResponseImpl extends MobilityMessageImpl impl
     private AuthenticationSetList authenticationSetList;
     private MAPExtensionContainer extensionContainer;
     private EpsAuthenticationSetList epsAuthenticationSetList;
-    private byte[] ueUsageType;
+    private UEUsageType ueUsageType;
     private long mapProtocolVersion;
 
     public SendAuthenticationInfoResponseImpl(long mapProtocolVersion) {
@@ -45,7 +45,7 @@ public class SendAuthenticationInfoResponseImpl extends MobilityMessageImpl impl
 
     public SendAuthenticationInfoResponseImpl(long mapProtocolVersion, AuthenticationSetList authenticationSetList,
             MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
-            byte[] ueUsageType) {
+            UEUsageType ueUsageType) {
         this.mapProtocolVersion = mapProtocolVersion;
         this.authenticationSetList = authenticationSetList;
         this.extensionContainer = extensionContainer;
@@ -76,7 +76,7 @@ public class SendAuthenticationInfoResponseImpl extends MobilityMessageImpl impl
         return epsAuthenticationSetList;
     }
 
-    public byte[] getUeUsageType() {
+    public UEUsageType getUeUsageType() {
         return ueUsageType;
     }
 
@@ -161,15 +161,12 @@ public class SendAuthenticationInfoResponseImpl extends MobilityMessageImpl impl
                             break;
                         case _TAG_ueUsageType:
                             // ueUsageType
-                            if (ais.isTagPrimitive())
+                            if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".ueUsageType: Parameter ueUsageType is primitive",
+                                        + ".ueUsageType: bad tag or tag class or not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            this.ueUsageType = ais.readOctetString();
-                            if (this.ueUsageType.length != 4)
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".ueUsageType: Bad field length: 32 is needed, found: " + this.ueUsageType.length,
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            this.ueUsageType = new UEUsageTypeImpl();
+                            ((UEUsageTypeImpl) this.ueUsageType).decodeAll(ais);
                             break;
 
                         default:
@@ -222,12 +219,13 @@ public class SendAuthenticationInfoResponseImpl extends MobilityMessageImpl impl
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
         if (this.mapProtocolVersion <= 2) {
             if (this.authenticationSetList == null)
-                throw new MAPException("authenticationSetList must not be null for MAP Version2");
+                throw new MAPException("authenticationSetList must not be null for MAP Version 2");
             ((AuthenticationSetListImpl) this.authenticationSetList).encodeData(asnOutputStream);
 
         } else {
-            if (this.authenticationSetList == null && extensionContainer == null && epsAuthenticationSetList == null)
-                throw new MAPException("At least one parameter must not be null for MAP Version3");
+            if (this.authenticationSetList == null && this.extensionContainer == null
+                    && this.epsAuthenticationSetList == null && this.ueUsageType == null)
+                throw new MAPException("At least one parameter must not be null for MAP Version 3");
 
             if (this.authenticationSetList != null)
                 ((AuthenticationSetListImpl) this.authenticationSetList).encodeAll(asnOutputStream);
@@ -237,19 +235,8 @@ public class SendAuthenticationInfoResponseImpl extends MobilityMessageImpl impl
                 ((EpsAuthenticationSetListImpl) this.epsAuthenticationSetList).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                         _TAG_eps_AuthenticationSetList);
             }
-            if (this.ueUsageType != null) {
-                if (this.ueUsageType.length != 4) {
-                    throw new MAPException("Wrong ueUsageType field length: must 4 32, found " + this.ueUsageType.length);
-                } else {
-                    try {
-                        asnOutputStream.writeOctetString(this.ueUsageType);
-                    }  catch (IOException e) {
-                        throw new MAPException("IOException when encoding ueUsageType: " + e.getMessage(), e);
-                    } catch (AsnException e) {
-                        throw new MAPException("AsnException when encoding ueUsageType: " + e.getMessage(), e);
-                    }
-                }
-            }
+            if (this.ueUsageType != null)
+                ((UEUsageTypeImpl) this.ueUsageType).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_ueUsageType);
         }
     }
 
@@ -275,7 +262,7 @@ public class SendAuthenticationInfoResponseImpl extends MobilityMessageImpl impl
         }
         if (this.ueUsageType != null) {
             sb.append("ueUsageType: ");
-            sb.append(Arrays.toString(ueUsageType));
+            sb.append(ueUsageType);
             sb.append(", ");
         }
 

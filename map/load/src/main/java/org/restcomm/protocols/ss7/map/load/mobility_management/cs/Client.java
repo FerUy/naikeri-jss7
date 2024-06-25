@@ -169,7 +169,7 @@ import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
  */
 public class Client extends TestHarnessMobilityManagement {
 
-    private static Logger logger = Logger.getLogger(Client.class);
+    private static final Logger logger = Logger.getLogger(Client.class);
 
     // TCAP
     private TCAPStack tcapStack;
@@ -343,7 +343,7 @@ public class Client extends TestHarnessMobilityManagement {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("InterruptedException: " + e.getMessage());
             }
         }
 
@@ -377,10 +377,8 @@ public class Client extends TestHarnessMobilityManagement {
         int noOfConcurrentCalls = Integer.parseInt(args[1]);
 
         IpChannelType ipChannelType = IpChannelType.SCTP;
-        if (args.length >= 3 && args[2].toLowerCase().equals("tcp")) {
+        if (args.length >= 3 && args[2].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
-        } else {
-            ipChannelType = IpChannelType.SCTP;
         }
 
         System.out.println("IpChannelType=" + ipChannelType);
@@ -512,33 +510,12 @@ public class Client extends TestHarnessMobilityManagement {
 
             while (client.endCount < NDIALOGS) {
                 Thread.sleep(100);
-                // while (client.nbConcurrentDialogs.intValue() >= MAXCONCURRENTDIALOGS) {
-
-                // logger.warn("Number of concurrent MAP dialog's = " +
-                // client.nbConcurrentDialogs.intValue()
-                // + " Waiting for max dialog count to go down!");
-
-                // synchronized (client) {
-                // try {
-                // client.wait();
-                // } catch (Exception ex) {
-                // }
-                // }
-                // }// end of while (client.nbConcurrentDialogs.intValue() >= MAXCONCURRENTDIALOGS)
-
-                //if (client.endCount < 0) {
-                //    client.start = System.currentTimeMillis();
-                //    client.prev = client.start;
-                // logger.warn("StartTime = " + client.start);
-                //}
-
-                // client.initiateUSSD();
             }
 
             client.terminate();
 
         } catch (Exception e) {
-
+            logger.error("Exception: " + e.getMessage());
         }
     }
 
@@ -861,7 +838,7 @@ public class Client extends TestHarnessMobilityManagement {
         try {
             ArrayList<AuthenticationQuintuplet> authenticationQuintuplets = sendAuthenticationInfoResponseIndication.
                     getAuthenticationSetList().getQuintupletList().getAuthenticationQuintuplets();
-            SccpAddress hlrAddress = sendAuthenticationInfoResponseIndication.getMAPDialog().getRemoteAddress();
+            // SccpAddress hlrAddress = sendAuthenticationInfoResponseIndication.getMAPDialog().getRemoteAddress();
 
             // Create Dialog
             AddressString originAddressString = this.mapProvider.getMAPParameterFactory()
@@ -1050,8 +1027,8 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onUpdateLocationRequest(UpdateLocationRequest updateLocationRequestIndication) {
-        logger.error(String.format("ERROR: received UpdateLocationRequest over DialogId=%d", updateLocationRequestIndication
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as VLR)"));
+        logger.error(String.format("ERROR: received UpdateLocationRequest at the client (acting as VLR) over DialogId=%d", updateLocationRequestIndication
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -1242,9 +1219,9 @@ public class Client extends TestHarnessMobilityManagement {
             RequestingNodeType requestingNodeType = RequestingNodeType.vlr;
             byte[] mccMnc = new byte[] {0x47, (byte) 0xf8, 0x10};
             PlmnId requestingPlmnId = new PlmnIdImpl(mccMnc);
-            Integer numberOfRequestedAdditionalVectors = 0;
-            boolean additionalVectorsAreForEPS = false;
-            boolean ueUsageTypeRequestIndication = false;
+            Integer numberOfRequestedAdditionalVectors = 1;
+            boolean additionalVectorsAreForEPS = true;
+            boolean ueUsageTypeRequestIndication = true;
 
             mapDialogMobility.addSendAuthenticationInfoRequest(imsi, numberOfRequestedVectors, segmentationProhibited,
                     immediateResponsePreferred, reSynchronisationInfo, mapExtensionContainer, requestingNodeType, requestingPlmnId,
@@ -1270,10 +1247,6 @@ public class Client extends TestHarnessMobilityManagement {
         @Override
         public void run() {
             ++imsiForPurge;
-            logger.warn("**************************************************************************");
-            logger.warn("imsiForPurge="+imsiForPurge);
-            logger.warn("**************************************************************************");
-
 
             try {
                 Thread.sleep(500);

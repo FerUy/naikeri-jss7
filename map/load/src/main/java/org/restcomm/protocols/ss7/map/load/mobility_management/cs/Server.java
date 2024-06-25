@@ -45,10 +45,12 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.Authen
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationQuintuplet;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationSetList;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpcAv;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpsAuthenticationSetList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.QuintupletList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ForwardCheckSSIndicationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.RestoreDataRequest;
@@ -116,7 +118,10 @@ import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationQuintupletImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationSetListImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpcAvImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpsAuthenticationSetListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.QuintupletListImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.authentication.UEUsageTypeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CategoryImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSInfoImpl;
@@ -146,6 +151,8 @@ import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 
 import java.util.ArrayList;
+
+import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
@@ -258,6 +265,7 @@ public class Server extends TestHarnessMobilityManagement {
 
         this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
         this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
+        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -647,8 +655,20 @@ public class Server extends TestHarnessMobilityManagement {
             QuintupletList quintupletList = new QuintupletListImpl(authenticationQuintupletList);
             AuthenticationSetList authenticationSetList = new AuthenticationSetListImpl(quintupletList);
             MAPExtensionContainer mapExtensionContainer = null;
-            EpsAuthenticationSetList epsAuthenticationSetList = null;
-            byte[] ueUsageType = null;
+            byte[] epsRand = new byte[] {(byte) 0xf6, (byte) 0xe2, (byte) 0xc3, (byte) 0xdc, (byte) 0xa4, (byte) 0xca,
+                    (byte) 0xae, (byte) 0x9e, 0x4c, (byte) 0xba, 0x0f, (byte) 0xd3, 0x42, 0x72, (byte) 0xee, 0x46};
+            byte[] epsXres = new byte[] {0x1e, 0x42, (byte) 0xe6, 0x58, (byte) 0xce, (byte) 0x99, 0x33, (byte) 0xb6};
+            byte[] epsAutn = new byte[] {(byte) 0xe9, 0x15, (byte) 0x97, (byte) 0x88, (byte) 0xbc, (byte) 0xeb, (byte) 0x80, 0x00,
+                    (byte) 0x81, 0x3f, (byte) 0xc0, 0x40, (byte) 0xff, 0x53, (byte) 0xd5, (byte) 0xfa};
+            byte[] epsKasme = new byte[] {0x70, (byte) 0xad, (byte) 0x8c, (byte) 0xd7, (byte) 0x89, 0x28, (byte) 0xc2, (byte) 0xde,
+                    (byte) 0x97, (byte) 0xcf, (byte) 0xe7, (byte) 0xb8, (byte) 0xbf, 0x10, 0x40, (byte) 0xe9, (byte) 0xa4, (byte) 0xdd,
+                    0x79, (byte) 0x80, 0x5b, 0x54, 0x61, (byte) 0x95, (byte) 0xc2, (byte) 0xb6, 0x0c, (byte) 0xb4, (byte) 0xcc, 0x41, (byte) 0xbe, 0x47};
+            EpcAv epcAuthVector = new EpcAvImpl(epsRand, epsXres, epsAutn, epsKasme, mapExtensionContainer);
+            ArrayList<EpcAv> epcAvList = new ArrayList<>();
+            epcAvList.add(epcAuthVector);
+            EpsAuthenticationSetList epsAuthenticationSetList = new EpsAuthenticationSetListImpl(epcAvList);
+            byte[] ueUsageTypeBytes = new byte[] {0, 0, 0, (byte) 0x80};
+            UEUsageType ueUsageType = new UEUsageTypeImpl(ueUsageTypeBytes);
 
             mapDialogMobility.addSendAuthenticationInfoResponse(invokeId, authenticationSetList, mapExtensionContainer,
                     epsAuthenticationSetList, ueUsageType);
@@ -663,8 +683,8 @@ public class Server extends TestHarnessMobilityManagement {
 
     @Override
     public void onSendAuthenticationInfoResponse(SendAuthenticationInfoResponse sendAuthenticationInfoResponseIndication) {
-        logger.error(String.format("ERROR: received SendAuthenticationInfoResponse over DialogId=%d", sendAuthenticationInfoResponseIndication
-                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
+        logger.error(String.format("ERROR: received SendAuthenticationInfoResponse at the server (acting as HLR) over DialogId=%d", sendAuthenticationInfoResponseIndication
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override

@@ -49,6 +49,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpsAut
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.QuintupletList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ForwardCheckSSIndicationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.RestoreDataRequest;
@@ -679,7 +680,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             AuthenticationSetList authenticationSetList = new AuthenticationSetListImpl(quintupletList);
             MAPExtensionContainer mapExtensionContainer = null;
             EpsAuthenticationSetList epsAuthenticationSetList = null;
-            byte[] ueUsageType = null;
+            UEUsageType ueUsageType = null;
 
             mapDialogMobility.addSendAuthenticationInfoResponse(invokeId, authenticationSetList, mapExtensionContainer,
                     epsAuthenticationSetList, ueUsageType);
