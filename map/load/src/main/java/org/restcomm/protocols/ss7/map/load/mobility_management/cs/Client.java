@@ -94,7 +94,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationNumberMap;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TAId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
@@ -132,7 +131,6 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.Geo
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeographicalInformationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationEPSImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationNumberMapImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RAIdentityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TAIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
@@ -1121,7 +1119,7 @@ public class Client extends TestHarnessMobilityManagement {
                 }
             }
 
-            new Thread(new org.restcomm.protocols.ss7.map.load.mobility_management.cs.Client.PurgeMSSender(this)).start();
+            new Thread(new PurgeMSSender(this)).start();
 
         } catch (MAPException e) {
             logger.error("Error while processing CancelLocationRequest ", e);
@@ -1323,16 +1321,15 @@ public class Client extends TestHarnessMobilityManagement {
                         originAddressString, serverSccpAddress, destAddressString);
 
                 IMSI imsi = new IMSIImpl(String.valueOf(imsiForPurge));
-                ISDNAddressString vlrNumber = null;
                 ISDNAddressString sgsnNumber = null;
                 MAPExtensionContainer extensionContainer = null;
                 Random rand = new Random();
                 int randLoc = rand.nextInt(10) + 1;
                 int ageOfLocationInformation;
                 boolean currentLocationRetrieved;
-                LocationInformation locationInformation;
+                LocationInformation locationInformation = null;
                 LocationInformationEPS locationInformationEPS = null;
-                LocationInformationGPRS locationInformationGPRS;
+                LocationInformationGPRS locationInformationGPRS = null;
                 boolean saiPresent = false;
                 int mcc, mnc, lac, cellId;
                 CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
@@ -1347,7 +1344,6 @@ public class Client extends TestHarnessMobilityManagement {
                 EUtranCgi eUtranCgi;
                 byte[] trackingAreaId;
                 TAId taId;
-                RAIdentity routeingAreaIdentity;
                 UserCSGInformation userCSGInformation = null;
                 TypeOfShape geographicalTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
                 double geographicalLatitude;
@@ -1376,9 +1372,9 @@ public class Client extends TestHarnessMobilityManagement {
                 String mmneNameStr;
                 byte[] mme;
                 DiameterIdentity mmeName;
-                byte[] raId;
                 byte[] lsaId = {49, 51, 50};
                 LSAIdentity selectedLSAId = new LSAIdentityImpl(lsaId);
+                ISDNAddressString vlrNumber = mscNumber;
 
                 switch(randLoc) {
                     case 1:
@@ -1404,6 +1400,7 @@ public class Client extends TestHarnessMobilityManagement {
                                 geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
                         break;
                     case 2:
+                    case 3:
                         ageOfLocationInformation = 0;
                         currentLocationRetrieved = true;
                         geographicalInformation = null;
@@ -1422,27 +1419,6 @@ public class Client extends TestHarnessMobilityManagement {
                         mmeName = new DiameterIdentityImpl(mme);
                         locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
                                 geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
-                        break;
-                    case 3:
-                        ageOfLocationInformation = 125;
-                        currentLocationRetrieved = false;
-                        mcc = 748;
-                        mnc = 1;
-                        lac = 118;
-                        cellId = 292;
-                        geographicalInformation = null;
-                        geodeticInformation = null;
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
-                        raId = hexStringToByteArray("47f810006517");
-                        routeingAreaIdentity = new RAIdentityImpl(raId);
-                        locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
-                                routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, extensionContainer, saiPresent, geodeticInformation,
-                                currentLocationRetrieved, ageOfLocationInformation);
                         break;
                     case 4:
                         ageOfLocationInformation = 1;
@@ -1483,6 +1459,7 @@ public class Client extends TestHarnessMobilityManagement {
                                 geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
                         break;
                     case 6:
+                    case 7:
                         ageOfLocationInformation = 5;
                         currentLocationRetrieved = false;
                         mcc = 748;
@@ -1511,7 +1488,7 @@ public class Client extends TestHarnessMobilityManagement {
                                 geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
                         locationInformationEPS = null;
                         break;
-                    case 7:
+                    case 8:
                         ageOfLocationInformation = 0;
                         currentLocationRetrieved = true;
                         mcc = 748;
@@ -1535,54 +1512,16 @@ public class Client extends TestHarnessMobilityManagement {
                                 vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
                                 geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
                         break;
-                    case 8:
-                        ageOfLocationInformation = 0;
-                        currentLocationRetrieved = true;
-                        mcc = 748;
-                        mnc = 10;
-                        lac = 9501;
-                        cellId = 35100;
-                        geographicalInformation = null;
-                        geodeticLatitude = -34.905624;
-                        geodeticLongitude = -55.042191;
-                        geodeticUncertainty = 4.0;
-                        geodeticConfidence = 10;
-                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
-                        raId = hexStringToByteArray("47f810006516");
-                        routeingAreaIdentity = new RAIdentityImpl(raId);
-                        locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
-                                routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, extensionContainer, saiPresent, geodeticInformation,
-                                currentLocationRetrieved, ageOfLocationInformation);
-                        break;
                     case 9:
-                        sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                                "491710490000");
-                        break;
                     case 10:
-                        vlrNumber = mscNumber;
                         break;
                     default:
-                        locationInformation = null;
-                        locationInformationEPS = null;
-                        locationInformationGPRS = null;
                         break;
                 }
-                // temporal as Wireshark is not recognizing the following in PMS
-                locationInformation = null;
-                locationInformationGPRS = null;
-                locationInformationEPS = null;
-                vlrNumber = mscNumber;
-                sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
 
                 int customInvokeTimeout = 30;
 
-                mapDialogMobility.addPurgeMSRequest(customInvokeTimeout, imsi, vlrNumber, sgsnNumber, null, locationInformation,
+                mapDialogMobility.addPurgeMSRequest(customInvokeTimeout, imsi, vlrNumber, sgsnNumber, extensionContainer, locationInformation,
                         locationInformationGPRS, locationInformationEPS);
                 mapDialogMobility.send();
 

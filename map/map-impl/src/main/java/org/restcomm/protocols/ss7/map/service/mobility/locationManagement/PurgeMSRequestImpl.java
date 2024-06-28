@@ -174,7 +174,7 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
         this.extensionContainer = null;
         this.locationInformation = null;
         this.locationInformationGPRS = null;
-        this.locationInformationEPS = locationInformationEPS;
+        this.locationInformationEPS = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -336,13 +336,13 @@ public class PurgeMSRequestImpl extends MobilityMessageImpl implements PurgeMSRe
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
 
             if (this.locationInformation != null)
-                ((LocationInformationImpl) this.locationInformation).encodeAll(asnOutputStream);
+                ((LocationInformationImpl) this.locationInformation).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_locationInformation);
 
             if (this.locationInformationGPRS != null)
-                ((LocationInformationGPRSImpl) this.locationInformationGPRS).encodeAll(asnOutputStream);
+                ((LocationInformationGPRSImpl) this.locationInformationGPRS).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_locationInformationGPRS);
 
             if (this.locationInformationEPS != null)
-                ((LocationInformationEPSImpl) this.locationInformationEPS).encodeAll(asnOutputStream);
+                ((LocationInformationEPSImpl) this.locationInformationEPS).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_locationInformationEPS);
 
         } else {
 
