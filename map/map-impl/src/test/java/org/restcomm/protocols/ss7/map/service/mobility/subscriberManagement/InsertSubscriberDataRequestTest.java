@@ -28,6 +28,8 @@ import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientInternalID;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LIPAPermission;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PDPContext;
@@ -356,7 +358,6 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(forwardingInfo.getSsCode().getSupplementaryCodeValue(), SupplementaryCodeValue.allSS);
 
         ArrayList<ExtForwFeature> forwardingFeatureList = forwardingInfo.getForwardingFeatureList();
-        ;
         assertNotNull(forwardingFeatureList);
         assertEquals(forwardingFeatureList.size(), 1);
         ExtForwFeature extForwFeature = forwardingFeatureList.get(0);
@@ -569,7 +570,7 @@ public class InsertSubscriberDataRequestTest {
         MMCode mmCode2 = mobilityTriggers.get(1);
         assertNotNull(mmCode2);
         assertEquals(MMCodeValue.IMSIAttach, mmCode2.getMMCodeValue());
-        assertNotNull(mCsi.getServiceKey());
+        assertNotNull(mCsi);
         assertEquals(mCsi.getServiceKey(), 3);
         ISDNAddressString gsmSCFAddressTwo = mCsi.getGsmSCFAddress();
         assertEquals(gsmSCFAddressTwo.getAddress(), "22235");
@@ -1530,7 +1531,7 @@ public class InsertSubscriberDataRequestTest {
         mmCode2 = mobilityTriggers.get(1);
         assertNotNull(mmCode2);
         assertEquals(MMCodeValue.IMSIAttach, mmCode2.getMMCodeValue());
-        assertNotNull(mCsi.getServiceKey());
+        assertNotNull(mCsi);
         assertEquals(mCsi.getServiceKey(), 3);
         gsmSCFAddressTwo = mCsi.getGsmSCFAddress();
         assertEquals(gsmSCFAddressTwo.getAddress(), "22235");
@@ -1653,6 +1654,48 @@ public class InsertSubscriberDataRequestTest {
         assertSame(mtSMSTPDUTypeTwo, MTSMSTPDUType.smsSTATUSREPORT);
         assertEquals(mtsmsCAMELTDPCriteria.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
         // end vlrCamelSubscriptionInfo
+
+        ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList = prim.getVPLMNCSGSubscriptionDataList();
+        assertNull(vplmnCSGSubscriptionDataList);
+
+        ISDNAddressString additionalMSISDN = prim.getAdditionalMSISDN();
+        assertNull(additionalMSISDN);
+
+        boolean psAndSMSOnlyServiceProvision = prim.getPSandSMSOnlyServiceProvision();
+        assertFalse(psAndSMSOnlyServiceProvision);
+
+        boolean smsInSGSNAllowed = prim.getSMSInSGSNAllowed();
+        assertFalse(smsInSGSNAllowed);
+
+        boolean pcscfRestorationRequest = prim.getPCSCFRestorationRequest();
+        assertFalse(pcscfRestorationRequest);
+
+        ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList = prim.getAdjacentAccessRestrictionDataList();
+        assertNull(adjacentAccessRestrictionDataList);
+
+        ArrayList<IMSIGroupId> imsiGroupIdList = prim.getIMSIGroupIdList();
+        assertNull(imsiGroupIdList);
+
+        UEUsageType ueUsageType = prim.getUEUsageType();
+        assertNull(ueUsageType);
+
+        boolean userPlaneIntegrityProtectionIndicator = prim.getUserPlaneIntegrityProtectionIndicator();
+        assertFalse(userPlaneIntegrityProtectionIndicator);
+
+        Long dlBufferingSuggestedPacketCount = prim.getDLBufferingSuggestedPacketCount();
+        assertNull(dlBufferingSuggestedPacketCount);
+
+        ArrayList<ResetId> resetIdList = prim.getResetIdList();
+        assertNull(resetIdList);
+
+        ArrayList<EDRXCycleLength> eDRXCycleLengthList = prim.getEDRXCycleLengthList();
+        assertNull(eDRXCycleLengthList);
+
+        ExtAccessRestrictionData extAccessRestrictionData = prim.getExtAccessRestrictionData();
+        assertNull(extAccessRestrictionData);
+
+        boolean iabOperationAllowedIndicator = prim.getIabOperationAllowedIndicator();
+        assertFalse(iabOperationAllowedIndicator);
 
     }
 
@@ -2042,13 +2085,58 @@ public class InsertSubscriberDataRequestTest {
         // subscribedPeriodicLAUtimer
         Long subscribedPeriodicLAUtimer = 2L;
 
+        // vplmnCSGSubscriptionDataList
+        ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList = null;
+
+        // additionalMSISDN
+        ISDNAddressString additionalMSISDN = null;
+
+        // psAndSMSOnlyServiceProvision
+        boolean psAndSMSOnlyServiceProvision = false;
+
+        // smsInSGSNAllowed
+        boolean smsInSGSNAllowed = false;
+
+        // pcscfRestorationRequest
+        boolean pcscfRestorationRequest = false;
+
+        // adjacentAccessRestrictionDataList
+        ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList = null;
+
+        // imsiGroupIdList
+        ArrayList<IMSIGroupId> imsiGroupIdList = null;
+
+        // ueUsageType
+        UEUsageType ueUsageType = null;
+
+        // userPlaneIntegrityProtectionIndicator
+        boolean userPlaneIntegrityProtectionIndicator = false;
+
+        // dlBufferingSuggestedPacketCount
+        Long dlBufferingSuggestedPacketCount = null;
+
+        // resetIdList
+        ArrayList<ResetId> resetIdList = null;
+
+        // eDRXCycleLengthList
+        ArrayList<EDRXCycleLength> eDRXCycleLengthList = null;
+
+        // extAccessRestrictionData
+        ExtAccessRestrictionData extAccessRestrictionData = null;
+
+        // iabOperationAllowedIndicator
+        boolean iabOperationAllowedIndicator = false;
+
         InsertSubscriberDataRequestImpl prim = new InsertSubscriberDataRequestImpl(3, imsi, msisdn, category, subscriberStatus, bearerServiceList,
                 teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionData, vbsSubscriptionData,
                 vgcsSubscriptionData, vlrCamelSubscriptionInfo, extensionContainer, naeaPreferredCI, gprsSubscriptionData,
                 roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode, lsaInformation, lmuIndicator, lcsInformation, istAlertTimer,
                 superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority, sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData,
                 icsIndicator, epsSubscriptionData, csgSubscriptionDataList, ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer,
-                vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer);
+                vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
+                smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
+                eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
 
         AsnOutputStream asn = new AsnOutputStream();
         prim.encodeAll(asn);

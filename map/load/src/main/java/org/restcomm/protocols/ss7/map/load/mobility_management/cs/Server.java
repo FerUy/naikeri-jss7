@@ -52,6 +52,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAu
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ForwardCheckSSIndicationRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.RestoreDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.RestoreDataResponse;
@@ -86,6 +87,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNConfiguration;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNConfigurationProfile;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNOIReplacement;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AdjacentAccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AllocationRetentionPriority;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSAllocationRetentionPriority;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGSubscriptionData;
@@ -95,8 +97,10 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ChargingCharacteristics;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EDRXCycleLength;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSQoSSubscribed;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSSubscriptionData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtAccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSData;
@@ -104,6 +108,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.IMSIGroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LCSInformation;
@@ -860,6 +865,20 @@ public class Server extends TestHarnessMobilityManagement {
             boolean vplmnLIPAAllowed = true;
             boolean mdtUserConsent = false;
             Long subscribedPeriodicLAUtimer = 360L;
+            ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList = null;
+            ISDNAddressString additionalMSISDN = null;
+            boolean psAndSMSOnlyServiceProvision = false;
+            boolean smsInSGSNAllowed = false;
+            boolean pcscfRestorationRequest = false;
+            ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList = null;
+            ArrayList<IMSIGroupId> imsiGroupIdList = null;
+            UEUsageType ueUsageType = null;
+            boolean userPlaneIntegrityProtectionIndicator = false;
+            Long dlBufferingSuggestedPacketCount = null;
+            ArrayList<ResetId> resetIdList = null;
+            ArrayList<EDRXCycleLength> eDRXCycleLengthList = null;
+            ExtAccessRestrictionData extAccessRestrictionData = null;
+            boolean iabOperationAllowedIndicator = false;
 
             insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId,null, msisdn, category, subscriberStatus,
                     bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
@@ -868,7 +887,10 @@ public class Server extends TestHarnessMobilityManagement {
                     lsaInformation, lmuIndicator, lcsInformation, istAlertTimer, superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority,
                     sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,
                     ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent,
-                    subscribedPeriodicLAUtimer);
+                    subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
+                    smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                    ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
+                    eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
 
             insertSubscriberDataDialog.send();
 
