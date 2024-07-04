@@ -11,7 +11,7 @@ package org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement;
  */
 public enum UsedRATType {
 
-    utran(0), geran(1), gan(2), iHspaEvolution(3), eUtran(4);
+    utran(0), geran(1), gan(2), iHspaEvolution(3), eUtran(4), nbIoT(5);
 
     private int code;
 
@@ -35,6 +35,8 @@ public enum UsedRATType {
                 return UsedRATType.iHspaEvolution;
             case 4:
                 return UsedRATType.eUtran;
+            case 5:
+                return UsedRATType.nbIoT;
             default:
                 return null;
         }

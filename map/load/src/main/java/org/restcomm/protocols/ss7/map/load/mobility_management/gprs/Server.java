@@ -150,7 +150,6 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Allo
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CategoryImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ChargingCharacteristicsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSQoSSubscribedImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSSubscriptionDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSStatusImpl;
@@ -895,9 +894,9 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
                     "491710490000");
             boolean mpsCSPriority = false;
             boolean mpsEPSPriority = true;
-            EPSSubscriptionData epsSubscriptionData = new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
-                    stnSr, mapExtensionContainer, mpsCSPriority, mpsEPSPriority);
-            epsSubscriptionData = null;
+            EPSSubscriptionData epsSubscriptionData = null;
+            //EPSSubscriptionData epsSubscriptionData = new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
+            //        stnSr, mapExtensionContainer, mpsCSPriority, mpsEPSPriority);
             ArrayList<CSGSubscriptionData> csgSubscriptionDataList = null;
             boolean ueReachabilityRequestIndicator = true;
             ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,

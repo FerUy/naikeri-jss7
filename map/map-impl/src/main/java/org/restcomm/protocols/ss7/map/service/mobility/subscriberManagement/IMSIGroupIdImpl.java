@@ -9,6 +9,7 @@ import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.IMSIGroupId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LocalGroupId;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.primitives.SequenceBase;
 
@@ -27,13 +28,13 @@ public class IMSIGroupIdImpl extends SequenceBase implements IMSIGroupId {
 
     private Long groupServiceId = null;
     private PlmnId plmnId = null;
-    private Long localGroupId = null;
+    private LocalGroupId localGroupId = null;
 
     public IMSIGroupIdImpl() {
         super(_PrimitiveName);
     }
 
-    public IMSIGroupIdImpl(Long groupServiceId, PlmnId plmnId, Long localGroupId) {
+    public IMSIGroupIdImpl(Long groupServiceId, PlmnId plmnId, LocalGroupId localGroupId) {
         super(_PrimitiveName);
         this.groupServiceId = groupServiceId;
         this.plmnId = plmnId;
@@ -51,7 +52,7 @@ public class IMSIGroupIdImpl extends SequenceBase implements IMSIGroupId {
     }
 
     @Override
-    public Long getLocalGroupId() {
+    public LocalGroupId getLocalGroupId() {
         return this.localGroupId;
     }
 
@@ -92,7 +93,8 @@ public class IMSIGroupIdImpl extends SequenceBase implements IMSIGroupId {
                                         + ".localGroupId: is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             }
-                            this.localGroupId = ais.readInteger();
+                            this.localGroupId = new LocalGroupIdImpl();
+                            ((LocalGroupIdImpl) this.localGroupId).decodeAll(ais);
                             break;
                         default:
                             ais.advanceElement();
@@ -144,16 +146,7 @@ public class IMSIGroupIdImpl extends SequenceBase implements IMSIGroupId {
 
         ((PlmnIdImpl) this.plmnId).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_PLMN_ID);
 
-        try {
-            asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_Local_GroupID,
-                    this.localGroupId);
-        } catch (IOException e) {
-            throw new MAPException("IOException while encoding " + _PrimitiveName
-                    + " parameter localGroupId", e);
-        } catch (AsnException e) {
-            throw new MAPException("AsnException while encoding " + _PrimitiveName
-                    + " parameter localGroupId", e);
-        }
+        ((LocalGroupIdImpl) this.localGroupId).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_Local_GroupID);
     }
 
     @Override

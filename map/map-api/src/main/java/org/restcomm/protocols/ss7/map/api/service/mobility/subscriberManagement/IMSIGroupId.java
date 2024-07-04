@@ -24,5 +24,5 @@ public interface IMSIGroupId extends Serializable {
 
     PlmnId getPLMNId();
 
-    Long getLocalGroupId();
+    LocalGroupId getLocalGroupId();
 }

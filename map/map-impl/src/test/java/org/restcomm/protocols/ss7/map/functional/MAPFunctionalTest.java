@@ -7919,7 +7919,7 @@ TC-END + SendRoutingInformationResponse
             @Override
             public void onUpdateGprsLocationResponse(UpdateGprsLocationResponse ind) {
                 super.onUpdateGprsLocationResponse(ind);
-                assertTrue(ind.getHlrNumber().getAddress().equals("22228"));
+                assertEquals(ind.getHlrNumber().getAddress(), "22228");
                 assertEquals(ind.getHlrNumber().getAddressNature(), AddressNature.international_number);
                 assertEquals(ind.getHlrNumber().getNumberingPlan(), NumberingPlan.ISDN);
                 assertTrue(ind.isAddCapability());
@@ -7943,7 +7943,7 @@ TC-END + SendRoutingInformationResponse
                 assertTrue(ind.getSGSNCapability().getSolsaSupportIndicator());
                 assertTrue(ind.getInformPreviousNetworkEntity());
                 assertTrue(ind.getPsLCSNotSupportedByUE());
-                assertTrue(ind.getADDInfo().getImeisv().getIMEI().equals("12341234"));
+                assertEquals(ind.getADDInfo().getImeisv().getIMEI(), "12341234");
                 assertTrue(ind.getEPSInfo().getIsrInformation().getCancelSGSN());
                 assertTrue(ind.getServingNodeTypeIndicator());
                 assertTrue(ind.getSkipSubscriberDataUpdate());

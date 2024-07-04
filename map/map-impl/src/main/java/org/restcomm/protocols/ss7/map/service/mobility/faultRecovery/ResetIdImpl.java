@@ -11,11 +11,11 @@ public class ResetIdImpl extends OctetStringBase implements ResetId {
     public static final String _PrimitiveName = "ResetId";
 
     public ResetIdImpl(byte[] data) {
-        super(1, 1, _PrimitiveName, data);
+        super(1, 4, _PrimitiveName, data);
     }
 
     public ResetIdImpl() {
-        super(1, 1, _PrimitiveName);
+        super(1, 4, _PrimitiveName);
     }
 
     @Override
