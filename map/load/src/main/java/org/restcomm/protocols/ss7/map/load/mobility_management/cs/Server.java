@@ -823,8 +823,7 @@ public class Server extends TestHarnessMobilityManagement {
             boolean isPrepaidCharging = false;
             boolean isFlatRateCharging = true;
             boolean isChargingByHotBillingCharging = false;
-            ChargingCharacteristics chargingCharacteristics =
-                    new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+            ChargingCharacteristics chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
             boolean utranNotAllowed = false;
             boolean geranNotAllowed = false;
             boolean ganNotAllowed = true;
@@ -873,10 +872,10 @@ public class Server extends TestHarnessMobilityManagement {
             EPSSubscriptionData epsSubscriptionData = new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
                     stnSr, mapExtensionContainer, mpsCSPriority, mpsEPSPriority);
             BitSetStrictLength csgIdBitSet = new BitSetStrictLength(27);
+            csgIdBitSet.set(0);
             csgIdBitSet.set(1);
-            csgIdBitSet.set(5);
-            csgIdBitSet.set(10);
-            csgIdBitSet.set(27);
+            csgIdBitSet.set(25);
+            csgIdBitSet.set(26);
             CSGId csgId = new CSGIdImpl(csgIdBitSet);
             int year = 2024;
             int month = 7;
@@ -888,11 +887,12 @@ public class Server extends TestHarnessMobilityManagement {
             ArrayList<APN> lipaAllowedAPNList = new ArrayList<>();
             lipaAllowedAPNList.add(apn);
             CSGSubscriptionData csgSubscriptionData = new CSGSubscriptionDataImpl(csgId, expirationDate, mapExtensionContainer, lipaAllowedAPNList);
-            ArrayList<CSGSubscriptionData> csgSubscriptionDataList = null;
-            boolean ueReachabilityRequestIndicator = false;
+            ArrayList<CSGSubscriptionData> csgSubscriptionDataList = new ArrayList<>();
+            csgSubscriptionDataList.add(csgSubscriptionData);
+            boolean ueReachabilityRequestIndicator = true;
             ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                     "491710490000");
-            byte[] mmeNameArray = "mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
+            byte[] mmeNameArray = "mmec20.mmegi800.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
             DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNameArray);
             Long subscribedPeriodicRAUTAUtimer = 300L;
             boolean vplmnLIPAAllowed = true;
@@ -903,12 +903,12 @@ public class Server extends TestHarnessMobilityManagement {
             ISDNAddressString additionalMSISDN = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "4917105682451");
             boolean psAndSMSOnlyServiceProvision = true;
             boolean smsInSGSNAllowed = true;
+            boolean csToPsSRVCCAllowedIndicator = true;
             boolean pcscfRestorationRequest = true;
             int mcc = 262;
             int mnc = 999;
             PlmnId plmnId = new PlmnIdImpl(mcc, mnc);
-            accessRestrictionData =
-                    new AccessRestrictionDataImpl(utranNotAllowed, geranNotAllowed, ganNotAllowed, iHspaEvolutionNotAllowed, eUtranNotAllowed, hoToNon3GppAccessNotAllowed);
+            accessRestrictionData = new AccessRestrictionDataImpl(utranNotAllowed, geranNotAllowed, ganNotAllowed, iHspaEvolutionNotAllowed, eUtranNotAllowed, hoToNon3GppAccessNotAllowed);
             boolean nrAsSecondaryRATNotAllowed = true;
             boolean unlicensedSpectrumAsSecondaryRATNotAllowed = false;
             ExtAccessRestrictionData extAccessRestrictionData = new ExtAccessRestrictionDataImpl(nrAsSecondaryRATNotAllowed, unlicensedSpectrumAsSecondaryRATNotAllowed);
@@ -944,7 +944,7 @@ public class Server extends TestHarnessMobilityManagement {
                     sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,
                     ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent,
                     subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
-                    smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                    csToPsSRVCCAllowedIndicator, smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
                     ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
                     eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
 

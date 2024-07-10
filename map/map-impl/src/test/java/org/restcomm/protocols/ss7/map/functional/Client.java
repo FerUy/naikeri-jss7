@@ -1528,6 +1528,7 @@ public class Client extends EventTestHarness {
         ISDNAddressString additionalMSISDN = null;
         boolean psAndSMSOnlyServiceProvision = false;
         boolean smsInSGSNAllowed = false;
+        boolean csToPsSRVCCAllowedIndicator = false;
         boolean pcscfRestorationRequest = false;
         ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList = null;
         ArrayList<IMSIGroupId> imsiGroupIdList = null;
@@ -1548,7 +1549,7 @@ public class Client extends EventTestHarness {
                 icsIndicator, epsSubscriptionData, csgSubscriptionDataList, ueReachabilityRequestIndicator, sgsnNumber,
                 mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer,
                 vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
-                smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                smsInSGSNAllowed, csToPsSRVCCAllowedIndicator, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
                 ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
                 eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.InsertSubscriberData, null, sequence++));

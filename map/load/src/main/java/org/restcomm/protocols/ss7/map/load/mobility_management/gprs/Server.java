@@ -901,7 +901,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             boolean ueReachabilityRequestIndicator = true;
             ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                     "491710490000");
-            byte[] mmeNameArray = "mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
+            byte[] mmeNameArray = "mmec20.mmegi800.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
             DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNameArray);
             Long subscribedPeriodicRAUTAUtimer = 360L;
             boolean vplmnLIPAAllowed = true;
@@ -911,6 +911,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             ISDNAddressString additionalMSISDN = null;
             boolean psAndSMSOnlyServiceProvision = false;
             boolean smsInSGSNAllowed = false;
+            boolean csToPsSRVCCAllowedIndicator = true;
             boolean pcscfRestorationRequest = false;
             ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList = null;
             ArrayList<IMSIGroupId> imsiGroupIdList = null;
@@ -930,7 +931,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
                     sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,
                     ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent,
                     subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
-                    smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                    csToPsSRVCCAllowedIndicator, smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
                     ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
                     eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
 

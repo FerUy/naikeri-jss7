@@ -122,7 +122,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
     private static final int _TAG_Reset_Id_List = 51;
     private static final int _TAG_EDRX_Cycle_Length_List = 52;
     private static final int _TAG_Ext_AccessRestrictionData = 53;
-    private static final int _TAG_iabOperationAllowedIndicator =54;
+    private static final int _TAG_iabOperationAllowedIndicator = 54;
 
     private IMSI imsi = null;
     private ISDNAddressString msisdn = null;
@@ -225,7 +225,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
             Long subscribedPeriodicRAUTAUtimer, boolean vplmnLIPAAllowed, Boolean mdtUserConsent,
             Long subscribedPeriodicLAUtimer, ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList,
             ISDNAddressString additionalMSISDN, boolean psAndSMSOnlyServiceProvision, boolean smsInSGSNAllowed,
-            boolean pcscfRestorationRequest, ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList,
+            boolean csToPsSRVCCAllowedIndicator, boolean pcscfRestorationRequest, ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList,
             ArrayList<IMSIGroupId> imsiGroupIdList, UEUsageType ueUsageType, boolean userPlaneIntegrityProtectionIndicator,
             Long dlBufferingSuggestedPacketCount, ArrayList<ResetId> resetIdList, ArrayList<EDRXCycleLength> eDRXCycleLengthList,
             ExtAccessRestrictionData extAccessRestrictionData, boolean iabOperationAllowedIndicator) {
@@ -275,6 +275,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
             this.additionalMSISDN = additionalMSISDN;
             this.psAndSMSOnlyServiceProvision = psAndSMSOnlyServiceProvision;
             this.smsInSGSNAllowed = smsInSGSNAllowed;
+            this.csToPsSRVCCAllowedIndicator = csToPsSRVCCAllowedIndicator;
             this.pcscfRestorationRequest = pcscfRestorationRequest;
             this.adjacentAccessRestrictionDataList = adjacentAccessRestrictionDataList;
             this.imsiGroupIdList = imsiGroupIdList;
@@ -720,8 +721,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                     break;
 
                                 int tag2 = ais2.readTag();
-                                if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL
-                                        || !ais2.isTagPrimitive())
+                                if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL || !ais2.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad bearerServiceCode element tag or tagClass or is not primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
@@ -730,7 +730,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                 (bearerItem).decodeAll(ais2);
                                 this.bearerServiceList.add(bearerItem);
                             }
-                            if (this.bearerServiceList.size() < 1 || this.bearerServiceList.size() > 50) {
+                            if (this.bearerServiceList.isEmpty() || this.bearerServiceList.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter bearerServiceList size must be from 1 to 50, found: "
                                         + this.bearerServiceList.size(), MAPParsingComponentExceptionReason.MistypedParameter);
@@ -749,8 +749,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                     break;
 
                                 int tag3 = ais3.readTag();
-                                if (tag3 != Tag.STRING_OCTET || ais3.getTagClass() != Tag.CLASS_UNIVERSAL
-                                        || !ais3.isTagPrimitive())
+                                if (tag3 != Tag.STRING_OCTET || ais3.getTagClass() != Tag.CLASS_UNIVERSAL || !ais3.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad teleserviceCode tag or tagClass or is not primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
@@ -759,7 +758,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                 (teleserviceItem).decodeAll(ais3);
                                 this.teleserviceList.add(teleserviceItem);
                             }
-                            if (this.teleserviceList.size() < 1 || this.teleserviceList.size() > 20) {
+                            if (this.teleserviceList.isEmpty() || this.teleserviceList.size() > 20) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter teleserviceList size must be from 1 to 20, found: "
                                         + this.teleserviceList.size(), MAPParsingComponentExceptionReason.MistypedParameter);
@@ -783,7 +782,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                 (serviceItem).decodeAll(ais4);
                                 this.provisionedSS.add(serviceItem);
                             }
-                            if (this.provisionedSS.size() < 1 || this.provisionedSS.size() > 30) {
+                            if (this.provisionedSS.isEmpty() || this.provisionedSS.size() > 30) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter provisionedSS size must be from 1 to 30, found: "
                                         + this.provisionedSS.size(), MAPParsingComponentExceptionReason.MistypedParameter);
@@ -811,24 +810,23 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                         + ".regionalSubscriptionData: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            ais4 = ais.readSequenceStream();
+                            AsnInputStream ais5 = ais.readSequenceStream();
                             this.regionalSubscriptionData = new ArrayList<>();
                             while (true) {
-                                if (ais4.available() == 0)
+                                if (ais5.available() == 0)
                                     break;
 
-                                int tag4 = ais4.readTag();
-                                if (tag4 != Tag.STRING_OCTET || ais4.getTagClass() != Tag.CLASS_UNIVERSAL
-                                        || !ais4.isTagPrimitive())
+                                int tag5 = ais5.readTag();
+                                if (tag5 != Tag.STRING_OCTET || ais5.getTagClass() != Tag.CLASS_UNIVERSAL || !ais5.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad regionalSubscriptionData tag or tagClass or is not primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 ZoneCodeImpl zoneCode = new ZoneCodeImpl();
-                                (zoneCode).decodeAll(ais4);
+                                (zoneCode).decodeAll(ais5);
                                 this.regionalSubscriptionData.add(zoneCode);
                             }
-                            if (this.regionalSubscriptionData.size() < 1 || this.regionalSubscriptionData.size() > 10) {
+                            if (this.regionalSubscriptionData.isEmpty() || this.regionalSubscriptionData.size() > 10) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter regionalSubscriptionData size must be from 1 to 10, found: "
                                         + this.regionalSubscriptionData.size(),
@@ -840,22 +838,22 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".vbsSubscriptionData: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            ais4 = ais.readSequenceStream();
+                            AsnInputStream ais6 = ais.readSequenceStream();
                             this.vbsSubscriptionData = new ArrayList<>();
                             while (true) {
-                                if (ais4.available() == 0)
+                                if (ais6.available() == 0)
                                     break;
 
-                                int tag4 = ais4.readTag();
-                                if (tag4 != Tag.SEQUENCE || ais4.getTagClass() != Tag.CLASS_UNIVERSAL || ais4.isTagPrimitive())
+                                int tag6 = ais6.readTag();
+                                if (tag6 != Tag.SEQUENCE || ais6.getTagClass() != Tag.CLASS_UNIVERSAL || ais6.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad vbsSubscriptionData element tag or tagClass or is primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 VoiceBroadcastDataImpl voiceBroadcastData = new VoiceBroadcastDataImpl();
-                                (voiceBroadcastData).decodeAll(ais4);
+                                (voiceBroadcastData).decodeAll(ais6);
                                 this.vbsSubscriptionData.add(voiceBroadcastData);
                             }
-                            if (this.vbsSubscriptionData.size() < 1 || this.vbsSubscriptionData.size() > 50) {
+                            if (this.vbsSubscriptionData.isEmpty() || this.vbsSubscriptionData.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter vbsSubscriptionData size must be from 1 to 50, found: "
                                         + this.vbsSubscriptionData.size(), MAPParsingComponentExceptionReason.MistypedParameter);
@@ -867,23 +865,23 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                         + ".vgcsSubscriptionData: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            ais4 = ais.readSequenceStream();
+                            AsnInputStream ais7 = ais.readSequenceStream();
                             this.vgcsSubscriptionData = new ArrayList<>();
                             while (true) {
-                                if (ais4.available() == 0)
+                                if (ais7.available() == 0)
                                     break;
 
-                                int tag4 = ais4.readTag();
-                                if (tag4 != Tag.SEQUENCE || ais4.getTagClass() != Tag.CLASS_UNIVERSAL || ais4.isTagPrimitive())
+                                int tag7 = ais7.readTag();
+                                if (tag7 != Tag.SEQUENCE || ais7.getTagClass() != Tag.CLASS_UNIVERSAL || ais7.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad vgcsSubscriptionData element tag or tagClass or is primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 VoiceGroupCallDataImpl voiceGroupCallData = new VoiceGroupCallDataImpl();
-                                (voiceGroupCallData).decodeAll(ais4);
+                                (voiceGroupCallData).decodeAll(ais7);
                                 vgcsSubscriptionData.add(voiceGroupCallData);
                             }
-                            if (this.vgcsSubscriptionData.size() < 1 || this.vgcsSubscriptionData.size() > 50) {
+                            if (this.vgcsSubscriptionData.isEmpty() || this.vgcsSubscriptionData.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter vgcsSubscriptionData size must be from 1 to 50, found: "
                                         + this.vgcsSubscriptionData.size(),
@@ -1052,23 +1050,23 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                         + ".csg_SubscriptionDataList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            ais4 = ais.readSequenceStream();
+                            AsnInputStream ais8 = ais.readSequenceStream();
                             this.csgSubscriptionDataList = new ArrayList<>();
                             while (true) {
-                                if (ais4.available() == 0)
+                                if (ais8.available() == 0)
                                     break;
 
-                                int tag4 = ais4.readTag();
-                                if (tag4 != Tag.SEQUENCE || ais4.getTagClass() != Tag.CLASS_UNIVERSAL || ais4.isTagPrimitive())
+                                int tag8 = ais8.readTag();
+                                if (tag8 != Tag.SEQUENCE || ais8.getTagClass() != Tag.CLASS_UNIVERSAL || ais8.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad csgSubscriptionDataList element tag or tagClass or is primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 CSGSubscriptionDataImpl csgSubscriptionData = new CSGSubscriptionDataImpl();
-                                (csgSubscriptionData).decodeAll(ais4);
+                                (csgSubscriptionData).decodeAll(ais8);
                                 csgSubscriptionDataList.add(csgSubscriptionData);
                             }
-                            if (this.csgSubscriptionDataList.size() < 1 || this.csgSubscriptionDataList.size() > 50) {
+                            if (this.csgSubscriptionDataList.isEmpty() || this.csgSubscriptionDataList.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter csgSubscriptionDataList size must be from 1 to 50, found: "
                                         + this.csgSubscriptionDataList.size(),
@@ -1138,23 +1136,23 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                         + ".vplmnCSGSubscriptionDataList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            AsnInputStream ais5 = ais.readSequenceStream();
+                            AsnInputStream ais9 = ais.readSequenceStream();
                             this.vplmnCSGSubscriptionDataList = new ArrayList<>();
                             while (true) {
-                                if (ais5.available() == 0)
+                                if (ais9.available() == 0)
                                     break;
 
-                                int tag5 = ais5.readTag();
-                                if (tag5 != Tag.SEQUENCE || ais5.getTagClass() != Tag.CLASS_UNIVERSAL || ais5.isTagPrimitive())
+                                int tag9 = ais9.readTag();
+                                if (tag9 != Tag.SEQUENCE || ais9.getTagClass() != Tag.CLASS_UNIVERSAL || ais9.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad vplmnCSGSubscriptionDataList element tag or tagClass or is primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 CSGSubscriptionDataImpl csgSubscriptionData = new CSGSubscriptionDataImpl();
-                                (csgSubscriptionData).decodeAll(ais5);
+                                (csgSubscriptionData).decodeAll(ais9);
                                 vplmnCSGSubscriptionDataList.add(csgSubscriptionData);
                             }
-                            if (this.vplmnCSGSubscriptionDataList.size() < 1 || this.vplmnCSGSubscriptionDataList.size() > 50) {
+                            if (this.vplmnCSGSubscriptionDataList.isEmpty() || this.vplmnCSGSubscriptionDataList.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter vplmnCSGSubscriptionDataList size must be from 1 to 50, found: "
                                         + this.vplmnCSGSubscriptionDataList.size(),
@@ -1210,23 +1208,23 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                         + ".vplmnCSGSubscriptionDataList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            AsnInputStream ais6 = ais.readSequenceStream();
+                            AsnInputStream ais10 = ais.readSequenceStream();
                             this.adjacentAccessRestrictionDataList = new ArrayList<>();
                             while (true) {
-                                if (ais6.available() == 0)
+                                if (ais10.available() == 0)
                                     break;
 
-                                int tag6 = ais6.readTag();
-                                if (tag6 != Tag.SEQUENCE || ais6.getTagClass() != Tag.CLASS_UNIVERSAL || ais6.isTagPrimitive())
+                                int tag10 = ais10.readTag();
+                                if (tag10 != Tag.SEQUENCE || ais10.getTagClass() != Tag.CLASS_UNIVERSAL || ais10.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad adjacentAccessRestrictionDataList element tag or tagClass or is primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 AdjacentAccessRestrictionDataImpl adjacentAccessRestrictionData = new AdjacentAccessRestrictionDataImpl();
-                                (adjacentAccessRestrictionData).decodeAll(ais6);
+                                (adjacentAccessRestrictionData).decodeAll(ais10);
                                 adjacentAccessRestrictionDataList.add(adjacentAccessRestrictionData);
                             }
-                            if (this.adjacentAccessRestrictionDataList.size() < 1 || this.adjacentAccessRestrictionDataList.size() > 50) {
+                            if (this.adjacentAccessRestrictionDataList.isEmpty() || this.adjacentAccessRestrictionDataList.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter adjacentAccessRestrictionDataList size must be from 1 to 50, found: "
                                         + this.adjacentAccessRestrictionDataList.size(),
@@ -1239,23 +1237,23 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                         + ".imsiGroupIdList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            AsnInputStream ais7 = ais.readSequenceStream();
+                            AsnInputStream ais11 = ais.readSequenceStream();
                             this.imsiGroupIdList = new ArrayList<>();
                             while (true) {
-                                if (ais7.available() == 0)
+                                if (ais11.available() == 0)
                                     break;
 
-                                int tag7 = ais7.readTag();
-                                if (tag7 != Tag.SEQUENCE || ais7.getTagClass() != Tag.CLASS_UNIVERSAL || ais7.isTagPrimitive())
+                                int tag11 = ais11.readTag();
+                                if (tag11 != Tag.SEQUENCE || ais11.getTagClass() != Tag.CLASS_UNIVERSAL || ais11.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad imsiGroupIdList element tag or tagClass or is primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 IMSIGroupIdImpl imsiGroupId = new IMSIGroupIdImpl();
-                                (imsiGroupId).decodeAll(ais7);
+                                (imsiGroupId).decodeAll(ais11);
                                 imsiGroupIdList.add(imsiGroupId);
                             }
-                            if (this.imsiGroupIdList.size() < 1 || this.imsiGroupIdList.size() > 50) {
+                            if (this.imsiGroupIdList.isEmpty() || this.imsiGroupIdList.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter imsiGroupIdList size must be from 1 to 50, found: "
                                         + this.imsiGroupIdList.size(),
@@ -1263,9 +1261,9 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                             }
                             break;
                         case _TAG_UE_Usage_Type:
-                            if (ais.isTagPrimitive())
+                            if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".ueUsageType: is primitive",
+                                        + ".ueUsageType: is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
                             this.ueUsageType = new UEUsageTypeImpl();
@@ -1294,23 +1292,23 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                         + ".resetIdList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            AsnInputStream ais8 = ais.readSequenceStream();
+                            AsnInputStream ais12 = ais.readSequenceStream();
                             this.resetIdList = new ArrayList<>();
                             while (true) {
-                                if (ais8.available() == 0)
+                                if (ais12.available() == 0)
                                     break;
 
-                                int tag8 = ais8.readTag();
-                                if (tag8 != Tag.SEQUENCE || ais8.getTagClass() != Tag.CLASS_UNIVERSAL || ais8.isTagPrimitive())
+                                int tag12 = ais12.readTag();
+                                if (tag12 != Tag.STRING_OCTET || ais12.getTagClass() != Tag.CLASS_UNIVERSAL || !ais12.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ": bad resetIdList element tag or tagClass or is primitive ",
+                                            + ": bad resetIdList element tag or tagClass or is not primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 ResetIdImpl resetId = new ResetIdImpl();
-                                (resetId).decodeAll(ais8);
+                                (resetId).decodeAll(ais12);
                                 resetIdList.add(resetId);
                             }
-                            if (this.resetIdList.size() < 1 || this.resetIdList.size() > 50) {
+                            if (this.resetIdList.isEmpty() || this.resetIdList.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter resetIdList size must be from 1 to 50, found: "
                                         + this.resetIdList.size(),
@@ -1323,23 +1321,23 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                                         + ".eDRXCycleLengthList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            AsnInputStream ais9 = ais.readSequenceStream();
+                            AsnInputStream ais13 = ais.readSequenceStream();
                             this.eDRXCycleLengthList = new ArrayList<>();
                             while (true) {
-                                if (ais9.available() == 0)
+                                if (ais13.available() == 0)
                                     break;
 
-                                int tag9 = ais9.readTag();
-                                if (tag9 != Tag.SEQUENCE || ais9.getTagClass() != Tag.CLASS_UNIVERSAL || ais9.isTagPrimitive())
+                                int tag13 = ais13.readTag();
+                                if (tag13 != Tag.SEQUENCE || ais13.getTagClass() != Tag.CLASS_UNIVERSAL || ais13.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad eDRXCycleLengthList element tag or tagClass or is primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 EDRXCycleLengthImpl eDRXCycleLength = new EDRXCycleLengthImpl();
-                                (eDRXCycleLength).decodeAll(ais9);
+                                (eDRXCycleLength).decodeAll(ais13);
                                 eDRXCycleLengthList.add(eDRXCycleLength);
                             }
-                            if (this.eDRXCycleLengthList.size() < 1 || this.eDRXCycleLengthList.size() > 8) {
+                            if (this.eDRXCycleLengthList.isEmpty() || this.eDRXCycleLengthList.size() > 8) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter eDRXCycleLengthList size must be from 1 to 50, found: "
                                         + this.eDRXCycleLengthList.size(),
@@ -1347,9 +1345,9 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
                             }
                             break;
                         case _TAG_Ext_AccessRestrictionData:
-                            if (ais.isTagPrimitive())
+                            if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".extAccessRestrictionData: is primitive",
+                                        + ".extAccessRestrictionData: is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
                             this.extAccessRestrictionData = new ExtAccessRestrictionDataImpl();
@@ -1404,25 +1402,25 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
     @Override
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
 
-        if (this.bearerServiceList != null && (this.bearerServiceList.size() < 1 || this.bearerServiceList.size() > 50))
+        if (this.bearerServiceList != null && (this.bearerServiceList.isEmpty() || this.bearerServiceList.size() > 50))
             throw new MAPException("bearerServiceList size must be from 1 to 50, found: " + this.bearerServiceList.size());
 
-        if (this.teleserviceList != null && (this.teleserviceList.size() < 1 || this.teleserviceList.size() > 20))
+        if (this.teleserviceList != null && (this.teleserviceList.isEmpty() || this.teleserviceList.size() > 20))
             throw new MAPException("teleserviceList size must be from 1 to 20, found: " + this.teleserviceList.size());
 
-        if (this.provisionedSS != null && (this.provisionedSS.size() < 1 || this.provisionedSS.size() > 30))
+        if (this.provisionedSS != null && (this.provisionedSS.isEmpty() || this.provisionedSS.size() > 30))
             throw new MAPException("provisionedSS size must be from 1 to 30, found: " + this.provisionedSS.size());
 
         if (this.regionalSubscriptionData != null
-                && (this.regionalSubscriptionData.size() < 1 || this.regionalSubscriptionData.size() > 10))
+                && (this.regionalSubscriptionData.isEmpty() || this.regionalSubscriptionData.size() > 10))
             throw new MAPException("regionalSubscriptionData size must be from 1 to 10, found: "
                     + this.regionalSubscriptionData.size());
 
-        if (this.vbsSubscriptionData != null && (this.vbsSubscriptionData.size() < 1 || this.vbsSubscriptionData.size() > 50))
+        if (this.vbsSubscriptionData != null && (this.vbsSubscriptionData.isEmpty() || this.vbsSubscriptionData.size() > 50))
             throw new MAPException("vbsSubscriptionData size must be from 1 to 50, found: " + this.vbsSubscriptionData.size());
 
         if (this.vgcsSubscriptionData != null
-                && (this.vgcsSubscriptionData.size() < 1 || this.vgcsSubscriptionData.size() > 50))
+                && (this.vgcsSubscriptionData.isEmpty() || this.vgcsSubscriptionData.size() > 50))
             throw new MAPException("vgcsSubscriptionData size must be from 1 to 50, found: " + this.vgcsSubscriptionData.size());
 
         if (this.istAlertTimer != null && (this.istAlertTimer < 15 || this.istAlertTimer > 255))
@@ -1554,8 +1552,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
         if (mapProtocolVersion >= 3) {
 
             if (this.extensionContainer != null)
-                ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                        _TAG_extContainer);
+                ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_extContainer);
 
             if (this.naeaPreferredCI != null) {
                 ((NAEAPreferredCIImpl) this.naeaPreferredCI)
@@ -1563,8 +1560,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
             }
 
             if (this.gprsSubscriptionData != null)
-                ((GPRSSubscriptionDataImpl) this.gprsSubscriptionData).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                        _TAG_gprsSubscriptionData);
+                ((GPRSSubscriptionDataImpl) this.gprsSubscriptionData).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_gprsSubscriptionData);
 
             if (this.roamingRestrictedInSgsnDueToUnsupportedFeature) {
                 try {
@@ -2208,19 +2204,19 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
         }
 
         if (this.psAndSMSOnlyServiceProvision) {
-            sb.append(this.psAndSMSOnlyServiceProvision);
+            sb.append("psAndSMSOnlyServiceProvision, ");
         }
 
         if (this.smsInSGSNAllowed) {
-            sb.append(this.smsInSGSNAllowed);
+            sb.append("smsInSGSNAllowed, ");
         }
 
-        if (this.csToPsSRVCCAllowedIndicator) {
-            sb.append(this.csToPsSRVCCAllowedIndicator);
+        if (csToPsSRVCCAllowedIndicator) {
+            sb.append("csToPsSRVCCAllowedIndicator, ");
         }
 
         if (this.pcscfRestorationRequest) {
-            sb.append(this.pcscfRestorationRequest);
+            sb.append("pcscfRestorationRequest, ");
         }
 
         if (this.adjacentAccessRestrictionDataList != null) {
@@ -2256,7 +2252,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
         }
 
         if (this.userPlaneIntegrityProtectionIndicator) {
-            sb.append(this.userPlaneIntegrityProtectionIndicator);
+            sb.append("userPlaneIntegrityProtectionIndicator, ");
         }
 
         if (this.dlBufferingSuggestedPacketCount != null) {
@@ -2298,7 +2294,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
         }
 
         if (this.iabOperationAllowedIndicator) {
-            sb.append(this.iabOperationAllowedIndicator);
+            sb.append("iabOperationAllowedIndicator, ");
         }
 
         sb.append("mapProtocolVersion=");

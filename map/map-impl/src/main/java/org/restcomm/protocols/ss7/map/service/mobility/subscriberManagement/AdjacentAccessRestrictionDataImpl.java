@@ -81,17 +81,17 @@ public class AdjacentAccessRestrictionDataImpl extends SequenceBase implements A
                             ((PlmnIdImpl) this.plmnId).decodeAll(ais);
                             break;
                         case _TAG_Access_Restriction_Data:
-                            if (ais.isTagPrimitive())
+                            if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".accessRestrictionData: Parameter is primitive",
+                                        + ".accessRestrictionData: Parameter is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             this.accessRestrictionData = new AccessRestrictionDataImpl();
                             ((AccessRestrictionDataImpl) this.accessRestrictionData).decodeAll(ais);
                             break;
                         case _TAG_Ext_Access_Restriction_Data:
-                            if (ais.isTagPrimitive())
+                            if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".extAccessRestrictionData: Parameter is primitive",
+                                        + ".extAccessRestrictionData: Parameter is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             this.extAccessRestrictionData = new ExtAccessRestrictionDataImpl();
                             ((ExtAccessRestrictionDataImpl) this.extAccessRestrictionData).decodeAll(ais);

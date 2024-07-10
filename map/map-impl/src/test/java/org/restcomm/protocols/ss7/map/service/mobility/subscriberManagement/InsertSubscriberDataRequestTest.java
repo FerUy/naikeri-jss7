@@ -1667,6 +1667,9 @@ public class InsertSubscriberDataRequestTest {
         boolean smsInSGSNAllowed = prim.getSMSInSGSNAllowed();
         assertFalse(smsInSGSNAllowed);
 
+        boolean csToPsSRVCCAllowedIndicator = prim.getCsToPsSRVCCAllowedIndicator();
+        assertFalse(csToPsSRVCCAllowedIndicator);
+
         boolean pcscfRestorationRequest = prim.getPCSCFRestorationRequest();
         assertFalse(pcscfRestorationRequest);
 
@@ -2097,6 +2100,9 @@ public class InsertSubscriberDataRequestTest {
         // smsInSGSNAllowed
         boolean smsInSGSNAllowed = false;
 
+        // csToPsSRVCCAllowedIndicator
+        boolean csToPsSRVCCAllowedIndicator = false;
+
         // pcscfRestorationRequest
         boolean pcscfRestorationRequest = false;
 
@@ -2134,7 +2140,7 @@ public class InsertSubscriberDataRequestTest {
                 superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority, sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData,
                 icsIndicator, epsSubscriptionData, csgSubscriptionDataList, ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer,
                 vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
-                smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                csToPsSRVCCAllowedIndicator, smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
                 ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
                 eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
 
