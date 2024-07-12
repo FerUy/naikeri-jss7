@@ -113,7 +113,7 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
                     ((ISDNAddressStringImpl) this.gsmSCFAddress).decodeAll(ais);
                     break;
                 case 3:
-                    if (tag != Tag.INTEGER || ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive())
+                    if (tag != Tag.ENUMERATED || ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ".defaultCallHandling: Parameter is bad tag, tag class or not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
@@ -192,7 +192,7 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
 
             ((ISDNAddressStringImpl) this.gsmSCFAddress).encodeAll(asnOutputStream);
 
-            asnOutputStream.writeInteger(this.defaultCallHandling.getCode());
+            asnOutputStream.writeInteger(Tag.CLASS_UNIVERSAL, Tag.ENUMERATED, this.defaultCallHandling.getCode());
 
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
