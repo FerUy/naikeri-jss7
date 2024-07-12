@@ -80,7 +80,7 @@ public abstract class TestHarnessMobilityManagement implements MAPDialogListener
 
     public void init() {
         try {
-            Properties tckProperties = new Properties();
+            //Properties tckProperties = new Properties();
 
             InputStream inStreamLog4j = TestHarnessMobilityManagement.class.getResourceAsStream("/log4j.properties");
 
@@ -91,7 +91,7 @@ public abstract class TestHarnessMobilityManagement implements MAPDialogListener
                 propertiesLog4j.load(inStreamLog4j);
                 PropertyConfigurator.configure(propertiesLog4j);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
                 BasicConfigurator.configure();
             }
 
@@ -106,10 +106,10 @@ public abstract class TestHarnessMobilityManagement implements MAPDialogListener
             try {
                 logger.addAppender(new FileAppender(new SimpleLayout(), logFileName));
             } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
+                logger.error(fileNotFoundException.getMessage());
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage());
             throw new RuntimeException(ex);
         }
 

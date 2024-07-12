@@ -64,9 +64,7 @@ public class NAEACICImpl extends OctetStringBase implements NAEACIC {
                 return address.substring(0, 3);
             }
             return address;
-        } catch (MAPParsingComponentException e) {
-            return null;
-        } catch (IOException e) {
+        } catch (MAPParsingComponentException | IOException e) {
             return null;
         }
     }
@@ -97,7 +95,7 @@ public class NAEACICImpl extends OctetStringBase implements NAEACIC {
                     + ": carrierCode, networkIdentificationPlanValue or networkIdentificationTypeValue is empty");
 
         if (!(carrierCode.length() == 3 || carrierCode.length() == 4))
-            throw new MAPException("Error when encoding " + _PrimitiveName + ": carrierCode lenght should be 3 or 4");
+            throw new MAPException("Error when encoding " + _PrimitiveName + ": carrierCode length should be 3 or 4");
 
         ByteArrayOutputStream stm = new ByteArrayOutputStream();
 

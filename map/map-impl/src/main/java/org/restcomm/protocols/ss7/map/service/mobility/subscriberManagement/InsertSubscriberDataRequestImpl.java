@@ -59,7 +59,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.ResetIdImpl
 /**
  * @author daniel bichara
  * @author sergey vetyutnev
- * @author<a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
  */
 public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl implements InsertSubscriberDataRequest {
 

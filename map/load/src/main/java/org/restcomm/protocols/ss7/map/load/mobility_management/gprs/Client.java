@@ -349,7 +349,7 @@ public class Client extends TestHarnessMobilityManagement {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 
