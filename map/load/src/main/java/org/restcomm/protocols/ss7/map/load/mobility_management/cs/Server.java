@@ -930,16 +930,6 @@ public class Server extends TestHarnessMobilityManagement {
             vbsSubscriptionData.add(voiceBroadcastData);
             // vgcsSubscriptionData
             ArrayList<VoiceGroupCallData> vgcsSubscriptionData = new ArrayList<>();
-            OBcsmTriggerDetectionPoint oBcsmTDP = OBcsmTriggerDetectionPoint.routeSelectFailure;
-            long serviceKey = 3L;
-            ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
-            DefaultCallHandling defaultCallHandling = DefaultCallHandling.continueCall;
-            OBcsmCamelTDPData oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(oBcsmTDP, serviceKey, gsmSCFAddress, defaultCallHandling, mapExtensionContainer);
-            ArrayList<OBcsmCamelTDPData> oBcsmCamelTDPDataList = new ArrayList<>();
-            oBcsmCamelTDPDataList.add(oBcsmCamelTDPData);
-            Integer camelCapabilityHandling = 2;
-            boolean notificationToCSE = true;
-            boolean csiActive = true;
             boolean privilegedUplinkRequest = true;
             boolean emergencyUplinkRequest = true;
             boolean emergencyReset = true;
@@ -952,6 +942,16 @@ public class Server extends TestHarnessMobilityManagement {
             VoiceGroupCallData voiceGroupCallData = new VoiceGroupCallDataImpl(gId, mapExtensionContainer, addSubscriptions, addInfo, lGId);
             vgcsSubscriptionData.add(voiceGroupCallData);
             // vlrCamelSubscriptionInfo
+            OBcsmTriggerDetectionPoint oBcsmTDP = OBcsmTriggerDetectionPoint.routeSelectFailure;
+            long serviceKey = 3L;
+            ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
+            DefaultCallHandling defaultCallHandling = DefaultCallHandling.continueCall;
+            OBcsmCamelTDPData oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(oBcsmTDP, serviceKey, gsmSCFAddress, defaultCallHandling, mapExtensionContainer);
+            ArrayList<OBcsmCamelTDPData> oBcsmCamelTDPDataList = new ArrayList<>();
+            oBcsmCamelTDPDataList.add(oBcsmCamelTDPData);
+            Integer camelCapabilityHandling = 2;
+            boolean notificationToCSE = true;
+            boolean csiActive = true;
             OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, mapExtensionContainer, camelCapabilityHandling, notificationToCSE, csiActive);
             ArrayList<SSCode> ssEventList = new ArrayList<>();
             ssEventList.add(clip);
@@ -986,8 +986,7 @@ public class Server extends TestHarnessMobilityManagement {
             CauseValue tcv2 = new CauseValueImpl(CauseValueCodeValue.BearerCapabilityNotAuthorized);
             tCauseValueCriteria.add(tcv1);
             tCauseValueCriteria.add(tcv2);
-            TBcsmCamelTdpCriteria tBcsmCamelTdpCriteria = new TBcsmCamelTdpCriteriaImpl(tBcsmTriggerDetectionPoint, basicServiceGroupList,
-                    tCauseValueCriteria);
+            TBcsmCamelTdpCriteria tBcsmCamelTdpCriteria = new TBcsmCamelTdpCriteriaImpl(tBcsmTriggerDetectionPoint, basicServiceGroupList, tCauseValueCriteria);
             ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = new ArrayList<>();
             tBcsmCamelTdpCriteriaList.add(tBcsmCamelTdpCriteria);
             ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = new ArrayList<>();
@@ -1079,8 +1078,7 @@ public class Server extends TestHarnessMobilityManagement {
             PDPAddress servedPartyIPIPv6Address = null;
             APNConfiguration apnConfiguration = new APNConfigurationImpl(contextId, pDNType, servedPartyIPIPv4Address, apn,
                     ePSQoSSubscribed, pdnGwIdentity, pdnGwAllocationType, vplmnAddressAllowed, chargingCharacteristics, ambr,
-                    specificAPNInfoList, mapExtensionContainer,
-                    servedPartyIPIPv6Address, apnOiReplacement, siptoPermission,
+                    specificAPNInfoList, mapExtensionContainer, servedPartyIPIPv6Address, apnOiReplacement, siptoPermission,
                     lipaPermission);
             ArrayList<APNConfiguration> ePSDataList = new ArrayList<>();
             ePSDataList.add(apnConfiguration);

@@ -138,7 +138,7 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
                                     break;
                             }
                         }
-                            break;
+                        break;
                         default:
                             ais.advanceElement();
                             break;
