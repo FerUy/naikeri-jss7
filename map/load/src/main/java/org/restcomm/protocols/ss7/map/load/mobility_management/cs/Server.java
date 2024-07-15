@@ -196,11 +196,13 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AMBR
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationProfileImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNOIReplacementImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AccessRestrictionDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AdditionalInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AdditionalSubscriptionsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AdjacentAccessRestrictionDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AllocationRetentionPriorityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSAllocationRetentionPriorityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGSubscriptionDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CategoryImpl;
@@ -223,6 +225,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.IMSI
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LocalGroupIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LongGroupIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MCSIImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MCSSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MMCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MTsmsCAMELTDPCriteriaImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OBcsmCamelTDPDataImpl;
@@ -232,6 +235,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBD
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBGeneralDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBHPLMNDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDNTypeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPAddressImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCAMELTDPDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCSIImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCSIImpl;
@@ -842,6 +846,9 @@ public class Server extends TestHarnessMobilityManagement {
             long isdInvokeId = updateLocationRequestIndication.getInvokeId() + 1;
             MAPDialogMobility insertSubscriberDataDialog = updateLocationRequestIndication.getMAPDialog();
 
+            MAPExtensionContainer extCont = null;
+            // imsi
+            imsi = null;
             // msisdn
             ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
             // category
@@ -862,12 +869,11 @@ public class Server extends TestHarnessMobilityManagement {
             ExtSSStatus clipExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
             SSSubscriptionOption clipSubscriptionOption = new SSSubscriptionOptionImpl(OverrideCategory.overrideDisabled);
             ArrayList<ExtBasicServiceCode> basicServiceGroupList = null;
-            MAPExtensionContainer mapExtensionContainer = null;
-            ExtSSData extSSDataClip = new ExtSSDataImpl(clip, clipExtSSStatus, clipSubscriptionOption, basicServiceGroupList, mapExtensionContainer);
+            ExtSSData extSSDataClip = new ExtSSDataImpl(clip, clipExtSSStatus, clipSubscriptionOption, basicServiceGroupList, extCont);
             SSCode clir = new SSCodeImpl(SupplementaryCodeValue.clir);
             ExtSSStatus clirExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
             SSSubscriptionOption clirSubscriptionOption = new SSSubscriptionOptionImpl(CliRestrictionOption.temporaryDefaultAllowed);
-            ExtSSData extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, mapExtensionContainer);
+            ExtSSData extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, extCont);
             ExtSSInfo ssInfoClip = new ExtSSInfoImpl(extSSDataClip);
             ExtSSInfo ssInfoClir = new ExtSSInfoImpl(extSSDataClir);
             provisionedSS.add(ssInfoClip);
@@ -916,7 +922,7 @@ public class Server extends TestHarnessMobilityManagement {
             boolean plmnSpecificBarringType3 = false;
             boolean plmnSpecificBarringType4 = false;
             ODBHPLMNData odbHplmnData = new ODBHPLMNDataImpl(plmnSpecificBarringType1, plmnSpecificBarringType2, plmnSpecificBarringType3, plmnSpecificBarringType4);
-            ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, mapExtensionContainer);
+            ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, extCont);
             // roamingRestrictionDueToUnsupportedFeature
             boolean roamingRestrictionDueToUnsupportedFeature = true;
             // regionalSubscriptionData
@@ -926,7 +932,7 @@ public class Server extends TestHarnessMobilityManagement {
             GroupId gId = new GroupIdImpl("1");
             boolean broadcastInitEntitlement = true;
             LongGroupId lGId = new LongGroupIdImpl("5");
-            VoiceBroadcastData voiceBroadcastData = new VoiceBroadcastDataImpl(gId, broadcastInitEntitlement, mapExtensionContainer, lGId);
+            VoiceBroadcastData voiceBroadcastData = new VoiceBroadcastDataImpl(gId, broadcastInitEntitlement, extCont, lGId);
             vbsSubscriptionData.add(voiceBroadcastData);
             // vgcsSubscriptionData
             ArrayList<VoiceGroupCallData> vgcsSubscriptionData = new ArrayList<>();
@@ -939,47 +945,47 @@ public class Server extends TestHarnessMobilityManagement {
             addInfoBitset.set(1);
             addInfoBitset.set(24);
             AdditionalInfo addInfo = new AdditionalInfoImpl(addInfoBitset);
-            VoiceGroupCallData voiceGroupCallData = new VoiceGroupCallDataImpl(gId, mapExtensionContainer, addSubscriptions, addInfo, lGId);
+            VoiceGroupCallData voiceGroupCallData = new VoiceGroupCallDataImpl(gId, extCont, addSubscriptions, addInfo, lGId);
             vgcsSubscriptionData.add(voiceGroupCallData);
             // vlrCamelSubscriptionInfo
             OBcsmTriggerDetectionPoint oBcsmTDP = OBcsmTriggerDetectionPoint.routeSelectFailure;
-            long serviceKey = 3L;
+            long serviceKey = 7L;
             ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
             DefaultCallHandling defaultCallHandling = DefaultCallHandling.continueCall;
-            OBcsmCamelTDPData oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(oBcsmTDP, serviceKey, gsmSCFAddress, defaultCallHandling, mapExtensionContainer);
+            OBcsmCamelTDPData oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(oBcsmTDP, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
             ArrayList<OBcsmCamelTDPData> oBcsmCamelTDPDataList = new ArrayList<>();
             oBcsmCamelTDPDataList.add(oBcsmCamelTDPData);
             Integer camelCapabilityHandling = 2;
             boolean notificationToCSE = true;
             boolean csiActive = true;
-            OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, mapExtensionContainer, camelCapabilityHandling, notificationToCSE, csiActive);
+            OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, extCont, camelCapabilityHandling, notificationToCSE, csiActive);
             ArrayList<SSCode> ssEventList = new ArrayList<>();
             ssEventList.add(clip);
             ssEventList.add(clir);
-            SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddress, mapExtensionContainer);
-            SSCSI ssCsi = new SSCSIImpl(ssCamelData, mapExtensionContainer, notificationToCSE, csiActive);
-            ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = getoBcsmCamelTdpCriteria(oBcsmTDP, basicServiceGroupList, mapExtensionContainer);
+            SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddress, extCont);
+            SSCSI ssCsi = new SSCSIImpl(ssCamelData, extCont, notificationToCSE, csiActive);
+            ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = getoBcsmCamelTdpCriteria(oBcsmTDP, basicServiceGroupList, extCont);
             boolean tifCsi = true;
             ArrayList<MMCode> mobilityTriggers = new ArrayList<>();
             MMCode mmCode1 = new MMCodeImpl(MMCodeValue.IMSIAttach);
             MMCode mmCode2 = new MMCodeImpl(MMCodeValue.LocationUpdateInSameVLR);
             mobilityTriggers.add(mmCode1);
             mobilityTriggers.add(mmCode2);
-            MCSI mcsi = new MCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, mapExtensionContainer, notificationToCSE, csiActive);
+            MCSI mcsi = new MCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, extCont, notificationToCSE, csiActive);
             ArrayList<SMSCAMELTDPData> smsCamelTdpDataList = new ArrayList<>();
             SMSTriggerDetectionPoint smsTDP = SMSTriggerDetectionPoint.smsDeliveryRequest;
             DefaultSMSHandling defaultSMSHandling = DefaultSMSHandling.continueTransaction;
-            SMSCAMELTDPData smscameltdpData = new SMSCAMELTDPDataImpl(smsTDP, serviceKey, gsmSCFAddress, defaultSMSHandling, mapExtensionContainer);
+            SMSCAMELTDPData smscameltdpData = new SMSCAMELTDPDataImpl(smsTDP, serviceKey, gsmSCFAddress, defaultSMSHandling, extCont);
             smsCamelTdpDataList.add(smscameltdpData);
-            SMSCSI smsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, mapExtensionContainer, notificationToCSE, csiActive);
+            SMSCSI smsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
             ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDataList = new ArrayList<>();
             TBcsmTriggerDetectionPoint tBcsmTDP1 = TBcsmTriggerDetectionPoint.tNoAnswer;
             TBcsmTriggerDetectionPoint tBcsmTDP2 = TBcsmTriggerDetectionPoint.tBusy;
-            TBcsmCamelTDPData tBcsmCamelTDPData1 = new TBcsmCamelTDPDataImpl(tBcsmTDP1, serviceKey, gsmSCFAddress, defaultCallHandling, mapExtensionContainer);
-            TBcsmCamelTDPData tBcsmCamelTDPData2 = new TBcsmCamelTDPDataImpl(tBcsmTDP2, serviceKey, gsmSCFAddress, defaultCallHandling, mapExtensionContainer);
+            TBcsmCamelTDPData tBcsmCamelTDPData1 = new TBcsmCamelTDPDataImpl(tBcsmTDP1, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
+            TBcsmCamelTDPData tBcsmCamelTDPData2 = new TBcsmCamelTDPDataImpl(tBcsmTDP2, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
             tBcsmCamelTDPDataList.add(tBcsmCamelTDPData1);
             tBcsmCamelTDPDataList.add(tBcsmCamelTDPData2);
-            TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDataList, mapExtensionContainer, camelCapabilityHandling, notificationToCSE, csiActive);
+            TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDataList, extCont, camelCapabilityHandling, notificationToCSE, csiActive);
             TBcsmTriggerDetectionPoint tBcsmTriggerDetectionPoint = TBcsmTriggerDetectionPoint.tNoAnswer;
             ArrayList<CauseValue> tCauseValueCriteria = new ArrayList<>();
             CauseValue tcv1 = new CauseValueImpl(CauseValueCodeValue.CallRejected);
@@ -991,10 +997,10 @@ public class Server extends TestHarnessMobilityManagement {
             tBcsmCamelTdpCriteriaList.add(tBcsmCamelTdpCriteria);
             ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = new ArrayList<>();
             ISDNAddressString dialledNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491714780432");
-            DPAnalysedInfoCriterium dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, serviceKey, gsmSCFAddress, defaultCallHandling, mapExtensionContainer);
+            DPAnalysedInfoCriterium dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
             dpAnalysedInfoCriteriaList.add(dpAnalysedInfoCriterium);
-            DCSI dCSI = new DCSIImpl(dpAnalysedInfoCriteriaList, camelCapabilityHandling, mapExtensionContainer, notificationToCSE, csiActive);
-            SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, mapExtensionContainer, notificationToCSE, csiActive);
+            DCSI dCSI = new DCSIImpl(dpAnalysedInfoCriteriaList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+            SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
             ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = new ArrayList<>();
             ArrayList<MTSMSTPDUType> mtsmstpduTypeArrayList = new ArrayList<>();
             MTSMSTPDUType mtsmstpduType1 = MTSMSTPDUType.smsDELIVER;
@@ -1005,7 +1011,7 @@ public class Server extends TestHarnessMobilityManagement {
             mtsmstpduTypeArrayList.add(mtsmstpduType3);
             MTsmsCAMELTDPCriteria mTsmsCAMELTDPCriteria = new MTsmsCAMELTDPCriteriaImpl(smsTDP, mtsmstpduTypeArrayList);
             mtSmsCamelTdpCriteriaList.add(mTsmsCAMELTDPCriteria);
-            VlrCamelSubscriptionInfo vlrCamelSubscriptionInfo = new VlrCamelSubscriptionInfoImpl(oCSI, mapExtensionContainer,
+            VlrCamelSubscriptionInfo vlrCamelSubscriptionInfo = new VlrCamelSubscriptionInfoImpl(oCSI, extCont,
                     ssCsi, oBcsmCamelTDPCriteriaList, tifCsi, mcsi, smsCsi, vtCsi, tBcsmCamelTdpCriteriaList, dCSI, mtSmsCSI,
                     mtSmsCamelTdpCriteriaList);
             // naeaPreferredCI
@@ -1013,7 +1019,7 @@ public class Server extends TestHarnessMobilityManagement {
             NetworkIdentificationPlanValue networkIdentificationPlanValue = NetworkIdentificationPlanValue.spare_1;
             NetworkIdentificationTypeValue networkIdentificationTypeValue = NetworkIdentificationTypeValue.nationalNetworkIdentification;
             NAEACIC naeaPreferredCIC = new NAEACICImpl(carrierCode, networkIdentificationPlanValue, networkIdentificationTypeValue);
-            NAEAPreferredCI naeaPreferredCI = new NAEAPreferredCIImpl(naeaPreferredCIC, mapExtensionContainer);
+            NAEAPreferredCI naeaPreferredCI = new NAEAPreferredCIImpl(naeaPreferredCIC, extCont);
             // gprsSubscriptionData
             GPRSSubscriptionData gprsSubscriptionData = null;
             // roamingRestrictedInSgsnDueToUnsupportedFeature
@@ -1031,9 +1037,15 @@ public class Server extends TestHarnessMobilityManagement {
             // superChargerSupportedInHLR
             AgeIndicator superChargerSupportedInHLR = null;
             // mcSsInfo
-            MCSSInfo mcSsInfo = null;
+
+            // MCSSInfoImpl(SSCode ssCode, ExtSSStatus ssStatus, int nbrSB, int nbrUser, MAPExtensionContainer extensionContainer)
+            SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.cfu);
+            ExtSSStatus ssStatus = new ExtSSStatusImpl(true, false, true, false);
+            int nbrSB = 2;
+            int nbrUser = 4;
+            MCSSInfo mcSsInfo = new MCSSInfoImpl(ssCode, ssStatus, nbrSB, nbrUser, extCont);
             // csAllocationRetentionPriority
-            CSAllocationRetentionPriority csAllocationRetentionPriority = null;
+            CSAllocationRetentionPriority csAllocationRetentionPriority = new CSAllocationRetentionPriorityImpl(4);
             // sgsnCamelSubscriptionInfo
             SGSNCAMELSubscriptionInfo sgsnCamelSubscriptionInfo = null;
             // chargingCharacteristics
@@ -1062,35 +1074,34 @@ public class Server extends TestHarnessMobilityManagement {
             int priorityLevel = 9;
             Boolean preEmptionCapability = true;
             Boolean preEmptionVulnerability = false;
-            AllocationRetentionPriority arp = new AllocationRetentionPriorityImpl(priorityLevel, preEmptionCapability, preEmptionVulnerability, mapExtensionContainer);
-            EPSQoSSubscribed ePSQoSSubscribed = new EPSQoSSubscribedImpl(qci, arp, mapExtensionContainer);
+            AllocationRetentionPriority arp = new AllocationRetentionPriorityImpl(priorityLevel, preEmptionCapability, preEmptionVulnerability, extCont);
+            EPSQoSSubscribed ePSQoSSubscribed = new EPSQoSSubscribedImpl(qci, arp, extCont);
             PDNGWIdentity pdnGwIdentity = null;
             PDNGWAllocationType pdnGwAllocationType = null;
             boolean vplmnAddressAllowed = true;
             int maxRequestedBandwidthUL = 2048;
             int maxRequestedBandwidthDL = 4096;
-            AMBR ambr = new AMBRImpl(maxRequestedBandwidthUL, maxRequestedBandwidthDL, mapExtensionContainer);
+            AMBR ambr = new AMBRImpl(maxRequestedBandwidthUL, maxRequestedBandwidthDL, extCont);
             ArrayList<SpecificAPNInfo> specificAPNInfoList = null;
-            APNOIReplacement apnOiReplacement = null;
-            SIPTOPermission siptoPermission = null;
-            LIPAPermission lipaPermission = null;
+            APNOIReplacement apnOiReplacement = new APNOIReplacementImpl(new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
+            SIPTOPermission sipToPermission = SIPTOPermission.siptoAllowed;
+            LIPAPermission lipaPermission = LIPAPermission.lipaConditional;
             int contextId = 1;
-            PDPAddress servedPartyIPIPv6Address = null;
+            PDPAddress servedPartyIPIPv6Address = new PDPAddressImpl(new byte[] { 21 });
             APNConfiguration apnConfiguration = new APNConfigurationImpl(contextId, pDNType, servedPartyIPIPv4Address, apn,
                     ePSQoSSubscribed, pdnGwIdentity, pdnGwAllocationType, vplmnAddressAllowed, chargingCharacteristics, ambr,
-                    specificAPNInfoList, mapExtensionContainer, servedPartyIPIPv6Address, apnOiReplacement, siptoPermission,
-                    lipaPermission);
+                    specificAPNInfoList, extCont, servedPartyIPIPv6Address, apnOiReplacement, sipToPermission, lipaPermission);
             ArrayList<APNConfiguration> ePSDataList = new ArrayList<>();
             ePSDataList.add(apnConfiguration);
             APNConfigurationProfile apnConfigurationProfile = new APNConfigurationProfileImpl(defaultContext, completeDataListIncluded,
-                    ePSDataList,  mapExtensionContainer);
+                    ePSDataList, extCont);
             Integer rfspId = 0;
             ISDNAddressString stnSr = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                     "491710490000");
             boolean mpsCSPriority = true;
             boolean mpsEPSPriority = true;
             EPSSubscriptionData epsSubscriptionData = new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
-                    stnSr, mapExtensionContainer, mpsCSPriority, mpsEPSPriority);
+                    stnSr, extCont, mpsCSPriority, mpsEPSPriority);
             // csgSubscriptionDataList
             BitSetStrictLength csgIdBitSet = new BitSetStrictLength(27);
             csgIdBitSet.set(0);
@@ -1107,7 +1118,7 @@ public class Server extends TestHarnessMobilityManagement {
             Time expirationDate = new TimeImpl(year, month, day, hour, minute, second);
             ArrayList<APN> lipaAllowedAPNList = new ArrayList<>();
             lipaAllowedAPNList.add(apn);
-            CSGSubscriptionData csgSubscriptionData = new CSGSubscriptionDataImpl(csgId, expirationDate, mapExtensionContainer, lipaAllowedAPNList);
+            CSGSubscriptionData csgSubscriptionData = new CSGSubscriptionDataImpl(csgId, expirationDate, extCont, lipaAllowedAPNList);
             ArrayList<CSGSubscriptionData> csgSubscriptionDataList = new ArrayList<>();
             csgSubscriptionDataList.add(csgSubscriptionData);
             // ueReachabilityRequestIndicator
@@ -1180,9 +1191,9 @@ public class Server extends TestHarnessMobilityManagement {
             // iabOperationAllowedIndicator
             boolean iabOperationAllowedIndicator = true;
 
-            insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId,null, msisdn, category, subscriberStatus,
+            insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId,imsi, msisdn, category, subscriberStatus,
                     bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
-                    regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, mapExtensionContainer,
+                    regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, extCont,
                     naeaPreferredCI, gprsSubscriptionData, roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode,
                     lsaInformation, lmuIndicator, lcsInformation, istAlertTimer, superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority,
                     sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,

@@ -39,6 +39,8 @@ import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NAEAPreferredCI;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientInternalID;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportRequest;
@@ -78,54 +80,92 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LIPAPermission;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PDPContext;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SIPTOPermission;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AMBR;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNConfiguration;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNConfigurationProfile;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APNOIReplacement;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AdjacentAccessRestrictionData;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AllocationRetentionPriority;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSAllocationRetentionPriority;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGSubscriptionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Category;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CategoryValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ChargingCharacteristics;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DefaultGPRSHandling;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DefaultSMSHandling;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EDRXCycleLength;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSQoSSubscribed;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSSubscriptionData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext2QoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext2QoSSubscribed_SourceStatisticsDescriptor;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext3QoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext4QoSSubscribed;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtAccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtPDPType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRate;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateExtended;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_DeliveryOfErroneousSdus;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_DeliveryOrder;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_MaximumSduSize;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_ResidualBER;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_SduErrorRatio;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TrafficClass;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TrafficHandlingPriority;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TransferDelay;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExternalClient;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GMLCRestriction;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSCSI;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSCamelTDPData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSTriggerDetectionPoint;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.IMSIGroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LCSInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LCSPrivacyClass;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAAttributes;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentificationPriorityValue;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAOnlyAccessIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LongGroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MCSSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MGCSI;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MMCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MMCodeValue;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MOLRClass;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MTSMSTPDUType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MTsmsCAMELTDPCriteria;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.NetworkAccessMode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.NotificationToMSUser;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ODBData;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDNGWAllocationType;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDNGWIdentity;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDNType;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDNTypeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPAddress;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.QoSClassIdentifier;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPTypeValue;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.QoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.QoSSubscribed_DelayClass;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.QoSSubscribed_MeanThroughput;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.QoSSubscribed_PeakThroughput;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.QoSSubscribed_PrecedenceClass;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.QoSSubscribed_ReliabilityClass;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SGSNCAMELSubscriptionInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SpecificAPNInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SMSCAMELTDPData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SMSCSI;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SMSTriggerDetectionPoint;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ServiceType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SubscriberStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.VlrCamelSubscriptionInfo;
@@ -140,27 +180,54 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCod
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.LCSClientExternalIDImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationQuintupletImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationSetListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.QuintupletListImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AMBRImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationProfileImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.PDPContextImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNOIReplacementImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AccessRestrictionDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AllocationRetentionPriorityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AgeIndicatorImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CategoryImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ChargingCharacteristicsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSQoSSubscribedImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSSubscriptionDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext2QoSSubscribedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext3QoSSubscribedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext4QoSSubscribedImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtPDPTypeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateExtendedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_MaximumSduSizeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_TransferDelayImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSStatusImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExternalClientImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GPRSCSIImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GPRSCamelTDPDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GPRSSubscriptionDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GroupIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LCSInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LCSPrivacyClassImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAAttributesImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSADataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAInformationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LongGroupIdImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDNTypeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MGCSIImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MMCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MOLRClassImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MTsmsCAMELTDPCriteriaImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPAddressImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPTypeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.QoSSubscribedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SGSNCAMELSubscriptionInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCAMELTDPDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCSIImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ServiceTypeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VoiceBroadcastDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ZoneCodeImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
@@ -189,7 +256,6 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static org.restcomm.protocols.ss7.map.load.mobility_management.gprs.TestHarnessMobilityManagement.SGSN_SSN;
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
 /**
@@ -709,8 +775,8 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
     @Override
     public void onSendAuthenticationInfoResponse(SendAuthenticationInfoResponse sendAuthenticationInfoResponseIndication) {
-        logger.error(String.format("ERROR: received SendAuthenticationInfoResponse at the server (acting as HLR) over DialogId=%d", sendAuthenticationInfoResponseIndication
-                .getMAPDialog().getLocalDialogId()));
+        logger.error(String.format("ERROR: received SendAuthenticationInfoResponse at the server (acting as HLR) over DialogId=%d",
+                sendAuthenticationInfoResponseIndication.getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -723,14 +789,14 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
     @Override
     public void onUpdateLocationResponse(UpdateLocationResponse updateLocationResponseIndication) {
-        logger.error(String.format("ERROR: received UpdateLocationResponse over DialogId=%d", updateLocationResponseIndication
-                .getMAPDialog().getLocalDialogId(), " over the server (acting as HLR)"));
+        logger.error(String.format("ERROR: received UpdateLocationResponse at the server (acting as HLR) over DialogId=%d",
+                updateLocationResponseIndication.getMAPDialog().getLocalDialogId()));
     }
 
     @Override
     public void onInsertSubscriberDataRequest(InsertSubscriberDataRequest insertSubscriberDataRequest) {
-        logger.error(String.format("ERROR: received InsertSubscriberDataRequest at the server (acting as HLR) over DialogId=%d", insertSubscriberDataRequest
-                .getMAPDialog().getLocalDialogId()));
+        logger.error(String.format("ERROR: received InsertSubscriberDataRequest at the server (acting as HLR) over DialogId=%d",
+                insertSubscriberDataRequest.getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -759,15 +825,15 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
     @Override
     public void onCancelLocationRequest(CancelLocationRequest cancelLocationRequest) {
-        logger.error(String.format("ERROR: received CancelLocationRequest at the server (acting as HLR) over DialogId=%d", cancelLocationRequest
-                .getMAPDialog().getLocalDialogId()));
+        logger.error(String.format("ERROR: received CancelLocationRequest at the server (acting as HLR) over DialogId=%d",
+                cancelLocationRequest.getMAPDialog().getLocalDialogId()));
     }
 
     @Override
     public void onCancelLocationResponse(CancelLocationResponse cancelLocationResponse) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onCancelLocationResponse for DialogId=%d", cancelLocationResponse
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug(String.format("onCancelLocationResponse for DialogId=%d",
+                    cancelLocationResponse.getMAPDialog().getLocalDialogId()));
         }
         // Start a new CL with subscription withdraw and reattach procedure (simulating an OSS request)
         new Thread(new GprsSubscriptionWithdrawReattach(this)).start();
@@ -810,7 +876,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             long isdInvokeId = updateGprsLocationRequestIndication.getInvokeId() + 1;
             MAPDialogMobility insertSubscriberDataDialog = updateGprsLocationRequestIndication.getMAPDialog();
 
-            MAPExtensionContainer mapExtensionContainer = null;
+            MAPExtensionContainer extCont = null;
             // msisdn
             ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
             // category
@@ -831,11 +897,11 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             ExtSSStatus clipExtSSStatus = new ExtSSStatusImpl(true, true, false, true);
             SSSubscriptionOption clipSubscriptionOption = new SSSubscriptionOptionImpl(OverrideCategory.overrideDisabled);
             ArrayList<ExtBasicServiceCode> basicServiceGroupList = null;
-            ExtSSData extSSDataClip = new ExtSSDataImpl(clip, clipExtSSStatus, clipSubscriptionOption, basicServiceGroupList, mapExtensionContainer);
+            ExtSSData extSSDataClip = new ExtSSDataImpl(clip, clipExtSSStatus, clipSubscriptionOption, basicServiceGroupList, extCont);
             SSCode clir = new SSCodeImpl(SupplementaryCodeValue.clir);
             ExtSSStatus clirExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
             SSSubscriptionOption clirSubscriptionOption = new SSSubscriptionOptionImpl(CliRestrictionOption.temporaryDefaultAllowed);
-            ExtSSData extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, mapExtensionContainer);
+            ExtSSData extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, extCont);
             ExtSSInfo ssInfoClip = new ExtSSInfoImpl(extSSDataClip);
             ExtSSInfo ssInfoClir = new ExtSSInfoImpl(extSSDataClir);
             provisionedSS.add(ssInfoClip);
@@ -857,7 +923,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             GroupId gId = new GroupIdImpl("1");
             boolean broadcastInitEntitlement = true;
             LongGroupId lGId = new LongGroupIdImpl("5");
-            VoiceBroadcastData voiceBroadcastData = new VoiceBroadcastDataImpl(gId, broadcastInitEntitlement, mapExtensionContainer, lGId);
+            VoiceBroadcastData voiceBroadcastData = new VoiceBroadcastDataImpl(gId, broadcastInitEntitlement, extCont, lGId);
             vbsSubscriptionData.add(voiceBroadcastData);
             // vgcsSubscriptionData
             ArrayList<VoiceGroupCallData> vgcsSubscriptionData = null;
@@ -866,34 +932,260 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             // naeaPreferredCI
             NAEAPreferredCI naeaPreferredCI = null;
             // gprsSubscriptionData
-            GPRSSubscriptionData gprsSubscriptionData = null;
+            boolean completeDataListIncluded = true;
+            ArrayList<PDPContext> gprsDataList = new ArrayList<>();
+            int pdpContextId = 1;
+            PDPType pdpType = new PDPTypeImpl(PDPTypeValue.IPv4);
+            PDPAddress pdpAddress = new PDPAddressImpl(new byte[] { 21 });
+            QoSSubscribed_ReliabilityClass reliabilityClass = QoSSubscribed_ReliabilityClass.reserved_7;
+            QoSSubscribed_DelayClass delayClass = QoSSubscribed_DelayClass.delay_Class_4_bestEffort;
+            QoSSubscribed_PrecedenceClass precedenceClass = QoSSubscribed_PrecedenceClass.normalPriority;
+            QoSSubscribed_PeakThroughput peakThroughput = QoSSubscribed_PeakThroughput.upTo_4000_octetS;
+            QoSSubscribed_MeanThroughput meanThroughput = QoSSubscribed_MeanThroughput._2000_octetH;
+            QoSSubscribed qosSubscribed = new QoSSubscribedImpl(reliabilityClass, delayClass, precedenceClass, peakThroughput, meanThroughput);
+            boolean vplmnAddressAllowed = true;
+            APN apn = new APNImpl("internet");
+            int allocationRetentionPriority = 9;
+            ExtQoSSubscribed_DeliveryOfErroneousSdus deliveryOfErroneousSdus = ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes;
+            ExtQoSSubscribed_DeliveryOrder deliveryOrder = ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo;
+            ExtQoSSubscribed_TrafficClass trafficClass = ExtQoSSubscribed_TrafficClass.interactiveClass;
+            int maximumSduSizeData = 151;
+            boolean isSourceData = true;
+            ExtQoSSubscribed_MaximumSduSize maximumSduSize = new ExtQoSSubscribed_MaximumSduSizeImpl(maximumSduSizeData, isSourceData);
+            int maximumBitRateForUL = 128;
+            ExtQoSSubscribed_BitRate maximumBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(maximumBitRateForUL, isSourceData);
+            int maximumBitRateForDL = 576;
+            ExtQoSSubscribed_BitRate maximumBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(maximumBitRateForDL, isSourceData);
+            ExtQoSSubscribed_ResidualBER residualBER = ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved;
+            ExtQoSSubscribed_SduErrorRatio sduErrorRatio = ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved;
+            ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3;
+            int transferDelayValue = 1000;
+            ExtQoSSubscribed_TransferDelay transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
+            int gbrUL = 64;
+            ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
+            int gbrDL = 256;
+            ExtQoSSubscribed_BitRate guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
+            ExtQoSSubscribed extQoSSubscribed = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
+                    deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
+                    sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
+            boolean isNormalCharging = true;
+            boolean isPrepaidCharging = false;
+            boolean isFlatRateCharging = false;
+            boolean isChargingByHotBillingCharging = false;
+            ChargingCharacteristics chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+            Ext2QoSSubscribed_SourceStatisticsDescriptor sourceStatisticsDescriptor = Ext2QoSSubscribed_SourceStatisticsDescriptor.unknown;
+            boolean optimisedForSignallingTraffic = true;
+            int maxBRDLExt = 256000;
+            ExtQoSSubscribed_BitRateExtended maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
+            int gbrExtDL = 128000;
+            ExtQoSSubscribed_BitRateExtended guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
+            Ext2QoSSubscribed ext2QoSSubscribed = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+                    maxBitRateForDLExt, guaranteedBitRateForDLExtended);
+            int mbrULExt = 256000;
+            ExtQoSSubscribed_BitRateExtended maximumBitRateForUplinkExtended = new ExtQoSSubscribed_BitRateExtendedImpl(mbrULExt, isSourceData);
+            int gbrULExt = 128000;
+            ExtQoSSubscribed_BitRateExtended guaranteedBitRateForUplinkExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrULExt, isSourceData);
+            Ext3QoSSubscribed ext3QoSSubscribed = new Ext3QoSSubscribedImpl(maximumBitRateForUplinkExtended, guaranteedBitRateForUplinkExtended);
+            Ext4QoSSubscribed ext4QoSSubscribed = new Ext4QoSSubscribedImpl(91);
+            APNOIReplacement apnOiReplacement = new APNOIReplacementImpl(new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
+            ExtPDPType extpdpType = new ExtPDPTypeImpl(new byte[] { 58, 59 });
+            PDPAddress extpdpAddress = new PDPAddressImpl(new byte[] { 60 });
+            SIPTOPermission sipToPermission = SIPTOPermission.siptoAllowed;
+            LIPAPermission lipaPermission = LIPAPermission.lipaConditional;
+            PDPContext pdpContext = new PDPContextImpl(pdpContextId, pdpType, pdpAddress, qosSubscribed, vplmnAddressAllowed, apn,
+                    extCont, extQoSSubscribed, chargingCharacteristics, ext2QoSSubscribed, ext3QoSSubscribed, ext4QoSSubscribed,
+                    apnOiReplacement, extpdpType, extpdpAddress, sipToPermission, lipaPermission);
+            gprsDataList.add(pdpContext);
+            GPRSSubscriptionData gprsSubscriptionData = new GPRSSubscriptionDataImpl(completeDataListIncluded,
+                    gprsDataList, extCont, apnOiReplacement);
+
             // roamingRestrictedInSgsnDueToUnsupportedFeature
-            boolean roamingRestrictedInSgsnDueToUnsupportedFeature = false;
+            boolean roamingRestrictedInSgsnDueToUnsupportedFeature = true;
             // networkAccessMode
-            NetworkAccessMode networkAccessMode = NetworkAccessMode.packetAndCircuit;
+            NetworkAccessMode networkAccessMode = NetworkAccessMode.onlyPacket;
             // lsaInformation
-            LSAInformation lsaInformation = null;
+            LSAOnlyAccessIndicator lsaOnlyAccessIndicator = LSAOnlyAccessIndicator.accessOutsideLSAsAllowed;
+            LSAIdentity lsaIdentity = new LSAIdentityImpl(new byte[] { 12, 10, 1 });
+            ArrayList<LSAData> lsaDataList = new ArrayList<>();
+            LSAIdentificationPriorityValue lsaIdentificationPriorityValue = LSAIdentificationPriorityValue.Priority_2;
+            boolean preferentialAccessAvailable = true;
+            boolean activeModeSupportAvailable = true;
+            LSAAttributes lsaAttributes = new LSAAttributesImpl(lsaIdentificationPriorityValue, preferentialAccessAvailable,
+                    activeModeSupportAvailable);
+            boolean lsaActiveModeIndicator = true;
+            LSAData lsaData = new LSADataImpl(lsaIdentity, lsaAttributes, lsaActiveModeIndicator, extCont);
+            lsaDataList.add(lsaData);
+            LSAInformation lsaInformation = new LSAInformationImpl(completeDataListIncluded, lsaOnlyAccessIndicator,
+                    lsaDataList, extCont);
             // lmuIndicator
             boolean lmuIndicator = true;
-            // lcsInformation
-            LCSInformation lcsInformation = null;
+            // lcsInformation (gmlcList)
+            ArrayList<ISDNAddressString> gmlcList = new ArrayList<>();
+            ISDNAddressString gmlcAddress =
+                    new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "4917104600321");
+            gmlcList.add(gmlcAddress);
+            // lcsInformation (lcsPrivacyExceptionList)
+            SSCode ssCode1 = new SSCodeImpl(SupplementaryCodeValue.allMOLR_SS);
+            SSCode ssCode2 = new SSCodeImpl(SupplementaryCodeValue.autonomousSelfLocation);
+            SSCode ssCode3 = new SSCodeImpl(SupplementaryCodeValue.allLCSPrivacyException);
+            SSCode ssCode4 = new SSCodeImpl(SupplementaryCodeValue.allPLMN_specificSS);
+            ExtSSStatus extSSStatus1 = new ExtSSStatusImpl(true, false, false, false);
+            ExtSSStatus extSSStatus2 = new ExtSSStatusImpl(false, true, false, false);
+            ExtSSStatus extSSStatus3 = new ExtSSStatusImpl(false, false, true, false);
+            ExtSSStatus extSSStatus4 = new ExtSSStatusImpl(false, false, false, true);
+            LCSClientInternalID lcsClientInternalID1 = LCSClientInternalID.broadcastService;
+            LCSClientInternalID lcsClientInternalID2 = LCSClientInternalID.oandMHPLMN;
+            LCSClientInternalID lcsClientInternalID3 = LCSClientInternalID.targetMSsubscribedService;
+            LCSClientInternalID lcsClientInternalID4 = LCSClientInternalID.anonymousLocation;
+            ArrayList<LCSClientInternalID> plmnClientList1 = new ArrayList<>();
+            plmnClientList1.add(lcsClientInternalID1);
+            plmnClientList1.add(lcsClientInternalID2);
+            ArrayList<LCSClientInternalID> plmnClientList2 = new ArrayList<>();
+            plmnClientList2.add(lcsClientInternalID2);
+            ArrayList<LCSClientInternalID> plmnClientList3 = new ArrayList<>();
+            plmnClientList3.add(lcsClientInternalID3);
+            ArrayList<LCSClientInternalID> plmnClientList4 = new ArrayList<>();
+            plmnClientList4.add(lcsClientInternalID4);
+            ArrayList<ExternalClient> externalClientList1 = new ArrayList<>();
+            ISDNAddressString externalAddress1 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "874927492");
+            LCSClientExternalID clientIdentity1 = new LCSClientExternalIDImpl(externalAddress1, extCont);
+            GMLCRestriction gmlcRestriction1 = GMLCRestriction.homeCountry;
+            NotificationToMSUser notificationToMSUser1 = NotificationToMSUser.notifyLocationAllowed;
+            ExternalClient externalClient1 = new ExternalClientImpl(clientIdentity1, gmlcRestriction1, notificationToMSUser1, extCont);
+            externalClientList1.add(externalClient1);
+            ArrayList<ExternalClient> externalClientList2 = new ArrayList<>();
+            ISDNAddressString externalAddress2 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "398279222");
+            LCSClientExternalID clientIdentity2 = new LCSClientExternalIDImpl(externalAddress2, extCont);
+            GMLCRestriction gmlcRestriction2 = GMLCRestriction.gmlcList;
+            NotificationToMSUser notificationToMSUser2 = NotificationToMSUser.notifyAndVerifyLocationAllowedIfNoResponse;
+            ExternalClient externalClient2 = new ExternalClientImpl(clientIdentity2, gmlcRestriction2, notificationToMSUser2, extCont);
+            externalClientList2.add(externalClient2);
+            ArrayList<ExternalClient> externalClientList3 = new ArrayList<>();
+            ISDNAddressString externalAddress3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "23543252234");
+            LCSClientExternalID clientIdentity3 = new LCSClientExternalIDImpl(externalAddress3, extCont);
+            GMLCRestriction gmlcRestriction3 = GMLCRestriction.homeCountry;
+            NotificationToMSUser notificationToMSUser3 = NotificationToMSUser.locationNotAllowed;
+            ExternalClient externalClient3 = new ExternalClientImpl(clientIdentity3, gmlcRestriction3, notificationToMSUser3, extCont);
+            externalClientList3.add(externalClient3);
+            ArrayList<ExternalClient> externalClientList4 = new ArrayList<>();
+            ISDNAddressString externalAddress4 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "598990298245");
+            LCSClientExternalID clientIdentity4 = new LCSClientExternalIDImpl(externalAddress4, extCont);
+            GMLCRestriction gmlcRestriction4 = GMLCRestriction.gmlcList;
+            NotificationToMSUser notificationToMSUser4 = NotificationToMSUser.notifyAndVerifyLocationNotAllowedIfNoResponse;
+            ExternalClient externalClient4 = new ExternalClientImpl(clientIdentity4, gmlcRestriction4, notificationToMSUser4, extCont);
+            externalClientList4.add(externalClient4);
+            ArrayList<ServiceType> serviceTypeList1 = new ArrayList<>();
+            int serviceTypeIdentity1 = 1;
+            ServiceType serviceType1 = new ServiceTypeImpl(serviceTypeIdentity1, gmlcRestriction1, notificationToMSUser1, extCont);
+            serviceTypeList1.add(serviceType1);
+            ArrayList<ServiceType> serviceTypeList2 = new ArrayList<>();
+            int serviceTypeIdentity2 = 2;
+            ServiceType serviceType2 = new ServiceTypeImpl(serviceTypeIdentity2, gmlcRestriction2, notificationToMSUser2, extCont);
+            serviceTypeList2.add(serviceType2);
+            ArrayList<ServiceType> serviceTypeList3 = new ArrayList<>();
+            int serviceTypeIdentity3 = 3;
+            ServiceType serviceType3 = new ServiceTypeImpl(serviceTypeIdentity3, gmlcRestriction3, notificationToMSUser3, extCont);
+            serviceTypeList3.add(serviceType3);
+            ArrayList<ServiceType> serviceTypeList4 = new ArrayList<>();
+            int serviceTypeIdentity4 = 4;
+            ServiceType serviceType4 = new ServiceTypeImpl(serviceTypeIdentity4, gmlcRestriction4, notificationToMSUser4, extCont);
+            serviceTypeList4.add(serviceType4);
+            LCSPrivacyClass lcsPrivacyClass1 = new LCSPrivacyClassImpl(ssCode1, extSSStatus1, notificationToMSUser1, externalClientList1,
+                    plmnClientList1, extCont, externalClientList1, serviceTypeList1);
+            LCSPrivacyClass lcsPrivacyClass2 = new LCSPrivacyClassImpl(ssCode2, extSSStatus2, notificationToMSUser2, externalClientList2,
+                    plmnClientList2, extCont, externalClientList2, serviceTypeList2);
+            LCSPrivacyClass lcsPrivacyClass3 = new LCSPrivacyClassImpl(ssCode3, extSSStatus3, notificationToMSUser3, externalClientList3,
+                    plmnClientList3, extCont, externalClientList3, serviceTypeList3);
+            LCSPrivacyClass lcsPrivacyClass4 = new LCSPrivacyClassImpl(ssCode4, extSSStatus4, notificationToMSUser4, externalClientList4,
+                    plmnClientList4, extCont, externalClientList4, serviceTypeList4);
+            ArrayList<LCSPrivacyClass> lcsPrivacyExceptionList = new ArrayList<>();
+            lcsPrivacyExceptionList.add(lcsPrivacyClass1);
+            lcsPrivacyExceptionList.add(lcsPrivacyClass2);
+            lcsPrivacyExceptionList.add(lcsPrivacyClass3);
+            lcsPrivacyExceptionList.add(lcsPrivacyClass4);
+            // lcsInformation (molrList)
+            ArrayList<MOLRClass> molrList = new ArrayList<>();
+            MOLRClass molrClass1 = new MOLRClassImpl(ssCode1, extSSStatus1, extCont);
+            MOLRClass molrClass2 = new MOLRClassImpl(ssCode2, extSSStatus2, extCont);
+            MOLRClass molrClass3 = new MOLRClassImpl(ssCode3, extSSStatus3, extCont);
+            molrList.add(molrClass1);
+            molrList.add(molrClass2);
+            molrList.add(molrClass3);
+            // lcsInformation (addLcsPrivacyExceptionList)
+            // add-lcs-PrivacyExceptionList may be sent only if lcs-PrivacyExceptionList is
+            // present and contains four instances of LCS-PrivacyClass. If the mentioned condition
+            // is not satisfied the receiving node shall discard add-lcs-PrivacyExceptionList.
+            // If an LCS-PrivacyClass is received both in lcs-PrivacyExceptionList and in
+            // add-lcs-PrivacyExceptionList with the same SS-Code, then the error unexpected
+            // data value shall be returned.
+            SSCode addSsCode = new SSCodeImpl(SupplementaryCodeValue.plmn_specificSS_1);
+            ExtSSStatus addExtSSStatus = new ExtSSStatusImpl(true, true, false, true);
+            ArrayList<LCSClientInternalID> addPlmnClientList = new ArrayList<>();
+            addPlmnClientList.add(lcsClientInternalID1);
+            addPlmnClientList.add(lcsClientInternalID2);
+            addPlmnClientList.add(lcsClientInternalID3);
+            addPlmnClientList.add(lcsClientInternalID4);
+            ArrayList<ExternalClient> addExternalClientList = new ArrayList<>();
+            ISDNAddressString addExternalAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "874927492");
+            LCSClientExternalID addClientIdentity = new LCSClientExternalIDImpl(addExternalAddress, extCont);
+            GMLCRestriction addGmlcRestriction = GMLCRestriction.homeCountry;
+            NotificationToMSUser addMNtificationToMSUser = NotificationToMSUser.notifyLocationAllowed;
+            ExternalClient addExternalClient = new ExternalClientImpl(addClientIdentity, addGmlcRestriction, addMNtificationToMSUser, extCont);
+            addExternalClientList.add(addExternalClient);
+            ArrayList<ServiceType> addServiceTypeList = new ArrayList<>();
+            int addServiceTypeIdentity = 5;
+            ServiceType addServiceType4 = new ServiceTypeImpl(addServiceTypeIdentity, addGmlcRestriction, addMNtificationToMSUser, extCont);
+            addServiceTypeList.add(addServiceType4);
+            LCSPrivacyClass addLcsPrivacyClass = new LCSPrivacyClassImpl(addSsCode, addExtSSStatus, addMNtificationToMSUser, addExternalClientList,
+                    addPlmnClientList, extCont, addExternalClientList, addServiceTypeList);
+            ArrayList<LCSPrivacyClass> addLcsPrivacyExceptionList = new ArrayList<>();
+            addLcsPrivacyExceptionList.add(addLcsPrivacyClass);
+            LCSInformation lcsInformation = new LCSInformationImpl(gmlcList, lcsPrivacyExceptionList, molrList, addLcsPrivacyExceptionList);
             // istAlertTimer
             Integer istAlertTimer = 15;
             // superChargerSupportedInHLR
-            AgeIndicator superChargerSupportedInHLR = null;
+            AgeIndicator superChargerSupportedInHLR = new AgeIndicatorImpl(new byte[] { 4, 1, 48 });
             // mcSsInfo
             MCSSInfo mcSsInfo = null;
             // csAllocationRetentionPriority
             CSAllocationRetentionPriority csAllocationRetentionPriority = null;
             // sgsnCamelSubscriptionInfo
-            SGSNCAMELSubscriptionInfo sgsnCamelSubscriptionInfo = null;
-            // chargingCharacteristics
-            boolean isNormalCharging = false;
-            boolean isPrepaidCharging = false;
-            boolean isFlatRateCharging = true;
-            boolean isChargingByHotBillingCharging = false;
-            ChargingCharacteristics chargingCharacteristics =
-                    new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+            GPRSTriggerDetectionPoint gprsTriggerDetectionPoint = GPRSTriggerDetectionPoint.attach;
+            long sk = 12;
+            ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
+            DefaultGPRSHandling defaultSessionHandling = DefaultGPRSHandling.continueTransaction;
+            GPRSCamelTDPData gprsCamelTDPData = new GPRSCamelTDPDataImpl(gprsTriggerDetectionPoint, sk, gsmSCFAddress, defaultSessionHandling, extCont);
+            ArrayList<GPRSCamelTDPData> gprsCamelTDPDataList = new ArrayList<>();
+            gprsCamelTDPDataList.add(gprsCamelTDPData);
+            Integer camelCapabilityHandling = 3;
+            boolean notificationToCSE = true;
+            boolean csiActive = true;
+            GPRSCSI gprsCsi = new GPRSCSIImpl(gprsCamelTDPDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+            int serviceKey = 7;
+            ArrayList<SMSCAMELTDPData> smsCamelTdpDataList = new ArrayList<>();
+            SMSTriggerDetectionPoint smsTDP = SMSTriggerDetectionPoint.smsDeliveryRequest;
+            DefaultSMSHandling defaultSMSHandling = DefaultSMSHandling.continueTransaction;
+            SMSCAMELTDPData smscameltdpData = new SMSCAMELTDPDataImpl(smsTDP, serviceKey, gsmSCFAddress, defaultSMSHandling, extCont);
+            smsCamelTdpDataList.add(smscameltdpData);
+            SMSCSI moSmsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+            SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+            ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = new ArrayList<>();
+            ArrayList<MTSMSTPDUType> mtsmstpduTypeArrayList = new ArrayList<>();
+            MTSMSTPDUType mtsmstpduType1 = MTSMSTPDUType.smsDELIVER;
+            MTSMSTPDUType mtsmstpduType2 = MTSMSTPDUType.smsSUBMITREPORT;
+            MTSMSTPDUType mtsmstpduType3 = MTSMSTPDUType.smsSTATUSREPORT;
+            mtsmstpduTypeArrayList.add(mtsmstpduType1);
+            mtsmstpduTypeArrayList.add(mtsmstpduType2);
+            mtsmstpduTypeArrayList.add(mtsmstpduType3);
+            MTsmsCAMELTDPCriteria mTsmsCAMELTDPCriteria = new MTsmsCAMELTDPCriteriaImpl(smsTDP, mtsmstpduTypeArrayList);
+            mtSmsCamelTdpCriteriaList.add(mTsmsCAMELTDPCriteria);
+            ArrayList<MMCode> mobilityTriggers = new ArrayList<>();
+            MMCode mmCode = new MMCodeImpl(MMCodeValue.GPRSAttach);
+            mobilityTriggers.add(mmCode);
+            MGCSI mgCsi = new MGCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, extCont, notificationToCSE, csiActive);
+            SGSNCAMELSubscriptionInfo sgsnCamelSubscriptionInfo = new SGSNCAMELSubscriptionInfoImpl(gprsCsi, moSmsCsi,
+                    extCont, mtSmsCSI, mtSmsCamelTdpCriteriaList, mgCsi);
+            // chargingCharacteristics already defined
             // accessRestrictionData
             boolean utranNotAllowed = false;
             boolean geranNotAllowed = false;
@@ -906,46 +1198,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             // icsIndicator
             Boolean icsIndicator = Boolean.TRUE;
             // epsSubscriptionData
-            int defaultContext = 1;
-            boolean completeDataListIncluded = true;
-            PDNType pDNType = new PDNTypeImpl(PDNTypeValue.IPv4v6);
-            PDPAddress servedPartyIPIPv4Address = null;
-            APN apn = new APNImpl("internet");
-            QoSClassIdentifier qci = QoSClassIdentifier.QCI_5;
-            int priorityLevel = 9;
-            Boolean preEmptionCapability = true;
-            Boolean preEmptionVulnerability = false;
-            AllocationRetentionPriority arp = new AllocationRetentionPriorityImpl(priorityLevel, preEmptionCapability, preEmptionVulnerability, mapExtensionContainer);
-            EPSQoSSubscribed ePSQoSSubscribed = new EPSQoSSubscribedImpl(qci, arp, mapExtensionContainer);
-            PDNGWIdentity pdnGwIdentity = null;
-            PDNGWAllocationType pdnGwAllocationType = null;
-            boolean vplmnAddressAllowed = true;
-            int maxRequestedBandwidthUL = 2048;
-            int maxRequestedBandwidthDL = 4096;
-            AMBR ambr = new AMBRImpl(maxRequestedBandwidthUL, maxRequestedBandwidthDL, mapExtensionContainer);
-            ArrayList<SpecificAPNInfo> specificAPNInfoList = null;
-            APNOIReplacement apnOiReplacement = null;
-            SIPTOPermission siptoPermission = null;
-            LIPAPermission lipaPermission = null;
-            int contextId = 1;
-            PDPAddress servedPartyIPIPv6Address = null;
-            APNConfiguration apnConfiguration = new APNConfigurationImpl(contextId, pDNType, servedPartyIPIPv4Address, apn,
-                    ePSQoSSubscribed, pdnGwIdentity, pdnGwAllocationType, vplmnAddressAllowed, chargingCharacteristics, ambr,
-                    specificAPNInfoList, mapExtensionContainer,
-                    servedPartyIPIPv6Address, apnOiReplacement, siptoPermission,
-                    lipaPermission);
-            ArrayList<APNConfiguration> ePSDataList = new ArrayList<>();
-            ePSDataList.add(apnConfiguration);
-            APNConfigurationProfile apnConfigurationProfile = new APNConfigurationProfileImpl(defaultContext, completeDataListIncluded,
-                    ePSDataList,  mapExtensionContainer);
-            Integer rfspId = 0;
-            ISDNAddressString stnSr = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                    "491710490000");
-            boolean mpsCSPriority = true;
-            boolean mpsEPSPriority = true;
-            EPSSubscriptionData epsSubscriptionData = new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
-                    stnSr, mapExtensionContainer, mpsCSPriority, mpsEPSPriority);
-            epsSubscriptionData = null;
+            EPSSubscriptionData epsSubscriptionData = null;
             // csgSubscriptionDataList
             ArrayList<CSGSubscriptionData> csgSubscriptionDataList = null;
             // ueReachabilityRequestIndicator
@@ -997,7 +1250,7 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
 
             insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId,null, msisdn, category, subscriberStatus,
                     bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
-                    regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, mapExtensionContainer,
+                    regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, extCont,
                     naeaPreferredCI, gprsSubscriptionData, roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode,
                     lsaInformation, lmuIndicator, lcsInformation, istAlertTimer, superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority,
                     sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,
