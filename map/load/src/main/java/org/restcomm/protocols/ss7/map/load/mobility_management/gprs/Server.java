@@ -998,7 +998,6 @@ public class Server extends org.restcomm.protocols.ss7.map.load.mobility_managem
             gprsDataList.add(pdpContext);
             GPRSSubscriptionData gprsSubscriptionData = new GPRSSubscriptionDataImpl(completeDataListIncluded,
                     gprsDataList, extCont, apnOiReplacement);
-
             // roamingRestrictedInSgsnDueToUnsupportedFeature
             boolean roamingRestrictedInSgsnDueToUnsupportedFeature = true;
             // networkAccessMode

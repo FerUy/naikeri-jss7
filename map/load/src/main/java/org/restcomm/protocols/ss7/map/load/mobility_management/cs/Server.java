@@ -1037,8 +1037,6 @@ public class Server extends TestHarnessMobilityManagement {
             // superChargerSupportedInHLR
             AgeIndicator superChargerSupportedInHLR = null;
             // mcSsInfo
-
-            // MCSSInfoImpl(SSCode ssCode, ExtSSStatus ssStatus, int nbrSB, int nbrUser, MAPExtensionContainer extensionContainer)
             SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.cfu);
             ExtSSStatus ssStatus = new ExtSSStatusImpl(true, false, true, false);
             int nbrSB = 2;
@@ -1191,7 +1189,7 @@ public class Server extends TestHarnessMobilityManagement {
             // iabOperationAllowedIndicator
             boolean iabOperationAllowedIndicator = true;
 
-            insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId,imsi, msisdn, category, subscriberStatus,
+            insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId, imsi, msisdn, category, subscriberStatus,
                     bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
                     regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, extCont,
                     naeaPreferredCI, gprsSubscriptionData, roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode,
