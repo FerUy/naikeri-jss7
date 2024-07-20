@@ -45,7 +45,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
-import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationQuintuplet;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoRequest;
@@ -90,13 +89,11 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeographicalInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationNumberMap;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TAId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
@@ -104,7 +101,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ODBGeneralData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OfferedCamel4CSIs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.RegionalSubscriptionResponse;
@@ -134,7 +130,6 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.Loc
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TAIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBGeneralDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
@@ -181,7 +176,7 @@ public class Client extends TestHarnessMobilityManagement {
 
     // MAP
     private MAPStackImpl mapStack;
-    private MAPProvider mapProvider;
+    private static MAPProvider mapProvider;
 
     // SCCP
     SccpExtModuleImpl sccpExtModule;
@@ -209,7 +204,7 @@ public class Client extends TestHarnessMobilityManagement {
 
     private CsvWriter csvWriter;
 
-    Long imsiForPurge = 901405105680000L;
+    static Long imsiForPurge = 901405105680000L;
 
     protected void initializeStack(IpChannelType ipChannelType) throws Exception {
 
@@ -329,10 +324,10 @@ public class Client extends TestHarnessMobilityManagement {
     private void initMAP() throws Exception {
         // this.mapStack = new MAPStackImpl(this.sccpStack.getSccpProvider(), VLR_SSN);
         this.mapStack = new MAPStackImpl("TestClient", this.tcapStack.getProvider());
-        this.mapProvider = this.mapStack.getMAPProvider();
-        this.mapProvider.addMAPDialogListener(this);
-        this.mapProvider.getMAPServiceMobility().addMAPServiceListener(this);
-        this.mapProvider.getMAPServiceMobility().activate();
+        mapProvider = this.mapStack.getMAPProvider();
+        mapProvider.addMAPDialogListener(this);
+        mapProvider.getMAPServiceMobility().addMAPServiceListener(this);
+        mapProvider.getMAPServiceMobility().activate();
         this.mapStack.start();
     }
 
@@ -358,7 +353,7 @@ public class Client extends TestHarnessMobilityManagement {
         sendAuthenticationInfoRequest("901405105682583");
     }
 
-    private SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
+    private static SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         GlobalTitle gt = fact.createGlobalTitle(address, 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
                 BCDEvenEncodingScheme.INSTANCE, NatureOfAddress.INTERNATIONAL);
@@ -559,7 +554,6 @@ public class Client extends TestHarnessMobilityManagement {
         }
 
     }
-
 
 
     /*
@@ -841,8 +835,7 @@ public class Client extends TestHarnessMobilityManagement {
                     .getMAPDialog().getLocalDialogId()));
         }
         try {
-            ArrayList<AuthenticationQuintuplet> authenticationQuintuplets = sendAuthenticationInfoResponseIndication.
-                    getAuthenticationSetList().getQuintupletList().getAuthenticationQuintuplets();
+            // ArrayList<AuthenticationQuintuplet> authenticationQuintuplets = sendAuthenticationInfoResponseIndication.getAuthenticationSetList().getQuintupletList().getAuthenticationQuintuplets();
             // SccpAddress hlrAddress = sendAuthenticationInfoResponseIndication.getMAPDialog().getRemoteAddress();
 
             // Create Dialog
@@ -1287,12 +1280,16 @@ public class Client extends TestHarnessMobilityManagement {
         }
     }
 
-    private class PurgeMSSender implements Runnable {
+    private static class PurgeMSSender implements Runnable {
 
-        private Client client;
+        private final Client client4PurgeMsSender;
 
         public PurgeMSSender(Client client) {
-            this.client = client;
+            client4PurgeMsSender = client;
+        }
+
+        public Client getClient() {
+            return client4PurgeMsSender;
         }
 
         @Override
@@ -1321,15 +1318,11 @@ public class Client extends TestHarnessMobilityManagement {
                         originAddressString, serverSccpAddress, destAddressString);
 
                 IMSI imsi = new IMSIImpl(String.valueOf(imsiForPurge));
-                ISDNAddressString sgsnNumber = null;
-                MAPExtensionContainer extensionContainer = null;
                 Random rand = new Random();
-                int randLoc = rand.nextInt(10) + 1;
+                int randLoc = rand.nextInt(7) + 1;
                 int ageOfLocationInformation;
-                boolean currentLocationRetrieved;
                 LocationInformation locationInformation = null;
                 LocationInformationEPS locationInformationEPS = null;
-                LocationInformationGPRS locationInformationGPRS = null;
                 boolean saiPresent = false;
                 int mcc, mnc, lac, cellId;
                 CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
@@ -1338,23 +1331,20 @@ public class Client extends TestHarnessMobilityManagement {
                 LocationNumberMap locationNumberMap;
                 ISDNAddressString mscNumber =  new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                         "491710490000");
+                ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                        "491710490000");
                 GeographicalInformation geographicalInformation;
                 GeodeticInformation geodeticInformation;
                 byte[] lteCgi;
                 EUtranCgi eUtranCgi;
                 byte[] trackingAreaId;
                 TAId taId;
-                UserCSGInformation userCSGInformation = null;
-                TypeOfShape geographicalTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
-                double geographicalLatitude;
-                double geographicalLongitude;
-                double geographicalUncertainty;
-                TypeOfShape geodeticTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
-                double geodeticLatitude;
-                double geodeticLongitude;
-                double geodeticUncertainty;
-                int geodeticConfidence = 1;
-                int screeningAndPresentationIndicators = 3;
+                TypeOfShape typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
+                double latitude;
+                double longitude;
+                double uncertainty;
+                int confidence;
+                int screeningAndPresentationIndicators;
                 int natureOfAddressIndicator = 4;
                 String locationNumberAddressDigits= "819203961904";
                 int numberingPlanIndicator = 1;
@@ -1369,151 +1359,139 @@ public class Client extends TestHarnessMobilityManagement {
                 } catch (MAPException e) {
                     logger.error(e.getMessage());
                 }
-                String mmneNameStr;
-                byte[] mme;
-                DiameterIdentity mmeName;
-                byte[] lsaId = {49, 51, 50};
-                LSAIdentity selectedLSAId = new LSAIdentityImpl(lsaId);
-                ISDNAddressString vlrNumber = mscNumber;
+                byte[] mme = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes();
+                DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
 
                 switch(randLoc) {
                     case 1:
                         ageOfLocationInformation = 0;
-                        currentLocationRetrieved = true;
                         mcc = 748;
                         mnc = 1;
                         lac = 101;
                         cellId = 10263;
-                        geographicalLatitude = -34.909744;
-                        geographicalLongitude = -56.146317;
-                        geographicalUncertainty = 1.0;
-                        geographicalInformation = new GeographicalInformationImpl(geographicalTypeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
-                        geodeticInformation = null;
+                        latitude = -34.909744;
+                        longitude = -56.146317;
+                        uncertainty = 1.0;
+                        geographicalInformation = new GeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty);
                         try {
                             cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
                         } catch (MAPException ex) {
                             logger.error(ex.getMessage());
                         }
                         cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        saiPresent = true;
                         locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
-                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, null, null, mscNumber,
+                                null, true, saiPresent, null, null);
                         break;
                     case 2:
-                    case 3:
                         ageOfLocationInformation = 0;
-                        currentLocationRetrieved = true;
-                        geographicalInformation = null;
-                        geodeticLatitude = -34.910349;
-                        geodeticLongitude = -56.149832;
-                        geodeticUncertainty = 2.0;
-                        geodeticConfidence = 2;
                         screeningAndPresentationIndicators = 1;
-                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        latitude = -34.910349;
+                        longitude = -56.149832;
+                        uncertainty = 2.0;
+                        confidence = 2;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, latitude, longitude, uncertainty, confidence);
                         lteCgi = hexStringToByteArray("47f81000095f02"); // ECGI = 748-1-614146; TBCD encoded: 47f81000095f02
                         trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
                         eUtranCgi = new EUtranCgiImpl(lteCgi);
                         taId = new TAIdImpl(trackingAreaId);
-                        mmneNameStr = "mmec03.mmeer3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
-                        mme = mmneNameStr.getBytes();
-                        mmeName = new DiameterIdentityImpl(mme);
-                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
-                                geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, null, null,
+                                geodeticInformation, true, ageOfLocationInformation, mmeName);
                         break;
-                    case 4:
+                    case 3:
                         ageOfLocationInformation = 1;
-                        currentLocationRetrieved = false;
                         mcc = 748;
                         mnc = 1;
                         lac = 109;
                         cellId = 10175;
-                        geographicalInformation = null;
-                        geodeticInformation = null;
                         try {
                             cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
                         } catch (MAPException ex) {
                             logger.error(ex.getMessage());
                         }
                         cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
-                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
-                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, null,
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, null, null, mscNumber,
+                                null, false, saiPresent, null, null);
                         break;
-                    case 5:
+                    case 4:
                         ageOfLocationInformation = 0;
-                        currentLocationRetrieved = true;
                         mcc = 748;
                         mnc = 1;
                         lac = 11;
                         cellId = 4812;
-                        geographicalInformation = null;
-                        geodeticInformation = null;
                         try {
                             cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
                         } catch (MAPException ex) {
                             logger.error(ex.getMessage());
                         }
+                        latitude = -34.909744;
+                        longitude = -56.146317;
+                        uncertainty = 1.0;
+                        geographicalInformation = new GeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty);
                         cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
                         locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
-                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, null, null, mscNumber,
+                                null, true, saiPresent, null, null);
                         break;
-                    case 6:
-                    case 7:
+                    case 5:
                         ageOfLocationInformation = 5;
-                        currentLocationRetrieved = false;
-                        mcc = 748;
-                        mnc = 7;
-                        lac = 8820;
-                        cellId = 9748;
-                        geographicalInformation = null;
-                        geodeticInformation = null;
                         lteCgi = hexStringToByteArray("47f87000477304"); // ECGI = 748-7-4682500; TBCD encoded: 47f87000477304
                         trackingAreaId = hexStringToByteArray("47f8701b6c"); // TAI = 748-7-7020; TBCD encoded: 47f8701b6c
                         eUtranCgi = new EUtranCgiImpl(lteCgi);
                         taId = new TAIdImpl(trackingAreaId);
-                        mmneNameStr = "mmec03.mmeer3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
-                        mme = mmneNameStr.getBytes();
-                        mmeName = new DiameterIdentityImpl(mme);
-                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
-                                geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
-                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
-                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
-                        locationInformationEPS = null;
+                        screeningAndPresentationIndicators = 1;
+                        latitude = -34.910349;
+                        longitude = -56.149832;
+                        uncertainty = 2.0;
+                        confidence = 2;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, latitude, longitude, uncertainty, confidence);
+                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, null, null,
+                                geodeticInformation, false, ageOfLocationInformation, mmeName);
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(null, null,
+                                vlrNumber, null, null, null, null, mscNumber,
+                                null, false, false, locationInformationEPS, null);
+                        locationInformationEPS = null; // locationInformationEPS will only exist within locationInformation in this case
                         break;
-                    case 8:
+                    case 6:
                         ageOfLocationInformation = 0;
-                        currentLocationRetrieved = true;
+                        lteCgi = hexStringToByteArray("47f87000477304"); // ECGI = 748-7-4682500; TBCD encoded: 47f87000477304
+                        trackingAreaId = hexStringToByteArray("47f8701b6c"); // TAI = 748-7-7020; TBCD encoded: 47f8701b6c
+                        eUtranCgi = new EUtranCgiImpl(lteCgi);
+                        taId = new TAIdImpl(trackingAreaId);
+                        latitude = -34.909744;
+                        longitude = -56.146317;
+                        uncertainty = 1.0;
+                        geographicalInformation = new GeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty);
+                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, null, geographicalInformation,
+                                null, true, ageOfLocationInformation, mmeName);
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(null, null,
+                                vlrNumber, null, null, null, null, mscNumber,
+                                null, false, false, locationInformationEPS, null);
+                        locationInformationEPS = null; // locationInformationEPS will only exist within locationInformation in this case
+                        break;
+                    case 7:
+                        ageOfLocationInformation = 0;
                         mcc = 748;
                         mnc = 7;
                         lac = 8552;
                         cellId = 8239;
-                        geographicalInformation = null;
-                        geodeticLatitude = -34.910349;
-                        geodeticLongitude = -56.149832;
-                        geodeticUncertainty = 2.0;
-                        geodeticConfidence = 3;
                         screeningAndPresentationIndicators = 2;
-                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        latitude = -34.910349;
+                        longitude = -56.149832;
+                        uncertainty = 2.0;
+                        confidence = 3;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, latitude, longitude, uncertainty, confidence);
                         try {
                             cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
                         } catch (MAPException ex) {
                             logger.error(ex.getMessage());
                         }
                         cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
-                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber,
-                                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
-                        break;
-                    case 9:
-                    case 10:
+                        locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, null,
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, null, null, mscNumber,
+                                geodeticInformation, true, saiPresent, null, null);
                         break;
                     default:
                         break;
@@ -1521,8 +1499,8 @@ public class Client extends TestHarnessMobilityManagement {
 
                 int customInvokeTimeout = 30;
 
-                mapDialogMobility.addPurgeMSRequest(customInvokeTimeout, imsi, vlrNumber, sgsnNumber, extensionContainer, locationInformation,
-                        locationInformationGPRS, locationInformationEPS);
+                mapDialogMobility.addPurgeMSRequest(customInvokeTimeout, imsi, vlrNumber, null, null, locationInformation,
+                        null, locationInformationEPS);
                 mapDialogMobility.send();
 
             } catch (Exception e) {
