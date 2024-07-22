@@ -90,7 +90,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
@@ -1376,7 +1375,7 @@ public class Client extends TestHarnessMobilityManagement {
                         "491710490000");
                 Random rand = new Random();
                 int ageOfLocationInformation;
-                boolean currentLocationRetrieved;
+                boolean currentLocationRetrieved = false;
                 LocationInformationGPRS locationInformationGPRS = null;
                 boolean saiPresent = false;
                 int mcc, mnc, lac, cellId;
@@ -1385,7 +1384,6 @@ public class Client extends TestHarnessMobilityManagement {
                 GeographicalInformation geographicalInformation = null;
                 GeodeticInformation geodeticInformation = null;
                 RAIdentity routeingAreaIdentity;
-                UserCSGInformation userCSGInformation = null;
                 TypeOfShape geographicalTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
                 double geographicalLatitude;
                 double geographicalLongitude;
@@ -1422,10 +1420,11 @@ public class Client extends TestHarnessMobilityManagement {
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
                                 routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, null, saiPresent, geodeticInformation,
-                                true, ageOfLocationInformation);
+                                currentLocationRetrieved, ageOfLocationInformation);
                         break;
                     case 2:
                         ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
                         mcc = 748;
                         mnc = 7;
                         lac = 8552;
@@ -1446,10 +1445,11 @@ public class Client extends TestHarnessMobilityManagement {
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
                                 routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, null, saiPresent, geodeticInformation,
-                                true, ageOfLocationInformation);
+                                currentLocationRetrieved, ageOfLocationInformation);
                         break;
                     case 3:
                         ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
                         geodeticLatitude = -34.910349;
                         geodeticLongitude = -56.149832;
                         geodeticUncertainty = 2.0;
@@ -1470,10 +1470,11 @@ public class Client extends TestHarnessMobilityManagement {
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
                                 routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, null, saiPresent, geodeticInformation,
-                                true, ageOfLocationInformation);
+                                currentLocationRetrieved, ageOfLocationInformation);
                         break;
                     case 4:
                         ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
                         mcc = 748;
                         mnc = 1;
                         lac = 11;
@@ -1488,7 +1489,7 @@ public class Client extends TestHarnessMobilityManagement {
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
                                 routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, null, saiPresent, geodeticInformation,
-                                true, ageOfLocationInformation);
+                                currentLocationRetrieved, ageOfLocationInformation);
                         break;
                     case 5:
                         ageOfLocationInformation = 5;
@@ -1506,7 +1507,7 @@ public class Client extends TestHarnessMobilityManagement {
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
                                 routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, null, saiPresent, geodeticInformation,
-                                false, ageOfLocationInformation);
+                                currentLocationRetrieved, ageOfLocationInformation);
                         break;
                     case 6:
                         ageOfLocationInformation = 40;
@@ -1521,10 +1522,11 @@ public class Client extends TestHarnessMobilityManagement {
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
                                 routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, null, saiPresent, geodeticInformation,
-                                false, ageOfLocationInformation);
+                                currentLocationRetrieved, ageOfLocationInformation);
                         break;
                     case 7:
                         ageOfLocationInformation = 0;
+                        currentLocationRetrieved = true;
                         mcc = 748;
                         mnc = 10;
                         lac = 9501;
@@ -1543,7 +1545,7 @@ public class Client extends TestHarnessMobilityManagement {
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
                                 routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, null, saiPresent, geodeticInformation,
-                                true, ageOfLocationInformation);
+                                currentLocationRetrieved, ageOfLocationInformation);
                         break;
                     default:
                         break;

@@ -11,8 +11,10 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
+import org.restcomm.protocols.ss7.isup.impl.message.parameter.LocationNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.LocationNumber;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
+import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdFixedLength;
 import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdOrLAI;
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
@@ -30,9 +32,22 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
+import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
+import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdOrLAIImpl;
+import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.EUtranCgiImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeodeticInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeographicalInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationEPSImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationGPRSImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationNumberMapImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RAIdentityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TAIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -175,7 +190,7 @@ public class PurgeMSRequestTest {
         assertNull(pms.getLocationInformationEPS());
 
         /*
-         * version 3 / data 3 containing LocationInformation with LocationInformationEPS
+         * data containing LocationInformation with LocationInformationEPS
          */
         data = this.getDataLocInfoWLocEPS();
         asn = new AsnInputStream(data);
@@ -211,8 +226,8 @@ public class PurgeMSRequestTest {
         LocationNumberMap locationNumberMap = locationInformation.getLocationNumber();
         assertNull(locationNumberMap);
         //	cellGlobalIdOrServiceAreaIdOrLAI
-        CellGlobalIdOrServiceAreaIdOrLAI cidOrSaiOrLai = locationInformation.getCellGlobalIdOrServiceAreaIdOrLAI();
-        assertNull(cidOrSaiOrLai);
+        CellGlobalIdOrServiceAreaIdOrLAI cgiOrSaiOrLai = locationInformation.getCellGlobalIdOrServiceAreaIdOrLAI();
+        assertNull(cgiOrSaiOrLai);
         //	extensionContainer
         MAPExtensionContainer extensionContainer = locationInformation.getExtensionContainer();
         assertNull(extensionContainer);
@@ -278,7 +293,9 @@ public class PurgeMSRequestTest {
         locationInfoEPS = pms.getLocationInformationEPS();
         assertNull(locationInfoEPS);
 
-        // MAP version 3 / data containing LocationInformation without LocationInformationEPS
+        /*
+         * version 3 / data containing LocationInformation without LocationInformationEPS
+         */
         data = this.getDataLocInfo();
         asn = new AsnInputStream(data);
         tag = asn.readTag();
@@ -319,11 +336,11 @@ public class PurgeMSRequestTest {
         assertEquals(locationNumber.getScreeningIndicator(), 3);
         assertEquals(locationNumber.getAddress(), "819203961904");
         //	cellGlobalIdOrServiceAreaIdOrLAI
-        cidOrSaiOrLai = locationInformation.getCellGlobalIdOrServiceAreaIdOrLAI();
-        assertEquals(cidOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
-        assertEquals(cidOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 1);
-        assertEquals(cidOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 109);
-        assertEquals(cidOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 10175);
+        cgiOrSaiOrLai = locationInformation.getCellGlobalIdOrServiceAreaIdOrLAI();
+        assertEquals(cgiOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
+        assertEquals(cgiOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 1);
+        assertEquals(cgiOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 109);
+        assertEquals(cgiOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 10175);
         //	extensionContainer
         extensionContainer = locationInformation.getExtensionContainer();
         assertNull(extensionContainer);
@@ -447,11 +464,11 @@ public class PurgeMSRequestTest {
         // LocationInformationGPRS
         locationInformationGPRS = pms.getLocationInformationGPRS();
         //	cellGlobalIdOrServiceAreaIdOrLAI
-        cidOrSaiOrLai = locationInformationGPRS.getCellGlobalIdOrServiceAreaIdOrLAI();
-        assertEquals(cidOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
-        assertEquals(cidOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 10);
-        assertEquals(cidOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 9501);
-        assertEquals(cidOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 35100);
+        cgiOrSaiOrLai = locationInformationGPRS.getCellGlobalIdOrServiceAreaIdOrLAI();
+        assertEquals(cgiOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
+        assertEquals(cgiOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 10);
+        assertEquals(cgiOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 9501);
+        assertEquals(cgiOrSaiOrLai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 35100);
         // routeingAreaIdentity
         RAIdentity rai= locationInformationGPRS.getRouteingAreaIdentity();
         assertEquals(rai.getMCC(), 748);
@@ -478,7 +495,7 @@ public class PurgeMSRequestTest {
         //	currentLocationRetrieved
         currentLocationRetrieved = locationInformationGPRS.isCurrentLocationRetrieved();
         assertTrue(currentLocationRetrieved);
-        // a
+        // ageOfLocationInformation
         aol = locationInformationGPRS.getAgeOfLocationInformation();
         assertEquals(aol.intValue(), 0);
         //	locationInformationEPS
@@ -494,21 +511,230 @@ public class PurgeMSRequestTest {
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
         IMSIImpl imsi = new IMSIImpl("1111122222");
 
-        PurgeMSRequestImpl prim = new PurgeMSRequestImpl(imsi, vlrNumber, null, extensionContainer, null, null, null, 2);
+        PurgeMSRequestImpl pms = new PurgeMSRequestImpl(imsi, vlrNumber, null, extensionContainer, null, null, null, 2);
 
         AsnOutputStream asn = new AsnOutputStream();
-        prim.encodeAll(asn);
+        pms.encodeAll(asn);
 
         assertTrue(Arrays.equals(asn.toByteArray(), this.getData1()));
 
         // version 3
-        ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                "22235");
-        prim = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, null, null, null, 3);
+        ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22235");
+        pms = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, null, null, null, 3);
 
         asn = new AsnOutputStream();
-        prim.encodeAll(asn);
+        pms.encodeAll(asn);
 
         assertTrue(Arrays.equals(asn.toByteArray(), this.getData2()));
+
+        /*
+         * another test data (this.getDataLocInfoWLocEPS()) containing LocationInformation with LocationInformationEPS
+         */
+        // imsi
+        imsi = new IMSIImpl("901405105680096");
+        // vlrNumber
+        vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+        // sgsnNumber
+        sgsnNumber = null;
+        // LocationInformation
+        // ageOfLocationInformation
+        Integer aol = null;
+        // geographicalInformation
+        GeographicalInformation geographicalInformation = null;
+        //locationNumber
+        LocationNumber locationNumber;
+        LocationNumberMap locationNumberMap;
+        // cellGlobalIdOrServiceAreaIdOrLAI
+        CellGlobalIdOrServiceAreaIdOrLAI cgiOrSaiOrLai = null;
+        // extensionContainer
+        extensionContainer = null;
+        // selectedLSA-Id
+        LSAIdentity selectedLSAId = null;
+        // msc-Number
+        ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+        // geodeticInformation
+        GeodeticInformation geodeticInformation = null;
+        // currentLocationRetrieved
+        boolean currentLocationRetrieved = false;
+        // saiPresent
+        boolean saiPresent = false;
+        // LocationInformationEPS within LocationInformation
+        // eUtranCgi
+        EUtranCgi eUtranCgi = new EUtranCgiImpl(hexStringToByteArray("47f87000477304"));
+        assertEquals(eUtranCgi.getMCC(), 748);
+        assertEquals(eUtranCgi.getMNC(), 7);
+        assertEquals(eUtranCgi.getEci(), 4682500);
+        assertEquals(eUtranCgi.getENodeBId(), 18291);
+        assertEquals(eUtranCgi.getCi(), 4);
+        // taId;
+        TAId taId = new TAIdImpl(hexStringToByteArray("47f8701b6c"));
+        assertEquals(taId.getMCC(), 748);
+        assertEquals(taId.getMNC(), 7);
+        assertEquals(taId.getTAC(), 7020);
+        // geographicalInformation
+        TypeOfShape typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
+        double latitude = -34.909744;
+        double longitude = -56.146317;
+        double uncertainty = 1.0;
+        geographicalInformation = new GeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty);
+        // boolean currentLocationRetrieved
+        currentLocationRetrieved = true;
+        // ageOfLocationInformation
+        aol = 0;
+        // mmeName
+        DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        LocationInformationEPS locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
+                geodeticInformation, currentLocationRetrieved, aol, mmeName);
+        // userCSGInformation
+        UserCSGInformation userCSGInformation = null;
+        aol = null;
+        geographicalInformation = null;
+        locationNumberMap = null;
+        currentLocationRetrieved = false;
+        LocationInformation locationInformation = new LocationInformationImpl(aol, geographicalInformation,
+                vlrNumber, locationNumberMap, cgiOrSaiOrLai, extensionContainer, selectedLSAId, mscNumber,
+                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+        // LocationInformationGPRS
+        LocationInformationGPRS locationInformationGPRS = null;
+        // LocationInformationEPS
+        locationInformationEPS = null;
+        pms = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, locationInformation, locationInformationGPRS, locationInformationEPS, 3);
+
+        asn = new AsnOutputStream();
+        pms.encodeAll(asn);
+        assertTrue(Arrays.equals(asn.toByteArray(), this.getDataLocInfoWLocEPS()));
+
+        /*
+         * another test data (this.getDataLocInfo()) containing LocationInformation without LocationInformationEPS
+         */
+        // ageOfLocationInformation
+        aol = 1;
+        //	locationNumber
+        int natureOfAddressIndicator = 4;
+        String locationNumberAddressDigits= "819203961904";
+        int numberingPlanIndicator = 1;
+        int internalNetworkNumberIndicator = 1;
+        int addressRepresentationRestrictedIndicator = 1;
+        int screeningIndicator = 3;
+        locationNumber = new LocationNumberImpl(natureOfAddressIndicator, locationNumberAddressDigits, numberingPlanIndicator,
+                internalNetworkNumberIndicator, addressRepresentationRestrictedIndicator, screeningIndicator);
+        locationNumberMap = new LocationNumberMapImpl(locationNumber);
+        //	cellGlobalIdOrServiceAreaIdOrLAI
+        int mcc = 748;
+        int mnc = 1;
+        int lac = 109;
+        int cellId = 10175;
+        CellGlobalIdOrServiceAreaIdFixedLength cgiFixed = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+        cgiOrSaiOrLai = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cgiFixed);
+        // LocationInformation
+        locationInformation = new LocationInformationImpl(aol, geographicalInformation,
+                vlrNumber, locationNumberMap, cgiOrSaiOrLai, extensionContainer, selectedLSAId, mscNumber,
+                geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+
+        pms = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, locationInformation, locationInformationGPRS, locationInformationEPS, 3);
+
+        asn = new AsnOutputStream();
+        pms.encodeAll(asn);
+        assertTrue(Arrays.equals(asn.toByteArray(), this.getDataLocInfo()));
+
+        /*
+         * another test data (this.getDataLocInfoEPS()) containing only LocationInformationEPS as location information
+         */
+        // LocationInformation
+        locationInformation = null;
+        //	locationInformationEPS
+        //	e-utranCellGlobalIdentity
+        eUtranCgi = new EUtranCgiImpl(hexStringToByteArray("47f81000095f02"));
+        assertEquals(eUtranCgi.getMCC(), 748);
+        assertEquals(eUtranCgi.getMNC(), 1);
+        assertEquals(eUtranCgi.getEci(), 614146);
+        assertEquals(eUtranCgi.getENodeBId(), 2399);
+        assertEquals(eUtranCgi.getCi(), 2);
+        //	trackingAreaIdentity
+        taId = new TAIdImpl(hexStringToByteArray("47f810006d"));
+        assertEquals(taId.getMCC(), 748);
+        assertEquals(taId.getMNC(), 1);
+        assertEquals(taId.getTAC(), 109);
+        //	geodeticInformation
+        int screeningAndPresentationIndicators = 1;
+        uncertainty = 1.0000000000000009;
+        int confidence = 2;
+        latitude = -34.91034507751465;
+        longitude = -56.14981412887573;
+        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, latitude, longitude, uncertainty, confidence);
+        //	currentLocationRetrieved
+        currentLocationRetrieved = true;
+        //	ageOfLocationInformation
+        aol = 0;
+        //	mme-Name
+        mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        // LocationInformationEPS
+        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
+                geodeticInformation, currentLocationRetrieved, aol, mmeName);
+
+        pms = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, locationInformation, locationInformationGPRS, locationInformationEPS, 3);
+
+        asn = new AsnOutputStream();
+        pms.encodeAll(asn);
+        assertTrue(Arrays.equals(asn.toByteArray(), this.getDataLocInfoEPS()));
+
+        /*
+         * another test data (this.getDataLocInfoGPRS()) containing only LocationInformationEPS as location information
+         */
+        // imsi
+        imsi = new IMSIImpl("901405105680370");
+        // vlrNumber
+        vlrNumber = null;
+        // sgsnNumber
+        sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+        // LocationInformationGPRS
+        //	cellGlobalIdOrServiceAreaIdOrLAI
+        mnc = 10;
+        lac = 9501;
+        cellId = 35100;
+        cgiFixed = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
+        cgiOrSaiOrLai = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cgiFixed);
+        // routeingAreaIdentity
+        RAIdentity routeingAreaIdentity = new RAIdentityImpl(hexStringToByteArray("47f810006516"));
+        assertEquals(routeingAreaIdentity.getMCC(), 748);
+        assertEquals(routeingAreaIdentity.getMNC(), 1);
+        assertEquals(routeingAreaIdentity.getLAC(), 101);
+        assertEquals(routeingAreaIdentity.getRAC(), 22);
+        //	geographicalInformation
+        latitude = -34.90561366081238;
+        longitude = -55.04219055175781;
+        uncertainty = 3.310000000000004;
+        geographicalInformation = new GeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty);
+        //	geodeticInformation
+        geodeticInformation = null;
+        // selectedLSAId
+        selectedLSAId = new LSAIdentityImpl(new byte[] {49, 51, 50});
+        // ageOfLocationInformation
+        aol = 0;
+        //	locationInformationGPRS
+        locationInformationGPRS =new LocationInformationGPRSImpl(cgiOrSaiOrLai,
+                routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAId, extensionContainer, saiPresent, geodeticInformation,
+                currentLocationRetrieved, aol);
+        //	locationInformationEPS
+        locationInformationEPS = null;
+
+        pms = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, locationInformation, locationInformationGPRS, locationInformationEPS, 3);
+
+        asn = new AsnOutputStream();
+        pms.encodeAll(asn);
+        assertTrue(Arrays.equals(asn.toByteArray(), this.getDataLocInfoGPRS()));
+
+
+
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
     }
 }
