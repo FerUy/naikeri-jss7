@@ -13,8 +13,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ProvideSubscriberInfoRequestImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RequestedInfoImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -52,7 +50,7 @@ public class ProvideSubscriberInfoRequestTest {
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
         IMSI imsi = asc.getImsi();
-        assertTrue(imsi.getData().equals("111222333444"));
+        assertEquals(imsi.getData(), "111222333444");
 
         assertTrue(asc.getRequestedInfo().getLocationInformation());
         assertFalse(asc.getRequestedInfo().getSubscriberState());
@@ -73,7 +71,7 @@ public class ProvideSubscriberInfoRequestTest {
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
         imsi = asc.getImsi();
-        assertTrue(imsi.getData().equals("111222333444"));
+        assertEquals(imsi.getData(), "111222333444");
 
         assertTrue(asc.getRequestedInfo().getLocationInformation());
         assertFalse(asc.getRequestedInfo().getSubscriberState());

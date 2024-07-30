@@ -17,6 +17,12 @@ import org.restcomm.protocols.ss7.map.primitives.TbcdString;
 import java.io.IOException;
 
 /**
+ *
+ <code>
+ E-UTRAN-CGI ::= OCTET STRING (SIZE (7))
+ -- Octets are coded as described in 3GPP TS 29.118 [152].
+ </code>
+ *
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
@@ -129,7 +135,7 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
             throw new MAPException("Data length must equal 7");
 
         AsnInputStream ansIS = new AsnInputStream(data);
-        String res = null;
+        String res;
         try {
             res = TbcdString.decodeString(ansIS, 3);
         } catch (IOException e) {
@@ -153,7 +159,7 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
             throw new MAPException("Data length must equal 7");
 
         AsnInputStream ansIS = new AsnInputStream(data);
-        String res = null;
+        String res;
         try {
             res = TbcdString.decodeString(ansIS, 3);
         } catch (IOException e) {
@@ -169,7 +175,7 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
         if (res.length() == 5) {
             sMnc = res.substring(3);
         } else {
-            sMnc = res.substring(4) + res.substring(3, 4);
+            sMnc = res.substring(4) + res.charAt(3);
         }
 
         return Integer.parseInt(sMnc);
@@ -181,8 +187,7 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
         if (data.length != 7)
             throw new MAPException("Data length must equal 7");
 
-        long eNodeBId = (data[3] & 0x0F) * 65536 + (data[4] & 0xFF) * 256 + (data[5] & 0xFF);
-        return eNodeBId;
+        return (data[3] & 0x0F) * 65536 + (data[4] & 0xFF) * 256 + (data[5] & 0xFF);
     }
 
     public int getCi() throws MAPException {
@@ -201,8 +206,7 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
         if (data.length != 7)
             throw new MAPException("Data length must equal 7");
 
-        long eci = ((this.data[3] & 0x0F) << 24) + ((this.data[4] & 255) << 16) + ((this.data[5] & 255) << 8) + (this.data[6] & 255);
-        return eci;
+        return ((this.data[3] & 0x0F) << 24) + ((this.data[4] & 255) << 16) + ((this.data[5] & 255) << 8) + (this.data[6] & 255);
     }
 
     @Override
@@ -255,7 +259,7 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<EUtranCgiImpl> E_UTRAN_CGI_XML = new XMLFormat<EUtranCgiImpl>(EUtranCgiImpl.class) {
+    protected static final XMLFormat<EUtranCgiImpl> E_UTRAN_CGI_XML = new XMLFormat<>(EUtranCgiImpl.class) {
 
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, EUtranCgiImpl eUtranCgi) throws XMLStreamException {

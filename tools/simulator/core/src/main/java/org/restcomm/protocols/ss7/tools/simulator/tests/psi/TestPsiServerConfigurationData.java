@@ -16,6 +16,11 @@ import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaId
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.IMEI;
 
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DaylightSavingTime;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.IMSVoiceOverPsSessionsIndication;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation5GS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
@@ -26,6 +31,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MNPInfoRes;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeographicalInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeodeticInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NumberPortabilityStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RouteingNumber;
@@ -232,20 +238,33 @@ public class TestPsiServerConfigurationData {
     private SubscriberInfo subscriberInfo;
     private LocationInformation locationInformation;
     private MNPInfoRes mnpInfoRes;
+    private IMSVoiceOverPsSessionsIndication imsVoiceOverPsSessionsIndication = null;
+    private Time lastUEActivityTime = null;
+    private UsedRATType lastRATType = null;
+    private PSSubscriberState epsSubscriberState = null;
+    private TimeZone timeZone = null;
+    private DaylightSavingTime daylightSavingTime = null;
+    private LocationInformation5GS locationInformation5GS = null;
 
     {
         try {
-            geographicalInformation = new GeographicalInformationImpl(geographicalTypeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
-            geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+            geographicalInformation =
+                    new GeographicalInformationImpl(geographicalTypeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+            geodeticInformation =
+                    new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude,
+                            geodeticUncertainty, geodeticConfidence);
             locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, mapExtensionContainer, geographicalInformation,
                     geodeticInformation, currentLocationRetrieved, aol, mmeName);
-            locationInformation = new LocationInformationImpl(aol, geographicalInformation, vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, mapExtensionContainer, lsaIdentity, mscNumber, geodeticInformation, currentLocationRetrieved,
+            locationInformation = new LocationInformationImpl(aol, geographicalInformation, vlrNumber, locationNumberMap,
+                    cellGlobalIdOrServiceAreaIdOrLAI, mapExtensionContainer, lsaIdentity, mscNumber, geodeticInformation, currentLocationRetrieved,
                     saiPresent, locationInformationEPS, userCSGInformation);
-            locationInformationGPRS = new LocationInformationGPRSImpl(cellGlobalIdOrServiceAreaIdOrLAI, routeingAreaIdentity, geographicalInformation, sgsnNumber,
-                    selectedLSAIdentity, mapExtensionContainer, saiPresent, geodeticInformation, currentLocationRetrieved, aol);
+            locationInformationGPRS = new LocationInformationGPRSImpl(cellGlobalIdOrServiceAreaIdOrLAI, routeingAreaIdentity, geographicalInformation,
+                    sgsnNumber, selectedLSAIdentity, mapExtensionContainer, saiPresent, geodeticInformation, currentLocationRetrieved, aol);
             mnpInfoRes = new MNPInfoResImpl(routeingNumber, null, msisdn, numberPortabilityStatus, mapExtensionContainer);
             subscriberInfo = new SubscriberInfoImpl(locationInformation, subscriberState, mapExtensionContainer,
-                    locationInformationGPRS, psSubscriberState, iMei, msClassmark2, gprsmsClass, mnpInfoRes);
+                    locationInformationGPRS, psSubscriberState, iMei, msClassmark2, gprsmsClass, mnpInfoRes,
+                    imsVoiceOverPsSessionsIndication, lastUEActivityTime, lastRATType, epsSubscriberState,
+                    locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
         } catch (MAPException e) {
             e.printStackTrace();
         }

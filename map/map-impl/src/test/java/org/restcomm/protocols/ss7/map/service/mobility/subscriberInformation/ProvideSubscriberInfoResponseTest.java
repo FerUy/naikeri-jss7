@@ -10,9 +10,6 @@ import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ProvideSubscriberInfoResponseImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.SubscriberInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.SubscriberStateImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -67,9 +64,8 @@ public class ProvideSubscriberInfoResponseTest {
     public void testEncode() throws Exception {
 
         SubscriberStateImpl subscriberState = new SubscriberStateImpl(SubscriberStateChoice.camelBusy, null);
-        SubscriberInfoImpl subscriberInfo = new SubscriberInfoImpl(null, subscriberState, null, null, null, null, null, null, null);
+        SubscriberInfoImpl subscriberInfo = new SubscriberInfoImpl(null, subscriberState, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         ProvideSubscriberInfoResponseImpl asc = new ProvideSubscriberInfoResponseImpl(subscriberInfo, null);
-        // SubscriberInfo subscriberInfo, MAPExtensionContainer extensionContainer
 
         AsnOutputStream asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);

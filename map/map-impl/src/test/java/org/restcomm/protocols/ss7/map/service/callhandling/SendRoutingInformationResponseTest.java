@@ -25,17 +25,24 @@ import org.restcomm.protocols.ss7.map.api.primitives.NAEACIC;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.ProtocolId;
 import org.restcomm.protocols.ss7.map.api.primitives.SignalInfo;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.AllowedServices;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.CUGCheckInfo;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.ExtendedRoutingInfo;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.ForwardingData;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.RoutingInfo;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.UnavailabilityCause;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DaylightSavingTime;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.IMSVoiceOverPsSessionsIndication;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation5GS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NumberPortabilityStatus;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberStateChoice;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CUGInterlock;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OfferedCamel4CSIs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
@@ -526,7 +533,8 @@ public class SendRoutingInformationResponseTest {
         LocationInformationImpl li = new LocationInformationImpl(1, gi, vlrN, null, c, null, null, mscN, null, false, true,
                 null, null);
         SubscriberStateImpl ss = new SubscriberStateImpl(SubscriberStateChoice.assumedIdle, null);
-        SubscriberInfo subscriberInfo = new SubscriberInfoImpl(li, ss, null, null, null, null, null, null, null);
+        SubscriberInfo subscriberInfo = new SubscriberInfoImpl(li, ss, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null);
         // ssList
         ArrayList<SSCode> ssList = new ArrayList<SSCode>();
         ssList.add(new SSCodeImpl(SupplementaryCodeValue.allCommunityOfInterestSS));

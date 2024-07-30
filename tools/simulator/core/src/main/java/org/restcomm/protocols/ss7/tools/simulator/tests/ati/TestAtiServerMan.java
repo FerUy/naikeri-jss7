@@ -23,6 +23,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NetworkResource;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportRequest;
@@ -45,18 +46,22 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Up
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateGprsLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateLocationResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.oam.ActivateTraceModeRequest_Mobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.oam.ActivateTraceModeResponse_Mobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DaylightSavingTime;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DomainType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EUtranCgi;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GPRSMSClass;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeodeticInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeographicalInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.IMSVoiceOverPsSessionsIndication;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation5GS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationNumberMap;
@@ -78,6 +83,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TAId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
@@ -287,7 +293,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
             switch (atiReaction.intValue()) {
                 case ATIReaction.VAL_RETURN_SUCCESS:
                     LocationInformation locationInformation = null;
-                    LocationInformationEPS locationInformationEPS;
+                    LocationInformationEPS locationInformationEPS = null;
                     LocationInformationGPRS locationInformationGPRS = null;
                     Integer ageOfLocationInformation = 0;
                     Boolean currentLocationRetrieved = null;
@@ -316,13 +322,20 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                     SubscriberState subscriberState = null;
                     PSSubscriberState psSubscriberState = null;
                     NotReachableReason notReachableReason = null;
-                    ArrayList<PDPContextInfo> pdpContextInfoList = null;//new ArrayList<PDPContextInfo>();;
+                    ArrayList<PDPContextInfo> pdpContextInfoList = null;
                     MNPInfoRes mnpInfoRes = null;
                     NumberPortabilityStatus numberPortabilityStatus;
                     MSClassmark2 msClassmark2 = null;
                     GPRSMSClass gprsMSClass = null;
                     IMEI imei = null;
                     MAPExtensionContainer extensionContainer = null;
+                    IMSVoiceOverPsSessionsIndication imsVoiceOverPsSessionsIndication = null;
+                    Time lastUEActivityTime = null;
+                    UsedRATType lastRATType = null;
+                    PSSubscriberState epsSubscriberState = null;
+                    TimeZone timeZone = null;
+                    DaylightSavingTime daylightSavingTime = null;
+                    LocationInformation5GS locationInformation5GS = null;
 
                     if (requestedInfo.getLocationInformation()) {
                         if (requestedInfo.getCurrentLocation()) {
@@ -929,7 +942,6 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                         if (subscriberStateChoice != SubscriberStateChoice.netDetNotReachable &&
                             psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
                             psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
-                            //RouteingNumber routeingNumber = mapProvider.getMAPParameterFactory().createRouteingNumber("5555555888");
                             routeingNumber = new RouteingNumberImpl("598123");
                             IMSI imsi = new IMSIImpl("748026871012345");
                             String msisdnStr = "59899077937";
@@ -979,7 +991,8 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                     }
 
                     SubscriberInfo subscriberInfo = mapProvider.getMAPParameterFactory().createSubscriberInfo(locationInformation, subscriberState, extensionContainer,
-                            locationInformationGPRS, psSubscriberState, imei, msClassmark2, gprsMSClass, mnpInfoRes);
+                            locationInformationGPRS, psSubscriberState, imei, msClassmark2, gprsMSClass, mnpInfoRes, imsVoiceOverPsSessionsIndication, lastUEActivityTime,
+                            lastRATType, epsSubscriberState, locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
 
                     delayResponse(300);
 
@@ -991,7 +1004,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                     break;
 
                 case ATIReaction.VAL_ERROR_UNKNOWN_SUBSCRIBER:
-                    MAPErrorMessage mapErrorMessage = null;
+                    MAPErrorMessage mapErrorMessage;
                     // MAPUserAbortChoice mapUserAbortChoice = new MAPUserAbortChoiceImpl();
                     // mapUserAbortChoice.setProcedureCancellationReason(ProcedureCancellationReason.handoverCancellation);
                     // curDialog.abort(mapUserAbortChoice);
@@ -1018,7 +1031,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
 
                 case ATIReaction.VAL_ERROR_SYSTEM_FAILURE:
                     mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageSystemFailure(
-                            (long) curDialog.getApplicationContext().getApplicationContextVersion().getVersion(), NetworkResource.hlr, null, null);
+                            curDialog.getApplicationContext().getApplicationContextVersion().getVersion(), NetworkResource.hlr, null, null);
                     curDialog.sendErrorComponent(invokeId, mapErrorMessage);
 
                     this.countErrSent++;

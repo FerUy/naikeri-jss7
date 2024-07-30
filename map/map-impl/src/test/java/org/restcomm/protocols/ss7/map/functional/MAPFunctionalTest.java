@@ -510,7 +510,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -537,7 +537,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -702,7 +702,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -724,7 +724,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -805,7 +805,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -817,7 +817,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -867,7 +867,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -879,7 +879,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         // !!!! ---
 //         this.saveTrafficInFile();
@@ -973,7 +973,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -994,7 +994,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1050,7 +1050,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1062,7 +1062,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         client.actionA();
         waitForEnd();
@@ -1134,7 +1134,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1149,7 +1149,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogEricssonRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1198,7 +1198,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AlertServiceCentreIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1210,7 +1210,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         server.mapProvider.getMAPServiceSms().deactivate();
         // this.saveTrafficInFile();
@@ -1239,7 +1239,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AlertServiceCentreIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1248,7 +1248,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         server.mapProvider.getMAPServiceSms().deactivate();
 //        this.saveTrafficInFile();
@@ -1322,7 +1322,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1340,7 +1340,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1422,7 +1422,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1440,7 +1440,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1595,7 +1595,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1619,7 +1619,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1712,7 +1712,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1730,7 +1730,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1814,7 +1814,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1829,7 +1829,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1919,7 +1919,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1937,7 +1937,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2022,7 +2022,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2040,7 +2040,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2125,7 +2125,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2143,7 +2143,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2291,7 +2291,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendRoutingInfoForSMIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2319,7 +2319,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -2538,7 +2538,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2568,7 +2568,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2680,7 +2680,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2689,7 +2689,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -2744,7 +2744,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProcessUnstructuredSSRequestIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2756,7 +2756,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         client.actionB();
 
@@ -2838,7 +2838,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2856,7 +2856,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2921,7 +2921,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AlertServiceCentreIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2930,7 +2930,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2973,7 +2973,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.DialogReject, null, count++,
                 (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         clientExpectedEvents.add(te);
@@ -2983,7 +2983,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         client.sendEmptyV1Request();
         waitForEnd();
@@ -3015,7 +3015,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AlertServiceCentreIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3027,7 +3027,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         client.sendV1BadOperationCode();
         waitForEnd();
@@ -3110,7 +3110,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ForwardShortMessageIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3128,7 +3128,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -3210,7 +3210,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AlertServiceCentreIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3229,7 +3229,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -3308,7 +3308,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ForwardShortMessageIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3327,7 +3327,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -3447,7 +3447,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.MoForwardShortMessageIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3466,7 +3466,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -3567,7 +3567,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.MtForwardShortMessageIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3586,7 +3586,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -3700,7 +3700,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3719,7 +3719,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -3831,7 +3831,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3850,7 +3850,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -4002,7 +4002,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendRoutingInfoForSMIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4025,7 +4025,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -4069,7 +4069,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.MoForwardShortMessageIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4088,7 +4088,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -4131,7 +4131,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
 
         TestEvent te = TestEvent.createReceivedEvent(EventType.DialogAccept, null, count++,
                 (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
@@ -4155,7 +4155,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -4199,7 +4199,7 @@ public class MAPFunctionalTest extends SccpHarness {
         public void sendMoForwardShortMessageRequest_WithLengthChecking() throws Exception {
             this.mapProvider.getMAPServiceSms().activate();
 
-            MAPApplicationContext appCnt = null;
+            MAPApplicationContext appCnt;
             appCnt = MAPApplicationContext.getInstance(MAPApplicationContextName.shortMsgMORelayContext,
                     MAPApplicationContextVersion.version3);
             AddressString orgiReference = this.mapParameterFactory.createAddressString(AddressNature.international_number,
@@ -4420,7 +4420,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendAuthenticationInfo_V3, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4439,7 +4439,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -4545,7 +4545,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendAuthenticationInfo_V2, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4564,7 +4564,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -4671,7 +4671,7 @@ public class MAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.UpdateLocation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4689,7 +4689,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -4750,7 +4750,7 @@ TC-END + anyTimeInterrogationResponse
 
                 MAPDialogMobility d = ind.getMAPDialog();
                 SubscriberIdentity subscriberIdentity = ind.getSubscriberIdentity();
-                Assert.assertTrue(subscriberIdentity.getIMSI().getData().equals("33334444"));
+                assertEquals(subscriberIdentity.getIMSI().getData(), "33334444");
                 RequestedInfo requestedInfo = ind.getRequestedInfo();
                 Assert.assertTrue(requestedInfo.getLocationInformation());
                 Assert.assertTrue(requestedInfo.getSubscriberState());
@@ -4759,13 +4759,13 @@ TC-END + anyTimeInterrogationResponse
                 Assert.assertFalse(requestedInfo.getImei());
                 Assert.assertFalse(requestedInfo.getMsClassmark());
                 ISDNAddressString gsmSCFAddress = ind.getGsmSCFAddress();
-                Assert.assertTrue(gsmSCFAddress.getAddress().equals("11112222"));
+                assertEquals(gsmSCFAddress.getAddress(), "11112222");
                 Assert.assertEquals(gsmSCFAddress.getAddressNature(), AddressNature.international_number);
                 Assert.assertEquals(gsmSCFAddress.getNumberingPlan(), NumberingPlan.ISDN);
 
                 SubscriberState ss = this.mapParameterFactory.createSubscriberState(SubscriberStateChoice.camelBusy, null);
                 SubscriberInfo si = this.mapParameterFactory.createSubscriberInfo(null, ss, null, null, null, null, null, null,
-                        null);
+                        null, null, null, null, null, null, null, null, null);
 
                 try {
                     d.addAnyTimeInterrogationResponse(ind.getInvokeId(), si, null);
@@ -4791,7 +4791,7 @@ TC-END + anyTimeInterrogationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AnyTimeInterrogation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4810,7 +4810,7 @@ TC-END + anyTimeInterrogationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -4949,7 +4949,7 @@ TC-END + anyTimeInterrogationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AnyTimeSubscriptionInterrogation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4968,7 +4968,7 @@ TC-END + anyTimeInterrogationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -5049,7 +5049,7 @@ TC-END + provideSubscriberInfoResponse
                             null, null, null, null, false, false, null, null);
                     SubscriberState ss = this.mapParameterFactory.createSubscriberState(SubscriberStateChoice.camelBusy, null);
                     SubscriberInfo si = this.mapParameterFactory.createSubscriberInfo(locationInformation, ss, null, null, null, null, null, null,
-                            null);
+                            null, null, null, null, null, null, null, null, null);
 
                     d.addProvideSubscriberInfoResponse(ind.getInvokeId(), si, null);
                 } catch (MAPException e) {
@@ -5074,7 +5074,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProvideSubscriberInfo, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5093,7 +5093,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -5175,7 +5175,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProvideSubscriberLocation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5194,7 +5194,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -5275,7 +5275,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SubscriberLocationReport, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5294,7 +5294,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -5378,7 +5378,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendRoutingInfoForLCS, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5397,7 +5397,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -5483,7 +5483,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.CheckImei, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5501,7 +5501,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -5574,7 +5574,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.CheckImei, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5592,7 +5592,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -5667,7 +5667,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.CheckImei, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5685,7 +5685,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -5723,7 +5723,7 @@ TC-END + provideSubscriberInfoResponse
             public void onCheckImeiResponse(CheckImeiResponse ind) {
                 super.onCheckImeiResponse(ind);
 
-                Assert.assertTrue(ind.getEquipmentStatus().equals(EquipmentStatus.blackListed));
+                assertEquals(EquipmentStatus.blackListed, ind.getEquipmentStatus());
                 Assert.assertNull(ind.getBmuef());
                 Assert.assertNull(ind.getExtensionContainer());
 
@@ -5809,7 +5809,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.CheckImei, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5839,7 +5839,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp));
         serverExpectedEvents.add(te);
 
@@ -5937,7 +5937,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.CheckImei, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5955,7 +5955,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp));
         serverExpectedEvents.add(te);
 
@@ -6059,7 +6059,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.CancelLocation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -6077,7 +6077,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -6169,7 +6169,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.CancelLocation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -6187,7 +6187,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -6323,7 +6323,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProvideRoamingNumber, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -6342,7 +6342,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -6471,7 +6471,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ProvideRoamingNumber, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -6490,7 +6490,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -6570,7 +6570,7 @@ TC-END + provideSubscriberInfoResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.IstCommand, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -6589,7 +6589,7 @@ TC-END + provideSubscriberInfoResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -6756,7 +6756,7 @@ TC-END + InsertSubscriberDataRequestResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InsertSubscriberData, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -6775,7 +6775,7 @@ TC-END + InsertSubscriberDataRequestResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -6931,7 +6931,7 @@ TC-END + InsertSubscriberDataRequestResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InsertSubscriberData, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -6950,7 +6950,7 @@ TC-END + InsertSubscriberDataRequestResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -7040,7 +7040,7 @@ TC-END + DeleteSubscriberDataRequestResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.DeleteSubscriberData, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -7059,7 +7059,7 @@ TC-END + DeleteSubscriberDataRequestResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -7143,7 +7143,7 @@ TC-END + DeleteSubscriberDataRequestResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.DeleteSubscriberData, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -7162,7 +7162,7 @@ TC-END + DeleteSubscriberDataRequestResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -7265,7 +7265,7 @@ TC-END + SendRoutingInformationResponse
                     LocationInformationGPRS locationInformationGPRS = this.mapParameterFactory.createLocationInformationGPRS(
                             cellGlobalIdOrServiceAreaIdOrLAI, null, null, null, null, null, false, null, false, null);
                     SubscriberInfo subscriberInfo = this.mapParameterFactory.createSubscriberInfo(null, null, null,
-                            locationInformationGPRS, null, null, null, null, null);
+                            locationInformationGPRS, null, null, null, null, null, null, null, null, null, null, null, null, null);
                     ArrayList<SSCode> ssList = null;
                     ExtBasicServiceCode basicService = null;
                     boolean forwardingInterrogationRequired = false;
@@ -7312,7 +7312,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendRoutingInformation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -7331,7 +7331,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -7489,7 +7489,7 @@ TC-CONTINUE
                                 .createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI, null, null, null, null, null,
                                         false, null, false, null);
                         SubscriberInfo subscriberInfo = this.mapParameterFactory.createSubscriberInfo(null, null, null,
-                                locationInformationGPRS, null, null, null, null, null);
+                                locationInformationGPRS, null, null, null, null, null, null, null, null, null, null, null, null, null);
                         ArrayList<SSCode> ssList = null;
                         ExtBasicServiceCode basicService = null;
                         boolean forwardingInterrogationRequired = false;
@@ -7541,7 +7541,7 @@ TC-CONTINUE
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendRoutingInformation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -7567,7 +7567,7 @@ TC-CONTINUE
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -7675,7 +7675,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendRoutingInformation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -7694,7 +7694,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -7773,7 +7773,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendIdentification, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -7792,7 +7792,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -7867,7 +7867,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendIdentification, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -7886,7 +7886,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -7983,7 +7983,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.UpdateGprsLocation, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8002,7 +8002,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8080,7 +8080,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.PurgeMS, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8098,7 +8098,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8176,7 +8176,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.PurgeMS, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8194,7 +8194,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8249,7 +8249,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.Reset, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8258,7 +8258,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8307,7 +8307,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ForwardCheckSSIndication, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8316,7 +8316,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8365,7 +8365,7 @@ TC-END + SendRoutingInformationResponse
 
                 MAPDialogMobility d = ((RestoreDataRequestImpl) request).getMAPDialog();
 
-                assertTrue(request.getImsi().getData().equals("00000222229999"));
+                assertEquals(request.getImsi().getData(), "00000222229999");
 
                 try {
                     ISDNAddressString hlrNumber = this.mapParameterFactory.createISDNAddressString(AddressNature.international_number, NumberingPlan.ISDN,
@@ -8394,7 +8394,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.RestoreData, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8412,7 +8412,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8492,7 +8492,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendImsi, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8510,7 +8510,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8604,7 +8604,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.RegisterSS, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8622,7 +8622,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8706,7 +8706,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.EraseSS, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8724,7 +8724,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8817,7 +8817,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ActivateSS, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8835,7 +8835,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -8919,7 +8919,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.DeactivateSS, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -8937,7 +8937,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -9027,7 +9027,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InterrogateSS, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -9045,7 +9045,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -9127,7 +9127,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ReadyForSM, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -9145,7 +9145,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -9199,7 +9199,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.NoteSubscriberPresent, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -9208,7 +9208,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -9293,7 +9293,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.SendRoutingInfoForGprs, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -9311,7 +9311,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -9396,7 +9396,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ActivateTraceMode, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -9414,7 +9414,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -9499,7 +9499,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ActivateTraceMode, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -9517,7 +9517,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -9665,7 +9665,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.RegisterPassword, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -9692,7 +9692,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
@@ -9782,7 +9782,7 @@ TC-END + SendRoutingInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AuthenticationFailureReport, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -9800,7 +9800,7 @@ TC-END + SendRoutingInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 

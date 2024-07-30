@@ -119,18 +119,9 @@ public class AnyTimeInterrogationResponseTest {
         CellGlobalIdOrServiceAreaIdOrLAIImpl c1 = new CellGlobalIdOrServiceAreaIdOrLAIImpl(c2);
         LocationInformationImpl li = new LocationInformationImpl(1, gi, vlrNumber, null, c1, null, null, mscNumber, null,
                 false, true, null, null);
-        // Integer ageOfLocationInformation, GeographicalInformation geographicalInformation, ISDNAddressString vlrNumber,
-        // LocationNumberMap locationNumber, CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI,
-        // MAPExtensionContainer extensionContainer,
-        // LSAIdentity selectedLSAId, ISDNAddressString mscNumber, GeodeticInformation geodeticInformation, boolean
-        // currentLocationRetrieved,
-        // boolean saiPresent, LocationInformationEPS locationInformationEPS, UserCSGInformation userCSGInformation
         SubscriberStateImpl ss = new SubscriberStateImpl(SubscriberStateChoice.assumedIdle, null);
-        SubscriberInfoImpl si = new SubscriberInfoImpl(li, ss, null, null, null, null, null, null, null);
-        // LocationInformation locationInformation, SubscriberState subscriberState, MAPExtensionContainer extensionContainer,
-        // LocationInformationGPRS locationInformationGPRS, PSSubscriberState psSubscriberState, IMEI imei, MSClassmark2
-        // msClassmark2,
-        // GPRSMSClass gprsMSClass, MNPInfoRes mnpInfoRes
+        SubscriberInfoImpl si = new SubscriberInfoImpl(li, ss, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null);
 
         AnyTimeInterrogationResponseImpl anyTimeInt = new AnyTimeInterrogationResponseImpl(si, null);
 
@@ -139,7 +130,8 @@ public class AnyTimeInterrogationResponseTest {
         byte[] encodedData = asnOS.toByteArray();
         assertTrue(Arrays.equals(data, encodedData));
 
-        si = new SubscriberInfoImpl(null, ss, null, null, null, null, null, null, null);
+        si = new SubscriberInfoImpl(null, ss, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null);
         anyTimeInt = new AnyTimeInterrogationResponseImpl(si, MAPExtensionContainerTest.GetTestExtensionContainer());
 
         asnOS = new AsnOutputStream();
@@ -160,7 +152,8 @@ public class AnyTimeInterrogationResponseTest {
         GPRSMSClassImpl gprsMSClass = new GPRSMSClassImpl(new MSNetworkCapabilityImpl(dataMSNetworkCapability), null);
         MNPInfoResImpl mnpInfoRes = new MNPInfoResImpl(null, new IMSIImpl("456787654"), null, null, null);
         SubscriberInfoImpl si = new SubscriberInfoImpl(li, ss, null, liGprs, new PSSubscriberStateImpl(PSSubscriberStateChoice.notProvidedFromSGSNorMME,
-                null, null), new IMEIImpl("1122334455667788"), new MSClassmark2Impl(dataMsClassMark2), gprsMSClass, mnpInfoRes);
+                null, null), new IMEIImpl("1122334455667788"), new MSClassmark2Impl(dataMsClassMark2), gprsMSClass, mnpInfoRes, null,
+                null, null, null, null, null, null, null);
         AnyTimeInterrogationResponseImpl original = new AnyTimeInterrogationResponseImpl(si, MAPExtensionContainerTest.GetTestExtensionContainer());
 
         // Writes the area to a file.

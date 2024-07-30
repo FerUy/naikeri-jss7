@@ -28,6 +28,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaId
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.IMEI;
 
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.AllowedServices;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.CCBSIndicators;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.CUGCheckInfo;
@@ -69,17 +70,22 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Up
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PurgeMSResponse;
 
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.oam.ActivateTraceModeRequest_Mobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.oam.ActivateTraceModeResponse_Mobility;
 
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DaylightSavingTime;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DomainType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.IMSVoiceOverPsSessionsIndication;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation5GS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSNetworkCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSRadioAccessCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PDPContextInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
@@ -679,7 +685,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
           SubscriberInfo subscriberInfo;
           IMSI imsi = null;
           LocationInformation locationInformation = null;
-          LocationInformationEPS locationInformationEPS;
+          LocationInformationEPS locationInformationEPS = null;
           LocationInformationGPRS locationInformationGPRS = null;
           Integer ageOfLocationInformation = 0;
           Boolean currentLocationRetrieved = null;
@@ -708,13 +714,20 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
           SubscriberState subscriberState = null;
           PSSubscriberState psSubscriberState = null;
           NotReachableReason notReachableReason = null;
-          ArrayList<PDPContextInfo> pdpContextInfoList = null;//new ArrayList<PDPContextInfo>();;
+          ArrayList<PDPContextInfo> pdpContextInfoList = null;
           MNPInfoRes mnpInfoRes = null;
           NumberPortabilityStatus numberPortabilityStatus;
           MSClassmark2 msClassmark2 = null;
           GPRSMSClass gprsMSClass = null;
           IMEI imei = null;
           MAPExtensionContainer extensionContainer = null;
+          IMSVoiceOverPsSessionsIndication imsVoiceOverPsSessionsIndication = null;
+          Time lastUEActivityTime = null;
+          UsedRATType lastRATType = null;
+          PSSubscriberState epsSubscriberState = null;
+          TimeZone timeZone = null;
+          DaylightSavingTime daylightSavingTime = null;
+          LocationInformation5GS locationInformation5GS = null;
 
           if (requestedInfo.getLocationInformation()) {
             if (requestedInfo.getCurrentLocation()) {
@@ -1259,7 +1272,8 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
           try {
 
             subscriberInfo = mapProvider.getMAPParameterFactory().createSubscriberInfo(locationInformation, subscriberState, extensionContainer,
-                locationInformationGPRS, psSubscriberState, imei, msClassmark2, gprsMSClass, mnpInfoRes);
+                locationInformationGPRS, psSubscriberState, imei, msClassmark2, gprsMSClass, mnpInfoRes, imsVoiceOverPsSessionsIndication, lastUEActivityTime,
+                    lastRATType, epsSubscriberState, locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
 
             delayResponse(300);
 
