@@ -181,6 +181,7 @@ import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostImpl;
 import org.restcomm.protocols.ss7.tools.simulator.tests.sms.SRIReaction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -395,8 +396,8 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     boolean mwdSet = false;
     IpSmGwGuidance ipSmGwGuidance = null;
     LocationInfoWithLMSI locationInfoWithLMSI  = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, mapExtensionContainer, false, additionalNumber);
-    logger.info("LocationInfoWithLMSI for onSendRoutingInfoForSMRequest: NNN="
-            +locationInfoWithLMSI.getNetworkNodeNumber().getAddress()+ ", IMSI="+imsi.getData()+ ", LMSI="+lmsi.getData());
+    logger.info("LocationInfoWithLMSI for onSendRoutingInfoForSMRequest: NNN=" + locationInfoWithLMSI.getNetworkNodeNumber().getAddress() +
+            ", IMSI=" + imsi.getData() + ", LMSI=" + Arrays.toString(lmsi.getData()));
 
     try {
 
@@ -683,13 +684,12 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
           String msisdnStr = "59899077937";
           ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, msisdnStr);
           SubscriberInfo subscriberInfo;
-          IMSI imsi = null;
           LocationInformation locationInformation = null;
           LocationInformationEPS locationInformationEPS = null;
           LocationInformationGPRS locationInformationGPRS = null;
           Integer ageOfLocationInformation = 0;
           Boolean currentLocationRetrieved = null;
-          Boolean saiPresent;
+          boolean saiPresent;
           int mcc, mnc, lac, cellId;
           CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
           CellGlobalIdOrServiceAreaIdFixedLength cgiOrSai = null;
@@ -733,7 +733,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
             if (requestedInfo.getCurrentLocation()) {
               currentLocationRetrieved = true;
             }
-            Integer sai = rand.nextInt(10) + 1;
+            int sai = rand.nextInt(10) + 1;
             switch(sai) {
               case 1:
               case 2:
@@ -751,7 +751,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 saiPresent = false; // set saiPresent to false
                 break;
             }
-            Integer stateOption = rand.nextInt(17) + 1;
+            int stateOption = rand.nextInt(17) + 1;
             switch (stateOption) {
               case 1:
               case 2:
@@ -799,19 +799,18 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 psSubscriberState = mapProvider.getMAPParameterFactory().createPSSubscriberState(psSubscriberStateChoice, notReachableReason, pdpContextInfoList);
               }
             }
-            TypeOfShape geographicalTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
-            Double geographicalLatitude;
-            Double geographicalLongitude;
-            Double geographicalUncertainty;
+            TypeOfShape typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
+            double geographicalLatitude;
+            double geographicalLongitude;
+            double geographicalUncertainty;
             //GeographicalInformation geographicalInformation = mapProvider.getMAPParameterFactory().createGeographicalInformation(geographicalLatitude, geographicalLongitude, geographicalUncertainty);
-            TypeOfShape geodeticTypeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
-            Double geodeticLatitude;
-            Double geodeticLongitude;
-            Double geodeticUncertainty;
+            double geodeticLatitude;
+            double geodeticLongitude;
+            double geodeticUncertainty;
             int geodeticConfidence = 1;
             int screeningAndPresentationIndicators = 3;
-            //geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
-            Integer randLoc = rand.nextInt(10) + 1;
+            //geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+            int randLoc = rand.nextInt(10) + 1;
             switch(randLoc) {
               case 1:
                 mcc = 748;
@@ -821,7 +820,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geographicalLatitude = -34.909744;
                 geographicalLongitude = -56.146317;
                 geographicalUncertainty = 1.0;
-                geographicalInformation = new GeographicalInformationImpl(geographicalTypeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+                geographicalInformation = new GeographicalInformationImpl(typeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
                 geodeticInformation = null;
                 lteCgi = hexStringToByteArray("47f8100007ea02"); // ECGI = 748-1-518658; TBCD encoded: 47f8100007ea02
                 trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
@@ -837,7 +836,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geodeticUncertainty = 2.0;
                 geodeticConfidence = 1;
                 screeningAndPresentationIndicators = 3;
-                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                 lteCgi = hexStringToByteArray("47f81000095f02"); // ECGI = 748-1-614146; TBCD encoded: 47f81000095f02
                 trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
                 break;
@@ -902,7 +901,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geodeticUncertainty = 4.0;
                 geodeticConfidence = 10;
                 screeningAndPresentationIndicators = 3;
-                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                 lteCgi = hexStringToByteArray("47f81000004802"); // ECGI = 748-1-18434; TBCD encoded: 47f81000004802
                 trackingAreaId = hexStringToByteArray("47f8100002"); // TAI = 748-1-2; TBCD encoded: 47f8100002
                 break;
@@ -917,7 +916,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geodeticUncertainty = 4.0;
                 geodeticConfidence = 2;
                 screeningAndPresentationIndicators = 1;
-                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                 lteCgi = hexStringToByteArray("47f81000089700"); // ECGI = 748-1-562944; TBCD encoded: 47f81000089700
                 trackingAreaId = hexStringToByteArray("47f8100067"); // TAI = 748-1-103; TBCD encoded: 47f8100067
                 break;
@@ -942,7 +941,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geodeticUncertainty = 4.0;
                 geodeticConfidence = 10;
                 screeningAndPresentationIndicators = 3;
-                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                 lteCgi = hexStringToByteArray("47f81000004802"); // ECGI = 748-1-18434; TBCD encoded: 47f81000004802
                 trackingAreaId = hexStringToByteArray("47f8100002"); // TAI = 748-1-2; TBCD encoded: 47f8100002
                 break;
@@ -969,7 +968,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               taId = new TAIdImpl(trackingAreaId);
               //byte[] mmeNom = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
               //DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNom);
-              String mmneNameStr = "mmec03.mmeer3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
+              String mmneNameStr = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
               byte[] mme = mmneNameStr.getBytes();
               DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
               byte[] lsaId = {49, 51, 50};
@@ -1068,7 +1067,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geographicalLatitude = -34.909744;
                   geographicalLongitude = -56.146317;
                   geographicalUncertainty = 1.0;
-                  geographicalInformation = new GeographicalInformationImpl(geographicalTypeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+                  geographicalInformation = new GeographicalInformationImpl(typeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
                   geodeticInformation = null;
                   break;
                 case 2:
@@ -1082,7 +1081,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geodeticUncertainty = 2.0;
                   geodeticConfidence = 1;
                   screeningAndPresentationIndicators = 3;
-                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                   break;
                 case 3:
                   mcc = 748;
@@ -1135,7 +1134,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geodeticUncertainty = 4.0;
                   geodeticConfidence = 10;
                   screeningAndPresentationIndicators = 3;
-                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                   break;
                 case 9:
                   mcc = 748;
@@ -1148,7 +1147,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geodeticUncertainty = 4.0;
                   geodeticConfidence = 2;
                   screeningAndPresentationIndicators = 1;
-                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                   break;
                 case 10:
                   mcc = 748;
@@ -1169,14 +1168,14 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geodeticUncertainty = 4.0;
                   geodeticConfidence = 10;
                   screeningAndPresentationIndicators = 3;
-                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                  geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                   break;
               }
               byte[] raId = hexStringToByteArray("47f810006517");
               if (this.countMapPsiReq % 2 == 0)
-                saiPresent = true; // set saiPresent to true if this ATI request is even since test started
+                saiPresent = true; // set saiPresent to true if this PSI request is even since test started
               else
-                saiPresent = false; // set saiPresent to false if this ATI request is odd since test started
+                saiPresent = false; // set saiPresent to false if this PSI request is odd since test started
               try {
                 cgiOrSai = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdFixedLength(mcc, mnc, lac, cellId);
               } catch (MAPException ex) {
@@ -1223,7 +1222,6 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               //RouteingNumber routeingNumber = mapProvider.getMAPParameterFactory().createRouteingNumber("5555555888");
               routeingNumber = new RouteingNumberImpl("598123");
               IMSI mnpImsi = new IMSIImpl("748026871012345");
-              String mnpMsisdnStr = "59899077937";
               ISDNAddressString mnpMsisdn = new ISDNAddressStringImpl(AddressNature.international_number,
                   NumberingPlan.ISDN, msisdnStr);
               numberPortabilityStatus = NumberPortabilityStatus.ownNumberNotPortedOut;
@@ -1667,8 +1665,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   @Override
   public void putNumberingPlanType(String val) {
     NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-    if (x != null)
-      this.setNumberingPlanType(x);
+    this.setNumberingPlanType(x);
   }
 
 
