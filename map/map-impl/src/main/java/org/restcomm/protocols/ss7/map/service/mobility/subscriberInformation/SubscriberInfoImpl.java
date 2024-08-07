@@ -129,7 +129,7 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.subscriberInformation.
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.
      * SubscriberInfo#getLocationInformation()
      */
     public LocationInformation getLocationInformation() {
@@ -139,7 +139,7 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.subscriberInformation.
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.
      * SubscriberInfo#getSubscriberState()
      */
     public SubscriberState getSubscriberState() {
@@ -149,7 +149,7 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.subscriberInformation.
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.
      * SubscriberInfo#getExtensionContainer()
      */
     public MAPExtensionContainer getExtensionContainer() {
@@ -159,7 +159,7 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.subscriberInformation.
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.
      * SubscriberInfo#getLocationInformationGPRS()
      */
     public LocationInformationGPRS getLocationInformationGPRS() {
@@ -169,7 +169,7 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.subscriberInformation.
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.
      * SubscriberInfo#getPSSubscriberState()
      */
     public PSSubscriberState getPSSubscriberState() {
@@ -179,7 +179,7 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.subscriberInformation.
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.
      * SubscriberInfo#getIMEI()
      */
     public IMEI getIMEI() {
@@ -189,7 +189,7 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.subscriberInformation.
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.
      * SubscriberInfo#getMSClassmark2()
      */
     public MSClassmark2 getMSClassmark2() {
@@ -199,7 +199,7 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.subscriberInformation.
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.
      * SubscriberInfo#getGPRSMSClass()
      */
     public GPRSMSClass getGPRSMSClass() {

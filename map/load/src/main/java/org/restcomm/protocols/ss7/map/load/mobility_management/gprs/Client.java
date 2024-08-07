@@ -35,16 +35,17 @@ import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaId
 import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdOrLAI;
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
+import org.restcomm.protocols.ss7.map.api.primitives.IMEI;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportResponse;
-import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationQuintuplet;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.SendAuthenticationInfoRequest;
@@ -83,23 +84,68 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DaylightSavingTime;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DomainType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EUtranCgi;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GPRSChargingID;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GPRSMSClass;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeodeticInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeographicalInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.IMSVoiceOverPsSessionsIndication;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation5GS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MNPInfoRes;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSNetworkCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSRadioAccessCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NotReachableReason;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NumberPortabilityStatus;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PDPContextInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberState;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RouteingNumber;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TAId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TEID;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TransactionId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ChargingCharacteristics;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext2QoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext2QoSSubscribed_SourceStatisticsDescriptor;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext3QoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext4QoSSubscribed;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtPDPType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRate;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateExtended;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_DeliveryOfErroneousSdus;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_DeliveryOrder;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_MaximumSduSize;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_ResidualBER;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_SduErrorRatio;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TrafficClass;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TrafficHandlingPriority;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TransferDelay;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.FQDN;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ODBGeneralData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OfferedCamel4CSIs;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPAddress;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPTypeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.RegionalSubscriptionResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCodeValue;
@@ -115,6 +161,7 @@ import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
+import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.ReSynchronisationInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ADDInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.EPSInfoImpl;
@@ -125,14 +172,41 @@ import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperC
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedRATTypesImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.EUtranCgiImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GPRSChargingIDImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeodeticInformationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeographicalInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformation5GSImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationEPSImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.MSNetworkCapabilityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.MSRadioAccessCapabilityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.NRCellGlobalIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.NRTAIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.PDPContextInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.PSSubscriberStateImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RAIdentityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RouteingNumberImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.SubscriberInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TAIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TEIDImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TimeZoneImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TransactionIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ChargingCharacteristicsImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext2QoSSubscribedImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateExtendedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_MaximumSduSizeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_TransferDelayImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.FQDNImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBGeneralDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPAddressImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPTypeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
@@ -147,6 +221,7 @@ import org.restcomm.protocols.ss7.sccp.impl.parameter.ParameterFactoryImpl;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.SccpAddressImpl;
 import org.restcomm.protocols.ss7.sccp.parameter.EncodingScheme;
 import org.restcomm.protocols.ss7.sccp.parameter.GlobalTitle;
+import org.restcomm.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
 import org.restcomm.protocols.ss7.sccpext.impl.SccpExtModuleImpl;
 import org.restcomm.protocols.ss7.sccpext.router.RouterExt;
@@ -841,10 +916,6 @@ public class Client extends TestHarnessMobilityManagement {
                     .getMAPDialog().getLocalDialogId()));
         }
         try {
-            ArrayList<AuthenticationQuintuplet> authenticationQuintuplets = sendAuthenticationInfoResponseIndication.
-                    getAuthenticationSetList().getQuintupletList().getAuthenticationQuintuplets();
-            // SccpAddress hlrAddress = sendAuthenticationInfoResponseIndication.getMAPDialog().getRemoteAddress();
-
             // Create Dialog
             AddressString originAddressString = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
@@ -1062,8 +1133,8 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onUpdateLocationRequest(UpdateLocationRequest updateLocationRequestIndication) {
-        logger.error(String.format("ERROR: received UpdateLocationRequest over DialogId=%d", updateLocationRequestIndication
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as SGSN)"));
+        logger.error(String.format("ERROR: received UpdateLocationRequest on the client (acting as SGSN) over DialogId=%d", updateLocationRequestIndication
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -1119,8 +1190,8 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onPurgeMSRequest(PurgeMSRequest purgeMSRequest) {
-        logger.error(String.format("ERROR: received PurgeMSRequest over DialogId=%d", purgeMSRequest
-                .getMAPDialog().getLocalDialogId(), " over the client (acting as SGSN)"));
+        logger.error(String.format("ERROR: received PurgeMSRequest on the client (acting as SGSN) over DialogId=%d", purgeMSRequest
+                .getMAPDialog().getLocalDialogId()));
     }
 
     @Override
@@ -1193,7 +1264,455 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onProvideSubscriberInfoRequest(ProvideSubscriberInfoRequest provideSubscriberInfoRequest) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onProvideSubscriberInfoRequest over DialogId=%d", provideSubscriberInfoRequest
+                    .getMAPDialog().getLocalDialogId()));
+        }
 
+        try {
+            long invokeId = provideSubscriberInfoRequest.getInvokeId();
+            MAPDialogMobility mapDialogMobility = provideSubscriberInfoRequest.getMAPDialog();
+            RequestedInfo requestedInfo = provideSubscriberInfoRequest.getRequestedInfo();
+
+            long invokeTimeout = 30;
+            SubscriberInfo subscriberInfo;
+            LocationInformationGPRS locationInformationGPRS = null;
+            PSSubscriberState psSubscriberState = null;
+            IMEI imei = null;
+            GPRSMSClass gprsMSClass = null;
+            MNPInfoRes mnpInfoRes = null;
+            int ageOfLocationInformation = 0;
+            boolean currentLocationRetrieved;
+            boolean saiPresent;
+            int mcc, mnc, lac, cellId;
+            CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
+            String sgsnAddress = getSGSNSCCPAddress("4917104600010").getGlobalTitle().getDigits();
+            ISDNAddressString sgsnNumber;
+            GeographicalInformation geographicalInformation = null;
+            GeodeticInformation geodeticInformation = null;
+            byte[] lteCgi;
+            EUtranCgi eUtranCgi;
+            byte[] trackingAreaId;
+            TAId taId;
+            LSAIdentity selectedLSAIdentity;
+            RAIdentity routeingAreaIdentity;
+            RouteingNumber routeingNumber;
+            PSSubscriberStateChoice psSubscriberStateChoice = null;
+            NotReachableReason notReachableReason = null;
+            ArrayList<PDPContextInfo> pdpContextInfoList = null;
+            NumberPortabilityStatus numberPortabilityStatus;
+            MAPExtensionContainer extensionContainer = null;
+            IMSVoiceOverPsSessionsIndication imsVoiceOverPsSessionsIndication;
+            Time lastUEActivityTime;
+            UsedRATType lastRATType;
+            PSSubscriberState epsSubscriberState = null;
+            LocationInformationEPS locationInformationEPS = null;
+            TimeZone timeZone = null;
+            DaylightSavingTime daylightSavingTime = null;
+            NRCellGlobalIdImpl nrCellGlobalIdentity = new NRCellGlobalIdImpl();
+            FQDN amfAddress;
+            PlmnId vplmnId;
+            TimeZone localTimeZone;
+            UsedRATType ratType;
+            NRTAIdImpl nrTrackingAreaIdentity;
+            LocationInformation5GS locationInformation5GS = null;
+            Random rand = new Random();
+
+            if (requestedInfo.getLocationInformation()) {
+                if (requestedInfo.getSubscriberState()) {
+                    int stateOption = rand.nextInt(10) + 1;
+                    switch (stateOption) {
+                        case 1:
+                        case 2:
+                        case 3:
+                            psSubscriberStateChoice = PSSubscriberStateChoice.psAttachedReachableForPaging;
+                            break;
+                        case 4:
+                            psSubscriberStateChoice = PSSubscriberStateChoice.psAttachedNotReachableForPaging;
+                            break;
+                        case 5:
+                        case 6:
+                            psSubscriberStateChoice = PSSubscriberStateChoice.psDetached;
+                            break;
+                        case 7:
+                            psSubscriberStateChoice = PSSubscriberStateChoice.netDetNotReachable;
+                            notReachableReason = NotReachableReason.imsiDetached;
+                            break;
+                        case 8:
+                            psSubscriberStateChoice = PSSubscriberStateChoice.notProvidedFromSGSNorMME;
+                            break;
+                        case 9:
+                            psSubscriberStateChoice = PSSubscriberStateChoice.netDetNotReachable;
+                            notReachableReason = NotReachableReason.restrictedArea;
+                            break;
+                        case 10:
+                            psSubscriberStateChoice = PSSubscriberStateChoice.psPDPActiveReachableForPaging;
+                            break;
+                    }
+                    if (psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
+                        if (psSubscriberStateChoice == PSSubscriberStateChoice.psPDPActiveReachableForPaging) {
+                            PDPContextInfo pdpContextInfo = getPdpContextInfo();
+                            pdpContextInfoList = new ArrayList<>();
+                            pdpContextInfoList.add(pdpContextInfo);
+                        }
+                        psSubscriberState = mapProvider.getMAPParameterFactory().createPSSubscriberState(psSubscriberStateChoice, notReachableReason, pdpContextInfoList);
+                    } else {
+                        psSubscriberState = mapProvider.getMAPParameterFactory().createPSSubscriberState(psSubscriberStateChoice, notReachableReason, null);
+                    }
+                }
+                TypeOfShape typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
+                double geographicalLatitude;
+                double geographicalLongitude;
+                double geographicalUncertainty;
+                double geodeticLatitude;
+                double geodeticLongitude;
+                double geodeticUncertainty;
+                int geodeticConfidence = 1;
+                int screeningAndPresentationIndicators = 3;
+                int randLoc = rand.nextInt(10) + 1;
+                switch(randLoc) {
+                    case 1:
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 101;
+                        cellId = 10263;
+                        geographicalLatitude = -34.909744;
+                        geographicalLongitude = -56.146317;
+                        geographicalUncertainty = 1.0;
+                        geographicalInformation = new GeographicalInformationImpl(typeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 2:
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 119;
+                        cellId = 15336;
+                        geodeticLatitude = -34.910349;
+                        geodeticLongitude = -56.149832;
+                        geodeticUncertainty = 2.0;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 3:
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 118;
+                        cellId = 292;
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 4:
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 109;
+                        cellId = 10175;
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 5:
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 11;
+                        cellId = 4812;
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 6:
+                        mcc = 748;
+                        mnc = 7;
+                        lac = 8820;
+                        cellId = 9748;
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 7:
+                        mcc = 748;
+                        mnc = 7;
+                        lac = 8552;
+                        cellId = 8239;
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 8:
+                        mcc = 748;
+                        mnc = 10;
+                        lac = 9501;
+                        cellId = 35100;
+                        geodeticLatitude = -34.905624;
+                        geodeticLongitude = -55.042191;
+                        geodeticUncertainty = 4.0;
+                        geodeticConfidence = 10;
+                        screeningAndPresentationIndicators = 2;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 9:
+                        mcc = 748;
+                        mnc = 7;
+                        lac = 8313;
+                        cellId = 9281;
+                        geodeticLatitude = -34.891032;
+                        geodeticLongitude = -56.0008102;
+                        geodeticUncertainty = 4.0;
+                        geodeticConfidence = 2;
+                        screeningAndPresentationIndicators = 1;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    case 10:
+                        mcc = 748;
+                        mnc = 7;
+                        lac = 8820;
+                        cellId = 8051;
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                    default:
+                        mcc = 748;
+                        mnc = 10;
+                        lac = 9501;
+                        cellId = 35100;
+                        geodeticLatitude = -34.905624;
+                        geodeticLongitude = -55.042190;
+                        geodeticUncertainty = 4.0;
+                        geodeticConfidence = 10;
+                        screeningAndPresentationIndicators = 3;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
+                        break;
+                }
+                byte[] raId = hexStringToByteArray("47f810006517");
+                // set saiPresent to false if this PSI request is odd since test started
+                saiPresent = invokeId % 2 == 0; // set saiPresent to true if this PSI request is even since test started
+                routeingAreaIdentity = new RAIdentityImpl(raId);
+                sgsnNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
+                        NumberingPlan.ISDN, sgsnAddress);
+                byte[] lsaId = {49, 51, 49};
+                selectedLSAIdentity = new LSAIdentityImpl(lsaId);
+                if (psSubscriberStateChoice == PSSubscriberStateChoice.psAttachedReachableForPaging ||
+                        psSubscriberStateChoice == PSSubscriberStateChoice.psPDPActiveReachableForPaging) {
+                    currentLocationRetrieved = true;
+                } else if (psSubscriberStateChoice == PSSubscriberStateChoice.psAttachedNotReachableForPaging) {
+                    ageOfLocationInformation = 1704;
+                    currentLocationRetrieved = false;
+                    geographicalInformation = null;
+                    geodeticInformation = null;
+                } else if (psSubscriberStateChoice == PSSubscriberStateChoice.notProvidedFromSGSNorMME) {
+                    ageOfLocationInformation = 2;
+                    currentLocationRetrieved = false;
+                } else if (psSubscriberStateChoice == PSSubscriberStateChoice.netDetNotReachable) {
+                    ageOfLocationInformation = 879;
+                    currentLocationRetrieved = false;
+                    geographicalInformation = null;
+                    geodeticInformation = null;
+                } else {
+                    ageOfLocationInformation = 1500;
+                    currentLocationRetrieved = false;
+                    geographicalInformation = null;
+                    geodeticInformation = null;
+                }
+                locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
+                        routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAIdentity, null, saiPresent, geodeticInformation,
+                        currentLocationRetrieved, ageOfLocationInformation);
+            }
+
+            if (requestedInfo.getMnpRequestedInfo()) {
+                if (psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
+                        psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
+                    routeingNumber = new RouteingNumberImpl("491710");
+                    IMSI mnpImsi = new IMSIImpl(String.valueOf(imsiForPurge));
+                    ISDNAddressString mnpMsisdn = new ISDNAddressStringImpl(AddressNature.international_number,
+                            NumberingPlan.ISDN, "59899077937");
+                    numberPortabilityStatus = NumberPortabilityStatus.ownNumberNotPortedOut;
+                    mnpInfoRes = mapProvider.getMAPParameterFactory().createMNPInfoRes(routeingNumber, mnpImsi, mnpMsisdn, numberPortabilityStatus, extensionContainer);
+                }
+            }
+
+            if (requestedInfo.getImei()) {
+                if (psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
+                        psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
+                    if (requestedInfo.getRequestedDomain() == null || requestedInfo.getRequestedDomain() == DomainType.csDomain) {
+                        imei = mapProvider.getMAPParameterFactory().createIMEI("011714004661050");
+                    } else {
+                        imei = mapProvider.getMAPParameterFactory().createIMEI("011714004661051");
+                    }
+                }
+            }
+
+            if (requestedInfo.getMsClassmark()) {
+                if (psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
+                        psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
+                    byte[] mSNetworkCapabilityB = hexStringToByteArray("3130303032303331");
+                    MSNetworkCapability mSNetworkCapability = new MSNetworkCapabilityImpl(mSNetworkCapabilityB);
+                    byte[] mSRadioAccessCapabilityB = hexStringToByteArray("31303030323033313730383134");
+                    MSRadioAccessCapability mSRadioAccessCapability = new MSRadioAccessCapabilityImpl(mSRadioAccessCapabilityB);
+                    gprsMSClass = mapProvider.getMAPParameterFactory().createGPRSMSClass(mSNetworkCapability, mSRadioAccessCapability);
+                }
+            }
+
+            imsVoiceOverPsSessionsIndication = IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsSupported;
+            lastUEActivityTime = new TimeImpl(2024, 8, 5, 10, 27, 49);
+            lastRATType = UsedRATType.geran;
+
+            int randLoc = rand.nextInt(10) + 1;
+            if (requestedInfo.getLocationInformationEPSSupported()) {
+                String mmeNameStr;
+                byte[] mme;
+                DiameterIdentity mmeName;
+                switch(randLoc) {
+                    case 1:
+                    case 2:
+                        // target subscriber is under 5G NR SA
+                        nrCellGlobalIdentity.setData(748, 1, 512063008768L);
+                        amfAddress = new FQDNImpl("amf1.cluster1.net2.amf.5gc.mnc01.mcc748.3gppnetwork.org".getBytes());
+                        vplmnId = new PlmnIdImpl(748, 1);
+                        localTimeZone = new TimeZoneImpl(new byte[] {0, -6});
+                        ratType = UsedRATType.eUtran;
+                        nrTrackingAreaIdentity = new NRTAIdImpl();
+                        nrTrackingAreaIdentity.setData(748, 1, 775);
+                        lteCgi = hexStringToByteArray("47f8100007ea02"); // ECGI = 748-1-518658; TBCD encoded: 47f8100007ea02
+                        trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
+                        eUtranCgi = new EUtranCgiImpl(lteCgi);
+                        taId = new TAIdImpl(trackingAreaId);
+                        currentLocationRetrieved = ageOfLocationInformation == 0;
+                        locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, eUtranCgi, geographicalInformation,
+                                geodeticInformation, amfAddress, taId, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
+                                localTimeZone, ratType, null, nrTrackingAreaIdentity);
+                        break;
+                    case 3:
+                    case 4:
+                        // target subscriber is under 5G NSA (E-UTRAN and NR)
+                        nrCellGlobalIdentity = new NRCellGlobalIdImpl();
+                        nrCellGlobalIdentity.setData(748, 2, 452063008767L);
+                        amfAddress = new FQDNImpl("amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
+                        vplmnId = new PlmnIdImpl(748, 2);
+                        localTimeZone = new TimeZoneImpl(new byte[] {0, -6});
+                        ratType = UsedRATType.eUtran;
+                        nrTrackingAreaIdentity = new NRTAIdImpl();
+                        nrTrackingAreaIdentity.setData(748, 2, 208);
+                        lteCgi = hexStringToByteArray("47f8100007ea02"); // ECGI = 748-1-518658; TBCD encoded: 47f8100007ea02
+                        trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
+                        eUtranCgi = new EUtranCgiImpl(lteCgi);
+                        taId = new TAIdImpl(trackingAreaId);
+                        currentLocationRetrieved = ageOfLocationInformation == 0;
+                        mmeNameStr = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
+                        mme = mmeNameStr.getBytes();
+                        mmeName = new DiameterIdentityImpl(mme);
+                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, null, geographicalInformation,
+                                geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                        locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, eUtranCgi, geographicalInformation,
+                                geodeticInformation, amfAddress, taId, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
+                                localTimeZone, ratType, null, nrTrackingAreaIdentity);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (requestedInfo.getSubscriberState()) {
+                if (psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
+                    if (psSubscriberStateChoice == PSSubscriberStateChoice.psPDPActiveReachableForPaging) {
+                        if (locationInformationEPS != null) {
+                            PDPContextInfo pdpContextInfo = getPdpContextInfo();
+                            pdpContextInfoList = new ArrayList<>();
+                            pdpContextInfoList.add(pdpContextInfo);
+                            epsSubscriberState = new PSSubscriberStateImpl(psSubscriberStateChoice, notReachableReason, pdpContextInfoList);
+                        }
+                    }
+                }
+            }
+
+            if (requestedInfo.getLocalTimeZoneRequest()) {
+                timeZone = new TimeZoneImpl(new byte[]{0, 6});
+                daylightSavingTime = DaylightSavingTime.noAdjustment;
+            }
+
+            // If the HLR receives locationInformation, subscriberState or ms-Classmark2 from an SGSN or
+            // MME (via an IWF), it shall discard them.
+            subscriberInfo = new SubscriberInfoImpl(null, null, null,
+                    locationInformationGPRS, psSubscriberState, imei, null, gprsMSClass, mnpInfoRes,
+                    imsVoiceOverPsSessionsIndication, lastUEActivityTime, lastRATType, epsSubscriberState,
+                    locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
+            mapDialogMobility.addProvideSubscriberInfoResponse(invokeTimeout, subscriberInfo, null);
+
+            mapDialogMobility.close(false);
+
+        } catch (MAPException e) {
+            logger.error("Error while processing ProvideSubscriberInfoRequest ", e);
+        }
+    }
+
+    private static CellGlobalIdOrServiceAreaIdOrLAI setCgiOrSaidOrLai(int mcc, int mnc, int lac, int ci) throws MAPException {
+        CellGlobalIdOrServiceAreaIdFixedLength cgiOrSaiFixed;
+        try {
+            cgiOrSaiFixed = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, ci);
+        } catch (MAPException ex) {
+            throw new MAPException("Error while setting CGI or SAI or LAI: " + ex.getMessage());
+        }
+        return new CellGlobalIdOrServiceAreaIdOrLAIImpl(cgiOrSaiFixed);
+
+    }
+
+    private static PDPContextInfo getPdpContextInfo() throws MAPException {
+        int pdpContextIdentifier = 1;
+        boolean pdpContextActive = true;
+        PDPType pdpType = new PDPTypeImpl(PDPTypeValue.IPv4);
+        PDPAddress pdpAddress = new PDPAddressImpl(new byte[] { 21 });
+        APN apnSubscribed = new APNImpl("internet");
+        int asapi = 1;
+        TransactionId transactionId = new TransactionIdImpl(new byte[] {1, 7});
+        TEID teidForGnAndGp = new TEIDImpl(new byte[] {1, 3, 4, 7});
+        TEID teidForIu = new TEIDImpl(new byte[] {1, 0, 0, 2});
+        GSNAddress ggsnAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
+        int allocationRetentionPriority = 9;
+        ExtQoSSubscribed_DeliveryOfErroneousSdus deliveryOfErroneousSdus = ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes;
+        ExtQoSSubscribed_DeliveryOrder deliveryOrder = ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo;
+        ExtQoSSubscribed_TrafficClass trafficClass = ExtQoSSubscribed_TrafficClass.interactiveClass;
+        int maximumSduSizeData = 151;
+        boolean isSourceData = true;
+        ExtQoSSubscribed_MaximumSduSize maximumSduSize = new ExtQoSSubscribed_MaximumSduSizeImpl(maximumSduSizeData, isSourceData);
+        int maximumBitRateForUL = 128;
+        ExtQoSSubscribed_BitRate maximumBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(maximumBitRateForUL, isSourceData);
+        int maximumBitRateForDL = 576;
+        ExtQoSSubscribed_BitRate maximumBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(maximumBitRateForDL, isSourceData);
+        ExtQoSSubscribed_ResidualBER residualBER = ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved;
+        ExtQoSSubscribed_SduErrorRatio sduErrorRatio = ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved;
+        ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3;
+        int transferDelayValue = 1000;
+        ExtQoSSubscribed_TransferDelay transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
+        int gbrUL = 64;
+        ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
+        int gbrDL = 256;
+        ExtQoSSubscribed_BitRate guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
+        ExtQoSSubscribed extQoSSubscribed = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
+                deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
+                sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
+        ExtQoSSubscribed qosRequested = null;
+        ExtQoSSubscribed qosNegotiated = null;
+        GPRSChargingID chargingId = new GPRSChargingIDImpl(new byte[] {1, 2, 4, 8});
+        boolean isNormalCharging = true;
+        boolean isPrepaidCharging = false;
+        boolean isFlatRateCharging = false;
+        boolean isChargingByHotBillingCharging = false;
+        ChargingCharacteristics chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+        GSNAddress rncAddress = null;
+        Ext2QoSSubscribed_SourceStatisticsDescriptor sourceStatisticsDescriptor = Ext2QoSSubscribed_SourceStatisticsDescriptor.unknown;
+        boolean optimisedForSignallingTraffic = true;
+        int maxBRDLExt = 256000;
+        ExtQoSSubscribed_BitRateExtended maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
+        int gbrExtDL = 128000;
+        ExtQoSSubscribed_BitRateExtended guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
+        Ext2QoSSubscribed ext2QoSSubscribed = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+                maxBitRateForDLExt, guaranteedBitRateForDLExtended);
+        Ext2QoSSubscribed qos2Requested = null;
+        Ext2QoSSubscribed qos2Negotiated = null;
+        Ext3QoSSubscribed qos3Subscribed = null;
+        Ext3QoSSubscribed qos3Requested = null;
+        Ext3QoSSubscribed qos3Negotiated = null;
+        Ext4QoSSubscribed qos4Subscribed = null;
+        Ext4QoSSubscribed qos4Requested = null;
+        Ext4QoSSubscribed qos4Negotiated = null;
+        ExtPDPType extPdpType = null;
+        PDPAddress extPdpAddress = null;
+        return new PDPContextInfoImpl(pdpContextIdentifier, pdpContextActive, pdpType, pdpAddress,
+                        apnSubscribed, apnSubscribed, asapi, transactionId, teidForGnAndGp, teidForIu, ggsnAddress, extQoSSubscribed, qosRequested,
+                        qosNegotiated, chargingId, chargingCharacteristics, rncAddress, null, ext2QoSSubscribed,
+                        qos2Requested, qos2Negotiated, qos3Subscribed, qos3Requested, qos3Negotiated, qos4Subscribed,
+                        qos4Requested, qos4Negotiated, extPdpType, extPdpAddress);
     }
 
     @Override
@@ -1380,7 +1899,6 @@ public class Client extends TestHarnessMobilityManagement {
                 boolean saiPresent = false;
                 int mcc, mnc, lac, cellId;
                 CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
-                CellGlobalIdOrServiceAreaIdFixedLength cellGlobalIdOrServiceAreaIdFixedLength = null;
                 GeographicalInformation geographicalInformation = null;
                 GeodeticInformation geodeticInformation = null;
                 RAIdentity routeingAreaIdentity;
@@ -1410,12 +1928,7 @@ public class Client extends TestHarnessMobilityManagement {
                         geographicalLongitude = -56.146317;
                         geographicalUncertainty = 1.0;
                         geographicalInformation = new GeographicalInformationImpl(geographicalTypeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
                         raId = hexStringToByteArray("47f810006515");
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
@@ -1435,12 +1948,7 @@ public class Client extends TestHarnessMobilityManagement {
                         geodeticConfidence = 3;
                         screeningAndPresentationIndicators = 2;
                         geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
                         raId = hexStringToByteArray("47f810006516");
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
@@ -1460,12 +1968,7 @@ public class Client extends TestHarnessMobilityManagement {
                         mnc = 1;
                         lac = 108;
                         cellId = 10101;
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
                         raId = hexStringToByteArray("47f810006514");
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
@@ -1479,12 +1982,7 @@ public class Client extends TestHarnessMobilityManagement {
                         mnc = 1;
                         lac = 11;
                         cellId = 4812;
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
                         raId = hexStringToByteArray("47f810006518");
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
@@ -1497,12 +1995,7 @@ public class Client extends TestHarnessMobilityManagement {
                         mnc = 7;
                         lac = 8820;
                         cellId = 9748;
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
                         raId = hexStringToByteArray("47f810006518");
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
@@ -1517,7 +2010,11 @@ public class Client extends TestHarnessMobilityManagement {
                         geodeticConfidence = 2;
                         screeningAndPresentationIndicators = 1;
                         geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, geodeticTypeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        mcc = 748;
+                        mnc = 1;
+                        lac = 108;
+                        cellId = 10101;
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
                         raId = hexStringToByteArray("47f810006517");
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
@@ -1535,12 +2032,7 @@ public class Client extends TestHarnessMobilityManagement {
                         geographicalLongitude = -55.042191;
                         geographicalUncertainty = 4.0;
                         geographicalInformation = new GeographicalInformationImpl(geographicalTypeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
-                        try {
-                            cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(mcc, mnc, lac, cellId);
-                        } catch (MAPException ex) {
-                            logger.error(ex.getMessage());
-                        }
-                        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+                        cellGlobalIdOrServiceAreaIdOrLAI = setCgiOrSaidOrLai(mcc, mnc, lac, cellId);
                         raId = hexStringToByteArray("47f810006516");
                         routeingAreaIdentity = new RAIdentityImpl(raId);
                         locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
@@ -1561,6 +2053,18 @@ public class Client extends TestHarnessMobilityManagement {
                 logger.error(e.getMessage());
             }
         }
+    }
+
+    /*
+     * SGSN SCCP Address creation
+     */
+    private SccpAddress getSGSNSCCPAddress(String sgsnAddress) {
+        ParameterFactory sccpParam = new ParameterFactoryImpl();
+        int translationType = 0; // Translation Type = 0 : Unknown
+        EncodingScheme encodingScheme = null;
+        GlobalTitle gt = sccpParam.createGlobalTitle(sgsnAddress, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
+        int sgsnSsn = 149;
+        return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, sgsnSsn);
     }
 
     public static byte[] hexStringToByteArray(String s) {

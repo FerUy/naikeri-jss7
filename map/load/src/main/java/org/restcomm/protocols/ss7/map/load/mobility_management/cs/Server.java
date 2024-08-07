@@ -33,6 +33,7 @@ import org.restcomm.protocols.ss7.map.api.dialog.ServingCheckData;
 import org.restcomm.protocols.ss7.map.api.errors.MAPErrorMessage;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.EMLPPPriority;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.NAEACIC;
 import org.restcomm.protocols.ss7.map.api.primitives.NAEAPreferredCI;
@@ -85,9 +86,12 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DomainType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LIPAPermission;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedNodes;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SIPTOPermission;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AMBR;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
@@ -181,6 +185,7 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCod
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
+import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.NAEACICImpl;
 import org.restcomm.protocols.ss7.map.primitives.NAEAPreferredCIImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
@@ -192,6 +197,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpsAuthent
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.QuintupletListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.UEUsageTypeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.ResetIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RequestedInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AMBRImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationProfileImpl;
@@ -271,6 +277,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Random;
 
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
@@ -283,7 +290,7 @@ public class Server extends TestHarnessMobilityManagement {
 
     // MAP
     private MAPStackImpl mapStack;
-    private MAPProvider mapProvider;
+    private static MAPProvider mapProvider;
 
     // TCAP
     private TCAPStack tcapStack;
@@ -303,6 +310,8 @@ public class Server extends TestHarnessMobilityManagement {
 
     int endCount = 0;
     volatile long start = System.currentTimeMillis();
+
+    static Long imsiForPSI = 748026871012340L;
 
     protected void initializeStack(IpChannelType ipChannelType) throws Exception {
 
@@ -417,12 +426,12 @@ public class Server extends TestHarnessMobilityManagement {
 
     private void initMAP() throws Exception {
         this.mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
-        this.mapProvider = this.mapStack.getMAPProvider();
+        mapProvider = this.mapStack.getMAPProvider();
 
-        this.mapProvider.addMAPDialogListener(this);
-        this.mapProvider.getMAPServiceMobility().addMAPServiceListener(this);
+        mapProvider.addMAPDialogListener(this);
+        mapProvider.getMAPServiceMobility().addMAPServiceListener(this);
 
-        this.mapProvider.getMAPServiceMobility().activate();
+        mapProvider.getMAPServiceMobility().activate();
 
         this.mapStack.start();
     }
@@ -623,7 +632,7 @@ public class Server extends TestHarnessMobilityManagement {
 
     public static void main(String[] args) {
         IpChannelType ipChannelType = IpChannelType.SCTP;
-        if (args.length >= 1 && args[0].toLowerCase().equals("tcp")) {
+        if (args.length >= 1 && args[0].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
         }
         System.out.println("IpChannelType="+ipChannelType);
@@ -683,11 +692,11 @@ public class Server extends TestHarnessMobilityManagement {
         }
         System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT=" + TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
 
-        final org.restcomm.protocols.ss7.map.load.mobility_management.cs.Server server = new org.restcomm.protocols.ss7.map.load.mobility_management.cs.Server();
+        final Server server = new Server();
         try {
             server.initializeStack(ipChannelType);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -813,15 +822,15 @@ public class Server extends TestHarnessMobilityManagement {
         }
         try {
             // Create Dialog for MAP CL
-            AddressString clDestinationRef = this.mapProvider.getMAPParameterFactory()
+            AddressString clDestinationRef = mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
-            AddressString clOriginRef = this.mapProvider.getMAPParameterFactory()
+            AddressString clOriginRef = mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
 
             SccpAddress clClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
             SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, "491710400000");
 
-            MAPDialogMobility cancelLocationDialog = this.mapProvider.getMAPServiceMobility().
+            MAPDialogMobility cancelLocationDialog = mapProvider.getMAPServiceMobility().
                     createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
                             clClientSccpAddress, clOriginRef, clServerSccpAddress, clDestinationRef);
 
@@ -1294,6 +1303,8 @@ public class Server extends TestHarnessMobilityManagement {
         }
         // Start a new CL with subscription withdraw and reattach procedure (simulating an OSS request)
         new Thread(new SubscriptionWithdrawReattach(this)).start();
+        // Send a random PSI request
+        new Thread(new PSISender(this)).start();
     }
 
     @Override
@@ -1439,16 +1450,6 @@ public class Server extends TestHarnessMobilityManagement {
 
     }
 
-    private SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
-        ParameterFactoryImpl fact = new ParameterFactoryImpl();
-        GlobalTitle gt = fact.createGlobalTitle(address, 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
-                BCDEvenEncodingScheme.INSTANCE, NatureOfAddress.INTERNATIONAL);
-        if (ssn < 0) {
-            ssn = HLR_SSN;
-        }
-        return fact.createSccpAddress(ri, gt, dpc, ssn);
-    }
-
     private static class SubscriptionWithdrawReattach implements Runnable {
 
         private final Server server4SubscriptionWithdrawReattach;
@@ -1480,7 +1481,7 @@ public class Server extends TestHarnessMobilityManagement {
             SccpAddress clServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, "491710400000");
 
             MAPDialogMobility cancelLocationDialog;
-            cancelLocationDialog = this.mapProvider.getMAPServiceMobility().createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
+            cancelLocationDialog = mapProvider.getMAPServiceMobility().createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
                     clClientSccpAddress, clOriginRef, clServerSccpAddress, clDestinationRef);
 
             IMSI imsi = new IMSIImpl(imsiDigits);
@@ -1502,5 +1503,215 @@ public class Server extends TestHarnessMobilityManagement {
         } catch (MAPException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static class PSISender implements Runnable {
+
+        private final Server server4PsiSender;
+
+        public PSISender(Server server) {
+            server4PsiSender = server;
+        }
+
+        public Server getServer4PsiSender() {
+            return server4PsiSender;
+        }
+
+        @Override
+        public void run() {
+            ++imsiForPSI;
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ie) {
+                logger.error(ie.getMessage());
+            }
+
+            try {
+                // Create Dialog for MAP PSI
+                AddressString psiDestinationRef = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
+                AddressString psiOriginRef = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
+
+                SccpAddress psiClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
+                SccpAddress psiServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, "491710400000");
+                MAPDialogMobility mapDialogMobility = mapProvider.getMAPServiceMobility().
+                        createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.subscriberInfoEnquiryContext, MAPApplicationContextVersion.version3),
+                                psiClientSccpAddress, psiOriginRef, psiServerSccpAddress, psiDestinationRef);
+
+                Random rand = new Random();
+                int randPSi = rand.nextInt(7) + 1;
+                IMSI imsi = new IMSIImpl(String.valueOf(imsiForPSI));
+                byte[] lmsiByte;
+                LMSI lmsi;
+                int lmsiRandom = rand.nextInt(10) + 1;
+                switch (lmsiRandom) {
+                    case 1:
+                        lmsiByte = new byte[] {114, 2, (byte) 233, (byte) 140};
+                        lmsi = new LMSIImpl(lmsiByte);
+                        break;
+                    case 2:
+                        lmsiByte = new byte[] {113, (byte) 255, (byte) 172, (byte) 206};
+                        lmsi = new LMSIImpl(lmsiByte);
+                        break;
+                    case 3:
+                        lmsiByte = new byte[] {114, 2, (byte) 235, 55};
+                        lmsi = new LMSIImpl(lmsiByte);
+                        break;
+                    case 4:
+                        lmsiByte = new byte[] {114, 2, (byte) 231, (byte) 213};
+                        lmsi = new LMSIImpl(lmsiByte);
+                        break;
+                    default:
+                        lmsi = null;
+                        break;
+                }
+                boolean locationInformation;
+                boolean subscriberState;
+                MAPExtensionContainer extensionContainer = null;
+                DomainType requestedDomain = DomainType.csDomain;
+                boolean imei;
+                boolean msClassmark;
+                boolean mnpRequestedInfo;
+                boolean currentLocation; // currentLocation shall be absent if locationInformation is absent
+                boolean tadsData = false; // t-adsData shall be absent in messages sent to the VLR
+                RequestedNodes requestedNodes = null; // requestedNodes shall be absent if requestedDomain is "cs-Domain"
+                boolean servingNodeIndication;
+                /*
+                servingNodeIndication shall be absent if locationInformation is absent;
+                servingNodeIndication shall be absent if current location is present;
+                servingNodeIndication indicates by its presence that only the serving node's address (MME-Name or SGSN-Number or VLR-Number) is requested.
+                 */
+                boolean locationInformationEPSSupported; // locationInformationEPS-Supported shall be absent if locationInformation is absent
+                boolean localTimeZoneRequest;
+                RequestedInfo requestedInfo = null;
+                EMLPPPriority callPriority = null;
+                switch (randPSi) {
+                    case 1:
+                        locationInformation = true;
+                        subscriberState = true;
+                        imei = false;
+                        msClassmark = false;
+                        mnpRequestedInfo = false;
+                        currentLocation = true; // currentLocation shall be absent if locationInformation is absent
+                        servingNodeIndication = false; // servingNodeIndication shall be absent if current location is present;
+                        locationInformationEPSSupported = true; // locationInformationEPS-Supported shall be absent if locationInformation is absent
+                        localTimeZoneRequest = false;
+                        requestedInfo = new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer,
+                                currentLocation, requestedDomain, imei, msClassmark, mnpRequestedInfo, tadsData, requestedNodes,
+                                servingNodeIndication, locationInformationEPSSupported, localTimeZoneRequest);
+                        callPriority = EMLPPPriority.priorityLevel1;
+                        break;
+                    case 2:
+                        locationInformation = true;
+                        subscriberState = true;
+                        imei = true;
+                        msClassmark = true;
+                        mnpRequestedInfo = true;
+                        currentLocation = true; // currentLocation shall be absent if locationInformation is absent
+                        servingNodeIndication = false; // servingNodeIndication shall be absent if current location is present;
+                        locationInformationEPSSupported = true; // locationInformationEPS-Supported shall be absent if locationInformation is absent
+                        localTimeZoneRequest = true;
+                        requestedInfo = new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer,
+                                currentLocation, requestedDomain, imei, msClassmark, mnpRequestedInfo, tadsData, requestedNodes,
+                                servingNodeIndication, locationInformationEPSSupported, localTimeZoneRequest);
+                        break;
+                    case 3:
+                        locationInformation = false;
+                        subscriberState = true;
+                        imei = false;
+                        msClassmark = false;
+                        mnpRequestedInfo = false;
+                        currentLocation = true; // currentLocation shall be absent if locationInformation is absent
+                        servingNodeIndication = false; // servingNodeIndication shall be absent if current location is present;
+                        locationInformationEPSSupported = true; // locationInformationEPS-Supported shall be absent if locationInformation is absent
+                        localTimeZoneRequest = false;
+                        requestedInfo = new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer,
+                                currentLocation, requestedDomain, imei, msClassmark, mnpRequestedInfo, tadsData, requestedNodes,
+                                servingNodeIndication, locationInformationEPSSupported, localTimeZoneRequest);
+                        callPriority = EMLPPPriority.priorityLevelA;
+                        break;
+                    case 4:
+                        locationInformation = true;
+                        subscriberState = true;
+                        imei = true;
+                        msClassmark = true;
+                        mnpRequestedInfo = false;
+                        currentLocation = false; // currentLocation shall be absent if locationInformation is absent
+                        servingNodeIndication = true; // servingNodeIndication shall be absent if current location is present;
+                        locationInformationEPSSupported = false; // locationInformationEPS-Supported shall be absent if locationInformation is absent
+                        localTimeZoneRequest = false;
+                        requestedInfo = new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer,
+                                currentLocation, requestedDomain, imei, msClassmark, mnpRequestedInfo, tadsData, requestedNodes,
+                                servingNodeIndication, locationInformationEPSSupported, localTimeZoneRequest);
+                        callPriority = EMLPPPriority.priorityLevel4;
+                        break;
+                    case 5:
+                        locationInformation = false;
+                        subscriberState = true;
+                        imei = true;
+                        msClassmark = true;
+                        mnpRequestedInfo = true;
+                        currentLocation = false; // currentLocation shall be absent if locationInformation is absent
+                        servingNodeIndication = false; // servingNodeIndication shall be absent if current location is present;
+                        locationInformationEPSSupported = false; // locationInformationEPS-Supported shall be absent if locationInformation is absent
+                        localTimeZoneRequest = false;
+                        requestedInfo = new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer,
+                                currentLocation, requestedDomain, imei, msClassmark, mnpRequestedInfo, tadsData, requestedNodes,
+                                servingNodeIndication, locationInformationEPSSupported, localTimeZoneRequest);
+                        callPriority = EMLPPPriority.priorityLevel2;
+                        break;
+                    case 6:
+                        locationInformation = true;
+                        subscriberState = true;
+                        imei = true;
+                        msClassmark = false;
+                        mnpRequestedInfo = false;
+                        currentLocation = true; // currentLocation shall be absent if locationInformation is absent
+                        servingNodeIndication = false; // servingNodeIndication shall be absent if current location is present;
+                        locationInformationEPSSupported = true; // locationInformationEPS-Supported shall be absent if locationInformation is absent
+                        localTimeZoneRequest = true;
+                        requestedInfo = new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer,
+                                currentLocation, requestedDomain, imei, msClassmark, mnpRequestedInfo, tadsData, requestedNodes,
+                                servingNodeIndication, locationInformationEPSSupported, localTimeZoneRequest);
+                        break;
+                    case 7:
+                        locationInformation = true;
+                        subscriberState = true;
+                        imei = true;
+                        msClassmark = true;
+                        mnpRequestedInfo = true;
+                        currentLocation = true; // currentLocation shall be absent if locationInformation is absent
+                        servingNodeIndication = false; // servingNodeIndication shall be absent if current location is present;
+                        locationInformationEPSSupported = true; // locationInformationEPS-Supported shall be absent if locationInformation is absent
+                        localTimeZoneRequest = true;
+                        requestedInfo = new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer,
+                                currentLocation, requestedDomain, imei, msClassmark, mnpRequestedInfo, tadsData, requestedNodes,
+                                servingNodeIndication, locationInformationEPSSupported, localTimeZoneRequest);
+                        callPriority = EMLPPPriority.priorityLevelB;
+                        break;
+                    default:
+                        break;
+                }
+
+                long invokeTimeout = 30;
+                mapDialogMobility.addProvideSubscriberInfoRequest(invokeTimeout, imsi, lmsi, requestedInfo, extensionContainer, callPriority);
+                mapDialogMobility.send();
+
+            } catch (MAPException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
+
+    private static SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
+        ParameterFactoryImpl fact = new ParameterFactoryImpl();
+        GlobalTitle gt = fact.createGlobalTitle(address, 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
+                BCDEvenEncodingScheme.INSTANCE, NatureOfAddress.INTERNATIONAL);
+        if (ssn < 0) {
+            ssn = HLR_SSN;
+        }
+        return fact.createSccpAddress(ri, gt, dpc, ssn);
     }
 }

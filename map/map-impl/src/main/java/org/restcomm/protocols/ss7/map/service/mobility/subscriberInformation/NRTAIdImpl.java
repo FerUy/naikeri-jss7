@@ -37,7 +37,7 @@ public class NRTAIdImpl extends OctetStringBase implements NRTAId {
         if (mnc < 0 || mnc > 999)
             throw new MAPException("Bad MNC value");
 
-        this.data = new byte[5];
+        this.data = new byte[6];
 
         StringBuilder sb = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();

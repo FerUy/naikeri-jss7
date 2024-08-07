@@ -13,11 +13,11 @@ public class RequestedNodesImpl extends BitStringBase implements RequestedNodes 
     public static final String _PrimitiveName = "RequestedNodes";
 
     public RequestedNodesImpl() {
-        super(1, 8, 1, _PrimitiveName);
+        super(1, 8, 8, _PrimitiveName);
     }
 
     public RequestedNodesImpl(boolean mme, boolean sgsn) {
-        super(1, 8, 1, _PrimitiveName);
+        super(1, 8, 8, _PrimitiveName);
 
         if (mme)
             this.bitString.set(_INDEX_MME);
