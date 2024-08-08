@@ -473,17 +473,17 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
                         imsVoiceOverPsSessionsIndication = IMSVoiceOverPsSessionsIndication.getInstance((int) ais.readInteger());
                         break;
                     case _TAG_lastUEActivityTime:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ".lastUEActivityTime: Parameter is primitive",
+                                    + ".lastUEActivityTime: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         lastUEActivityTime = new TimeImpl();
                         ((TimeImpl) lastUEActivityTime).decodeAll(ais);
                         break;
                     case _TAG_lastRATType:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ".lastRATType: Parameter is primitive",
+                                    + ".lastRATType: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         lastRATType = UsedRATType.getInstance((int) ais.readInteger());
                         break;
@@ -504,17 +504,17 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
                         ((LocationInformationEPSImpl) locationInformationEPS).decodeAll(ais);
                         break;
                     case _TAG_timeZone:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ".timeZone: Parameter is primitive",
+                                    + ".timeZone: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         timeZone = new TimeZoneImpl();
                         ((TimeZoneImpl) timeZone).decodeAll(ais);
                         break;
                     case _TAG_daylightSavingTime:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ".daylightSavingTime: Parameter is primitive",
+                                    + ".daylightSavingTime: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         daylightSavingTime = DaylightSavingTime.getInstance((int) ais.readInteger());
                         break;

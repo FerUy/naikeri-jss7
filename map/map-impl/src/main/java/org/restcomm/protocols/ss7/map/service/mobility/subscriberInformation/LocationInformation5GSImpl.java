@@ -264,17 +264,17 @@ public class LocationInformation5GSImpl extends SequenceBase implements Location
 
                 switch (tag) {
                     case _TAG_NR_CGI:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " nrCellGlobalIdentity: Parameter is primitive",
+                                    + " nrCellGlobalIdentity: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.nrCellGlobalIdentity = new NRCellGlobalIdImpl();
                         ((NRCellGlobalIdImpl) this.nrCellGlobalIdentity).decodeAll(ais);
                         break;
                     case _TAG_EUTRAN_CGI:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " eUtranCellGlobalIdentity: Parameter is primitive",
+                                    + " eUtranCellGlobalIdentity: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.eUtranCellGlobalIdentity = new EUtranCgiImpl();
                         ((EUtranCgiImpl) this.eUtranCellGlobalIdentity).decodeAll(ais);
@@ -296,17 +296,17 @@ public class LocationInformation5GSImpl extends SequenceBase implements Location
                         ((GeodeticInformationImpl) this.geodeticInformation).decodeAll(ais);
                         break;
                     case _TAG_AMF_ADDRESS:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " amfAddress: Parameter is primitive",
+                                    + " amfAddress: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.amfAddress = new FQDNImpl();
                         ((FQDNImpl) this.amfAddress).decodeAll(ais);
                         break;
                     case _TAG_TAI:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " trackingAreaIdentity: Parameter is primitive",
+                                    + " trackingAreaIdentity: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.trackingAreaIdentity = new TAIdImpl();
                         ((TAIdImpl) this.trackingAreaIdentity).decodeAll(ais);
@@ -328,17 +328,17 @@ public class LocationInformation5GSImpl extends SequenceBase implements Location
                         this.ageOfLocationInformation = (int) ais.readInteger();
                         break;
                     case _TAG_VPLMN_ID:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " mmeName: Parameter is primitive",
+                                    + " mmeName: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.vplmnId = new PlmnIdImpl();
                         ((PlmnIdImpl) this.vplmnId).decodeAll(ais);
                         break;
                     case _TAG_LOCAL_TIME_ZONE:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " mmeName: Parameter is primitive",
+                                    + " mmeName: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.localTimeZone = new TimeZoneImpl();
                         ((TimeZoneImpl) this.localTimeZone).decodeAll(ais);
@@ -359,9 +359,9 @@ public class LocationInformation5GSImpl extends SequenceBase implements Location
                         ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
                         break;
                     case _TAG_NR_TA_ID:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + " extensionContainer: Parameter is primitive",
+                                    + " extensionContainer: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.nrTrackingAreaIdentity = new NRTAIdImpl();
                         ((NRTAIdImpl) this.nrTrackingAreaIdentity).decodeAll(ais);

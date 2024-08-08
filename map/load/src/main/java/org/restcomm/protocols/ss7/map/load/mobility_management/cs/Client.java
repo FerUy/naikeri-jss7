@@ -1596,6 +1596,11 @@ public class Client extends TestHarnessMobilityManagement {
                                 ratType = UsedRATType.eUtran;
                                 nrTrackingAreaIdentity = new NRTAIdImpl();
                                 nrTrackingAreaIdentity.setData(748, 1, 775);
+                                geographicalLatitude = -34.909744;
+                                geographicalLongitude = -56.146317;
+                                geographicalUncertainty = 1.0;
+                                geographicalInformation = new GeographicalInformationImpl(typeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+                                geodeticInformation = null;
                                 locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, eUtranCgi, geographicalInformation,
                                         geodeticInformation, amfAddress, taId, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
                                         localTimeZone, ratType, null, nrTrackingAreaIdentity);
@@ -1612,9 +1617,20 @@ public class Client extends TestHarnessMobilityManagement {
                                 nrTrackingAreaIdentity = new NRTAIdImpl();
                                 nrTrackingAreaIdentity.setData(748, 2, 208);
                                 currentLocationRetrieved = ageOfLocationInformation == 0;
+                                geodeticLatitude = -34.910349;
+                                geodeticLongitude = -56.149832;
+                                geodeticUncertainty = 2.0;
+                                geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
                                 locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, eUtranCgi, geographicalInformation,
                                         geodeticInformation, amfAddress, taId, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
                                         localTimeZone, ratType, null, nrTrackingAreaIdentity);
+                                lteCgi = hexStringToByteArray("47f81000095f02"); // ECGI = 748-1-614146; TBCD encoded: 47f81000095f02
+                                trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
+                                eUtranCgi = new EUtranCgiImpl(lteCgi);
+                                taId = new TAIdImpl(trackingAreaId);
+                                mmeNameStr = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
+                                mme = mmeNameStr.getBytes();
+                                mmeName = new DiameterIdentityImpl(mme);
                                 locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
                                         geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
                                 locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(null, null,
