@@ -220,7 +220,6 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
                         this.geographicalInformation = new GeographicalInformationImpl();
                         ((GeographicalInformationImpl) this.geographicalInformation).decodeAll(ais);
                         break;
-
                     case _TAG_geodeticInformation:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName

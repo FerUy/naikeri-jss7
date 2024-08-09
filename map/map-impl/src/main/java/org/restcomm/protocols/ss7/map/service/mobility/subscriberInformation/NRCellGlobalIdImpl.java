@@ -23,13 +23,8 @@ public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalI
     private static final String NCI = "nci";
     private static final String DATA = "data";
     private static final long DEFAULT_LONG_VALUE = 0;
-
     private static final String DEFAULT_VALUE = null;
     private static final String _PrimitiveName = "NRCellGlobalId";
-
-    public NRCellGlobalIdImpl(int minLength, int maxLength, String _PrimitiveName) {
-        super(minLength, maxLength, _PrimitiveName);
-    }
 
     public NRCellGlobalIdImpl() {
         super(8, 8, _PrimitiveName);
@@ -76,11 +71,11 @@ public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalI
         TbcdString.encodeString(asnOs, sb2.toString());
         System.arraycopy(asnOs.toByteArray(), 0, this.data, 2, 1);
 
-        data[3] = (byte) (nci / 65536);
-        data[4] = (byte) (nci % 65536);
-        data[5] = (byte) (nci / 256);
-        data[6] = (byte) (nci % 256);
-        data[7] = (byte) (nci / 16);
+        data[3] = (byte) ((nci >> 32) & 0x0F);
+        data[4] = (byte) ((nci >> 24) & 0xFF);
+        data[5] = (byte) ((nci >> 16) & 0xFF);
+        data[6] = (byte) ((nci >> 8) & 0xFF);
+        data[7] = (byte) (nci & 0xFF);
     }
 
     public int getMCC() throws MAPException {
@@ -145,7 +140,7 @@ public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalI
         if (data.length != 8)
             throw new MAPException("Data length must equal 8");
 
-        return (data[3] & 0xFF) * 4294967296L + (data[4] & 0xFF) * 16777216L + (data[5] & 0xFF) * 65536 + (data[6] & 0xFF) * 256 + (data[7] & 0xFF);
+        return ((long) (data[3] & 0x0F) << 32) + ((long) (data[4] & 0xFF) << 24) + ((data[5] & 0xFF) << 16) + ((data[6] & 0xFF) << 8) + (data[7] & 0xFF);
     }
 
     @Override

@@ -64,9 +64,9 @@ public class NRTAIdImpl extends OctetStringBase implements NRTAId {
         TbcdString.encodeString(asnOs, sb2.toString());
         System.arraycopy(asnOs.toByteArray(), 0, this.data, 2, 1);
 
-        data[3] = (byte) (tac / 256);
-        data[4] = (byte) (tac % 256);
-        data[5] = (byte) (tac / 16);
+        data[3] = (byte) ((tac >> 16) & 0x0F);
+        data[4] = (byte) ((tac >> 8) & 0xFF);
+        data[5] = (byte) (tac & 0xFF);
     }
 
     public int getMCC() throws MAPException {
@@ -128,10 +128,10 @@ public class NRTAIdImpl extends OctetStringBase implements NRTAId {
 
         if (data == null)
             throw new MAPException("Data must not be empty");
-        if (data.length != 7)
-            throw new MAPException("Data length must equal 7");
+        if (data.length != 6)
+            throw new MAPException("Data length must equal 6");
 
-        return (data[3] & 0xFF) * 65536 + (data[4] & 0xFF) * 256 + (data[5] & 0xFF);
+        return ((data[3] & 0x0F) << 16) + ((data[4] & 0xFF) << 8) + (data[5] & 0xFF);
     }
 
     @Override

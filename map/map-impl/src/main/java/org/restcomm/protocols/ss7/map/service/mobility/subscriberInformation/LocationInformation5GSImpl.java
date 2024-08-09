@@ -280,7 +280,7 @@ public class LocationInformation5GSImpl extends SequenceBase implements Location
                         ((EUtranCgiImpl) this.eUtranCellGlobalIdentity).decodeAll(ais);
                         break;
                     case _TAG_GEOGRAPHICAL_INFO:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " geographicalInformation: Parameter is primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
@@ -288,7 +288,7 @@ public class LocationInformation5GSImpl extends SequenceBase implements Location
                         ((GeographicalInformationImpl) this.geographicalInformation).decodeAll(ais);
                         break;
                     case _TAG_GEODETIC_INFO:
-                        if (ais.isTagPrimitive())
+                        if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " geodeticInformation: Parameter is primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);

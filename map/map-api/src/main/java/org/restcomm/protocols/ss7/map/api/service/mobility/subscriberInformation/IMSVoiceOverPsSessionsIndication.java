@@ -30,9 +30,9 @@ public enum IMSVoiceOverPsSessionsIndication {
     public static IMSVoiceOverPsSessionsIndication getInstance(int ind) {
         switch (ind) {
             case 0:
-                return imsVoiceOverPSSessionsSupported;
-            case 1:
                 return imsVoiceOverPSSessionsNotSupported;
+            case 1:
+                return imsVoiceOverPSSessionsSupported;
             case 2:
                 return unknown;
             default:
