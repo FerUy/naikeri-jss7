@@ -38,7 +38,7 @@ SubscriberInfo ::= SEQUENCE {
 </code>
  *
  * @author amit bhayani
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface SubscriberInfo extends Serializable {
 

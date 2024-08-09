@@ -51,7 +51,7 @@ import org.testng.annotations.Test;
 /**
 *
 * @author sergey vetyutnev
-*
+* @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
 */
 public class ProvideSubscriberInfoResponseTest {
 
@@ -82,13 +82,13 @@ public class ProvideSubscriberInfoResponseTest {
                 0x00, 0x64, 0x16, 0x50, (byte) 0xf0, (byte) 0x86, 0x03, 0x39,
                 0x3a, 0x52, (byte) 0xa8, 0x1b, (byte) 0x80, 0x03, (byte) 0x94, 0x71,
                 0x01, (byte) 0x81, 0x08, 0x09, 0x41, 0x50, 0x01, 0x65,
-                0x08, 0x34, (byte) 0xf3, (byte) 0x82, 0x07, (byte) 0x91, (byte) 0x95, (byte) 0x98,
+                0x08, 0x74, (byte) 0xf4, (byte) 0x82, 0x07, (byte) 0x91, (byte) 0x95, (byte) 0x98,
                 0x09, 0x77, 0x39, (byte) 0xf7, (byte) 0x83, 0x01, 0x04, (byte) 0x89,
                 0x01, 0x00, (byte) 0x8a, 0x04, (byte) 0xea, 0x5b, 0x27, (byte) 0xa5,
                 (byte) 0x8b, 0x01, 0x04, (byte) 0x8e, 0x02, 0x00, 0x03, (byte) 0x8f,
                 0x01, 0x00, (byte) 0xb0, 0x78, (byte) 0x80, 0x08, 0x47, (byte) 0xf8,
-                0x20, 0x0e, (byte) 0xff, 0x17, (byte) 0xff, 0x7f, (byte) 0x81, 0x07,
-                0x47, (byte) 0xf8, 0x70, 0x00, 0x4c, 0x2e, 0x08, (byte) 0x83,
+                0x20, 0x08, 0x00, 0x00, 0x00, 0x08, (byte) 0x81, 0x07,
+                0x47, (byte) 0xf8, 0x10, 0x00, 0x07, (byte) 0xf0, 0x01, (byte) 0x83,
                 0x0a, 0x03, 0x10, (byte) 0xb1, (byte) 0xa6, 0x78, (byte) 0xd8, 0x12,
                 0x3d, 0x01, 0x01, (byte) 0x84, 0x37, 0x61, 0x6d, 0x66,
                 0x33, 0x2e, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65,
@@ -98,10 +98,10 @@ public class ProvideSubscriberInfoResponseTest {
                 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
                 0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
                 0x2e, 0x6f, 0x72, 0x67, (byte) 0x85, 0x05, 0x47, (byte) 0xf8,
-                0x70, 0x1b, 0x58, (byte) 0x86, 0x00, (byte) 0x87, 0x01, 0x00,
+                0x10, 0x00, 0x6d, (byte) 0x86, 0x00, (byte) 0x87, 0x01, 0x00,
                 (byte) 0x88, 0x03, 0x47, (byte) 0xf8, 0x20, (byte) 0x89, 0x02, 0x00,
                 (byte) 0xfa, (byte) 0x8a, 0x01, 0x04, (byte) 0x8c, 0x06, 0x47, (byte) 0xf8,
-                0x20, 0x00, (byte) 0xd0, 0x0d
+                0x20, 0x07, (byte) 0x8f, (byte) 0xd2
         };
     }
 
@@ -232,7 +232,7 @@ public class ProvideSubscriberInfoResponseTest {
         ISDNAddressString msisdn = mnpInfoRes.getMSISDN();
         NumberPortabilityStatus portabilityStatus = mnpInfoRes.getNumberPortabilityStatus();
         assertEquals(rn.getRouteingNumber(), "491710");
-        assertEquals(imsi.getData(), "901405105680433");
+        assertEquals(imsi.getData(), "901405105680474");
         assertEquals(msisdn.getAddress(), "59899077937");
         assertEquals(portabilityStatus, NumberPortabilityStatus.ownNumberNotPortedOut);
         // IMSVoiceOverPsSessionsIndication
@@ -266,7 +266,7 @@ public class ProvideSubscriberInfoResponseTest {
         NRCellGlobalId nrCGI = li5GS.getNRCellGlobalId();
         EUtranCgi li5GSLteCgi = li5GS.getEUtranCgi();
         GeographicalInformation li5GSGeographicalInfo = li5GS.getGeographicalInformation();
-        GeodeticInformation getGeodeticInformation = li5GS.getGeodeticInformation();
+        GeodeticInformation li5GSGeodeticInformation = li5GS.getGeodeticInformation();
         FQDN li5GSAMFAddress = li5GS.getAMFAddress();
         TAId li5GSTAId = li5GS.getTAId();
         boolean li5GSCurrentLocationRetrieved = li5GS.isCurrentLocationRetrieved();
@@ -278,7 +278,35 @@ public class ProvideSubscriberInfoResponseTest {
         NRTAId li5GSNRTAId = li5GS.getNRTAId();
         assertEquals(nrCGI.getMCC(), 748);
         assertEquals(nrCGI.getMNC(), 2);
-        assertEquals(nrCGI.getNCI(), 64409304959L);
+        assertEquals(nrCGI.getNCI(), 34359738376L);
+        assertEquals(li5GSLteCgi.getMCC(), 748);
+        assertEquals(li5GSLteCgi.getMNC(), 1);
+        assertEquals(li5GSLteCgi.getEci(), 520193);
+        assertEquals(li5GSLteCgi.getENodeBId(), 2032);
+        assertEquals(li5GSLteCgi.getCi(), 1);
+        assertNull(li5GSGeographicalInfo);
+        assertEquals(li5GSGeodeticInformation.getScreeningAndPresentationIndicators(), 3);
+        assertEquals(li5GSGeodeticInformation.getTypeOfShape(), TypeOfShape.EllipsoidPointWithUncertaintyCircle);
+        assertEquals(li5GSGeodeticInformation.getLatitude(), -34.91034507751465);
+        assertEquals(li5GSGeodeticInformation.getLongitude(), -56.14981412887573);
+        assertEquals(li5GSGeodeticInformation.getUncertainty(), 1.0000000000000009);
+        assertEquals(liLocEPSInfoGeodeticInfo.getConfidence(), 1);
+        assertEquals(li5GSAMFAddress.getData(), "amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
+        assertEquals(li5GSTAId.getMCC(), 748);
+        assertEquals(li5GSTAId.getMNC(), 1);
+        assertEquals(li5GSTAId.getTAC(), 109);
+        assertTrue(li5GSCurrentLocationRetrieved);
+        assertEquals(li5GSAgeOfLocationInformation.intValue(), 0);
+        assertEquals(li5GSVPlmnId.getMcc(), 748);
+        assertEquals(li5GSVPlmnId.getMnc(), 2);
+        assertEquals(li5GSLocalTimeZone.getData(), new byte[] {0, -6});
+        assertEquals(li5GSUsedRATType, UsedRATType.eUtran);
+        assertNull(li5GSExtensionContainer);
+        assertEquals(li5GSNRTAId.getMCC(), 748);
+        assertEquals(li5GSNRTAId.getMNC(), 2);
+        assertEquals(li5GSNRTAId.getNrTAC(), 495570);
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
 
     }
 

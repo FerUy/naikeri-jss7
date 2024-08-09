@@ -13,6 +13,9 @@ import org.restcomm.protocols.ss7.map.primitives.TbcdString;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 
+/**
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ */
 public class NRTAIdImpl extends OctetStringBase implements NRTAId {
 
     private static final String MCC = "mcc";
