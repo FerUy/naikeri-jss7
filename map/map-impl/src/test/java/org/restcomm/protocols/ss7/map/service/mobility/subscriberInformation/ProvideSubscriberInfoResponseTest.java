@@ -9,12 +9,14 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
+import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdOrLAI;
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.IMEI;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
@@ -33,9 +35,11 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSClassmark2;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NRCellGlobalId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NRTAId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NotReachableReason;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NumberPortabilityStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberState;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RouteingNumber;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberStateChoice;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberStateChoice;
@@ -49,10 +53,10 @@ import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
 import org.testng.annotations.Test;
 
 /**
-*
-* @author sergey vetyutnev
-* @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
-*/
+ *
+ * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ */
 public class ProvideSubscriberInfoResponseTest {
 
     private byte[] getEncodedData() {
@@ -102,6 +106,79 @@ public class ProvideSubscriberInfoResponseTest {
                 (byte) 0x88, 0x03, 0x47, (byte) 0xf8, 0x20, (byte) 0x89, 0x02, 0x00,
                 (byte) 0xfa, (byte) 0x8a, 0x01, 0x04, (byte) 0x8c, 0x06, 0x47, (byte) 0xf8,
                 0x20, 0x07, (byte) 0x8f, (byte) 0xd2
+        };
+    }
+
+    private byte[] getEncodedDataCs4() {
+        return new byte[] { 0x30, 0x4d, 0x30, 0x4b, (byte) 0xa0, 0x31, 0x02, 0x02,
+                0x01, 0x2c, (byte) 0x81, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01,
+                0x64, 0x00, 0x00, (byte) 0x82, 0x08, 0x04, (byte) 0x97, 0x18,
+                0x29, 0x30, 0x69, (byte) 0x91, 0x40, (byte) 0xa3, 0x09, (byte) 0x80,
+                0x07, 0x47, (byte) 0xf8, 0x10, 0x00, 0x65, 0x28, 0x17,
+                (byte) 0xab, 0x0d, (byte) 0x80, 0x05, 0x05, (byte) 0xc0, 0x00, 0x00,
+                0x60, (byte) 0x82, 0x01, 0x01, (byte) 0x83, 0x01, 0x02, (byte) 0xa1,
+                0x03, 0x0a, 0x01, 0x02, (byte) 0x89, 0x01, 0x00, (byte) 0x8a,
+                0x04, (byte) 0xea, 0x5b, 0x27, (byte) 0xa5, (byte) 0x8b, 0x01, 0x04,
+                (byte) 0x8e, 0x02, 0x00, 0x03, (byte) 0x8f, 0x01, 0x00
+        };
+    }
+
+    private byte[] getEncodedDataCs5() {
+        return new byte[] { 0x30, (byte) 0x81, (byte) 0x8d, 0x30, (byte) 0x81, (byte) 0x8a, (byte) 0xa0,
+                0x45, 0x02, 0x01, 0x00, (byte) 0x80, 0x08, 0x10, (byte) 0xb1,
+                (byte) 0xa6, 0x3f, (byte) 0xd8, 0x12, (byte) 0xe0, 0x00, (byte) 0x81, 0x07,
+                (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64, 0x00, 0x00, (byte) 0x82,
+                0x08, 0x04, (byte) 0x97, 0x18, 0x29, 0x30, 0x69, (byte) 0x91,
+                0x40, (byte) 0xa3, 0x09, (byte) 0x80, 0x07, 0x47, (byte) 0xf8, 0x10,
+                0x00, 0x65, 0x28, 0x17, (byte) 0x86, 0x07, (byte) 0x91, (byte) 0x94,
+                0x71, 0x01, 0x64, 0x00, 0x00, (byte) 0x88, 0x00, (byte) 0xab,
+                0x0d, (byte) 0x80, 0x05, 0x05, (byte) 0xc0, 0x00, 0x00, 0x60,
+                (byte) 0x82, 0x01, 0x01, (byte) 0x83, 0x01, 0x02, (byte) 0xa1, 0x02,
+                (byte) 0x81, 0x00, (byte) 0x85, 0x08, 0x10, 0x71, 0x41, 0x00,
+                0x64, 0x16, 0x50, (byte) 0xf0, (byte) 0x86, 0x03, 0x39, 0x3a,
+                0x52, (byte) 0xa8, 0x1b, (byte) 0x80, 0x03, (byte) 0x94, 0x71, 0x01,
+                (byte) 0x81, 0x08, 0x09, 0x41, 0x50, 0x01, 0x65, 0x08,
+                0x74, (byte) 0xf4, (byte) 0x82, 0x07, (byte) 0x91, (byte) 0x95, (byte) 0x98, 0x09,
+                0x77, 0x39, (byte) 0xf7, (byte) 0x83, 0x01, 0x04, (byte) 0x89, 0x01,
+                0x00, (byte) 0x8a, 0x04, (byte) 0xea, 0x5b, 0x27, (byte) 0xa5, (byte) 0x8b,
+                0x01, 0x04, (byte) 0x8e, 0x02, 0x00, 0x03, (byte) 0x8f, 0x01, 0x00
+        };
+    }
+
+    private byte[] getEncodedDataPs6() {
+        return new byte[] { 0x30, (byte) 0x82, 0x01, 0x00, 0x30, (byte) 0x81,
+                (byte) 0xfd, (byte) 0xa3, 0x28, (byte) 0xa0, 0x09, (byte) 0x80, 0x07, 0x47,
+                (byte) 0xf8, 0x10, 0x00, 0x6d, 0x27, (byte) 0xbf, (byte) 0x81, 0x06,
+                0x47, (byte) 0xf8, 0x10, 0x00, 0x65, 0x17, (byte) 0x83, 0x08,
+                (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64, 0x00, 0x10, (byte) 0xf0,
+                (byte) 0x84, 0x03, 0x31, 0x33, 0x31, (byte) 0x86, 0x00, (byte) 0x89,
+                0x02, 0x03, 0x6f, (byte) 0xa4, 0x03, 0x0a, 0x01, 0x02,
+                (byte) 0x89, 0x01, 0x01, (byte) 0x8a, 0x04, (byte) 0xea, 0x5b, 0x27,
+                (byte) 0xa5, (byte) 0x8b, 0x01, 0x01, (byte) 0xad, 0x4c, (byte) 0x80, 0x07,
+                0x47, (byte) 0xf8, 0x10, 0x00, 0x07, (byte) 0xea, 0x02, (byte) 0x81,
+                0x05, 0x47, (byte) 0xf8, 0x10, 0x00, 0x6d, (byte) 0x86, 0x02,
+                0x03, 0x6f, (byte) 0x87, 0x36, 0x6d, 0x6d, 0x65, 0x63,
+                0x30, 0x33, 0x2e, 0x6d, 0x6d, 0x65, 0x67, 0x69,
+                0x33, 0x30, 0x30, 0x30, 0x2e, 0x6d, 0x6d, 0x65,
+                0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63,
+                0x30, 0x30, 0x32, 0x2e, 0x6d, 0x63, 0x63, 0x37,
+                0x34, 0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e,
+                0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f,
+                0x72, 0x67, (byte) 0x8e, 0x02, 0x00, 0x06, (byte) 0x8f, 0x01,
+                0x00, (byte) 0xb0, 0x6b, (byte) 0x80, 0x08, 0x47, (byte) 0xf8, 0x20,
+                0x08, 0x00, 0x00, 0x00, 0x08, (byte) 0x81, 0x07, 0x47,
+                (byte) 0xf8, 0x10, 0x00, 0x07, (byte) 0xea, 0x02, (byte) 0x84, 0x37,
+                0x61, 0x6d, 0x66, 0x33, 0x2e, 0x63, 0x6c, 0x75,
+                0x73, 0x74, 0x65, 0x72, 0x32, 0x2e, 0x6e, 0x65,
+                0x74, 0x32, 0x2e, 0x61, 0x6d, 0x66, 0x2e, 0x35,
+                0x67, 0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x32,
+                0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e,
+                0x33, 0x67, 0x70, 0x70, 0x6e, 0x65, 0x74, 0x77,
+                0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67, (byte) 0x85,
+                0x05, 0x47, (byte) 0xf8, 0x10, 0x00, 0x6d, (byte) 0x87, 0x02,
+                0x03, 0x6f, (byte) 0x88, 0x03, 0x47, (byte) 0xf8, 0x20, (byte) 0x89,
+                0x02, 0x00, (byte) 0xfa, (byte) 0x8a, 0x01, 0x04, (byte) 0x8c, 0x06,
+                0x47, (byte) 0xf8, 0x20, 0x07, (byte) 0x8f, (byte) 0xd2
         };
     }
 
@@ -155,7 +232,7 @@ public class ProvideSubscriberInfoResponseTest {
         GeographicalInformation liGeographicInfo = li.getGeographicalInformation();
         ISDNAddressString vlrNumber = li.getVlrNumber();
         LocationNumberMap locationNumberMap = li.getLocationNumber();
-        CellGlobalIdOrServiceAreaIdOrLAI loCGIorSAIorLAI = li.getCellGlobalIdOrServiceAreaIdOrLAI();
+        CellGlobalIdOrServiceAreaIdOrLAI liCGIorSAIorLAI = li.getCellGlobalIdOrServiceAreaIdOrLAI();
         MAPExtensionContainer liExtensionContainer = li.getExtensionContainer();
         LSAIdentity liLsaId = li.getSelectedLSAId();
         ISDNAddressString mscAddress = li.getMscNumber();
@@ -177,7 +254,7 @@ public class ProvideSubscriberInfoResponseTest {
         assertNull(liGeographicInfo);
         assertNull(vlrNumber);
         assertNull(locationNumberMap);
-        assertNull(loCGIorSAIorLAI);
+        assertNull(liCGIorSAIorLAI);
         assertNull(liExtensionContainer);
         assertNull(liLsaId);
         assertNull(mscAddress);
@@ -227,14 +304,14 @@ public class ProvideSubscriberInfoResponseTest {
         assertNull(gprsmsClass);
         // MNPInfoRes
         MNPInfoRes mnpInfoRes = si.getMNPInfoRes();
-        RouteingNumber rn = mnpInfoRes.getRouteingNumber();
-        IMSI imsi = mnpInfoRes.getIMSI();
-        ISDNAddressString msisdn = mnpInfoRes.getMSISDN();
-        NumberPortabilityStatus portabilityStatus = mnpInfoRes.getNumberPortabilityStatus();
-        assertEquals(rn.getRouteingNumber(), "491710");
-        assertEquals(imsi.getData(), "901405105680474");
-        assertEquals(msisdn.getAddress(), "59899077937");
-        assertEquals(portabilityStatus, NumberPortabilityStatus.ownNumberNotPortedOut);
+        IMSI mnpImsi = mnpInfoRes.getIMSI();
+        ISDNAddressString mnpMsisdn = mnpInfoRes.getMSISDN();
+        NumberPortabilityStatus mnpPortabilityStatus = mnpInfoRes.getNumberPortabilityStatus();
+        String mnpRouteingNumber = mnpInfoRes.getRouteingNumber().getRouteingNumber();
+        assertEquals(mnpRouteingNumber, "491710");
+        assertEquals(mnpImsi.getData(), "901405105680474");
+        assertEquals(mnpMsisdn.getAddress(), "59899077937");
+        assertEquals(mnpPortabilityStatus, NumberPortabilityStatus.ownNumberNotPortedOut);
         // IMSVoiceOverPsSessionsIndication
         IMSVoiceOverPsSessionsIndication ims = si.getIMSVoiceOverPsSessionsIndication();
         assertEquals(ims, IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsNotSupported);
@@ -257,7 +334,7 @@ public class ProvideSubscriberInfoResponseTest {
         assertNull(locationInfoEPS);
         // TimeZone
         TimeZone timeZone = si.getTimeZone();
-        assertEquals(timeZone.getData(), new byte[]{0, 3});
+        assertEquals(timeZone.getData(), new byte[] {0, 3});
         // DaylightSavingTime
         DaylightSavingTime daylightSavingTime = si.getDaylightSavingTime();
         assertEquals(daylightSavingTime, DaylightSavingTime.noAdjustment);
@@ -297,6 +374,397 @@ public class ProvideSubscriberInfoResponseTest {
         assertEquals(li5GSTAId.getTAC(), 109);
         assertTrue(li5GSCurrentLocationRetrieved);
         assertEquals(li5GSAgeOfLocationInformation.intValue(), 0);
+        assertEquals(li5GSVPlmnId.getMcc(), 748);
+        assertEquals(li5GSVPlmnId.getMnc(), 2);
+        assertEquals(li5GSLocalTimeZone.getData(), new byte[] {0, -6});
+        assertEquals(li5GSUsedRATType, UsedRATType.eUtran);
+        assertNull(li5GSExtensionContainer);
+        assertEquals(li5GSNRTAId.getMCC(), 748);
+        assertEquals(li5GSNRTAId.getMNC(), 2);
+        assertEquals(li5GSNRTAId.getNrTAC(), 495570);
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
+
+        // test 4 (data taken from MAP load test for CS domain, containing location information (no EPS or 5GS)
+        rawData = getEncodedDataCs4();
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        asc = new ProvideSubscriberInfoResponseImpl();
+        asc.decodeAll(asn);
+
+        assertEquals(tag, Tag.SEQUENCE);
+        assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
+
+        si = asc.getSubscriberInfo();
+        // LocationInformation
+        li = si.getLocationInformation();
+        aol = li.getAgeOfLocationInformation();
+        liGeographicInfo = li.getGeographicalInformation();
+        vlrNumber = li.getVlrNumber();
+        locationNumberMap = li.getLocationNumber();
+        liCGIorSAIorLAI = li.getCellGlobalIdOrServiceAreaIdOrLAI();
+        liExtensionContainer = li.getExtensionContainer();
+        liLsaId = li.getSelectedLSAId();
+        mscAddress = li.getMscNumber();
+        liGeodeticInfo = li.getGeodeticInformation();
+        liCurrentLocationRetrieved = li.getCurrentLocationRetrieved();
+        liSaiPresent = li.getSaiPresent();
+        liLocInfoEPS = li.getLocationInformationEPS();
+        liUserCSGInformation = li.getUserCSGInformation();
+        assertNotNull(li);
+        assertEquals(aol.intValue(), 300);
+        assertNull(liGeographicInfo);
+        assertEquals(vlrNumber.getAddressNature(), AddressNature.international_number);
+        assertEquals(vlrNumber.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(vlrNumber.getAddress(), "491710460000");
+        assertEquals(locationNumberMap.getLocationNumber().getNatureOfAddressIndicator(), 4);
+        assertEquals(locationNumberMap.getLocationNumber().getNumberingPlanIndicator(), 1);
+        assertEquals(locationNumberMap.getLocationNumber().getInternalNetworkNumberIndicator(), 1);
+        assertEquals(locationNumberMap.getLocationNumber().getAddressRepresentationRestrictedIndicator(), 1);
+        assertEquals(locationNumberMap.getLocationNumber().getScreeningIndicator(), 3);
+        assertEquals(locationNumberMap.getLocationNumber().getAddress(), "819203961904");
+        assertEquals(liCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
+        assertEquals(liCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 1);
+        assertEquals(liCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 101);
+        assertEquals(liCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 10263);
+        assertNull(liExtensionContainer);
+        assertNull(liLsaId);
+        assertNull(mscAddress);
+        assertNull(liGeodeticInfo);
+        assertFalse(liCurrentLocationRetrieved);
+        assertFalse(liSaiPresent);
+        assertNull(liLocInfoEPS);
+        assertTrue(liUserCSGInformation.getCSGId().getData().get(0));
+        assertTrue(liUserCSGInformation.getCSGId().getData().get(1));
+        assertFalse(liUserCSGInformation.getCSGId().getData().get(2));
+        assertTrue(liUserCSGInformation.getCSGId().getData().get(25));
+        assertTrue(liUserCSGInformation.getCSGId().getData().get(26));
+        assertNull(liUserCSGInformation.getExtensionContainer());
+        assertEquals(liUserCSGInformation.getAccessMode().intValue(), 1);
+        assertEquals(liUserCSGInformation.getCmi().intValue(), 2);
+        // SubscriberState
+        subscriberState = si.getSubscriberState();
+        assertEquals(subscriberState.getSubscriberStateChoice(), SubscriberStateChoice.netDetNotReachable);
+        assertEquals(subscriberState.getNotReachableReason(), NotReachableReason.restrictedArea);
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
+        // LocationInformationGPRS
+        liGPRS = si.getLocationInformationGPRS();
+        assertNull(liGPRS);
+        // PSSubscriberState
+        psSubscriberState = si.getPSSubscriberState();
+        assertNull(psSubscriberState);
+        // IMEI
+        imei = si.getIMEI();
+        assertNull(imei);
+        // MSClassmark2
+        msClassmark2 = si.getMSClassmark2();
+        assertNull(msClassmark2);
+        // GPRSMSClass
+        gprsmsClass = si.getGPRSMSClass();
+        assertNull(gprsmsClass);
+        // MNPInfoRes
+        mnpInfoRes = si.getMNPInfoRes();
+        assertNull(mnpInfoRes);
+        // IMSVoiceOverPsSessionsIndication
+        ims = si.getIMSVoiceOverPsSessionsIndication();
+        assertEquals(ims, IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsNotSupported);
+        // LastUEActivityTime
+        lastUEActivityTime = si.getLastUEActivityTime();
+        assertEquals(lastUEActivityTime.getYear(), 2024);
+        assertEquals(lastUEActivityTime.getMonth(), 8);
+        assertEquals(lastUEActivityTime.getDay(), 5);
+        assertEquals(lastUEActivityTime.getHour(), 10);
+        assertEquals(lastUEActivityTime.getMinute(), 27);
+        assertEquals(lastUEActivityTime.getSecond(), 49);
+        // UsedRATType
+        lastRATType = si.getLastRATType();
+        assertEquals(lastRATType, UsedRATType.eUtran);
+        // EPSSubscriberState
+        epsSubscriberState = si.getEPSSubscriberState();
+        assertNull(epsSubscriberState);
+        // LocationInformationEPS
+        locationInfoEPS = si.getLocationInformationEPS();
+        assertNull(locationInfoEPS);
+        // TimeZone
+        timeZone = si.getTimeZone();
+        assertEquals(timeZone.getData(), new byte[] {0, 3});
+        // DaylightSavingTime
+        daylightSavingTime = si.getDaylightSavingTime();
+        assertEquals(daylightSavingTime, DaylightSavingTime.noAdjustment);
+        // LocationInformation5GS
+        li5GS = si.getLocationInformation5GS();
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
+
+        // test 5 (data taken from MAP load test for CS domain, containing location information, richer than test 4 (no EPS or 5GS)
+        rawData = getEncodedDataCs5();
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        asc = new ProvideSubscriberInfoResponseImpl();
+        asc.decodeAll(asn);
+
+        assertEquals(tag, Tag.SEQUENCE);
+        assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
+
+        si = asc.getSubscriberInfo();
+        // LocationInformation
+        li = si.getLocationInformation();
+        aol = li.getAgeOfLocationInformation();
+        liGeographicInfo = li.getGeographicalInformation();
+        vlrNumber = li.getVlrNumber();
+        locationNumberMap = li.getLocationNumber();
+        liCGIorSAIorLAI = li.getCellGlobalIdOrServiceAreaIdOrLAI();
+        liExtensionContainer = li.getExtensionContainer();
+        liLsaId = li.getSelectedLSAId();
+        mscAddress = li.getMscNumber();
+        liGeodeticInfo = li.getGeodeticInformation();
+        liCurrentLocationRetrieved = li.getCurrentLocationRetrieved();
+        liSaiPresent = li.getSaiPresent();
+        liLocInfoEPS = li.getLocationInformationEPS();
+        liUserCSGInformation = li.getUserCSGInformation();
+        assertEquals(aol.intValue(), 0);
+        assertEquals(liGeographicInfo.getTypeOfShape(), TypeOfShape.EllipsoidPointWithUncertaintyCircle);
+        assertEquals(liGeographicInfo.getLatitude(), -34.90973353385925);
+        assertEquals(liGeographicInfo.getLongitude(), -56.14631652832031);
+        assertEquals(liGeographicInfo.getUncertainty(), 0.0);
+        assertEquals(vlrNumber.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(vlrNumber.getAddressNature(), AddressNature.international_number);
+        assertEquals(vlrNumber.getAddress(), "491710460000");
+        assertEquals(locationNumberMap.getLocationNumber().getNatureOfAddressIndicator(), 4);
+        assertEquals(locationNumberMap.getLocationNumber().getNumberingPlanIndicator(), 1);
+        assertEquals(locationNumberMap.getLocationNumber().getInternalNetworkNumberIndicator(), 1);
+        assertEquals(locationNumberMap.getLocationNumber().getAddressRepresentationRestrictedIndicator(), 1);
+        assertEquals(locationNumberMap.getLocationNumber().getScreeningIndicator(), 3);
+        assertEquals(locationNumberMap.getLocationNumber().getAddress(), "819203961904");
+        assertEquals(liCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
+        assertEquals(liCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 1);
+        assertEquals(liCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 101);
+        assertEquals(liCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 10263);
+        assertNull(liExtensionContainer);
+        assertNull(liLsaId);
+        assertEquals(mscAddress.getAddressNature(), AddressNature.international_number);
+        assertEquals(mscAddress.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(mscAddress.getAddress(), "491710460000");
+        assertNull(liGeodeticInfo);
+        assertTrue(liCurrentLocationRetrieved);
+        assertFalse(liSaiPresent);
+        assertNull(liLocInfoEPS);
+        assertTrue(liUserCSGInformation.getCSGId().getData().get(0));
+        assertTrue(liUserCSGInformation.getCSGId().getData().get(1));
+        assertFalse(liUserCSGInformation.getCSGId().getData().get(2));
+        assertTrue(liUserCSGInformation.getCSGId().getData().get(25));
+        assertTrue(liUserCSGInformation.getCSGId().getData().get(26));
+        assertNull(liUserCSGInformation.getExtensionContainer());
+        assertEquals(liUserCSGInformation.getAccessMode().intValue(), 1);
+        assertEquals(liUserCSGInformation.getCmi().intValue(), 2);
+        // SubscriberState
+        subscriberState = si.getSubscriberState();
+        assertEquals(subscriberState.getSubscriberStateChoice(), SubscriberStateChoice.camelBusy);
+        assertNull(subscriberState.getNotReachableReason());
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
+        // LocationInformationGPRS
+        liGPRS = si.getLocationInformationGPRS();
+        assertNull(liGPRS);
+        // PSSubscriberState
+        psSubscriberState = si.getPSSubscriberState();
+        assertNull(psSubscriberState);
+        // IMEI
+        imei = si.getIMEI();
+        assertEquals(imei.getIMEI(), "011714004661050");
+        // MSClassmark2
+        msClassmark2 = si.getMSClassmark2();
+        assertEquals(msClassmark2.getData(), new byte[] {0x39, 0x3a, 0x52});
+        // GPRSMSClass
+        gprsmsClass = si.getGPRSMSClass();
+        assertNull(gprsmsClass);
+        // MNPInfoRes
+        mnpInfoRes = si.getMNPInfoRes();
+        mnpImsi = mnpInfoRes.getIMSI();
+        mnpMsisdn = mnpInfoRes.getMSISDN();
+        mnpPortabilityStatus = mnpInfoRes.getNumberPortabilityStatus();
+        mnpRouteingNumber = mnpInfoRes.getRouteingNumber().getRouteingNumber();
+        assertEquals(mnpRouteingNumber, "491710");
+        assertEquals(mnpImsi.getData(), "901405105680474");
+        assertEquals(mnpMsisdn.getAddress(), "59899077937");
+        assertEquals(mnpPortabilityStatus, NumberPortabilityStatus.ownNumberNotPortedOut);
+        // IMSVoiceOverPsSessionsIndication
+        ims = si.getIMSVoiceOverPsSessionsIndication();
+        assertEquals(ims, IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsNotSupported);
+        // LastUEActivityTime
+        lastUEActivityTime = si.getLastUEActivityTime();
+        assertEquals(lastUEActivityTime.getYear(), 2024);
+        assertEquals(lastUEActivityTime.getMonth(), 8);
+        assertEquals(lastUEActivityTime.getDay(), 5);
+        assertEquals(lastUEActivityTime.getHour(), 10);
+        assertEquals(lastUEActivityTime.getMinute(), 27);
+        assertEquals(lastUEActivityTime.getSecond(), 49);
+        // UsedRATType
+        lastRATType = si.getLastRATType();
+        assertEquals(lastRATType, UsedRATType.eUtran);
+        // EPSSubscriberState
+        epsSubscriberState = si.getEPSSubscriberState();
+        assertNull(epsSubscriberState);
+        // LocationInformationEPS
+        locationInfoEPS = si.getLocationInformationEPS();
+        assertNull(locationInfoEPS);
+        // TimeZone
+        timeZone = si.getTimeZone();
+        assertEquals(timeZone.getData(), new byte[] {0, 3});
+        // DaylightSavingTime
+        daylightSavingTime = si.getDaylightSavingTime();
+        assertEquals(daylightSavingTime, DaylightSavingTime.noAdjustment);
+        // LocationInformation5GS
+        li5GS = si.getLocationInformation5GS();
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
+
+        // test 6 (data taken from MAP load test for PS domain, containing location information GPRS, EPS and 5GS
+        rawData = getEncodedDataPs6();
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        asc = new ProvideSubscriberInfoResponseImpl();
+        asc.decodeAll(asn);
+
+        assertEquals(tag, Tag.SEQUENCE);
+        assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
+
+        si = asc.getSubscriberInfo();
+        // LocationInformation
+        li = si.getLocationInformation();
+        assertNull(li);
+        // SubscriberState
+        subscriberState = si.getSubscriberState();
+        assertNull(subscriberState);
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
+        // LocationInformationGPRS
+        liGPRS = si.getLocationInformationGPRS();
+        CellGlobalIdOrServiceAreaIdOrLAI liGprsCGIorSAIorLAI = liGPRS.getCellGlobalIdOrServiceAreaIdOrLAI();
+        boolean liGprsSaiPresent = liGPRS.isSaiPresent();
+        Integer liGprsAol = liGPRS.getAgeOfLocationInformation();
+        boolean liGprsCurrentLocation = liGPRS.isCurrentLocationRetrieved();
+        GeographicalInformation liGPRSGeographicalInfo = liGPRS.getGeographicalInformation();
+        GeodeticInformation liGPRSGeodeticInfo = liGPRS.getGeodeticInformation();
+        RAIdentity rai = liGPRS.getRouteingAreaIdentity();
+        LSAIdentity lsaIdentity = liGPRS.getLSAIdentity();
+        ISDNAddressString sgsnNumber = liGPRS.getSGSNNumber();
+        assertEquals(liGprsCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
+        assertEquals(liGprsCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 1);
+        assertEquals(liGprsCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 109);
+        assertEquals(liGprsCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 10175);
+        assertTrue(liGprsSaiPresent);
+        assertEquals(liGprsAol.intValue(), 879);
+        assertFalse(liGprsCurrentLocation);
+        assertNull(liGPRSGeographicalInfo);
+        assertNull(liGPRSGeodeticInfo);
+        assertEquals(rai.getMCC(), 748);
+        assertEquals(rai.getMNC(), 1);
+        assertEquals(rai.getLAC(), 101);
+        assertEquals(rai.getRAC(), 23);
+        assertEquals(lsaIdentity.getData(), new byte[] {49, 51, 49});
+        assertEquals(sgsnNumber.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(sgsnNumber.getAddressNature(), AddressNature.international_number);
+        assertEquals(sgsnNumber.getAddress(), "4917104600010");
+        assertNull(liGPRS.getExtensionContainer());
+        // PSSubscriberState
+        psSubscriberState = si.getPSSubscriberState();
+        assertEquals(psSubscriberState.getChoice(), PSSubscriberStateChoice.netDetNotReachable);
+        assertEquals(psSubscriberState.getNetDetNotReachable(), NotReachableReason.restrictedArea);
+        // IMEI
+        imei = si.getIMEI();
+        assertNull(imei);
+        // MSClassmark2
+        msClassmark2 = si.getMSClassmark2();
+        assertNull(msClassmark2);
+        // GPRSMSClass
+        gprsmsClass = si.getGPRSMSClass();
+        assertNull(gprsmsClass);
+        // MNPInfoRes
+        mnpInfoRes = si.getMNPInfoRes();
+        assertNull(mnpInfoRes);
+        // IMSVoiceOverPsSessionsIndication
+        ims = si.getIMSVoiceOverPsSessionsIndication();
+        assertEquals(ims, IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsSupported);
+        // LastUEActivityTime
+        lastUEActivityTime = si.getLastUEActivityTime();
+        assertEquals(lastUEActivityTime.getYear(), 2024);
+        assertEquals(lastUEActivityTime.getMonth(), 8);
+        assertEquals(lastUEActivityTime.getDay(), 5);
+        assertEquals(lastUEActivityTime.getHour(), 10);
+        assertEquals(lastUEActivityTime.getMinute(), 27);
+        assertEquals(lastUEActivityTime.getSecond(), 49);
+        // UsedRATType
+        lastRATType = si.getLastRATType();
+        assertEquals(lastRATType, UsedRATType.geran);
+        // EPSSubscriberState
+        epsSubscriberState = si.getEPSSubscriberState();
+        assertNull(epsSubscriberState);
+        // LocationInformationEPS
+        locationInfoEPS = si.getLocationInformationEPS();
+        EUtranCgi epsCgi = locationInfoEPS.getEUtranCellGlobalIdentity();
+        TAId epsTAId = locationInfoEPS.getTrackingAreaIdentity();
+        MAPExtensionContainer epsExtensionContainer = locationInfoEPS.getExtensionContainer();
+        GeographicalInformation epsGeographicalInfo = locationInfoEPS.getGeographicalInformation();
+        GeodeticInformation epsGeodeticInfo = locationInfoEPS.getGeodeticInformation();
+        boolean epsCurrentLocationRetrieved = locationInfoEPS.getCurrentLocationRetrieved();
+        Integer epsAgeOfLocationInformation = locationInfoEPS.getAgeOfLocationInformation();
+        DiameterIdentity epsMmeName = locationInfoEPS.getMmeName();
+        assertEquals(epsCgi.getMCC(), 748);
+        assertEquals(epsCgi.getMNC(), 1);//518658
+        assertEquals(epsCgi.getEci(), 518658);
+        assertEquals(epsCgi.getENodeBId(), 2026);
+        assertEquals(epsCgi.getCi(), 2);
+        assertEquals(epsTAId.getMCC(), 748);
+        assertEquals(epsTAId.getMNC(), 1);
+        assertEquals(epsTAId.getTAC(), 109);
+        assertNull(epsExtensionContainer);
+        assertNull(epsGeographicalInfo);
+        assertNull(epsGeodeticInfo);
+        assertFalse(epsCurrentLocationRetrieved);
+        assertEquals(epsAgeOfLocationInformation.intValue(), 879);
+        assertEquals(epsMmeName.getData(), "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        // TimeZone
+        timeZone = si.getTimeZone();
+        assertEquals(timeZone.getData(), new byte[] {0, 6});
+        // DaylightSavingTime
+        daylightSavingTime = si.getDaylightSavingTime();
+        assertEquals(daylightSavingTime, DaylightSavingTime.noAdjustment);
+        // LocationInformation5GS
+        li5GS = si.getLocationInformation5GS();
+        nrCGI = li5GS.getNRCellGlobalId();
+        li5GSLteCgi = li5GS.getEUtranCgi();
+        li5GSGeographicalInfo = li5GS.getGeographicalInformation();
+        li5GSGeodeticInformation = li5GS.getGeodeticInformation();
+        li5GSAMFAddress = li5GS.getAMFAddress();
+        li5GSTAId = li5GS.getTAId();
+        li5GSCurrentLocationRetrieved = li5GS.isCurrentLocationRetrieved();
+        li5GSAgeOfLocationInformation = li5GS.getAgeOfLocationInformation();
+        li5GSVPlmnId = li5GS.getVPlmnId();
+        li5GSLocalTimeZone = li5GS.getLocalTimeZone();
+        li5GSUsedRATType = li5GS.getUsedRATType();
+        li5GSExtensionContainer = li5GS.getExtensionContainer();
+        li5GSNRTAId = li5GS.getNRTAId();
+        assertEquals(nrCGI.getMCC(), 748);
+        assertEquals(nrCGI.getMNC(), 2);
+        assertEquals(nrCGI.getNCI(), 34359738376L);
+        assertEquals(li5GSLteCgi.getMCC(), 748);
+        assertEquals(li5GSLteCgi.getMNC(), 1);
+        assertEquals(li5GSLteCgi.getEci(), 518658);
+        assertEquals(li5GSLteCgi.getENodeBId(), 2026);
+        assertEquals(li5GSLteCgi.getCi(), 2);
+        assertNull(li5GSGeographicalInfo);
+        assertNull(li5GSGeodeticInformation);
+        assertEquals(li5GSAMFAddress.getData(), "amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
+        assertEquals(li5GSTAId.getMCC(), 748);
+        assertEquals(li5GSTAId.getMNC(), 1);
+        assertEquals(li5GSTAId.getTAC(), 109);
+        assertFalse(li5GSCurrentLocationRetrieved);
+        assertEquals(li5GSAgeOfLocationInformation.intValue(), 879);
         assertEquals(li5GSVPlmnId.getMcc(), 748);
         assertEquals(li5GSVPlmnId.getMnc(), 2);
         assertEquals(li5GSLocalTimeZone.getData(), new byte[] {0, -6});

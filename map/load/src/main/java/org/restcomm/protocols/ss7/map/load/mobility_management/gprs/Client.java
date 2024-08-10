@@ -1557,13 +1557,13 @@ public class Client extends TestHarnessMobilityManagement {
                     case 1:
                     case 2:
                         // target subscriber is under 5G NR SA
-                        nrCellGlobalIdentity.setData(748, 1, 512063008768L);
+                        nrCellGlobalIdentity.setData(748, 1, 42949672954L);
                         amfAddress = new FQDNImpl("amf1.cluster1.net2.amf.5gc.mnc01.mcc748.3gppnetwork.org".getBytes());
                         vplmnId = new PlmnIdImpl(748, 1);
-                        localTimeZone = new TimeZoneImpl(new byte[] {0, -6});
+                        localTimeZone = new TimeZoneImpl(new byte[] {0, 9});
                         ratType = UsedRATType.eUtran;
                         nrTrackingAreaIdentity = new NRTAIdImpl();
-                        nrTrackingAreaIdentity.setData(748, 1, 775);
+                        nrTrackingAreaIdentity.setData(748, 1, 595578);
                         lteCgi = hexStringToByteArray("47f8100007ea02"); // ECGI = 748-1-518658; TBCD encoded: 47f8100007ea02
                         trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
                         eUtranCgi = new EUtranCgiImpl(lteCgi);
@@ -1576,14 +1576,13 @@ public class Client extends TestHarnessMobilityManagement {
                     case 3:
                     case 4:
                         // target subscriber is under 5G NSA (E-UTRAN and NR)
-                        nrCellGlobalIdentity = new NRCellGlobalIdImpl();
-                        nrCellGlobalIdentity.setData(748, 2, 452063008767L);
+                        nrCellGlobalIdentity.setData(748, 2, 34359738376L);
                         amfAddress = new FQDNImpl("amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
                         vplmnId = new PlmnIdImpl(748, 2);
-                        localTimeZone = new TimeZoneImpl(new byte[] {0, -6});
+                        localTimeZone = new TimeZoneImpl(new byte[] {0, 8});
                         ratType = UsedRATType.eUtran;
                         nrTrackingAreaIdentity = new NRTAIdImpl();
-                        nrTrackingAreaIdentity.setData(748, 2, 208);
+                        nrTrackingAreaIdentity.setData(748, 2, 495570);
                         lteCgi = hexStringToByteArray("47f8100007ea02"); // ECGI = 748-1-518658; TBCD encoded: 47f8100007ea02
                         trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
                         eUtranCgi = new EUtranCgiImpl(lteCgi);
@@ -1617,7 +1616,7 @@ public class Client extends TestHarnessMobilityManagement {
             }
 
             if (requestedInfo.getLocalTimeZoneRequest()) {
-                timeZone = new TimeZoneImpl(new byte[]{0, 6});
+                timeZone = new TimeZoneImpl(new byte[] {0, 6});
                 daylightSavingTime = DaylightSavingTime.noAdjustment;
             }
 

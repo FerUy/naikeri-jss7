@@ -1589,13 +1589,15 @@ public class Client extends TestHarnessMobilityManagement {
                             case 3:
                                 currentLocationRetrieved = ageOfLocationInformation == 0;
                                 // target subscriber is under 5G NR SA
-                                nrCellGlobalIdentity.setData(748, 1, 512063008768L);
+                                nrCellGlobalIdentity.setData(748, 1, 42949672954L);
+                                logger.warn("NR-CGI MCC="+nrCellGlobalIdentity.getMCC()+
+                                        ", MNC="+nrCellGlobalIdentity.getMNC()+", NCI="+nrCellGlobalIdentity.getNCI());
                                 amfAddress = new FQDNImpl("amf1.cluster1.net2.amf.5gc.mnc01.mcc748.3gppnetwork.org".getBytes());
                                 vplmnId = new PlmnIdImpl(748, 1);
-                                localTimeZone = new TimeZoneImpl(new byte[] {0, -6});
+                                localTimeZone = new TimeZoneImpl(new byte[] {0,9});
                                 ratType = UsedRATType.eUtran;
                                 nrTrackingAreaIdentity = new NRTAIdImpl();
-                                nrTrackingAreaIdentity.setData(748, 1, 775);
+                                nrTrackingAreaIdentity.setData(748, 1, 595578);
                                 geographicalLatitude = -34.909744;
                                 geographicalLongitude = -56.146317;
                                 geographicalUncertainty = 1.0;
@@ -1608,14 +1610,15 @@ public class Client extends TestHarnessMobilityManagement {
                             case 4:
                             case 5:
                                 // target subscriber is under 5G NSA (E-UTRAN and NR)
-                                nrCellGlobalIdentity = new NRCellGlobalIdImpl();
-                                nrCellGlobalIdentity.setData(748, 2, 452063008767L);
+                                nrCellGlobalIdentity.setData(748, 2, 34359738376L);
+                                logger.warn("NR-CGI MCC="+nrCellGlobalIdentity.getMCC()+
+                                        ", MNC="+nrCellGlobalIdentity.getMNC()+", NCI="+nrCellGlobalIdentity.getNCI());
                                 amfAddress = new FQDNImpl("amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
                                 vplmnId = new PlmnIdImpl(748, 2);
-                                localTimeZone = new TimeZoneImpl(new byte[] {0, -6});
+                                localTimeZone = new TimeZoneImpl(new byte[] {0, 8});
                                 ratType = UsedRATType.eUtran;
                                 nrTrackingAreaIdentity = new NRTAIdImpl();
-                                nrTrackingAreaIdentity.setData(748, 2, 208);
+                                nrTrackingAreaIdentity.setData(748, 2, 495570);
                                 currentLocationRetrieved = ageOfLocationInformation == 0;
                                 geodeticLatitude = -34.910349;
                                 geodeticLongitude = -56.149832;
