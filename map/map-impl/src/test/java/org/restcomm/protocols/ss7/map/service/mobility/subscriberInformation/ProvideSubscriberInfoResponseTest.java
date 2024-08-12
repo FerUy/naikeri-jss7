@@ -225,11 +225,11 @@ public class ProvideSubscriberInfoResponseTest {
                 (byte) 0x86, 0x01, 0x01, (byte) 0x87, 0x02, 0x01, 0x07, (byte) 0x88,
                 0x04, 0x01, 0x03, 0x04, 0x07, (byte) 0x89, 0x04, 0x01,
                 0x00, 0x00, 0x02, (byte) 0x8a, 0x06, 0x17, 0x05, 0x26,
-                0x30, 0x51, 0x05, (byte) 0x8b, 0x09, 0x09, 0x72, (byte) 0x97,
-                (byte) 0x80, 0x40, 0x00, (byte) 0xa3, 0x40, 0x00, (byte) 0x8c, 0x09,
-                0x09, 0x72, (byte) 0x97, (byte) 0x80, 0x40, 0x00, 0x43, (byte) 0x80,
-                0x00, (byte) 0x8d, 0x09, 0x09, 0x72, (byte) 0x97, (byte) 0x80, 0x40,
-                0x00, 0x03, 0x40, 0x00, (byte) 0x8e, 0x04, 0x01, 0x02,
+                0x30, 0x51, 0x05, (byte) 0x8b, 0x09, 0x09, 0x72, 0x64,
+                (byte) 0x80, 0x40, 0x00, (byte) 0x83, 0x40, 0x00, (byte) 0x8c, 0x09,
+                0x09, 0x72, 0x64, (byte) 0x80, 0x40, 0x00, 0x43, (byte) 0x80,
+                0x00, (byte) 0x8d, 0x09, 0x09, 0x72, 0x64, (byte) 0x80, 0x40,
+                0x00, (byte) 0x83, 0x40, 0x00, (byte) 0x8e, 0x04, 0x01, 0x02,
                 0x04, 0x08, (byte) 0x8f, 0x02, 0x08, 0x00, (byte) 0x90, 0x05,
                 (byte) 0xc0, (byte) 0xa8, 0x05, 0x33, 0x18, (byte) 0x92, 0x03, 0x10,
                 0x00, 0x00, (byte) 0x93, 0x03, 0x10, 0x00, 0x00, (byte) 0x94,
@@ -269,10 +269,10 @@ public class ProvideSubscriberInfoResponseTest {
                 0x01, 0x07, (byte) 0x88, 0x04, 0x01, 0x03, 0x04, 0x07,
                 (byte) 0x89, 0x04, 0x01, 0x00, 0x00, 0x02, (byte) 0x8a, 0x06,
                 0x17, 0x05, 0x26, 0x30, 0x51, 0x05, (byte) 0x8b, 0x09,
-                0x09, 0x72, (byte) 0x97, (byte) 0x80, 0x40, 0x00, (byte) 0xa3, 0x40,
-                0x00, (byte) 0x8c, 0x09, 0x09, 0x72, (byte) 0x97, (byte) 0x80, 0x40,
+                0x09, 0x72, 0x64, (byte) 0x80, 0x40, 0x00, (byte) 0x83, 0x40,
+                0x00, (byte) 0x8c, 0x09, 0x09, 0x72, 0x64, (byte) 0x80, 0x40,
                 0x00, 0x43, (byte) 0x80, 0x00, (byte) 0x8d, 0x09, 0x09, 0x72,
-                (byte) 0x97, (byte) 0x80, 0x40, 0x00, 0x03, 0x40, 0x00, (byte) 0x8e,
+                0x64, (byte) 0x80, 0x40, 0x00, (byte) 0x83, 0x40, 0x00, (byte) 0x8e,
                 0x04, 0x01, 0x02, 0x04, 0x08, (byte) 0x8f, 0x02, 0x08,
                 0x00, (byte) 0x90, 0x05, (byte) 0xc0, (byte) 0xa8, 0x05, 0x33, 0x18,
                 (byte) 0x92, 0x03, 0x10, 0x00, 0x00, (byte) 0x93, 0x03, 0x10,
@@ -963,31 +963,83 @@ public class ProvideSubscriberInfoResponseTest {
         assertEquals(teidForIu.getData(), new byte[] {1, 0, 0, 2});
         GSNAddress ggsnAddress = pdpContextInfoList.get(0).getGgsnAddress();
         assertEquals(ggsnAddress.getData(), new byte[] {23, 5, 38, 48, 81, 5});
-        int allocationRetentionPriority = pdpContextInfoList.get(0).getQosRequested().getAllocationRetentionPriority();
-        ExtQoSSubscribed_DeliveryOfErroneousSdus deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosRequested().getDeliveryOfErroneousSdus();
-        ExtQoSSubscribed_DeliveryOrder deliveryOrder = pdpContextInfoList.get(0).getQosRequested().getDeliveryOrder();
-        ExtQoSSubscribed_TrafficClass trafficClass = pdpContextInfoList.get(0).getQosRequested().getTrafficClass();
-        ExtQoSSubscribed_MaximumSduSize maximumSduSize = pdpContextInfoList.get(0).getQosRequested().getMaximumSduSize();
-        ExtQoSSubscribed_BitRate maximumBitRateForUplink = pdpContextInfoList.get(0).getQosRequested().getMaximumBitRateForUplink();
-        ExtQoSSubscribed_BitRate maximumBitRateForDownlink = pdpContextInfoList.get(0).getQosRequested().getMaximumBitRateForDownlink();
-        ExtQoSSubscribed_ResidualBER residualBER = pdpContextInfoList.get(0).getQosRequested().getResidualBER();
-        ExtQoSSubscribed_SduErrorRatio sduErrorRatio = pdpContextInfoList.get(0).getQosRequested().getSduErrorRatio();
-        ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = pdpContextInfoList.get(0).getQosRequested().getTrafficHandlingPriority();
-        ExtQoSSubscribed_TransferDelay transferDelay = pdpContextInfoList.get(0).getQosRequested().getTransferDelay();
-        ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = pdpContextInfoList.get(0).getQosRequested().getGuaranteedBitRateForUplink();
-        ExtQoSSubscribed_BitRate guaranteedBitRateForDownlink = pdpContextInfoList.get(0).getQosRequested().getGuaranteedBitRateForDownlink();
+        int allocationRetentionPriority = pdpContextInfoList.get(0).getQosSubscribed().getAllocationRetentionPriority();
+        ExtQoSSubscribed_DeliveryOfErroneousSdus deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosSubscribed().getDeliveryOfErroneousSdus();
+        ExtQoSSubscribed_DeliveryOrder deliveryOrder = pdpContextInfoList.get(0).getQosSubscribed().getDeliveryOrder();
+        ExtQoSSubscribed_TrafficClass trafficClass = pdpContextInfoList.get(0).getQosSubscribed().getTrafficClass();
+        ExtQoSSubscribed_MaximumSduSize maximumSduSize = pdpContextInfoList.get(0).getQosSubscribed().getMaximumSduSize();
+        ExtQoSSubscribed_BitRate maximumBitRateForUplink = pdpContextInfoList.get(0).getQosSubscribed().getMaximumBitRateForUplink();
+        ExtQoSSubscribed_BitRate maximumBitRateForDownlink = pdpContextInfoList.get(0).getQosSubscribed().getMaximumBitRateForDownlink();
+        ExtQoSSubscribed_ResidualBER residualBER = pdpContextInfoList.get(0).getQosSubscribed().getResidualBER();
+        ExtQoSSubscribed_SduErrorRatio sduErrorRatio = pdpContextInfoList.get(0).getQosSubscribed().getSduErrorRatio();
+        ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = pdpContextInfoList.get(0).getQosSubscribed().getTrafficHandlingPriority();
+        ExtQoSSubscribed_TransferDelay transferDelay = pdpContextInfoList.get(0).getQosSubscribed().getTransferDelay();
+        ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = pdpContextInfoList.get(0).getQosSubscribed().getGuaranteedBitRateForUplink();
+        ExtQoSSubscribed_BitRate guaranteedBitRateForDownlink = pdpContextInfoList.get(0).getQosSubscribed().getGuaranteedBitRateForDownlink();
         assertEquals(allocationRetentionPriority, 9);
         assertEquals(deliveryOfErroneousSdus, ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
         assertEquals(deliveryOrder, ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
         assertEquals(trafficClass, ExtQoSSubscribed_TrafficClass.interactiveClass);
-        assertEquals(maximumSduSize.getMaximumSduSize(), 1502);
+        assertEquals(maximumSduSize.getMaximumSduSize(), 1000);
         assertEquals(maximumBitRateForUplink.getBitRate(), 576);
         assertEquals(maximumBitRateForDownlink.getBitRate(), 64);
         assertEquals(residualBER, ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
         assertEquals(sduErrorRatio,ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
         assertEquals(trafficHandlingPriority, ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
-        assertEquals(transferDelay.getTransferDelay(), 200);
+        assertEquals(transferDelay.getSourceData(), 32);
+        assertEquals(guaranteedBitRateForUplink.getBitRate(), 64);
+        assertEquals(guaranteedBitRateForDownlink.getBitRate(), 0);
+        allocationRetentionPriority = pdpContextInfoList.get(0).getQosRequested().getAllocationRetentionPriority();
+        deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosRequested().getDeliveryOfErroneousSdus();
+        deliveryOrder = pdpContextInfoList.get(0).getQosRequested().getDeliveryOrder();
+        trafficClass = pdpContextInfoList.get(0).getQosRequested().getTrafficClass();
+        maximumSduSize = pdpContextInfoList.get(0).getQosRequested().getMaximumSduSize();
+        maximumBitRateForUplink = pdpContextInfoList.get(0).getQosRequested().getMaximumBitRateForUplink();
+        maximumBitRateForDownlink = pdpContextInfoList.get(0).getQosRequested().getMaximumBitRateForDownlink();
+        residualBER = pdpContextInfoList.get(0).getQosRequested().getResidualBER();
+        sduErrorRatio = pdpContextInfoList.get(0).getQosRequested().getSduErrorRatio();
+        trafficHandlingPriority = pdpContextInfoList.get(0).getQosRequested().getTrafficHandlingPriority();
+        transferDelay = pdpContextInfoList.get(0).getQosRequested().getTransferDelay();
+        guaranteedBitRateForUplink = pdpContextInfoList.get(0).getQosRequested().getGuaranteedBitRateForUplink();
+        guaranteedBitRateForDownlink = pdpContextInfoList.get(0).getQosRequested().getGuaranteedBitRateForDownlink();
+        assertEquals(allocationRetentionPriority, 9);
+        assertEquals(deliveryOfErroneousSdus, ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
+        assertEquals(deliveryOrder, ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
+        assertEquals(trafficClass, ExtQoSSubscribed_TrafficClass.interactiveClass);
+        assertEquals(maximumSduSize.getMaximumSduSize(), 1000);
+        assertEquals(maximumBitRateForUplink.getBitRate(), 576);
+        assertEquals(maximumBitRateForDownlink.getBitRate(), 64);
+        assertEquals(residualBER, ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
+        assertEquals(sduErrorRatio,ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
+        assertEquals(trafficHandlingPriority, ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
+        assertEquals(transferDelay.getSourceData(), 16);
         assertEquals(guaranteedBitRateForUplink.getBitRate(), 576);
+        assertEquals(guaranteedBitRateForDownlink.getBitRate(), 0);
+        allocationRetentionPriority = pdpContextInfoList.get(0).getQosNegotiated().getAllocationRetentionPriority();
+        deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosNegotiated().getDeliveryOfErroneousSdus();
+        deliveryOrder = pdpContextInfoList.get(0).getQosNegotiated().getDeliveryOrder();
+        trafficClass = pdpContextInfoList.get(0).getQosNegotiated().getTrafficClass();
+        maximumSduSize = pdpContextInfoList.get(0).getQosNegotiated().getMaximumSduSize();
+        maximumBitRateForUplink = pdpContextInfoList.get(0).getQosNegotiated().getMaximumBitRateForUplink();
+        maximumBitRateForDownlink = pdpContextInfoList.get(0).getQosNegotiated().getMaximumBitRateForDownlink();
+        residualBER = pdpContextInfoList.get(0).getQosNegotiated().getResidualBER();
+        sduErrorRatio = pdpContextInfoList.get(0).getQosNegotiated().getSduErrorRatio();
+        trafficHandlingPriority = pdpContextInfoList.get(0).getQosNegotiated().getTrafficHandlingPriority();
+        transferDelay = pdpContextInfoList.get(0).getQosNegotiated().getTransferDelay();
+        guaranteedBitRateForUplink = pdpContextInfoList.get(0).getQosNegotiated().getGuaranteedBitRateForUplink();
+        guaranteedBitRateForDownlink = pdpContextInfoList.get(0).getQosNegotiated().getGuaranteedBitRateForDownlink();
+        assertEquals(allocationRetentionPriority, 9);
+        assertEquals(deliveryOfErroneousSdus, ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
+        assertEquals(deliveryOrder, ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
+        assertEquals(trafficClass, ExtQoSSubscribed_TrafficClass.interactiveClass);
+        assertEquals(maximumSduSize.getMaximumSduSize(), 1000);
+        assertEquals(maximumBitRateForUplink.getBitRate(), 576);
+        assertEquals(maximumBitRateForDownlink.getBitRate(), 64);
+        assertEquals(residualBER, ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
+        assertEquals(sduErrorRatio,ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
+        assertEquals(trafficHandlingPriority, ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
+        assertEquals(transferDelay.getSourceData(), 32);
+        assertEquals(guaranteedBitRateForUplink.getBitRate(), 64);
         assertEquals(guaranteedBitRateForDownlink.getBitRate(), 0);
         // IMEI
         imei = si.getIMEI();
@@ -1131,6 +1183,32 @@ public class ProvideSubscriberInfoResponseTest {
         assertEquals(teidForIu.getData(), new byte[] {1, 0, 0, 2});
         ggsnAddress = pdpContextInfoList.get(0).getGgsnAddress();
         assertEquals(ggsnAddress.getData(), new byte[] {23, 5, 38, 48, 81, 5});
+        allocationRetentionPriority = pdpContextInfoList.get(0).getQosSubscribed().getAllocationRetentionPriority();
+        deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosSubscribed().getDeliveryOfErroneousSdus();
+        deliveryOrder = pdpContextInfoList.get(0).getQosSubscribed().getDeliveryOrder();
+        trafficClass = pdpContextInfoList.get(0).getQosSubscribed().getTrafficClass();
+        maximumSduSize = pdpContextInfoList.get(0).getQosSubscribed().getMaximumSduSize();
+        maximumBitRateForUplink = pdpContextInfoList.get(0).getQosSubscribed().getMaximumBitRateForUplink();
+        maximumBitRateForDownlink = pdpContextInfoList.get(0).getQosSubscribed().getMaximumBitRateForDownlink();
+        residualBER = pdpContextInfoList.get(0).getQosSubscribed().getResidualBER();
+        sduErrorRatio = pdpContextInfoList.get(0).getQosSubscribed().getSduErrorRatio();
+        trafficHandlingPriority = pdpContextInfoList.get(0).getQosSubscribed().getTrafficHandlingPriority();
+        transferDelay = pdpContextInfoList.get(0).getQosSubscribed().getTransferDelay();
+        guaranteedBitRateForUplink = pdpContextInfoList.get(0).getQosSubscribed().getGuaranteedBitRateForUplink();
+        guaranteedBitRateForDownlink = pdpContextInfoList.get(0).getQosSubscribed().getGuaranteedBitRateForDownlink();
+        assertEquals(allocationRetentionPriority, 9);
+        assertEquals(deliveryOfErroneousSdus, ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
+        assertEquals(deliveryOrder, ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
+        assertEquals(trafficClass, ExtQoSSubscribed_TrafficClass.interactiveClass);
+        assertEquals(maximumSduSize.getMaximumSduSize(), 1000);
+        assertEquals(maximumBitRateForUplink.getBitRate(), 576);
+        assertEquals(maximumBitRateForDownlink.getBitRate(), 64);
+        assertEquals(residualBER, ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
+        assertEquals(sduErrorRatio,ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
+        assertEquals(trafficHandlingPriority, ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
+        assertEquals(transferDelay.getSourceData(), 32);
+        assertEquals(guaranteedBitRateForUplink.getBitRate(), 64);
+        assertEquals(guaranteedBitRateForDownlink.getBitRate(), 0);
         allocationRetentionPriority = pdpContextInfoList.get(0).getQosRequested().getAllocationRetentionPriority();
         deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosRequested().getDeliveryOfErroneousSdus();
         deliveryOrder = pdpContextInfoList.get(0).getQosRequested().getDeliveryOrder();
@@ -1148,14 +1226,40 @@ public class ProvideSubscriberInfoResponseTest {
         assertEquals(deliveryOfErroneousSdus, ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
         assertEquals(deliveryOrder, ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
         assertEquals(trafficClass, ExtQoSSubscribed_TrafficClass.interactiveClass);
-        assertEquals(maximumSduSize.getMaximumSduSize(), 1502);
+        assertEquals(maximumSduSize.getMaximumSduSize(), 1000);
         assertEquals(maximumBitRateForUplink.getBitRate(), 576);
         assertEquals(maximumBitRateForDownlink.getBitRate(), 64);
         assertEquals(residualBER, ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
         assertEquals(sduErrorRatio,ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
         assertEquals(trafficHandlingPriority, ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
-        assertEquals(transferDelay.getTransferDelay(), 200);
+        assertEquals(transferDelay.getSourceData(), 16);
         assertEquals(guaranteedBitRateForUplink.getBitRate(), 576);
+        assertEquals(guaranteedBitRateForDownlink.getBitRate(), 0);
+        allocationRetentionPriority = pdpContextInfoList.get(0).getQosNegotiated().getAllocationRetentionPriority();
+        deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosNegotiated().getDeliveryOfErroneousSdus();
+        deliveryOrder = pdpContextInfoList.get(0).getQosNegotiated().getDeliveryOrder();
+        trafficClass = pdpContextInfoList.get(0).getQosNegotiated().getTrafficClass();
+        maximumSduSize = pdpContextInfoList.get(0).getQosNegotiated().getMaximumSduSize();
+        maximumBitRateForUplink = pdpContextInfoList.get(0).getQosNegotiated().getMaximumBitRateForUplink();
+        maximumBitRateForDownlink = pdpContextInfoList.get(0).getQosNegotiated().getMaximumBitRateForDownlink();
+        residualBER = pdpContextInfoList.get(0).getQosNegotiated().getResidualBER();
+        sduErrorRatio = pdpContextInfoList.get(0).getQosNegotiated().getSduErrorRatio();
+        trafficHandlingPriority = pdpContextInfoList.get(0).getQosNegotiated().getTrafficHandlingPriority();
+        transferDelay = pdpContextInfoList.get(0).getQosNegotiated().getTransferDelay();
+        guaranteedBitRateForUplink = pdpContextInfoList.get(0).getQosNegotiated().getGuaranteedBitRateForUplink();
+        guaranteedBitRateForDownlink = pdpContextInfoList.get(0).getQosNegotiated().getGuaranteedBitRateForDownlink();
+        assertEquals(allocationRetentionPriority, 9);
+        assertEquals(deliveryOfErroneousSdus, ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
+        assertEquals(deliveryOrder, ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
+        assertEquals(trafficClass, ExtQoSSubscribed_TrafficClass.interactiveClass);
+        assertEquals(maximumSduSize.getMaximumSduSize(), 1000);
+        assertEquals(maximumBitRateForUplink.getBitRate(), 576);
+        assertEquals(maximumBitRateForDownlink.getBitRate(), 64);
+        assertEquals(residualBER, ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
+        assertEquals(sduErrorRatio,ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
+        assertEquals(trafficHandlingPriority, ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
+        assertEquals(transferDelay.getSourceData(), 32);
+        assertEquals(guaranteedBitRateForUplink.getBitRate(), 64);
         assertEquals(guaranteedBitRateForDownlink.getBitRate(), 0);
         // LocationInformationEPS
         locationInfoEPS = si.getLocationInformationEPS();
