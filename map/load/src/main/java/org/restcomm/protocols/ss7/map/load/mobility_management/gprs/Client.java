@@ -195,6 +195,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNI
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ChargingCharacteristicsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext2QoSSubscribedImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtPDPTypeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribedImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateExtendedImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateImpl;
@@ -1555,6 +1556,19 @@ public class Client extends TestHarnessMobilityManagement {
                 DiameterIdentity mmeName;
                 switch(randLoc) {
                     case 1:
+                        lteCgi = hexStringToByteArray("47f8100007ea02"); // ECGI = 748-1-518658; TBCD encoded: 47f8100007ea02
+                        trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
+                        eUtranCgi = new EUtranCgiImpl(lteCgi);
+                        taId = new TAIdImpl(trackingAreaId);
+                        currentLocationRetrieved = ageOfLocationInformation == 0;
+                        mmeNameStr = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
+                        mme = mmeNameStr.getBytes();
+                        mmeName = new DiameterIdentityImpl(mme);
+                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, null, geographicalInformation,
+                                geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                        lastRATType = UsedRATType.eUtran;
+                        locationInformationGPRS = null;
+                        break;
                     case 2:
                         // target subscriber is under 5G NR SA
                         nrCellGlobalIdentity.setData(748, 1, 42949672954L);
@@ -1572,6 +1586,8 @@ public class Client extends TestHarnessMobilityManagement {
                         locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, eUtranCgi, geographicalInformation,
                                 geodeticInformation, amfAddress, taId, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
                                 localTimeZone, ratType, null, nrTrackingAreaIdentity);
+                        lastRATType = UsedRATType.eUtran;
+                        locationInformationGPRS = null;
                         break;
                     case 3:
                     case 4:
@@ -1596,6 +1612,8 @@ public class Client extends TestHarnessMobilityManagement {
                         locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, eUtranCgi, geographicalInformation,
                                 geodeticInformation, amfAddress, taId, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
                                 localTimeZone, ratType, null, nrTrackingAreaIdentity);
+                        lastRATType = UsedRATType.eUtran;
+                        locationInformationGPRS = null;
                         break;
                     default:
                         break;
@@ -1610,6 +1628,8 @@ public class Client extends TestHarnessMobilityManagement {
                             pdpContextInfoList = new ArrayList<>();
                             pdpContextInfoList.add(pdpContextInfo);
                             epsSubscriberState = new PSSubscriberStateImpl(psSubscriberStateChoice, notReachableReason, pdpContextInfoList);
+                            psSubscriberState = null;
+                            locationInformation5GS = null;
                         }
                     }
                 }
@@ -1652,7 +1672,7 @@ public class Client extends TestHarnessMobilityManagement {
         PDPType pdpType = new PDPTypeImpl(PDPTypeValue.IPv4);
         PDPAddress pdpAddress = new PDPAddressImpl(new byte[] { 21 });
         APN apnSubscribed = new APNImpl("internet");
-        int asapi = 1;
+        int nsapi = 1;
         TransactionId transactionId = new TransactionIdImpl(new byte[] {1, 7});
         TEID teidForGnAndGp = new TEIDImpl(new byte[] {1, 3, 4, 7});
         TEID teidForIu = new TEIDImpl(new byte[] {1, 0, 0, 2});
@@ -1661,7 +1681,7 @@ public class Client extends TestHarnessMobilityManagement {
         ExtQoSSubscribed_DeliveryOfErroneousSdus deliveryOfErroneousSdus = ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes;
         ExtQoSSubscribed_DeliveryOrder deliveryOrder = ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo;
         ExtQoSSubscribed_TrafficClass trafficClass = ExtQoSSubscribed_TrafficClass.interactiveClass;
-        int maximumSduSizeData = 151;
+        int maximumSduSizeData = 100;
         boolean isSourceData = true;
         ExtQoSSubscribed_MaximumSduSize maximumSduSize = new ExtQoSSubscribed_MaximumSduSizeImpl(maximumSduSizeData, isSourceData);
         int maximumBitRateForUL = 128;
@@ -1671,45 +1691,71 @@ public class Client extends TestHarnessMobilityManagement {
         ExtQoSSubscribed_ResidualBER residualBER = ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved;
         ExtQoSSubscribed_SduErrorRatio sduErrorRatio = ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved;
         ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3;
-        int transferDelayValue = 1000;
+        int transferDelayValue = 180;
         ExtQoSSubscribed_TransferDelay transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
         int gbrUL = 64;
         ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
         int gbrDL = 256;
         ExtQoSSubscribed_BitRate guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
-        ExtQoSSubscribed extQoSSubscribed = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
+        ExtQoSSubscribed qosSubscribed = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
                 deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
                 sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
-        ExtQoSSubscribed qosRequested = null;
-        ExtQoSSubscribed qosNegotiated = null;
+        transferDelayValue = 1000;
+        transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
+        gbrUL = 128;
+        guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
+        gbrDL = 512;
+        guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
+        ExtQoSSubscribed qosRequested = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
+                deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
+                sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
+        transferDelayValue = 800;
+        transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
+        gbrUL = 64;
+        guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
+        gbrDL = 256;
+        guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
+        ExtQoSSubscribed qosNegotiated = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
+                deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
+                sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
         GPRSChargingID chargingId = new GPRSChargingIDImpl(new byte[] {1, 2, 4, 8});
         boolean isNormalCharging = true;
         boolean isPrepaidCharging = false;
         boolean isFlatRateCharging = false;
         boolean isChargingByHotBillingCharging = false;
         ChargingCharacteristics chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
-        GSNAddress rncAddress = null;
+        GSNAddress rncAddress = new GSNAddressImpl(new byte[] { (byte) 192, (byte) 168, 5, 51, 24 });
         Ext2QoSSubscribed_SourceStatisticsDescriptor sourceStatisticsDescriptor = Ext2QoSSubscribed_SourceStatisticsDescriptor.unknown;
         boolean optimisedForSignallingTraffic = true;
         int maxBRDLExt = 256000;
         ExtQoSSubscribed_BitRateExtended maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
         int gbrExtDL = 128000;
         ExtQoSSubscribed_BitRateExtended guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
-        Ext2QoSSubscribed ext2QoSSubscribed = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+        Ext2QoSSubscribed qos2Subscribed = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
                 maxBitRateForDLExt, guaranteedBitRateForDLExtended);
-        Ext2QoSSubscribed qos2Requested = null;
-        Ext2QoSSubscribed qos2Negotiated = null;
+        maxBRDLExt = 512000;
+        maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
+        gbrExtDL = 256000;
+        guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
+        Ext2QoSSubscribed qos2Requested = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+                maxBitRateForDLExt, guaranteedBitRateForDLExtended);
+        maxBRDLExt = 256000;
+        maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
+        gbrExtDL = 128000;
+        guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
+        Ext2QoSSubscribed qos2Negotiated = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+                maxBitRateForDLExt, guaranteedBitRateForDLExtended);
         Ext3QoSSubscribed qos3Subscribed = null;
         Ext3QoSSubscribed qos3Requested = null;
         Ext3QoSSubscribed qos3Negotiated = null;
         Ext4QoSSubscribed qos4Subscribed = null;
         Ext4QoSSubscribed qos4Requested = null;
         Ext4QoSSubscribed qos4Negotiated = null;
-        ExtPDPType extPdpType = null;
-        PDPAddress extPdpAddress = null;
+        ExtPDPType extPdpType = new ExtPDPTypeImpl(new byte[] { 58, 59 });
+        PDPAddress extPdpAddress = new PDPAddressImpl(new byte[] { 60 });
         return new PDPContextInfoImpl(pdpContextIdentifier, pdpContextActive, pdpType, pdpAddress,
-                        apnSubscribed, apnSubscribed, asapi, transactionId, teidForGnAndGp, teidForIu, ggsnAddress, extQoSSubscribed, qosRequested,
-                        qosNegotiated, chargingId, chargingCharacteristics, rncAddress, null, ext2QoSSubscribed,
+                        apnSubscribed, apnSubscribed, nsapi, transactionId, teidForGnAndGp, teidForIu, ggsnAddress, qosSubscribed, qosRequested,
+                        qosNegotiated, chargingId, chargingCharacteristics, rncAddress, null, qos2Subscribed,
                         qos2Requested, qos2Negotiated, qos3Subscribed, qos3Requested, qos3Negotiated, qos4Subscribed,
                         qos4Requested, qos4Negotiated, extPdpType, extPdpAddress);
     }
