@@ -18,10 +18,6 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.primitives.GSNAddressAddressType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPTypeValue;
 import org.restcomm.protocols.ss7.map.primitives.GSNAddressImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GPRSChargingIDImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.PDPContextInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TEIDImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TransactionIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ChargingCharacteristicsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext2QoSSubscribedImpl;
@@ -56,11 +52,11 @@ public class PDPContextInfoTest {
         return new byte[] { 21 };
     }
 
-    private byte[] getEncodedapnSubscribed() {
+    private byte[] getEncodedApnSubscribed() {
         return new byte[] { 22, 23 };
     }
 
-    private byte[] getEncodedgetapnInUse() {
+    private byte[] getEncodedGetApnInUse() {
         return new byte[] { 24, 25 };
     }
 
@@ -76,63 +72,63 @@ public class PDPContextInfoTest {
         return new byte[] { 31, 32, 33, 34 };
     }
 
-    private byte[] getEncodedggsnAddress() {
+    private byte[] getEncodedGGSNAddress() {
         return new byte[] { 35, 36, 37, 38, 39 };
     }
 
-    private byte[] getEncodedggsnAddress2() {
+    private byte[] getEncodedGGSNAddress2() {
         return new byte[] { (byte) 192, (byte) 168, 0, 1 };
     }
 
-    private byte[] getEncodedqosSubscribed() {
+    private byte[] getEncodedQosSubscribed() {
         return new byte[] { 15 };
     }
 
-    private byte[] getEncodedqosRequested() {
+    private byte[] getEncodedQosRequested() {
         return new byte[] { 16 };
     }
 
-    private byte[] getEncodedqosNegotiated() {
+    private byte[] getEncodedQosNegotiated() {
         return new byte[] { 17 };
     }
 
-    private byte[] getEncodedchargingId() {
+    private byte[] getEncodedChargingId() {
         return new byte[] { 41, 42, 43, 44 };
     }
 
-    private byte[] getEncodedchargingCharacteristics() {
+    private byte[] getEncodedChargingCharacteristics() {
         return new byte[] { 45, 46 };
     }
 
-    private byte[] getEncodedrncAddress() {
+    private byte[] getEncodedRNCAddress() {
         return new byte[] { 47, 48, 49, 50, 51 };
     }
 
-    private byte[] getEncodedrncAddress2() {
+    private byte[] getEncodedRNCAddress2() {
         return new byte[] { (byte) 192, (byte) 168, 5, 51 };
     }
 
-    private byte[] getEncodedqos2Subscribed() {
+    private byte[] getEncodedQos2Subscribed() {
         return new byte[] { 52 };
     }
 
-    private byte[] getEncodedqos2Requested() {
+    private byte[] getEncodedQos2Requested() {
         return new byte[] { 53 };
     }
 
-    private byte[] getEncodedqos2Negotiated() {
+    private byte[] getEncodedQos2Negotiated() {
         return new byte[] { 54 };
     }
 
-    private byte[] getEncodedqos3Subscribed() {
+    private byte[] getEncodedQos3Subscribed() {
         return new byte[] { 55 };
     }
 
-    private byte[] getEncodedqos3Requested() {
+    private byte[] getEncodedQos3Requested() {
         return new byte[] { 56 };
     }
 
-    private byte[] getEncodedqos3Negotiated() {
+    private byte[] getEncodedQos3Negotiated() {
         return new byte[] { 57 };
     }
 
@@ -156,36 +152,35 @@ public class PDPContextInfoTest {
         impl.decodeAll(asn);
         assertEquals(tag, Tag.SEQUENCE);
 
-        assertEquals((int) impl.getPdpContextIdentifier(), 10);
+        assertEquals(impl.getPdpContextIdentifier(), 10);
         assertTrue(impl.getPdpContextActive());
         assertTrue(Arrays.equals(impl.getPdpType().getData(), this.getEncodedPDPType()));
         assertTrue(Arrays.equals(impl.getPdpAddress().getData(), this.getEncodedPDPAddress()));
-        assertTrue(Arrays.equals(impl.getApnSubscribed().getData(), this.getEncodedapnSubscribed()));
-        assertTrue(Arrays.equals(impl.getApnInUse().getData(), this.getEncodedgetapnInUse()));
+        assertTrue(Arrays.equals(impl.getApnSubscribed().getData(), this.getEncodedApnSubscribed()));
+        assertTrue(Arrays.equals(impl.getApnInUse().getData(), this.getEncodedGetApnInUse()));
         assertEquals((int) impl.getNsapi(), 11);
         assertTrue(Arrays.equals(impl.getTransactionId().getData(), this.getEncodedTransactionId()));
         assertTrue(Arrays.equals(impl.getTeidForGnAndGp().getData(), this.getEncodedTEID_1()));
         assertTrue(Arrays.equals(impl.getTeidForIu().getData(), this.getEncodedTEID_2()));
-        assertTrue(Arrays.equals(impl.getGgsnAddress().getData(), this.getEncodedggsnAddress()));
-        assertTrue(Arrays.equals(impl.getQosSubscribed().getData(), this.getEncodedqosSubscribed()));
-        assertTrue(Arrays.equals(impl.getQosRequested().getData(), this.getEncodedqosRequested()));
-        assertTrue(Arrays.equals(impl.getQosNegotiated().getData(), this.getEncodedqosNegotiated()));
-        assertTrue(Arrays.equals(impl.getChargingId().getData(), this.getEncodedchargingId()));
-        assertTrue(Arrays.equals(impl.getChargingCharacteristics().getData(), this.getEncodedchargingCharacteristics()));
-        assertTrue(Arrays.equals(impl.getRncAddress().getData(), this.getEncodedrncAddress()));
+        assertTrue(Arrays.equals(impl.getGgsnAddress().getData(), this.getEncodedGGSNAddress()));
+        assertTrue(Arrays.equals(impl.getQosSubscribed().getData(), this.getEncodedQosSubscribed()));
+        assertTrue(Arrays.equals(impl.getQosRequested().getData(), this.getEncodedQosRequested()));
+        assertTrue(Arrays.equals(impl.getQosNegotiated().getData(), this.getEncodedQosNegotiated()));
+        assertTrue(Arrays.equals(impl.getChargingId().getData(), this.getEncodedChargingId()));
+        assertTrue(Arrays.equals(impl.getChargingCharacteristics().getData(), this.getEncodedChargingCharacteristics()));
+        assertTrue(Arrays.equals(impl.getRncAddress().getData(), this.getEncodedRNCAddress()));
         assertNull(impl.getExtensionContainer());
-        assertTrue(Arrays.equals(impl.getQos2Subscribed().getData(), this.getEncodedqos2Subscribed()));
-        assertTrue(Arrays.equals(impl.getQos2Requested().getData(), this.getEncodedqos2Requested()));
-        assertTrue(Arrays.equals(impl.getQos2Negotiated().getData(), this.getEncodedqos2Negotiated()));
-        assertTrue(Arrays.equals(impl.getQos3Subscribed().getData(), this.getEncodedqos3Subscribed()));
-        assertTrue(Arrays.equals(impl.getQos3Requested().getData(), this.getEncodedqos3Requested()));
-        assertTrue(Arrays.equals(impl.getQos3Negotiated().getData(), this.getEncodedqos3Negotiated()));
+        assertTrue(Arrays.equals(impl.getQos2Subscribed().getData(), this.getEncodedQos2Subscribed()));
+        assertTrue(Arrays.equals(impl.getQos2Requested().getData(), this.getEncodedQos2Requested()));
+        assertTrue(Arrays.equals(impl.getQos2Negotiated().getData(), this.getEncodedQos2Negotiated()));
+        assertTrue(Arrays.equals(impl.getQos3Subscribed().getData(), this.getEncodedQos3Subscribed()));
+        assertTrue(Arrays.equals(impl.getQos3Requested().getData(), this.getEncodedQos3Requested()));
+        assertTrue(Arrays.equals(impl.getQos3Negotiated().getData(), this.getEncodedQos3Negotiated()));
         assertEquals(impl.getQos4Subscribed().getData(), 91);
         assertEquals(impl.getQos4Requested().getData(), 92);
         assertEquals(impl.getQos4Negotiated().getData(), 93);
         assertTrue(Arrays.equals(impl.getExtPdpType().getData(), this.getEncodedExtPDPType()));
         assertTrue(Arrays.equals(impl.getExtPdpAddress().getData(), this.getEncodedExtPdpAddress()));
-
     }
 
     @Test(groups = { "functional.encode", "subscriberInformation" })
@@ -193,25 +188,24 @@ public class PDPContextInfoTest {
 
         PDPTypeImpl pdpType = new PDPTypeImpl(getEncodedPDPType());
         PDPAddressImpl pdpAddress = new PDPAddressImpl(getEncodedPDPAddress());
-        APNImpl apnSubscribed = new APNImpl(getEncodedapnSubscribed());
-        APNImpl apnInUse = new APNImpl(getEncodedgetapnInUse());
+        APNImpl apnSubscribed = new APNImpl(getEncodedApnSubscribed());
+        APNImpl apnInUse = new APNImpl(getEncodedGetApnInUse());
         TransactionIdImpl transactionId = new TransactionIdImpl(getEncodedTransactionId());
         TEIDImpl teidForGnAndGp = new TEIDImpl(getEncodedTEID_1());
         TEIDImpl teidForIu = new TEIDImpl(getEncodedTEID_2());
-        GSNAddressImpl ggsnAddress = new GSNAddressImpl(getEncodedggsnAddress());
-        ExtQoSSubscribedImpl qosSubscribed = new ExtQoSSubscribedImpl(getEncodedqosSubscribed());
-        ExtQoSSubscribedImpl qosRequested = new ExtQoSSubscribedImpl(getEncodedqosRequested());
-        ExtQoSSubscribedImpl qosNegotiated = new ExtQoSSubscribedImpl(getEncodedqosNegotiated());
-        GPRSChargingIDImpl chargingId = new GPRSChargingIDImpl(getEncodedchargingId());
-        ChargingCharacteristicsImpl chargingCharacteristics = new ChargingCharacteristicsImpl(
-                getEncodedchargingCharacteristics());
-        GSNAddressImpl rncAddress = new GSNAddressImpl(getEncodedrncAddress());
-        Ext2QoSSubscribedImpl qos2Subscribed = new Ext2QoSSubscribedImpl(getEncodedqos2Subscribed());
-        Ext2QoSSubscribedImpl qos2Requested = new Ext2QoSSubscribedImpl(getEncodedqos2Requested());
-        Ext2QoSSubscribedImpl qos2Negotiated = new Ext2QoSSubscribedImpl(getEncodedqos2Negotiated());
-        Ext3QoSSubscribedImpl qos3Subscribed = new Ext3QoSSubscribedImpl(getEncodedqos3Subscribed());
-        Ext3QoSSubscribedImpl qos3Requested = new Ext3QoSSubscribedImpl(getEncodedqos3Requested());
-        Ext3QoSSubscribedImpl qos3Negotiated = new Ext3QoSSubscribedImpl(getEncodedqos3Negotiated());
+        GSNAddressImpl ggsnAddress = new GSNAddressImpl(getEncodedGGSNAddress());
+        ExtQoSSubscribedImpl qosSubscribed = new ExtQoSSubscribedImpl(getEncodedQosSubscribed());
+        ExtQoSSubscribedImpl qosRequested = new ExtQoSSubscribedImpl(getEncodedQosRequested());
+        ExtQoSSubscribedImpl qosNegotiated = new ExtQoSSubscribedImpl(getEncodedQosNegotiated());
+        GPRSChargingIDImpl chargingId = new GPRSChargingIDImpl(getEncodedChargingId());
+        ChargingCharacteristicsImpl chargingCharacteristics = new ChargingCharacteristicsImpl(getEncodedChargingCharacteristics());
+        GSNAddressImpl rncAddress = new GSNAddressImpl(getEncodedRNCAddress());
+        Ext2QoSSubscribedImpl qos2Subscribed = new Ext2QoSSubscribedImpl(getEncodedQos2Subscribed());
+        Ext2QoSSubscribedImpl qos2Requested = new Ext2QoSSubscribedImpl(getEncodedQos2Requested());
+        Ext2QoSSubscribedImpl qos2Negotiated = new Ext2QoSSubscribedImpl(getEncodedQos2Negotiated());
+        Ext3QoSSubscribedImpl qos3Subscribed = new Ext3QoSSubscribedImpl(getEncodedQos3Subscribed());
+        Ext3QoSSubscribedImpl qos3Requested = new Ext3QoSSubscribedImpl(getEncodedQos3Requested());
+        Ext3QoSSubscribedImpl qos3Negotiated = new Ext3QoSSubscribedImpl(getEncodedQos3Negotiated());
         Ext4QoSSubscribedImpl qos4Subscribed = new Ext4QoSSubscribedImpl(91);
         Ext4QoSSubscribedImpl qos4Requested = new Ext4QoSSubscribedImpl(92);
         Ext4QoSSubscribedImpl qos4Negotiated = new Ext4QoSSubscribedImpl(93);
@@ -222,18 +216,7 @@ public class PDPContextInfoTest {
                 transactionId, teidForGnAndGp, teidForIu, ggsnAddress, qosSubscribed, qosRequested, qosNegotiated, chargingId,
                 chargingCharacteristics, rncAddress, null, qos2Subscribed, qos2Requested, qos2Negotiated, qos3Subscribed,
                 qos3Requested, qos3Negotiated, qos4Subscribed, qos4Requested, qos4Negotiated, extPdpType, extPdpAddress);
-        // int pdpContextIdentifier, boolean pdpContextActive, PDPType pdpType, PDPAddress pdpAddress, APN apnSubscribed, APN
-        // apnInUse,
-        // Integer asapi, TransactionId transactionId, TEID teidForGnAndGp, TEID teidForIu, GSNAddress ggsnAddress,
-        // ExtQoSSubscribed qosSubscribed,
-        // ExtQoSSubscribed qosRequested, ExtQoSSubscribed qosNegotiated, GPRSChargingID chargingId, ChargingCharacteristics
-        // chargingCharacteristics,
-        // GSNAddress rncAddress, MAPExtensionContainer extensionContainer, Ext2QoSSubscribed qos2Subscribed, Ext2QoSSubscribed
-        // qos2Requested,
-        // Ext2QoSSubscribed qos2Negotiated, Ext3QoSSubscribed qos3Subscribed, Ext3QoSSubscribed qos3Requested,
-        // Ext3QoSSubscribed qos3Negotiated,
-        // Ext4QoSSubscribed qos4Subscribed, Ext4QoSSubscribed qos4Requested, Ext4QoSSubscribed qos4Negotiated, ExtPDPType
-        // extPdpType, PDPAddress extPdpAddress
+
         AsnOutputStream asnOS = new AsnOutputStream();
         impl.encodeAll(asnOS);
         byte[] encodedData = asnOS.toByteArray();
@@ -251,30 +234,26 @@ public class PDPContextInfoTest {
         TransactionIdImpl transactionId = new TransactionIdImpl(getEncodedTransactionId());
         TEIDImpl teidForGnAndGp = new TEIDImpl(getEncodedTEID_1());
         TEIDImpl teidForIu = new TEIDImpl(getEncodedTEID_2());
-        GSNAddressImpl ggsnAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, getEncodedggsnAddress2());
-        ExtQoSSubscribedImpl qosSubscribed = new ExtQoSSubscribedImpl(getEncodedqosSubscribed());
-        ExtQoSSubscribedImpl qosRequested = new ExtQoSSubscribedImpl(getEncodedqosRequested());
-        ExtQoSSubscribedImpl qosNegotiated = new ExtQoSSubscribedImpl(getEncodedqosNegotiated());
-        GPRSChargingIDImpl chargingId = new GPRSChargingIDImpl(getEncodedchargingId());
+        GSNAddressImpl ggsnAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, getEncodedGGSNAddress2());
+        ExtQoSSubscribedImpl qosSubscribed = new ExtQoSSubscribedImpl(getEncodedQosSubscribed());
+        ExtQoSSubscribedImpl qosRequested = new ExtQoSSubscribedImpl(getEncodedQosRequested());
+        ExtQoSSubscribedImpl qosNegotiated = new ExtQoSSubscribedImpl(getEncodedQosNegotiated());
+        GPRSChargingIDImpl chargingId = new GPRSChargingIDImpl(getEncodedChargingId());
         ChargingCharacteristicsImpl chargingCharacteristics = new ChargingCharacteristicsImpl(
-                getEncodedchargingCharacteristics());
-        GSNAddressImpl rncAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, getEncodedrncAddress2());
-        Ext2QoSSubscribedImpl qos2Subscribed = new Ext2QoSSubscribedImpl(getEncodedqos2Subscribed());
-        Ext2QoSSubscribedImpl qos2Requested = new Ext2QoSSubscribedImpl(getEncodedqos2Requested());
-        Ext2QoSSubscribedImpl qos2Negotiated = new Ext2QoSSubscribedImpl(getEncodedqos2Negotiated());
-        Ext3QoSSubscribedImpl qos3Subscribed = new Ext3QoSSubscribedImpl(getEncodedqos3Subscribed());
-        Ext3QoSSubscribedImpl qos3Requested = new Ext3QoSSubscribedImpl(getEncodedqos3Requested());
-        Ext3QoSSubscribedImpl qos3Negotiated = new Ext3QoSSubscribedImpl(getEncodedqos3Negotiated());
+                getEncodedChargingCharacteristics());
+        GSNAddressImpl rncAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, getEncodedRNCAddress2());
+        Ext2QoSSubscribedImpl qos2Subscribed = new Ext2QoSSubscribedImpl(getEncodedQos2Subscribed());
+        Ext2QoSSubscribedImpl qos2Requested = new Ext2QoSSubscribedImpl(getEncodedQos2Requested());
+        Ext2QoSSubscribedImpl qos2Negotiated = new Ext2QoSSubscribedImpl(getEncodedQos2Negotiated());
+        Ext3QoSSubscribedImpl qos3Subscribed = new Ext3QoSSubscribedImpl(getEncodedQos3Subscribed());
+        Ext3QoSSubscribedImpl qos3Requested = new Ext3QoSSubscribedImpl(getEncodedQos3Requested());
+        Ext3QoSSubscribedImpl qos3Negotiated = new Ext3QoSSubscribedImpl(getEncodedQos3Negotiated());
         Ext4QoSSubscribedImpl qos4Subscribed = new Ext4QoSSubscribedImpl(91);
         Ext4QoSSubscribedImpl qos4Requested = new Ext4QoSSubscribedImpl(92);
         Ext4QoSSubscribedImpl qos4Negotiated = new Ext4QoSSubscribedImpl(93);
         ExtPDPTypeImpl extPdpType = new ExtPDPTypeImpl(getEncodedExtPDPType());
         PDPAddressImpl extPdpAddress = new PDPAddressImpl(getEncodedExtPdpAddress());
 
-//        PDPContextInfoImpl original = new PDPContextInfoImpl(10, true, pdpType, pdpAddress, apnSubscribed, apnInUse, 11,
-//                transactionId, teidForGnAndGp, teidForIu, ggsnAddress, qosSubscribed, qosRequested, qosNegotiated, chargingId,
-//                chargingCharacteristics, rncAddress, null, qos2Subscribed, qos2Requested, qos2Negotiated, qos3Subscribed,
-//                qos3Requested, qos3Negotiated, qos4Subscribed, qos4Requested, qos4Negotiated, extPdpType, extPdpAddress);
         PDPContextInfoImpl original = new PDPContextInfoImpl(10, true, pdpType, pdpAddress, apnSubscribed, apnInUse, 11,
                 transactionId, teidForGnAndGp, teidForIu, ggsnAddress, qosSubscribed, qosRequested, qosNegotiated, chargingId,
                 chargingCharacteristics, rncAddress, null, qos2Subscribed, qos2Requested, qos2Negotiated, qos3Subscribed,
@@ -345,9 +324,6 @@ public class PDPContextInfoTest {
         assertEquals(copy.getExtPdpType().getData(), original.getExtPdpType().getData());
         
         assertEquals(copy.getPdpAddress().getData(), original.getPdpAddress().getData());
-        
-        
-        
     }
 
 }

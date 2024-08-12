@@ -239,8 +239,7 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
                     break;
 
                 case _ID_ps_PDP_ActiveReachableForPaging:
-                    if (asnInputStream
-                        .isTagPrimitive())
+                    if (asnInputStream.isTagPrimitive())
                         throw new MAPParsingComponentException(
                                 "Error while decoding psPDPActiveReachableForPaging choice: Parameter is primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
@@ -261,7 +260,7 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
 
     private void decodePdpContextInfoList(AsnInputStream asnInputStream, int length) throws AsnException, IOException,
             MAPParsingComponentException {
-        this.pdpContextInfoList = new ArrayList<PDPContextInfo>();
+        this.pdpContextInfoList = new ArrayList<>();
         while (true) {
             if (asnInputStream.available() == 0)
                 break;
@@ -362,10 +361,10 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
         sb.append(" [");
 
         if (this.choice != null)
-            sb.append(this.choice.toString());
+            sb.append(this.choice);
         if (this.netDetNotReachable != null) {
             sb.append(", netDetNotReachable=");
-            sb.append(this.netDetNotReachable.toString());
+            sb.append(this.netDetNotReachable);
         }
         if (this.pdpContextInfoList != null && !this.pdpContextInfoList.isEmpty()) {
             sb.append(", pdpContextInfoList [");
@@ -385,7 +384,7 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<PSSubscriberStateImpl> PS_SUBSCRIBER_STATE_XML = new XMLFormat<PSSubscriberStateImpl>(
+    protected static final XMLFormat<PSSubscriberStateImpl> PS_SUBSCRIBER_STATE_XML = new XMLFormat<>(
             PSSubscriberStateImpl.class) {
 
         @Override

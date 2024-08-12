@@ -4,6 +4,7 @@ package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 import static org.testng.Assert.*;
 import static org.testng.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -12,6 +13,7 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdOrLAI;
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
+import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.IMEI;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
@@ -33,10 +35,13 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationNumberMap;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MNPInfoRes;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSClassmark2;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSNetworkCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSRadioAccessCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NRCellGlobalId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NRTAId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NotReachableReason;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NumberPortabilityStatus;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PDPContextInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
@@ -44,12 +49,34 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TAId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TEID;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TransactionId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRate;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_DeliveryOfErroneousSdus;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_DeliveryOrder;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_MaximumSduSize;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_ResidualBER;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_SduErrorRatio;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TrafficClass;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TrafficHandlingPriority;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_TransferDelay;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.FQDN;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPAddress;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPTypeValue;
+import org.restcomm.protocols.ss7.map.primitives.GSNAddressImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_MaximumSduSizeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_TransferDelayImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPAddressImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPTypeImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -179,6 +206,89 @@ public class ProvideSubscriberInfoResponseTest {
                 0x03, 0x6f, (byte) 0x88, 0x03, 0x47, (byte) 0xf8, 0x20, (byte) 0x89,
                 0x02, 0x00, (byte) 0xfa, (byte) 0x8a, 0x01, 0x04, (byte) 0x8c, 0x06,
                 0x47, (byte) 0xf8, 0x20, 0x07, (byte) 0x8f, (byte) 0xd2
+        };
+    }
+
+    private byte[] getEncodedDataPs7() {
+        return new byte[] { 0x30, (byte) 0x82, 0x01, 0x12, 0x30, (byte) 0x82,
+                0x01, 0x0e, (byte) 0xa3, 0x29, (byte) 0xa0, 0x09, (byte) 0x80, 0x07,
+                0x47, (byte) 0xf8, 0x70, 0x22, 0x74, 0x26, 0x14, (byte) 0x81,
+                0x06, 0x47, (byte) 0xf8, 0x10, 0x00, 0x65, 0x17, (byte) 0x83,
+                0x08, (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64, 0x00, 0x10,
+                (byte) 0xf0, (byte) 0x84, 0x03, 0x31, 0x33, 0x31, (byte) 0x86, 0x00,
+                (byte) 0x88, 0x00, (byte) 0x89, 0x01, 0x00, (byte) 0xa4, (byte) 0x81, (byte) 0x8b,
+                (byte) 0xa5, (byte) 0x81, (byte) 0x88, 0x30, (byte) 0x81, (byte) 0x85, (byte) 0x80, 0x01,
+                0x01, (byte) 0x81, 0x00, (byte) 0x82, 0x02, (byte) 0xf1, 0x21, (byte) 0x83,
+                0x01, 0x15, (byte) 0x84, 0x09, 0x08, 0x69, 0x6e, 0x74,
+                0x65, 0x72, 0x6e, 0x65, 0x74, (byte) 0x85, 0x09, 0x08,
+                0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x65, 0x74,
+                (byte) 0x86, 0x01, 0x01, (byte) 0x87, 0x02, 0x01, 0x07, (byte) 0x88,
+                0x04, 0x01, 0x03, 0x04, 0x07, (byte) 0x89, 0x04, 0x01,
+                0x00, 0x00, 0x02, (byte) 0x8a, 0x06, 0x17, 0x05, 0x26,
+                0x30, 0x51, 0x05, (byte) 0x8b, 0x09, 0x09, 0x72, (byte) 0x97,
+                (byte) 0x80, 0x40, 0x00, (byte) 0xa3, 0x40, 0x00, (byte) 0x8c, 0x09,
+                0x09, 0x72, (byte) 0x97, (byte) 0x80, 0x40, 0x00, 0x43, (byte) 0x80,
+                0x00, (byte) 0x8d, 0x09, 0x09, 0x72, (byte) 0x97, (byte) 0x80, 0x40,
+                0x00, 0x03, 0x40, 0x00, (byte) 0x8e, 0x04, 0x01, 0x02,
+                0x04, 0x08, (byte) 0x8f, 0x02, 0x08, 0x00, (byte) 0x90, 0x05,
+                (byte) 0xc0, (byte) 0xa8, 0x05, 0x33, 0x18, (byte) 0x92, 0x03, 0x10,
+                0x00, 0x00, (byte) 0x93, 0x03, 0x10, 0x00, 0x00, (byte) 0x94,
+                0x03, 0x10, 0x00, 0x00, (byte) 0x9c, 0x02, 0x3a, 0x3b,
+                (byte) 0x9d, 0x01, 0x3c, (byte) 0x85, 0x08, 0x10, 0x71, 0x41,
+                0x00, 0x64, 0x16, 0x50, (byte) 0xf1, (byte) 0xa7, 0x19, (byte) 0x80,
+                0x08, 0x31, 0x30, 0x30, 0x30, 0x32, 0x30, 0x33,
+                0x31, (byte) 0x81, 0x0d, 0x31, 0x30, 0x30, 0x30, 0x32,
+                0x30, 0x33, 0x31, 0x37, 0x30, 0x38, 0x31, 0x34,
+                (byte) 0xa8, 0x1b, (byte) 0x80, 0x03, (byte) 0x94, 0x71, 0x01, (byte) 0x81,
+                0x08, 0x09, 0x41, 0x50, 0x01, 0x65, 0x28, 0x32,
+                (byte) 0xf8, (byte) 0x82, 0x07, (byte) 0x91, (byte) 0x95, (byte) 0x98, 0x09, 0x77,
+                0x39, (byte) 0xf7, (byte) 0x83, 0x01, 0x04, (byte) 0x89, 0x01, 0x01,
+                (byte) 0x8a, 0x04, (byte) 0xea, 0x5b, 0x27, (byte) 0xa5, (byte) 0x8b, 0x01,
+                0x01, (byte) 0x8e, 0x02, 0x00, 0x06, (byte) 0x8f, 0x01, 0x00
+        };
+    }
+
+    private byte[] getEncodedDataPs8() {
+        return new byte[] { 0x30, (byte) 0x82, 0x01, 0x36, 0x30, (byte) 0x82,
+                0x01, 0x32, (byte) 0x85, 0x08, 0x10, 0x71, 0x41, 0x00,
+                0x64, 0x16, 0x50, (byte) 0xf1, (byte) 0xa7, 0x19, (byte) 0x80, 0x08,
+                0x31, 0x30, 0x30, 0x30, 0x32, 0x30, 0x33, 0x31,
+                (byte) 0x81, 0x0d, 0x31, 0x30, 0x30, 0x30, 0x32, 0x30,
+                0x33, 0x31, 0x37, 0x30, 0x38, 0x31, 0x34, (byte) 0xa8,
+                0x1b, (byte) 0x80, 0x03, (byte) 0x94, 0x71, 0x01, (byte) 0x81, 0x08,
+                0x09, 0x41, 0x50, 0x01, 0x65, 0x08, 0x14, (byte) 0xf5,
+                (byte) 0x82, 0x07, (byte) 0x91, (byte) 0x95, (byte) 0x98, 0x09, 0x77, 0x39,
+                (byte) 0xf7, (byte) 0x83, 0x01, 0x04, (byte) 0x89, 0x01, 0x01, (byte) 0x8a,
+                0x04, (byte) 0xea, 0x5b, 0x27, (byte) 0xa5, (byte) 0x8b, 0x01, 0x04,
+                (byte) 0xac, (byte) 0x81, (byte) 0x8b, (byte) 0xa5, (byte) 0x81, (byte) 0x88, 0x30, (byte) 0x81,
+                (byte) 0x85, (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x00, (byte) 0x82, 0x02,
+                (byte) 0xf1, 0x21, (byte) 0x83, 0x01, 0x15, (byte) 0x84, 0x09, 0x08,
+                0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x65, 0x74,
+                (byte) 0x85, 0x09, 0x08, 0x69, 0x6e, 0x74, 0x65, 0x72,
+                0x6e, 0x65, 0x74, (byte) 0x86, 0x01, 0x01, (byte) 0x87, 0x02,
+                0x01, 0x07, (byte) 0x88, 0x04, 0x01, 0x03, 0x04, 0x07,
+                (byte) 0x89, 0x04, 0x01, 0x00, 0x00, 0x02, (byte) 0x8a, 0x06,
+                0x17, 0x05, 0x26, 0x30, 0x51, 0x05, (byte) 0x8b, 0x09,
+                0x09, 0x72, (byte) 0x97, (byte) 0x80, 0x40, 0x00, (byte) 0xa3, 0x40,
+                0x00, (byte) 0x8c, 0x09, 0x09, 0x72, (byte) 0x97, (byte) 0x80, 0x40,
+                0x00, 0x43, (byte) 0x80, 0x00, (byte) 0x8d, 0x09, 0x09, 0x72,
+                (byte) 0x97, (byte) 0x80, 0x40, 0x00, 0x03, 0x40, 0x00, (byte) 0x8e,
+                0x04, 0x01, 0x02, 0x04, 0x08, (byte) 0x8f, 0x02, 0x08,
+                0x00, (byte) 0x90, 0x05, (byte) 0xc0, (byte) 0xa8, 0x05, 0x33, 0x18,
+                (byte) 0x92, 0x03, 0x10, 0x00, 0x00, (byte) 0x93, 0x03, 0x10,
+                0x00, 0x00, (byte) 0x94, 0x03, 0x10, 0x00, 0x00, (byte) 0x9c,
+                0x02, 0x3a, 0x3b, (byte) 0x9d, 0x01, 0x3c, (byte) 0xad, 0x4d,
+                (byte) 0x80, 0x07, 0x47, (byte) 0xf8, 0x10, 0x00, 0x07, (byte) 0xea,
+                0x02, (byte) 0x81, 0x05, 0x47, (byte) 0xf8, 0x10, 0x00, 0x6d,
+                (byte) 0x85, 0x00, (byte) 0x86, 0x01, 0x00, (byte) 0x87, 0x36, 0x6d,
+                0x6d, 0x65, 0x63, 0x30, 0x33, 0x2e, 0x6d, 0x6d,
+                0x65, 0x67, 0x69, 0x33, 0x30, 0x30, 0x30, 0x2e,
+                0x6d, 0x6d, 0x65, 0x2e, 0x65, 0x70, 0x63, 0x2e,
+                0x6d, 0x6e, 0x63, 0x30, 0x30, 0x32, 0x2e, 0x6d,
+                0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67,
+                0x70, 0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+                0x6b, 0x2e, 0x6f, 0x72, 0x67, (byte) 0x8e, 0x02, 0x00,
+                0x06, (byte) 0x8f, 0x01, 0x00
         };
     }
 
@@ -776,6 +886,311 @@ public class ProvideSubscriberInfoResponseTest {
         // MAPExtensionContainer
         assertNull(asc.getExtensionContainer());
 
+        // test 7 (data taken from MAP load test for PS domain, containing location information GPRS and some
+        // other parameters not found in test 6 such GPRSMCClass and PSSubscriberState with PDPContextInfo
+        rawData = getEncodedDataPs7();
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        asc = new ProvideSubscriberInfoResponseImpl();
+        asc.decodeAll(asn);
+
+        assertEquals(tag, Tag.SEQUENCE);
+        assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
+
+        si = asc.getSubscriberInfo();
+        // LocationInformation
+        li = si.getLocationInformation();
+        assertNull(li);
+        // SubscriberState
+        subscriberState = si.getSubscriberState();
+        assertNull(subscriberState);
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
+        // LocationInformationGPRS
+        liGPRS = si.getLocationInformationGPRS();
+        liGprsCGIorSAIorLAI = liGPRS.getCellGlobalIdOrServiceAreaIdOrLAI();
+        liGprsSaiPresent = liGPRS.isSaiPresent();
+        liGprsAol = liGPRS.getAgeOfLocationInformation();
+        liGprsCurrentLocation = liGPRS.isCurrentLocationRetrieved();
+        liGPRSGeographicalInfo = liGPRS.getGeographicalInformation();
+        liGPRSGeodeticInfo = liGPRS.getGeodeticInformation();
+        rai = liGPRS.getRouteingAreaIdentity();
+        lsaIdentity = liGPRS.getLSAIdentity();
+        sgsnNumber = liGPRS.getSGSNNumber();
+        assertEquals(liGprsCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
+        assertEquals(liGprsCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 7);
+        assertEquals(liGprsCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 8820);
+        assertEquals(liGprsCGIorSAIorLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 9748);
+        assertTrue(liGprsSaiPresent);
+        assertEquals(liGprsAol.intValue(), 0);
+        assertTrue(liGprsCurrentLocation);
+        assertNull(liGPRSGeographicalInfo);
+        assertNull(liGPRSGeodeticInfo);
+        assertEquals(rai.getMCC(), 748);
+        assertEquals(rai.getMNC(), 1);
+        assertEquals(rai.getLAC(), 101);
+        assertEquals(rai.getRAC(), 23);
+        assertEquals(lsaIdentity.getData(), new byte[] {49, 51, 49});
+        assertEquals(sgsnNumber.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(sgsnNumber.getAddressNature(), AddressNature.international_number);
+        assertEquals(sgsnNumber.getAddress(), "4917104600010");
+        assertNull(liGPRS.getExtensionContainer());
+        // PSSubscriberState
+        psSubscriberState = si.getPSSubscriberState();
+        assertEquals(psSubscriberState.getChoice(), PSSubscriberStateChoice.psPDPActiveReachableForPaging);
+        assertNotNull(psSubscriberState.getPDPContextInfoList());
+        ArrayList<PDPContextInfo> pdpContextInfoList = psSubscriberState.getPDPContextInfoList();
+        int pdpContextIdentifier = pdpContextInfoList.get(0).getPdpContextIdentifier();
+        assertEquals(pdpContextIdentifier, 1);
+        boolean pdpContextActive = pdpContextInfoList.get(0).getPdpContextActive();
+        assertTrue(pdpContextActive);
+        PDPTypeValue pdpTypeValue = pdpContextInfoList.get(0).getPdpType().getPDPTypeValue();
+        assertEquals(pdpTypeValue, PDPTypeValue.IPv4);
+        PDPAddress pdpAddress = pdpContextInfoList.get(0).getPdpAddress();
+        assertEquals(pdpAddress.getData(), new byte[] { 21 });
+        APN apnSubscribed = pdpContextInfoList.get(0).getApnSubscribed();
+        assertEquals(apnSubscribed.getApn(), "internet");
+        APN apnInUse = pdpContextInfoList.get(0).getApnInUse();
+        assertEquals(apnInUse.getApn(), "internet");
+        int asapi = pdpContextInfoList.get(0).getNsapi();
+        assertEquals(asapi, 1);
+        TransactionId transactionId = pdpContextInfoList.get(0).getTransactionId();
+        assertEquals(transactionId.getData(), new byte[] {1, 7});
+        TEID teidForGnAndGp = pdpContextInfoList.get(0).getTeidForGnAndGp();
+        assertEquals(teidForGnAndGp.getData(), new byte[] {1, 3, 4, 7});
+        TEID teidForIu = pdpContextInfoList.get(0).getTeidForIu();
+        assertEquals(teidForIu.getData(), new byte[] {1, 0, 0, 2});
+        GSNAddress ggsnAddress = pdpContextInfoList.get(0).getGgsnAddress();
+        assertEquals(ggsnAddress.getData(), new byte[] {23, 5, 38, 48, 81, 5});
+        int allocationRetentionPriority = pdpContextInfoList.get(0).getQosRequested().getAllocationRetentionPriority();
+        ExtQoSSubscribed_DeliveryOfErroneousSdus deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosRequested().getDeliveryOfErroneousSdus();
+        ExtQoSSubscribed_DeliveryOrder deliveryOrder = pdpContextInfoList.get(0).getQosRequested().getDeliveryOrder();
+        ExtQoSSubscribed_TrafficClass trafficClass = pdpContextInfoList.get(0).getQosRequested().getTrafficClass();
+        ExtQoSSubscribed_MaximumSduSize maximumSduSize = pdpContextInfoList.get(0).getQosRequested().getMaximumSduSize();
+        ExtQoSSubscribed_BitRate maximumBitRateForUplink = pdpContextInfoList.get(0).getQosRequested().getMaximumBitRateForUplink();
+        ExtQoSSubscribed_BitRate maximumBitRateForDownlink = pdpContextInfoList.get(0).getQosRequested().getMaximumBitRateForDownlink();
+        ExtQoSSubscribed_ResidualBER residualBER = pdpContextInfoList.get(0).getQosRequested().getResidualBER();
+        ExtQoSSubscribed_SduErrorRatio sduErrorRatio = pdpContextInfoList.get(0).getQosRequested().getSduErrorRatio();
+        ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = pdpContextInfoList.get(0).getQosRequested().getTrafficHandlingPriority();
+        ExtQoSSubscribed_TransferDelay transferDelay = pdpContextInfoList.get(0).getQosRequested().getTransferDelay();
+        ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = pdpContextInfoList.get(0).getQosRequested().getGuaranteedBitRateForUplink();
+        ExtQoSSubscribed_BitRate guaranteedBitRateForDownlink = pdpContextInfoList.get(0).getQosRequested().getGuaranteedBitRateForDownlink();
+        assertEquals(allocationRetentionPriority, 9);
+        assertEquals(deliveryOfErroneousSdus, ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
+        assertEquals(deliveryOrder, ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
+        assertEquals(trafficClass, ExtQoSSubscribed_TrafficClass.interactiveClass);
+        assertEquals(maximumSduSize.getMaximumSduSize(), 1502);
+        assertEquals(maximumBitRateForUplink.getBitRate(), 576);
+        assertEquals(maximumBitRateForDownlink.getBitRate(), 64);
+        assertEquals(residualBER, ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
+        assertEquals(sduErrorRatio,ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
+        assertEquals(trafficHandlingPriority, ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
+        assertEquals(transferDelay.getTransferDelay(), 200);
+        assertEquals(guaranteedBitRateForUplink.getBitRate(), 576);
+        assertEquals(guaranteedBitRateForDownlink.getBitRate(), 0);
+        // IMEI
+        imei = si.getIMEI();
+        assertEquals(imei.getIMEI(), "011714004661051");
+        // MSClassmark2
+        msClassmark2 = si.getMSClassmark2();
+        assertNull(msClassmark2);
+        // GPRSMSClass
+        gprsmsClass = si.getGPRSMSClass();
+        MSNetworkCapability msNetworkCapability = gprsmsClass.getMSNetworkCapability();
+        MSRadioAccessCapability msRadioAccessCapability = gprsmsClass.getMSRadioAccessCapability();
+        assertEquals(msNetworkCapability.getData(), hexStringToByteArray("3130303032303331"));
+        assertEquals(msRadioAccessCapability.getData(), hexStringToByteArray("31303030323033313730383134"));
+        // MNPInfoRes
+        mnpInfoRes = si.getMNPInfoRes();
+        mnpImsi = mnpInfoRes.getIMSI();
+        mnpMsisdn = mnpInfoRes.getMSISDN();
+        mnpPortabilityStatus = mnpInfoRes.getNumberPortabilityStatus();
+        mnpRouteingNumber = mnpInfoRes.getRouteingNumber().getRouteingNumber();
+        assertEquals(mnpRouteingNumber, "491710");
+        assertEquals(mnpImsi.getData(), "901405105682238");
+        assertEquals(mnpMsisdn.getAddress(), "59899077937");
+        assertEquals(mnpPortabilityStatus, NumberPortabilityStatus.ownNumberNotPortedOut);
+        // IMSVoiceOverPsSessionsIndication
+        ims = si.getIMSVoiceOverPsSessionsIndication();
+        assertEquals(ims, IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsSupported);
+        // LastUEActivityTime
+        lastUEActivityTime = si.getLastUEActivityTime();
+        assertEquals(lastUEActivityTime.getYear(), 2024);
+        assertEquals(lastUEActivityTime.getMonth(), 8);
+        assertEquals(lastUEActivityTime.getDay(), 5);
+        assertEquals(lastUEActivityTime.getHour(), 10);
+        assertEquals(lastUEActivityTime.getMinute(), 27);
+        assertEquals(lastUEActivityTime.getSecond(), 49);
+        // UsedRATType
+        lastRATType = si.getLastRATType();
+        assertEquals(lastRATType, UsedRATType.geran);
+        // EPSSubscriberState
+        epsSubscriberState = si.getEPSSubscriberState();
+        assertNull(epsSubscriberState);
+        // LocationInformationEPS
+        locationInfoEPS = si.getLocationInformationEPS();
+        assertNull(locationInfoEPS);
+        // TimeZone
+        timeZone = si.getTimeZone();
+        assertEquals(timeZone.getData(), new byte[] {0, 6});
+        // DaylightSavingTime
+        daylightSavingTime = si.getDaylightSavingTime();
+        assertEquals(daylightSavingTime, DaylightSavingTime.noAdjustment);
+        // LocationInformation5GS
+        li5GS = si.getLocationInformation5GS();
+        assertNull(li5GS);
+
+        // test 8 (data taken from MAP load test for PS domain, containing location information GPRS/EPS/5GS and some
+        // other parameters not found in test 7 such as EPS Subscriber State
+        rawData = getEncodedDataPs8();
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        asc = new ProvideSubscriberInfoResponseImpl();
+        asc.decodeAll(asn);
+
+        assertEquals(tag, Tag.SEQUENCE);
+        assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
+
+        si = asc.getSubscriberInfo();
+        // LocationInformation
+        li = si.getLocationInformation();
+        assertNull(li);
+        // SubscriberState
+        subscriberState = si.getSubscriberState();
+        assertNull(subscriberState);
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
+        // LocationInformationGPRS
+        liGPRS = si.getLocationInformationGPRS();
+        assertNull(liGPRS);
+        // PSSubscriberState
+        psSubscriberState = si.getPSSubscriberState();
+        assertNull(psSubscriberState);
+        // IMEI
+        imei = si.getIMEI();
+        assertEquals(imei.getIMEI(), "011714004661051");
+        // MSClassmark2
+        msClassmark2 = si.getMSClassmark2();
+        assertNull(msClassmark2);
+        // GPRSMSClass
+        gprsmsClass = si.getGPRSMSClass();
+        msNetworkCapability = gprsmsClass.getMSNetworkCapability();
+        msRadioAccessCapability = gprsmsClass.getMSRadioAccessCapability();
+        assertEquals(msNetworkCapability.getData(), hexStringToByteArray("3130303032303331"));
+        assertEquals(msRadioAccessCapability.getData(), hexStringToByteArray("31303030323033313730383134"));
+        // MNPInfoRes
+        mnpInfoRes = si.getMNPInfoRes();
+        mnpImsi = mnpInfoRes.getIMSI();
+        mnpMsisdn = mnpInfoRes.getMSISDN();
+        mnpPortabilityStatus = mnpInfoRes.getNumberPortabilityStatus();
+        mnpRouteingNumber = mnpInfoRes.getRouteingNumber().getRouteingNumber();
+        assertEquals(mnpRouteingNumber, "491710");
+        assertEquals(mnpImsi.getData(), "901405105680415");
+        assertEquals(mnpMsisdn.getAddress(), "59899077937");
+        assertEquals(mnpPortabilityStatus, NumberPortabilityStatus.ownNumberNotPortedOut);
+        // IMSVoiceOverPsSessionsIndication
+        ims = si.getIMSVoiceOverPsSessionsIndication();
+        assertEquals(ims, IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsSupported);
+        // LastUEActivityTime
+        lastUEActivityTime = si.getLastUEActivityTime();
+        assertEquals(lastUEActivityTime.getYear(), 2024);
+        assertEquals(lastUEActivityTime.getMonth(), 8);
+        assertEquals(lastUEActivityTime.getDay(), 5);
+        assertEquals(lastUEActivityTime.getHour(), 10);
+        assertEquals(lastUEActivityTime.getMinute(), 27);
+        assertEquals(lastUEActivityTime.getSecond(), 49);
+        // UsedRATType
+        lastRATType = si.getLastRATType();
+        assertEquals(lastRATType, UsedRATType.eUtran);
+        // EPSSubscriberState
+        epsSubscriberState = si.getEPSSubscriberState();
+        assertEquals(epsSubscriberState.getChoice(), PSSubscriberStateChoice.psPDPActiveReachableForPaging);
+        assertNotNull(epsSubscriberState.getPDPContextInfoList());
+        pdpContextInfoList = epsSubscriberState.getPDPContextInfoList();
+        pdpContextIdentifier = pdpContextInfoList.get(0).getPdpContextIdentifier();
+        assertEquals(pdpContextIdentifier, 1);
+        pdpContextActive = pdpContextInfoList.get(0).getPdpContextActive();
+        assertTrue(pdpContextActive);
+        pdpTypeValue = pdpContextInfoList.get(0).getPdpType().getPDPTypeValue();
+        assertEquals(pdpTypeValue, PDPTypeValue.IPv4);
+        pdpAddress = pdpContextInfoList.get(0).getPdpAddress();
+        assertEquals(pdpAddress.getData(), new byte[] { 21 });
+        apnSubscribed = pdpContextInfoList.get(0).getApnSubscribed();
+        assertEquals(apnSubscribed.getApn(), "internet");
+        apnInUse = pdpContextInfoList.get(0).getApnInUse();
+        assertEquals(apnInUse.getApn(), "internet");
+        asapi = pdpContextInfoList.get(0).getNsapi();
+        assertEquals(asapi, 1);
+        transactionId = pdpContextInfoList.get(0).getTransactionId();
+        assertEquals(transactionId.getData(), new byte[] {1, 7});
+        teidForGnAndGp = pdpContextInfoList.get(0).getTeidForGnAndGp();
+        assertEquals(teidForGnAndGp.getData(), new byte[] {1, 3, 4, 7});
+        teidForIu = pdpContextInfoList.get(0).getTeidForIu();
+        assertEquals(teidForIu.getData(), new byte[] {1, 0, 0, 2});
+        ggsnAddress = pdpContextInfoList.get(0).getGgsnAddress();
+        assertEquals(ggsnAddress.getData(), new byte[] {23, 5, 38, 48, 81, 5});
+        allocationRetentionPriority = pdpContextInfoList.get(0).getQosRequested().getAllocationRetentionPriority();
+        deliveryOfErroneousSdus = pdpContextInfoList.get(0).getQosRequested().getDeliveryOfErroneousSdus();
+        deliveryOrder = pdpContextInfoList.get(0).getQosRequested().getDeliveryOrder();
+        trafficClass = pdpContextInfoList.get(0).getQosRequested().getTrafficClass();
+        maximumSduSize = pdpContextInfoList.get(0).getQosRequested().getMaximumSduSize();
+        maximumBitRateForUplink = pdpContextInfoList.get(0).getQosRequested().getMaximumBitRateForUplink();
+        maximumBitRateForDownlink = pdpContextInfoList.get(0).getQosRequested().getMaximumBitRateForDownlink();
+        residualBER = pdpContextInfoList.get(0).getQosRequested().getResidualBER();
+        sduErrorRatio = pdpContextInfoList.get(0).getQosRequested().getSduErrorRatio();
+        trafficHandlingPriority = pdpContextInfoList.get(0).getQosRequested().getTrafficHandlingPriority();
+        transferDelay = pdpContextInfoList.get(0).getQosRequested().getTransferDelay();
+        guaranteedBitRateForUplink = pdpContextInfoList.get(0).getQosRequested().getGuaranteedBitRateForUplink();
+        guaranteedBitRateForDownlink = pdpContextInfoList.get(0).getQosRequested().getGuaranteedBitRateForDownlink();
+        assertEquals(allocationRetentionPriority, 9);
+        assertEquals(deliveryOfErroneousSdus, ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
+        assertEquals(deliveryOrder, ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
+        assertEquals(trafficClass, ExtQoSSubscribed_TrafficClass.interactiveClass);
+        assertEquals(maximumSduSize.getMaximumSduSize(), 1502);
+        assertEquals(maximumBitRateForUplink.getBitRate(), 576);
+        assertEquals(maximumBitRateForDownlink.getBitRate(), 64);
+        assertEquals(residualBER, ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
+        assertEquals(sduErrorRatio,ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
+        assertEquals(trafficHandlingPriority, ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
+        assertEquals(transferDelay.getTransferDelay(), 200);
+        assertEquals(guaranteedBitRateForUplink.getBitRate(), 576);
+        assertEquals(guaranteedBitRateForDownlink.getBitRate(), 0);
+        // LocationInformationEPS
+        locationInfoEPS = si.getLocationInformationEPS();
+        epsCgi = locationInfoEPS.getEUtranCellGlobalIdentity();
+        epsTAId = locationInfoEPS.getTrackingAreaIdentity();
+        epsExtensionContainer = locationInfoEPS.getExtensionContainer();
+        epsGeographicalInfo = locationInfoEPS.getGeographicalInformation();
+        epsGeodeticInfo = locationInfoEPS.getGeodeticInformation();
+        epsCurrentLocationRetrieved = locationInfoEPS.getCurrentLocationRetrieved();
+        epsAgeOfLocationInformation = locationInfoEPS.getAgeOfLocationInformation();
+        epsMmeName = locationInfoEPS.getMmeName();
+        assertEquals(epsCgi.getMCC(), 748);
+        assertEquals(epsCgi.getMNC(), 1);//518658
+        assertEquals(epsCgi.getEci(), 518658);
+        assertEquals(epsCgi.getENodeBId(), 2026);
+        assertEquals(epsCgi.getCi(), 2);
+        assertEquals(epsTAId.getMCC(), 748);
+        assertEquals(epsTAId.getMNC(), 1);
+        assertEquals(epsTAId.getTAC(), 109);
+        assertNull(epsExtensionContainer);
+        assertNull(epsGeographicalInfo);
+        assertNull(epsGeodeticInfo);
+        assertTrue(epsCurrentLocationRetrieved);
+        assertEquals(epsAgeOfLocationInformation.intValue(), 0);
+        assertEquals(epsMmeName.getData(), "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        // TimeZone
+        timeZone = si.getTimeZone();
+        assertEquals(timeZone.getData(), new byte[] {0, 6});
+        // DaylightSavingTime
+        daylightSavingTime = si.getDaylightSavingTime();
+        assertEquals(daylightSavingTime, DaylightSavingTime.noAdjustment);
+        // LocationInformation5GS
+        li5GS = si.getLocationInformation5GS();
+        // MAPExtensionContainer
+        assertNull(asc.getExtensionContainer());
     }
 
     @Test(groups = { "functional.encode", "service.mobility.subscriberInformation" })
@@ -803,4 +1218,13 @@ public class ProvideSubscriberInfoResponseTest {
         assertTrue(Arrays.equals(rawData, encodedData));
     }
 
+    private static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
+    }
 }

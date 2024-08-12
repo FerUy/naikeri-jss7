@@ -488,12 +488,14 @@ public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
                         lastRATType = UsedRATType.getInstance((int) ais.readInteger());
                         break;
                     case _TAG_epsSubscriberState:
-                        if (!ais.isTagPrimitive())
+                        if (ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ".epsSubscriberState: Parameter is not primitive",
+                                    + ".epsSubscriberState: Parameter is primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.epsSubscriberState = new PSSubscriberStateImpl();
-                        ((PSSubscriberStateImpl) this.epsSubscriberState).decodeAll(ais);
+                        AsnInputStream ais4 = ais.readSequenceStream();
+                        ais4.readTag();
+                        ((PSSubscriberStateImpl) this.epsSubscriberState).decodeAll(ais4);
                         break;
                     case _TAG_locationInformationEPS:
                         if (ais.isTagPrimitive())
