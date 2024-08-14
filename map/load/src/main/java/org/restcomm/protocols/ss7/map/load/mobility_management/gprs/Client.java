@@ -1691,7 +1691,7 @@ public class Client extends TestHarnessMobilityManagement {
         ExtQoSSubscribed_ResidualBER residualBER = ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved;
         ExtQoSSubscribed_SduErrorRatio sduErrorRatio = ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved;
         ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3;
-        int transferDelayValue = 180;
+        int transferDelayValue = 800;
         ExtQoSSubscribed_TransferDelay transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
         int gbrUL = 64;
         ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
@@ -1700,7 +1700,7 @@ public class Client extends TestHarnessMobilityManagement {
         ExtQoSSubscribed qosSubscribed = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
                 deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
                 sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
-        transferDelayValue = 1000;
+        transferDelayValue = 400;
         transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
         gbrUL = 128;
         guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);

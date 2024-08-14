@@ -24,7 +24,7 @@ public abstract class AbstractNAINumber extends AbstractNumber implements NAINum
     private static final int DEFAULT_NATURE_OF_ADDRESS_INDICATOR = 0;
 
     /**
-     * Holds nature of address indicator bits - those are 7 first bits from ususaly top byte (first bit is even/odd flag.)
+     * Holds nature of address indicator bits - those are 7 first bits from usually top byte (first bit is even/odd flag.)
      */
     protected int natureOfAddresIndicator;
 
@@ -64,7 +64,7 @@ public abstract class AbstractNAINumber extends AbstractNumber implements NAINum
     /**
      * This method is used in encode method. It encodes header part (1 or 2 bytes usually.)
      *
-     * @param bis
+     * @param bos
      * @return - number of bytes encoded.
      */
     public int encodeHeader(ByteArrayOutputStream bos) {

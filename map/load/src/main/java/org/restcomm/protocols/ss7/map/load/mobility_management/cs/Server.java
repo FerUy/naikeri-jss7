@@ -1472,9 +1472,9 @@ public class Server extends TestHarnessMobilityManagement {
 
     private void sendCLOnSubWithdrawAndReattach(String imsiDigits) {
         try {
-            AddressString clDestinationRef = this.mapProvider.getMAPParameterFactory()
+            AddressString clDestinationRef = mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
-            AddressString clOriginRef = this.mapProvider.getMAPParameterFactory()
+            AddressString clOriginRef = mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
 
             SccpAddress clClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);

@@ -91,7 +91,7 @@ public class LocationInformationTest {
         assertEquals(impl.getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 111);
         assertEquals(impl.getVlrNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(impl.getVlrNumber().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(impl.getVlrNumber().getAddress().equals("000222111"));
+        assertEquals(impl.getVlrNumber().getAddress(), "000222111");
 
         rawData = getEncodedData2();
         asn = new AsnInputStream(rawData);
@@ -108,10 +108,10 @@ public class LocationInformationTest {
         assertEquals(impl.getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 111);
         assertEquals(impl.getVlrNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(impl.getVlrNumber().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(impl.getVlrNumber().getAddress().equals("000222111"));
+        assertEquals(impl.getVlrNumber().getAddress(), "000222111");
         LocationNumber ln = impl.getLocationNumber().getLocationNumber();
         assertEquals(ln.getNatureOfAddressIndicator(), 4);
-        assertTrue(ln.getAddress().equals("80207910020"));
+        assertEquals(ln.getAddress(), "80207910020");
         assertEquals(ln.getNumberingPlanIndicator(), 1);
         assertEquals(ln.getInternalNetworkNumberIndicator(), 1);
         assertEquals(ln.getAddressRepresentationRestrictedIndicator(), 1);
@@ -130,10 +130,10 @@ public class LocationInformationTest {
         assertTrue(Arrays.equals(impl.getGeographicalInformation().getData(), getDataGeographicalInformation()));
         assertEquals(impl.getVlrNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(impl.getVlrNumber().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(impl.getVlrNumber().getAddress().equals("000222111"));
+        assertEquals(impl.getVlrNumber().getAddress(), "000222111");
         ln = impl.getLocationNumber().getLocationNumber();
         assertEquals(ln.getNatureOfAddressIndicator(), 4);
-        assertTrue(ln.getAddress().equals("80207910020"));
+        assertEquals(ln.getAddress(), "80207910020");
         assertEquals(ln.getNumberingPlanIndicator(), 1);
         assertEquals(ln.getInternalNetworkNumberIndicator(), 1);
         assertEquals(ln.getAddressRepresentationRestrictedIndicator(), 1);
@@ -144,7 +144,7 @@ public class LocationInformationTest {
                 .getCellIdOrServiceAreaCode(), 2212);
         assertEquals(impl.getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 111);
         assertTrue(Arrays.equals(impl.getSelectedLSAId().getData(), getDataLSAIdentity()));
-        assertTrue(impl.getMscNumber().getAddress().equals("888222666"));
+        assertEquals(impl.getMscNumber().getAddress(), "888222666");
         assertTrue(Arrays.equals(impl.getGeodeticInformation().getData(), getDataGeodeticInformation()));
         assertTrue(impl.getCurrentLocationRetrieved());
         assertTrue(impl.getSaiPresent());
@@ -205,33 +205,16 @@ public class LocationInformationTest {
         encodedData = asnOS.toByteArray();
         rawData = getEncodedDataFull();
         assertTrue(Arrays.equals(rawData, encodedData));
-
-        // Integer ageOfLocationInformation, GeographicalInformation geographicalInformation, ISDNAddressString vlrNumber,
-        // LocationNumber locationNumber, CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI,
-        // MAPExtensionContainer extensionContainer,
-        // LSAIdentity selectedLSAId, ISDNAddressString mscNumber, GeodeticInformation geodeticInformation, boolean
-        // currentLocationRetrieved,
-        // boolean saiPresent, LocationInformationEPS locationInformationEPS, UserCSGInformation userCSGInformation
     }
 
     @Test(groups = { "functional.xml.serialize", "subscriberInformation" })
     public void testXMLSerialize() throws Exception {
 
+        int aol = 3;
+        GeographicalInformationImpl geographicalInformation = new GeographicalInformationImpl(TypeOfShape.EllipsoidPointWithUncertaintyCircle,
+                -70.33, -0.5, 58);
         ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                 "000222111");
-        GeographicalInformationImpl ggi = new GeographicalInformationImpl(TypeOfShape.EllipsoidPointWithUncertaintyCircle,
-                -70.33, -0.5, 58);
-        LSAIdentityImpl selectedLSAId = new LSAIdentityImpl(getDataLSAIdentity());
-        ISDNAddressStringImpl mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                "888222666");
-        GeodeticInformationImpl gdi = new GeodeticInformationImpl(3, TypeOfShape.EllipsoidPointWithUncertaintyCircle, 21.5,
-                171, 8, 11);
-        LocationInformationEPSImpl liEps = new LocationInformationEPSImpl(null, null, null, null, null, true, 7, null);
-        BitSetStrictLength bs = new BitSetStrictLength(27);
-        bs.set(0);
-        bs.set(26);
-        CSGIdImpl csgId = new CSGIdImpl(bs);
-        UserCSGInformationImpl uci = new UserCSGInformationImpl(csgId, null, null, null);
         LocationNumberImpl ln = new LocationNumberImpl(LocationNumber._NAI_NATIONAL_SN, "80207910020",
                 LocationNumber._NPI_TELEX, LocationNumber._INN_ROUTING_NOT_ALLOWED, LocationNumber._APRI_ALLOWED,
                 LocationNumber._SI_USER_PROVIDED_VERIFIED_PASSED);
@@ -240,9 +223,22 @@ public class LocationInformationTest {
                 250, 1, 111, 2212);
         CellGlobalIdOrServiceAreaIdOrLAIImpl cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(
                 cellGlobalIdOrServiceAreaIdFixedLength);
-        LocationInformationImpl original = new LocationInformationImpl(3, ggi, vlrNumber, locationNumber,
+        LSAIdentityImpl selectedLSAId = new LSAIdentityImpl(getDataLSAIdentity());
+        ISDNAddressStringImpl mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                "888222666");
+        GeodeticInformationImpl geodeticInformation = new GeodeticInformationImpl(3, TypeOfShape.EllipsoidPointWithUncertaintyCircle, 21.5,
+                171, 8, 11);
+        boolean currentLocationRetrieved = true;
+        boolean saiPresent = true;
+        LocationInformationEPSImpl locationInformationEPS = new LocationInformationEPSImpl(null, null, null, null, null, true, 7, null);
+        BitSetStrictLength bs = new BitSetStrictLength(27);
+        bs.set(0);
+        bs.set(26);
+        CSGIdImpl csgId = new CSGIdImpl(bs);
+        UserCSGInformationImpl userCSGInformation = new UserCSGInformationImpl(csgId, null, null, null);
+        LocationInformationImpl original = new LocationInformationImpl(aol, geographicalInformation, vlrNumber, locationNumber,
                 cellGlobalIdOrServiceAreaIdOrLAI, MAPExtensionContainerTest.GetTestExtensionContainer(), selectedLSAId,
-                mscNumber, gdi, true, true, liEps, uci);
+                mscNumber, geodeticInformation, currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
 
         // Writes the area to a file.
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -9,7 +9,10 @@ import java.util.Arrays;
 
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
+import org.mobicents.protocols.asn.BitSetStrictLength;
 import org.mobicents.protocols.asn.Tag;
+import org.restcomm.protocols.ss7.isup.impl.message.parameter.LocationNumberImpl;
+import org.restcomm.protocols.ss7.isup.message.parameter.LocationNumber;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdOrLAI;
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
@@ -24,6 +27,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DaylightSavingTime;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EUtranCgi;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GPRSChargingID;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GPRSMSClass;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeodeticInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeographicalInformation;
@@ -45,6 +49,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RouteingNumber;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberStateChoice;
@@ -55,7 +60,16 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ChargingCharacteristics;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext2QoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext2QoSSubscribed_SourceStatisticsDescriptor;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext3QoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Ext4QoSSubscribed;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtPDPType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRate;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateExtended;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_DeliveryOfErroneousSdus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_DeliveryOrder;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtQoSSubscribed_MaximumSduSize;
@@ -69,12 +83,28 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.PDPTypeValue;
+import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
+import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdOrLAIImpl;
+import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.GSNAddressImpl;
+import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
+import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
+import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
+import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
+import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ChargingCharacteristicsImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext2QoSSubscribedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtPDPTypeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribedImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateExtendedImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_BitRateImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_MaximumSduSizeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribed_TransferDelayImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.FQDNImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPAddressImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPTypeImpl;
 import org.testng.annotations.Test;
@@ -477,7 +507,7 @@ public class ProvideSubscriberInfoResponseTest {
         assertEquals(li5GSGeodeticInformation.getLatitude(), -34.91034507751465);
         assertEquals(li5GSGeodeticInformation.getLongitude(), -56.14981412887573);
         assertEquals(li5GSGeodeticInformation.getUncertainty(), 1.0000000000000009);
-        assertEquals(liLocEPSInfoGeodeticInfo.getConfidence(), 1);
+        assertEquals(li5GSGeodeticInformation.getConfidence(), 1);
         assertEquals(li5GSAMFAddress.getData(), "amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
         assertEquals(li5GSTAId.getMCC(), 748);
         assertEquals(li5GSTAId.getMNC(), 1);
@@ -1312,6 +1342,7 @@ public class ProvideSubscriberInfoResponseTest {
         assertTrue(Arrays.equals(rawData, encodedData));
 
 
+        // test 3 (data taken from MAP load test for CS domain, containing location information EPS and 5GS)
         asc = new ProvideSubscriberInfoResponseImpl(subscriberInfo, MAPExtensionContainerTest.GetTestExtensionContainer());
 
         asnOS = new AsnOutputStream();
@@ -1320,6 +1351,380 @@ public class ProvideSubscriberInfoResponseTest {
         encodedData = asnOS.toByteArray();
         rawData = getEncodedData2();
         assertTrue(Arrays.equals(rawData, encodedData));
+
+        // Subscriber Info
+        // LocationInformation
+        int aol;
+        GeographicalInformationImpl geographicalInformation = null;
+        ISDNAddressString vlrNumber = null;
+        LocationNumberImpl locationNumber = null;
+        LocationNumberMapImpl locationNumberMap = null;
+        CellGlobalIdOrServiceAreaIdFixedLengthImpl cellGlobalIdOrServiceAreaIdFixedLength = null;
+        CellGlobalIdOrServiceAreaIdOrLAIImpl cellGlobalIdOrServiceAreaIdOrLAI = null;
+        LSAIdentityImpl selectedLSAId = null;
+        ISDNAddressStringImpl mscNumber;
+        EUtranCgiImpl eUtranCgi = new EUtranCgiImpl();
+        eUtranCgi.setData(748, 1, 614146);
+        TAIdImpl taId = new TAIdImpl();
+        taId.setData(748, 1, 109);
+        GeodeticInformationImpl geodeticInformation = new GeodeticInformationImpl(3, TypeOfShape.EllipsoidPointWithUncertaintyCircle, -34.91034507751465,
+                -56.14981412887573, 1.0000000000000009, 1);
+        boolean currentLocationRetrieved = true;
+        boolean saiPresent = false;
+        aol = 0;
+        DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        LocationInformationEPSImpl locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, null, null,
+                geodeticInformation, currentLocationRetrieved, aol, mmeName);
+        UserCSGInformationImpl userCSGInformation = null;
+        LocationInformation locationInformation = new LocationInformationImpl(null, null, null, null,
+                null, null, null, null, null, false,
+                saiPresent, locationInformationEPS, null);
+        // SubscriberState
+        subscriberState = new SubscriberStateImpl(SubscriberStateChoice.assumedIdle, null);
+        // MAPExtensionContainer
+        MAPExtensionContainer extensionContainer = null;
+        // LocationInformationGPRS
+        LocationInformationGPRS locationInformationGPRS = null;
+        // PSSubscriberState
+        PSSubscriberState psSubscriberState = null;
+        // IMEI
+        IMEI imei = new IMEIImpl("011714004661050");
+        // MSClassmark2
+        MSClassmark2 msClassmark2 = new MSClassmark2Impl(new byte[] {0x39, 0x3a, 0x52});
+        // GPRSMSClass
+        GPRSMSClass gprsmsClass = null;
+        // MNPInfoRes
+        RouteingNumber routeingNumber = new RouteingNumberImpl("491710");
+        IMSI mnpImsi = new IMSIImpl("901405105680474");
+        ISDNAddressString mnpMsisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
+        NumberPortabilityStatus mnpPortabilityStatus = NumberPortabilityStatus.ownNumberNotPortedOut;
+        MNPInfoRes mnpInfoRes = new MNPInfoResImpl(routeingNumber, mnpImsi, mnpMsisdn, mnpPortabilityStatus, null);
+        // IMSVoiceOverPsSessionsIndication
+        IMSVoiceOverPsSessionsIndication ims = IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsNotSupported;
+        // LastUEActivityTime
+        Time lastUEActivityTime = new TimeImpl(2024, 8, 5, 10, 27, 49);
+        // UsedRATType
+        UsedRATType lastRATType = UsedRATType.eUtran;
+        // EPSSubscriberState
+        PSSubscriberState epsSubscriberState = null;
+        // LocationInformationEPS
+        locationInformationEPS = null;
+        // TimeZone
+        TimeZone timeZone = new TimeZoneImpl(new byte[] {0, 3});
+        // DaylightSavingTime
+        DaylightSavingTime daylightSavingTime = DaylightSavingTime.noAdjustment;
+        // LocationInformation5GS
+        NRCellGlobalIdImpl nrCGI = new NRCellGlobalIdImpl();
+        nrCGI.setData(748, 2, 34359738376L);
+        EUtranCgiImpl li5GSLteCgi = new EUtranCgiImpl();
+        li5GSLteCgi.setData(748, 1, 520193);
+        GeographicalInformation li5GSGeographicalInfo = null;
+        GeodeticInformation li5GSGeodeticInformation = new GeodeticInformationImpl(3,
+                TypeOfShape.EllipsoidPointWithUncertaintyCircle, -34.91034507751465, -56.14981412887573, 1.0000000000000009, 1);
+        FQDN li5GSAMFAddress = new FQDNImpl("amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
+        TAIdImpl li5GSTAId = new TAIdImpl();
+        li5GSTAId.setData(748, 1, 109);
+        boolean li5GSCurrentLocationRetrieved = true;
+        int li5GSAgeOfLocationInformation = 0;
+        PlmnIdImpl li5GSVPlmnId = new PlmnIdImpl(748, 2);
+        TimeZone li5GSLocalTimeZone = new TimeZoneImpl(new byte[] {0, -6});
+        UsedRATType li5GSUsedRATType = UsedRATType.eUtran;
+        MAPExtensionContainer li5GSExtensionContainer = null;
+        NRTAIdImpl li5GSNRTAId = new NRTAIdImpl();
+        li5GSNRTAId.setData(748, 2, 495570);
+        LocationInformation5GS locationInformation5GS = new LocationInformation5GSImpl(nrCGI, li5GSLteCgi, li5GSGeographicalInfo, li5GSGeodeticInformation,
+                li5GSAMFAddress, li5GSTAId, li5GSCurrentLocationRetrieved, li5GSAgeOfLocationInformation, li5GSVPlmnId, li5GSLocalTimeZone, li5GSUsedRATType,
+                null, li5GSNRTAId);
+        // Subscriber Info
+        subscriberInfo = new SubscriberInfoImpl(locationInformation, subscriberState, null, locationInformationGPRS,
+                psSubscriberState, imei, msClassmark2, gprsmsClass, mnpInfoRes, ims, lastUEActivityTime, lastRATType, epsSubscriberState,
+                locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
+
+        asc = new ProvideSubscriberInfoResponseImpl(subscriberInfo, null);
+
+        asnOS = new AsnOutputStream();
+        asc.encodeAll(asnOS);
+
+        encodedData = asnOS.toByteArray();
+        rawData = getEncodedDataCs3();
+
+        assertTrue(Arrays.equals(rawData, encodedData));
+
+        // test 5 (data taken from MAP load test for CS domain, containing location information, richer than test 4 (no EPS or 5GS)
+        geographicalInformation = new GeographicalInformationImpl(TypeOfShape.EllipsoidPointWithUncertaintyCircle, -34.90973353385925,
+                -56.14631652832031, 0.0);
+        vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                "491710460000");
+        int natureOfAddressIndicator = 4;
+        String address = "819203961904";
+        int numberingPlanIndicator = 1;
+        int internalNetworkNumberIndicator = 1;
+        int addressRepresentationREstrictedIndicator = 1;
+        int screeningIndicator = 3;
+        locationNumber = new LocationNumberImpl(natureOfAddressIndicator, address, numberingPlanIndicator, internalNetworkNumberIndicator,
+                addressRepresentationREstrictedIndicator, screeningIndicator);
+        locationNumberMap = new LocationNumberMapImpl();
+        locationNumberMap.setLocationNumber(locationNumber);
+        cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl();
+        cellGlobalIdOrServiceAreaIdFixedLength.setData(748, 1, 101, 10263);
+        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+        mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                "491710460000");
+        geodeticInformation = null;
+        BitSetStrictLength csgIdBitSet = new BitSetStrictLength(27);
+        csgIdBitSet.set(0);
+        csgIdBitSet.set(1);
+        csgIdBitSet.set(25);
+        csgIdBitSet.set(26);
+        CSGId csgId = new CSGIdImpl(csgIdBitSet);
+        Integer accessMode = 1;
+        Integer cmi = 2;
+        userCSGInformation = new UserCSGInformationImpl(csgId, null, accessMode, cmi);
+        locationInformation = new LocationInformationImpl(aol, geographicalInformation, vlrNumber, locationNumberMap,
+                cellGlobalIdOrServiceAreaIdOrLAI, null, null, mscNumber, geodeticInformation, currentLocationRetrieved,
+                saiPresent, locationInformationEPS, userCSGInformation);
+        // SubscriberState
+        subscriberState = new SubscriberStateImpl(SubscriberStateChoice.camelBusy, null);
+        // IMEI
+        imei = new IMEIImpl("011714004661050");
+        // MSClassmark2
+        msClassmark2 = new MSClassmark2Impl(new byte[] {0x39, 0x3a, 0x52});
+        // MNPInfoRes
+        routeingNumber = new RouteingNumberImpl("491710");
+        mnpImsi = new IMSIImpl("901405105680474");
+        mnpMsisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
+        mnpInfoRes = new MNPInfoResImpl(routeingNumber, mnpImsi, mnpMsisdn, mnpPortabilityStatus, null);
+        // LastUEActivityTime
+        lastUEActivityTime = new TimeImpl(2024, 8, 5, 10, 27, 49);
+        // TimeZone
+        timeZone = new TimeZoneImpl(new byte[] {0, 3});
+        // LocationInformation5GS
+        locationInformation5GS = null;
+        // Subscriber Info
+        subscriberInfo = new SubscriberInfoImpl(locationInformation, subscriberState, null, locationInformationGPRS,
+                psSubscriberState, imei, msClassmark2, gprsmsClass, mnpInfoRes, ims, lastUEActivityTime, lastRATType, epsSubscriberState,
+                locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
+
+        asc = new ProvideSubscriberInfoResponseImpl(subscriberInfo, null);
+
+        asnOS = new AsnOutputStream();
+        asc.encodeAll(asnOS);
+
+        encodedData = asnOS.toByteArray();
+        rawData = getEncodedDataCs5();
+
+        assertTrue(Arrays.equals(rawData, encodedData));
+
+        // test 7 (data taken from MAP load test for PS domain, containing location information GPRS and some
+        // other parameters not found in test 6 such GPRSMCClass and PSSubscriberState with PDPContextInfo
+
+        // LocationInformation
+        locationInformation = null;
+        // SubscriberState
+        subscriberState = null;
+        // LocationInformationGPRS
+        cellGlobalIdOrServiceAreaIdFixedLength.setData(748, 7, 8820, 9748);
+        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
+        saiPresent = true;
+        geographicalInformation = null;
+        //geodeticInformation = null;
+        RAIdentity raIdentity = new RAIdentityImpl(748, 1, 101, 23);
+        LSAIdentity selectedLSAIdentity = new LSAIdentityImpl(new byte[] {49, 51, 49});
+        ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                "4917104600010");
+        locationInformationGPRS = new LocationInformationGPRSImpl(cellGlobalIdOrServiceAreaIdOrLAI, raIdentity, geographicalInformation,
+                sgsnNumber, selectedLSAIdentity, null, saiPresent, geodeticInformation, currentLocationRetrieved, aol);
+        PSSubscriberStateChoice psSubscriberStateChoice = PSSubscriberStateChoice.psPDPActiveReachableForPaging;
+        NotReachableReason netDetNotReachable = null;
+        ArrayList<PDPContextInfo> pdpContextInfoList = new ArrayList<>();
+        int pdpContextIdentifier = 1;
+        boolean pdpContextActive = true;
+        PDPType pdpType = new PDPTypeImpl(PDPTypeValue.IPv4);
+        PDPAddress pdpAddress = new PDPAddressImpl(new byte[] { 21 });
+        APN apnSubscribed = new APNImpl("internet");
+        int nsapi = 1;
+        TransactionId transactionId = new TransactionIdImpl(new byte[] {1, 7});
+        TEID teidForGnAndGp = new TEIDImpl(new byte[] {1, 3, 4, 7});
+        TEID teidForIu = new TEIDImpl(new byte[] {1, 0, 0, 2});
+        GSNAddress ggsnAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
+        int allocationRetentionPriority = 9;
+        ExtQoSSubscribed_DeliveryOfErroneousSdus deliveryOfErroneousSdus = ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes;
+        ExtQoSSubscribed_DeliveryOrder deliveryOrder = ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo;
+        ExtQoSSubscribed_TrafficClass trafficClass = ExtQoSSubscribed_TrafficClass.interactiveClass;
+        int maximumSduSizeData = 100;
+        boolean isSourceData = true;
+        ExtQoSSubscribed_MaximumSduSize maximumSduSize = new ExtQoSSubscribed_MaximumSduSizeImpl(maximumSduSizeData, isSourceData);
+        int maximumBitRateForUL = 128;
+        ExtQoSSubscribed_BitRate maximumBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(maximumBitRateForUL, isSourceData);
+        int maximumBitRateForDL = 576;
+        ExtQoSSubscribed_BitRate maximumBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(maximumBitRateForDL, isSourceData);
+        ExtQoSSubscribed_ResidualBER residualBER = ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved;
+        ExtQoSSubscribed_SduErrorRatio sduErrorRatio = ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved;
+        ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3;
+        int transferDelayValue = 800;
+        ExtQoSSubscribed_TransferDelay transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
+        int gbrUL = 64;
+        ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
+        int gbrDL = 256;
+        ExtQoSSubscribed_BitRate guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
+        ExtQoSSubscribed qosSubscribed = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
+                deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
+                sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
+        transferDelayValue = 400;
+        transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
+        gbrUL = 128;
+        guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
+        gbrDL = 512;
+        guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
+        ExtQoSSubscribed qosRequested = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
+                deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
+                sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
+        transferDelayValue = 800;
+        transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
+        gbrUL = 64;
+        guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
+        gbrDL = 256;
+        guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
+        ExtQoSSubscribed qosNegotiated = new ExtQoSSubscribedImpl(allocationRetentionPriority, deliveryOfErroneousSdus,
+                deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
+                sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
+        GPRSChargingID chargingId = new GPRSChargingIDImpl(new byte[] {1, 2, 4, 8});
+        boolean isNormalCharging = true;
+        boolean isPrepaidCharging = false;
+        boolean isFlatRateCharging = false;
+        boolean isChargingByHotBillingCharging = false;
+        ChargingCharacteristics chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+        GSNAddress rncAddress = new GSNAddressImpl(new byte[] { (byte) 192, (byte) 168, 5, 51, 24 });
+        Ext2QoSSubscribed_SourceStatisticsDescriptor sourceStatisticsDescriptor = Ext2QoSSubscribed_SourceStatisticsDescriptor.unknown;
+        boolean optimisedForSignallingTraffic = true;
+        int maxBRDLExt = 256000;
+        ExtQoSSubscribed_BitRateExtended maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
+        int gbrExtDL = 128000;
+        ExtQoSSubscribed_BitRateExtended guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
+        Ext2QoSSubscribed qos2Subscribed = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+                maxBitRateForDLExt, guaranteedBitRateForDLExtended);
+        maxBRDLExt = 512000;
+        maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
+        gbrExtDL = 256000;
+        guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
+        Ext2QoSSubscribed qos2Requested = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+                maxBitRateForDLExt, guaranteedBitRateForDLExtended);
+        maxBRDLExt = 256000;
+        maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
+        gbrExtDL = 128000;
+        guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
+        Ext2QoSSubscribed qos2Negotiated = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+                maxBitRateForDLExt, guaranteedBitRateForDLExtended);
+        ExtPDPType extPdpType = new ExtPDPTypeImpl(new byte[] { 58, 59 });
+        PDPAddress extPdpAddress = new PDPAddressImpl(new byte[] { 60 });
+        PDPContextInfo pdpContextInfo = new PDPContextInfoImpl(pdpContextIdentifier, pdpContextActive, pdpType, pdpAddress,
+                apnSubscribed, apnSubscribed, nsapi, transactionId, teidForGnAndGp, teidForIu, ggsnAddress, qosSubscribed, qosRequested,
+                qosNegotiated, chargingId, chargingCharacteristics, rncAddress, null, qos2Subscribed,
+                qos2Requested, qos2Negotiated, null, null, null, null,
+                null, null, extPdpType, extPdpAddress);
+        pdpContextInfoList.add(pdpContextInfo);
+        psSubscriberState = new PSSubscriberStateImpl(psSubscriberStateChoice, netDetNotReachable, pdpContextInfoList);
+        // IMEI
+        imei = new IMEIImpl("011714004661051");
+        // MSClassmark2
+        msClassmark2 = null;
+        // GPRSMSClass
+        byte[] mSNetworkCapabilityB = hexStringToByteArray("3130303032303331");
+        byte[] mSRadioAccessCapabilityB = hexStringToByteArray("31303030323033313730383134");
+        MSNetworkCapability msNetworkCapability = new MSNetworkCapabilityImpl(mSNetworkCapabilityB);
+        MSRadioAccessCapability msRadioAccessCapability = new MSRadioAccessCapabilityImpl(mSRadioAccessCapabilityB);
+        gprsmsClass = new GPRSMSClassImpl(msNetworkCapability, msRadioAccessCapability);
+        // MNPInfoRes
+        assertEquals(mnpPortabilityStatus, NumberPortabilityStatus.ownNumberNotPortedOut);
+        routeingNumber = new RouteingNumberImpl("491710");
+        mnpImsi = new IMSIImpl("901405105682238");
+        mnpMsisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
+        mnpInfoRes = new MNPInfoResImpl(routeingNumber, mnpImsi, mnpMsisdn, mnpPortabilityStatus, null);
+        // IMSVoiceOverPsSessionsIndication
+        ims = IMSVoiceOverPsSessionsIndication.imsVoiceOverPSSessionsSupported;
+        // LastUEActivityTime
+        lastUEActivityTime = new TimeImpl(2024, 8, 5, 10, 27, 49);
+        // UsedRATType
+        lastRATType = UsedRATType.geran;
+        timeZone = new TimeZoneImpl(new byte[] {0, 6});
+
+        subscriberInfo = new SubscriberInfoImpl(locationInformation, subscriberState, null, locationInformationGPRS,
+                psSubscriberState, imei, msClassmark2, gprsmsClass, mnpInfoRes, ims, lastUEActivityTime, lastRATType, epsSubscriberState,
+                locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
+
+        asc = new ProvideSubscriberInfoResponseImpl(subscriberInfo, null);
+
+        asnOS = new AsnOutputStream();
+        asc.encodeAll(asnOS);
+
+        encodedData = asnOS.toByteArray();
+        rawData = getEncodedDataPs7();
+
+        assertTrue(Arrays.equals(rawData, encodedData));
+
+        // test 8 (data taken from MAP load test for PS domain, containing location information GPRS/EPS/5GS and some
+        // other parameters not found in test 7 such as EPS Subscriber State
+        // LocationInformationGPRS
+        locationInformationGPRS = null;
+        // PSSubscriberState
+        psSubscriberState = null;
+        // IMEI
+        imei = new IMEIImpl("011714004661051");
+        // GPRSMSClass
+        mSNetworkCapabilityB = hexStringToByteArray("3130303032303331");
+        mSRadioAccessCapabilityB = hexStringToByteArray("31303030323033313730383134");
+        msNetworkCapability = new MSNetworkCapabilityImpl(mSNetworkCapabilityB);
+        msRadioAccessCapability = new MSRadioAccessCapabilityImpl(mSRadioAccessCapabilityB);
+        gprsmsClass = new GPRSMSClassImpl(msNetworkCapability, msRadioAccessCapability);
+        // MNPInfoRes
+        assertEquals(mnpPortabilityStatus, NumberPortabilityStatus.ownNumberNotPortedOut);
+        routeingNumber = new RouteingNumberImpl("491710");
+        mnpImsi = new IMSIImpl("901405105680415");
+        mnpMsisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
+        mnpInfoRes = new MNPInfoResImpl(routeingNumber, mnpImsi, mnpMsisdn, mnpPortabilityStatus, null);
+        // LastUEActivityTime
+        lastUEActivityTime = new TimeImpl(2024, 8, 5, 10, 27, 49);
+        // UsedRATType
+        lastRATType = UsedRATType.eUtran;
+        // EPSSubscriberState
+        epsSubscriberState = new PSSubscriberStateImpl();
+        PSSubscriberStateChoice epsSubscriberStateChoice = PSSubscriberStateChoice.psPDPActiveReachableForPaging;
+        //netDetNotReachable = null;
+        pdpContextInfoList = new ArrayList<>();
+        pdpContextInfo = new PDPContextInfoImpl(pdpContextIdentifier, pdpContextActive, pdpType, pdpAddress,
+                apnSubscribed, apnSubscribed, nsapi, transactionId, teidForGnAndGp, teidForIu, ggsnAddress, qosSubscribed, qosRequested,
+                qosNegotiated, chargingId, chargingCharacteristics, rncAddress, null, qos2Subscribed,
+                qos2Requested, qos2Negotiated, null, null, null, null,
+                null, null, extPdpType, extPdpAddress);
+        pdpContextInfoList.add(pdpContextInfo);
+        epsSubscriberState = new PSSubscriberStateImpl(epsSubscriberStateChoice, netDetNotReachable, pdpContextInfoList);
+        // LocationInformationEPS
+        eUtranCgi = new EUtranCgiImpl();
+        eUtranCgi.setData(748, 1, 518658);
+        taId = new TAIdImpl();
+        taId.setData(748, 1, 109);
+        saiPresent = false;
+        //aol = 0;
+        mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, null, null,
+                geodeticInformation, currentLocationRetrieved, aol, mmeName);
+        // TimeZone
+        timeZone = new TimeZoneImpl(new byte[] {0, 6});
+
+        subscriberInfo = new SubscriberInfoImpl(locationInformation, subscriberState, null, locationInformationGPRS,
+                psSubscriberState, imei, msClassmark2, gprsmsClass, mnpInfoRes, ims, lastUEActivityTime, lastRATType, epsSubscriberState,
+                locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
+
+        asc = new ProvideSubscriberInfoResponseImpl(subscriberInfo, null);
+
+        asnOS = new AsnOutputStream();
+        asc.encodeAll(asnOS);
+
+        encodedData = asnOS.toByteArray();
+        rawData = getEncodedDataPs8();
+
+        assertTrue(Arrays.equals(rawData, encodedData));
+
     }
 
     private static byte[] hexStringToByteArray(String s) {
