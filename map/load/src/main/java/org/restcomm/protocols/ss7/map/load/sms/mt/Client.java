@@ -332,10 +332,11 @@ public class Client extends TestHarnessSmsMt {
         // TeleserviceCode teleserviceCode = new TeleserviceCodeImpl(teleserviceCodeValue);
         TeleserviceCode teleserviceCode = null;
         CorrelationID correlationID = null;
+        boolean smsfSupportIndicator = false;
 
         mapDialogSms.addSendRoutingInfoForSMRequest(msisdn, sm_RP_PRI, serviceCentreAddress, mapExtensionContainer,
             gprsSupportIndicator, sM_RP_MTI, sM_RP_SMEA, smDeliveryNotIntended, ipSmGwGuidanceIndicator,
-            imsi, t4TriggerIndicator, singleAttemptDelivery, teleserviceCode, correlationID);
+            imsi, t4TriggerIndicator, singleAttemptDelivery, teleserviceCode, correlationID, smsfSupportIndicator);
 
         // nbConcurrentDialogs.incrementAndGet();
 
@@ -369,10 +370,8 @@ public class Client extends TestHarnessSmsMt {
         int noOfConcurrentCalls = Integer.parseInt(args[1]);
 
         IpChannelType ipChannelType = IpChannelType.SCTP;
-        if (args.length >= 3 && args[2].toLowerCase().equals("tcp")) {
+        if (args.length >= 3 && args[2].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
-        } else {
-            ipChannelType = IpChannelType.SCTP;
         }
 
         System.out.println("IpChannelType=" + ipChannelType);
@@ -548,7 +547,6 @@ public class Client extends TestHarnessSmsMt {
         }
         try {
             MAPApplicationContextName mapApplicationContextName = mapDialog.getApplicationContext().getApplicationContextName();
-            MAPApplicationContextVersion mapApplicationContextVersion = mapDialog.getApplicationContext().getApplicationContextVersion();
             if (mapApplicationContextName == MAPApplicationContextName.shortMsgMTRelayContext) {
                 AddressString originAddressString = this.mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "598990012345");
@@ -567,8 +565,8 @@ public class Client extends TestHarnessSmsMt {
                 SMDeliveryOutcome sMDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
                 Integer absentSubscriberDiagnosticSM = AbsentSubscriberDiagnosticSM.NoPagingResponseViaTheMSC.getCode();
                 MAPExtensionContainer extensionContainer = null;
-                Boolean gprsSupportIndicator = false;
-                Boolean deliveryOutcomeIndicator = false;
+                boolean gprsSupportIndicator = false;
+                boolean deliveryOutcomeIndicator = false;
                 SMDeliveryOutcome additionalSMDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
                 Integer additionalAbsentSubscriberDiagnosticSM = AbsentSubscriberDiagnosticSM.NoPagingResponseViaTheSGSN.getCode();
 
@@ -920,10 +918,10 @@ public class Client extends TestHarnessSmsMt {
                 udh = new UserDataHeaderImpl();
                 udh.addInformationElement(apa16);
             }
-            Boolean moreMessagesToSend = false;
-            Boolean forwardedOrSpawned = false;
-            Boolean replyPathExists = false;
-            Boolean statusReportIndication = true;
+            boolean moreMessagesToSend = false;
+            boolean forwardedOrSpawned = false;
+            boolean replyPathExists = false;
+            boolean statusReportIndication = true;
             Charset gsm8Charset = Charset.defaultCharset();
             UserData userData = new UserDataImpl("Load test MT-SMS text", dcs, udh, gsm8Charset);
             ProtocolIdentifier pi = new ProtocolIdentifierImpl(0);
@@ -973,7 +971,7 @@ public class Client extends TestHarnessSmsMt {
             // start the MT-SM process again now that's reported available
             initiateMTSM();
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error("Error while processing onAlertServiceCentreRequest ", e);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -438,10 +438,8 @@ public class Server extends TestHarnessSmsMt {
 
     public static void main(String[] args) {
         IpChannelType ipChannelType = IpChannelType.SCTP;
-        if (args.length >= 1 && args[0].toLowerCase().equals("tcp")) {
+        if (args.length >= 1 && args[0].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
-        } else {
-            ipChannelType = IpChannelType.SCTP;
         }
         System.out.println("IpChannelType="+ipChannelType);
 

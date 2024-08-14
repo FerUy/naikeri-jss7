@@ -461,7 +461,7 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
 
             curDialog.addSendRoutingInfoForSMRequest(msisdn, true, serviceCentreAddress, null, this.testerHost
                     .getConfigurationData().getTestSmsServerConfigurationData().isGprsSupportIndicator(), null, null, null,
-                    false, null, false, false, null, null);
+                    false, null, false, false, null, null, false);
 
             // this cap helps us give SCCP error if any
             // curDialog.setReturnMessageOnError(true);
@@ -475,7 +475,7 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
 
             return "SendRoutingInfoForSMRequest has been sent";
         } catch (MAPException ex) {
-            return "Exception when sending SendRoutingInfoForSMRequest: " + ex.toString();
+            return "Exception when sending SendRoutingInfoForSMRequest: " + ex;
         }
     }
 

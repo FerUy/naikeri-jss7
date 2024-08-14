@@ -284,17 +284,17 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
     public Long addSendRoutingInfoForSMRequest(ISDNAddressString msisdn, boolean sm_RP_PRI, AddressString serviceCentreAddress,
             MAPExtensionContainer extensionContainer, boolean gprsSupportIndicator, SM_RP_MTI sM_RP_MTI, SM_RP_SMEA sM_RP_SMEA,
             SMDeliveryNotIntended smDeliveryNotIntended, boolean ipSmGwGuidanceIndicator, IMSI imsi, boolean t4TriggerIndicator,
-            boolean singleAttemptDelivery, TeleserviceCode teleserviceCode, CorrelationID correlationId) throws MAPException {
+            boolean singleAttemptDelivery, TeleserviceCode teleserviceCode, CorrelationID correlationId, boolean smsfSupportIndicator) throws MAPException {
         return this.addSendRoutingInfoForSMRequest(_Timer_Default, msisdn, sm_RP_PRI, serviceCentreAddress, extensionContainer,
                 gprsSupportIndicator, sM_RP_MTI, sM_RP_SMEA, smDeliveryNotIntended, ipSmGwGuidanceIndicator, imsi,
-                t4TriggerIndicator, singleAttemptDelivery, teleserviceCode, correlationId);
+                t4TriggerIndicator, singleAttemptDelivery, teleserviceCode, correlationId, smsfSupportIndicator);
     }
 
     public Long addSendRoutingInfoForSMRequest(int customInvokeTimeout, ISDNAddressString msisdn, boolean sm_RP_PRI,
             AddressString serviceCentreAddress, MAPExtensionContainer extensionContainer, boolean gprsSupportIndicator,
             SM_RP_MTI sM_RP_MTI, SM_RP_SMEA sM_RP_SMEA, SMDeliveryNotIntended smDeliveryNotIntended,
             boolean ipSmGwGuidanceIndicator, IMSI imsi, boolean t4TriggerIndicator, boolean singleAttemptDelivery,
-            TeleserviceCode teleserviceCode, CorrelationID correlationId) throws MAPException {
+            TeleserviceCode teleserviceCode, CorrelationID correlationId, boolean smsfSupportIndicator) throws MAPException {
 
         MAPApplicationContextVersion vers = this.mapApplicationContext.getApplicationContextVersion();
         if (this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.shortMsgGatewayContext
@@ -314,8 +314,8 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
 
         try {
             SendRoutingInfoForSMRequestImpl sendRoutingInfoForSMRequest = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, serviceCentreAddress,
-                    extensionContainer, gprsSupportIndicator, sM_RP_MTI, sM_RP_SMEA, smDeliveryNotIntended,
-                    ipSmGwGuidanceIndicator, imsi, t4TriggerIndicator, singleAttemptDelivery, teleserviceCode, correlationId);
+                    extensionContainer, gprsSupportIndicator, sM_RP_MTI, sM_RP_SMEA, smDeliveryNotIntended, ipSmGwGuidanceIndicator, imsi, t4TriggerIndicator,
+                    singleAttemptDelivery, teleserviceCode, correlationId, smsfSupportIndicator);
             AsnOutputStream aos = new AsnOutputStream();
             sendRoutingInfoForSMRequest.encodeData(aos);
 
