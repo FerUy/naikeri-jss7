@@ -59,6 +59,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.Restore
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiResponse;
 
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
@@ -392,10 +393,24 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     LMSI lmsi = new LMSIImpl(lmsiByte);
 
     MAPExtensionContainer mapExtensionContainer = null;
+    boolean gprsNodeIndicator = false;
     AdditionalNumber additionalNumber = null;
     boolean mwdSet = false;
     IpSmGwGuidance ipSmGwGuidance = null;
-    LocationInfoWithLMSI locationInfoWithLMSI  = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, mapExtensionContainer, false, additionalNumber);
+    NetworkNodeDiameterAddress networkNodeDiameterAddress = null;
+    NetworkNodeDiameterAddress additionalNetworkNodeDiameterAddress = null;
+    AdditionalNumber thirdNumber = null;
+    NetworkNodeDiameterAddress thirdNetworkNodeDiameterAddress = null;
+    boolean imsNodeIndicator = false;
+    ISDNAddressString smsf3gppNumber = null;
+    NetworkNodeDiameterAddress smsf3gppDiameterAddress = null;
+    ISDNAddressString smsfNon3gppNumber = null;
+    NetworkNodeDiameterAddress smsfNon3gppDiameterAddress = null;
+    boolean smsf3gppAddressIndicator = false;
+    boolean smsfNon3gppAddressIndicator = false;
+    LocationInfoWithLMSI locationInfoWithLMSI  = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, mapExtensionContainer, gprsNodeIndicator, additionalNumber,
+            networkNodeDiameterAddress, additionalNetworkNodeDiameterAddress, thirdNumber, thirdNetworkNodeDiameterAddress, imsNodeIndicator, smsf3gppNumber, smsf3gppDiameterAddress, smsfNon3gppNumber,
+            smsfNon3gppDiameterAddress, smsf3gppAddressIndicator, smsfNon3gppAddressIndicator);
     logger.info("LocationInfoWithLMSI for onSendRoutingInfoForSMRequest: NNN=" + locationInfoWithLMSI.getNetworkNodeNumber().getAddress() +
             ", IMSI=" + imsi.getData() + ", LMSI=" + Arrays.toString(lmsi.getData()));
 

@@ -41,6 +41,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageRequest;
@@ -92,7 +93,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 import java.util.Random;
 
 /**
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class Server extends TestHarnessSmsMt {
 
@@ -676,8 +677,21 @@ public class Server extends TestHarnessSmsMt {
             MAPExtensionContainer mapExtensionContainer = null;
             boolean gprsNodeIndicator = false;
             AdditionalNumber additionalNumber = null;
+            NetworkNodeDiameterAddress networkNodeDiameterAddress = null;
+            NetworkNodeDiameterAddress additionalNetworkNodeDiameterAddress = null;
+            AdditionalNumber thirdNumber = null;
+            NetworkNodeDiameterAddress thirdNetworkNodeDiameterAddress = null;
+            boolean imsNodeIndicator = false;
+            ISDNAddressString smsf3gppNumber = null;
+            NetworkNodeDiameterAddress smsf3gppDiameterAddress = null;
+            ISDNAddressString smsfNon3gppNumber = null;
+            NetworkNodeDiameterAddress smsfNon3gppDiameterAddress = null;
+            boolean smsf3gppAddressIndicator = false;
+            boolean smsfNon3gppAddressIndicator = false;
             LocationInfoWithLMSI locationInfoWithLMSI = new LocationInfoWithLMSIImpl(networkNodeNumber, lmsi, mapExtensionContainer,
-                gprsNodeIndicator, additionalNumber);
+                gprsNodeIndicator, additionalNumber, networkNodeDiameterAddress, additionalNetworkNodeDiameterAddress, thirdNumber, thirdNetworkNodeDiameterAddress,
+                    imsNodeIndicator, smsf3gppNumber, smsf3gppDiameterAddress, smsfNon3gppNumber, smsfNon3gppDiameterAddress,
+                    smsf3gppAddressIndicator, smsfNon3gppAddressIndicator);
             Boolean mwdSet = null;
             IpSmGwGuidance ipSmGwGuidance = null;
             mapDialogSms.addSendRoutingInfoForSMResponse(invokeId, imsi, locationInfoWithLMSI, mapExtensionContainer, mwdSet, ipSmGwGuidance);

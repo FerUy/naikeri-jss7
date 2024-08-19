@@ -121,6 +121,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IS
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LAC;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LocationArea;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PDNGWUpdate;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
@@ -874,8 +875,15 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
     }
 
     public LocationInfoWithLMSI createLocationInfoWithLMSI(ISDNAddressString networkNodeNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
-            boolean gprsNodeIndicator, AdditionalNumber additionalNumber) {
-        return new LocationInfoWithLMSIImpl(networkNodeNumber, lmsi, extensionContainer, gprsNodeIndicator, additionalNumber);
+            boolean gprsNodeIndicator, AdditionalNumber additionalNumber, NetworkNodeDiameterAddress networkNodeDiameterAddress,
+            NetworkNodeDiameterAddress additionalNetworkNodeDiameterAddress, AdditionalNumber thirdNumber,
+            NetworkNodeDiameterAddress thirdNetworkNodeDiameterAddress, boolean imsNodeIndicator, ISDNAddressString smsf3gppNumber,
+            NetworkNodeDiameterAddress smsf3gppDiameterAddress, ISDNAddressString smsfNon3gppNumber, NetworkNodeDiameterAddress smsfNon3gppDiameterAddress,
+            boolean smsf3gppAddressIndicator, boolean smsfNon3gppAddressIndicator) {
+        return new LocationInfoWithLMSIImpl(networkNodeNumber, lmsi, extensionContainer, gprsNodeIndicator, additionalNumber,
+                networkNodeDiameterAddress, additionalNetworkNodeDiameterAddress, thirdNumber, thirdNetworkNodeDiameterAddress,
+                imsNodeIndicator, smsf3gppNumber, smsf3gppDiameterAddress, smsfNon3gppNumber, smsfNon3gppDiameterAddress,
+                smsf3gppAddressIndicator, smsfNon3gppAddressIndicator);
     }
 
     public Problem createProblemGeneral(GeneralProblemType prob) {

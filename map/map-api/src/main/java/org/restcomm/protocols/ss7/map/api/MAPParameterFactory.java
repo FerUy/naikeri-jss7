@@ -117,6 +117,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IS
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LAC;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LocationArea;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PDNGWUpdate;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
@@ -581,7 +582,11 @@ public interface MAPParameterFactory {
     MWStatus createMWStatus(boolean scAddressNotIncluded, boolean mnrfSet, boolean mcefSet, boolean mnrgSet);
 
     LocationInfoWithLMSI createLocationInfoWithLMSI(ISDNAddressString networkNodeNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
-            boolean gprsNodeIndicator, AdditionalNumber additionalNumber);
+            boolean gprsNodeIndicator, AdditionalNumber additionalNumber, NetworkNodeDiameterAddress networkNodeDiameterAddress,
+            NetworkNodeDiameterAddress additionalNetworkNodeDiameterAddress, AdditionalNumber thirdNumber,
+            NetworkNodeDiameterAddress thirdNetworkNodeDiameterAddress, boolean imsNodeIndicator, ISDNAddressString smsf3gppNumber,
+            NetworkNodeDiameterAddress smsf3gppDiameterAddress, ISDNAddressString smsfNon3gppNumber, NetworkNodeDiameterAddress smsfNon3gppDiameterAddress,
+            boolean smsf3gppAddressIndicator, boolean smsfNon3gppAddressIndicator);
 
     /**
      * Creates a new instance of {@link MAPPrivateExtension} for {@link MAPExtensionContainer}

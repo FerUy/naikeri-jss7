@@ -90,8 +90,7 @@ import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface
  * @author sergey vetyutnev
  *
  */
-public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBean, Stoppable, MAPDialogListener,
-        MAPServiceSmsListener {
+public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBean, Stoppable, MAPDialogListener, MAPServiceSmsListener {
 
     public static String SOURCE_NAME = "TestSmsClient";
 
@@ -1146,7 +1145,7 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
                 this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getAddressNature(),
                 this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getNumberingPlan(),
                 this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getSriResponseVlr());
-        LocationInfoWithLMSI li = null;
+        LocationInfoWithLMSI li;
         boolean informServiceCentrePossible = false;
 
         try {
@@ -1164,7 +1163,9 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
 
             switch (sriReaction.intValue()) {
             case SRIReaction.VAL_RETURN_SUCCESS:
-                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, null, null, false, null);
+                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, null, null, false, null,
+                        null, null, null, null, false, null, null,
+                        null, null, false, false);
                 curDialog.addSendRoutingInfoForSMResponse(invokeId, imsi, li, null, null, null);
 
                 this.countSriResp++;
@@ -1179,7 +1180,9 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
 
             case SRIReaction.VAL_RETURN_SUCCESS_WITH_LMSI:
                 LMSI lmsi = mapProvider.getMAPParameterFactory().createLMSI(new byte[] { 11, 12, 13, 14 });
-                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, null, false, null);
+                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, null, false, null,
+                        null, null, null, null, false, null, null,
+                        null, null, false, false);
                 curDialog.addSendRoutingInfoForSMResponse(invokeId, imsi, li, null, null, null);
 
                 this.countSriResp++;

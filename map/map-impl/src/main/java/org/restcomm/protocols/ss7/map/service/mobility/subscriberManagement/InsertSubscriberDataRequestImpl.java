@@ -163,7 +163,7 @@ public class InsertSubscriberDataRequestImpl extends MobilityMessageImpl impleme
     private Boolean mdtUserConsent = null;
     private Long subscribedPeriodicLAUtimer = null;
     private ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList = null;
-    private  ISDNAddressString additionalMSISDN = null;
+    private ISDNAddressString additionalMSISDN = null;
     private boolean psAndSMSOnlyServiceProvision = false;
     private boolean smsInSGSNAllowed = false;
     private boolean csToPsSRVCCAllowedIndicator = false;

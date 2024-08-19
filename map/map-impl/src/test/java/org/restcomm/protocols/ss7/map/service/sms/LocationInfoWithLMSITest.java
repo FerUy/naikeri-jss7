@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class LocationInfoWithLMSITest {
 
@@ -90,7 +90,8 @@ public class LocationInfoWithLMSITest {
 
         ISDNAddressString nnm = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "79033700222");
         LMSIImpl lmsi = new LMSIImpl(new byte[] { 0, 3, 98, 49 });
-        LocationInfoWithLMSIImpl liw = new LocationInfoWithLMSIImpl(nnm, lmsi, null, false, null);
+        LocationInfoWithLMSIImpl liw = new LocationInfoWithLMSIImpl(nnm, lmsi, null, false, null, null,
+                null, null, null, false, null, null, null, null, false, false);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         liw.encodeAll(asnOS, Tag.CLASS_CONTEXT_SPECIFIC, 0);
@@ -104,7 +105,8 @@ public class LocationInfoWithLMSITest {
                 "987654321");
         lmsi = new LMSIImpl(new byte[] { 4, 3, 2, 1 });
         AdditionalNumber an = new AdditionalNumberImpl(null, sgsnAn);
-        liw = new LocationInfoWithLMSIImpl(nnm, lmsi, MAPExtensionContainerTest.GetTestExtensionContainer(), true, an);
+        liw = new LocationInfoWithLMSIImpl(nnm, lmsi, MAPExtensionContainerTest.GetTestExtensionContainer(), true, an, null,
+                null, null, null, false, null, null, null, null, false, false);
 
         asnOS.reset();
         liw.encodeAll(asnOS, Tag.CLASS_CONTEXT_SPECIFIC, 0);
@@ -119,7 +121,8 @@ public class LocationInfoWithLMSITest {
     public void testSerialization() throws Exception {
         ISDNAddressString nnm = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "79033700222");
         LMSIImpl lmsi = new LMSIImpl(new byte[] { 0, 3, 98, 49 });
-        LocationInfoWithLMSIImpl original = new LocationInfoWithLMSIImpl(nnm, lmsi, null, true, null);
+        LocationInfoWithLMSIImpl original = new LocationInfoWithLMSIImpl(nnm, lmsi, null, true, null, null,
+                null, null, null, false, null, null, null, null, false, false);
 
         // serialize
         ByteArrayOutputStream out = new ByteArrayOutputStream();
