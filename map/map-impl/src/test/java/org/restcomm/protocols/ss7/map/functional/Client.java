@@ -113,6 +113,7 @@ import org.restcomm.protocols.ss7.map.api.service.oam.TraceReference;
 import org.restcomm.protocols.ss7.map.api.service.oam.TraceType;
 import org.restcomm.protocols.ss7.map.api.service.pdpContextActivation.MAPDialogPdpContextActivation;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertReason;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
 import org.restcomm.protocols.ss7.map.api.service.sms.MAPDialogSms;
 import org.restcomm.protocols.ss7.map.api.service.sms.SMDeliveryNotIntended;
 import org.restcomm.protocols.ss7.map.api.service.sms.SMDeliveryOutcome;
@@ -331,7 +332,7 @@ public class Client extends EventTestHarness {
         AddressString serviceCentreAddress = this.mapParameterFactory.createAddressString(
                 AddressNature.network_specific_number, NumberingPlan.national, "999000");
         clientDialogSms.addReportSMDeliveryStatusRequest(msisdn1, serviceCentreAddress, null, null, null, false, false, null,
-                null);
+                null, false, null, null, null, false, null, false, null, null, false, null, null);
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusIndication, null, sequence++));
         clientDialogSms.send();
 
@@ -638,9 +639,24 @@ public class Client extends EventTestHarness {
         boolean deliveryOutcomeIndicator = true;
         SMDeliveryOutcome additionalSMDeliveryOutcome = SMDeliveryOutcome.successfulTransfer;
         Integer additionalAbsentSubscriberDiagnosticSM = 444;
+        boolean ipSmGwIndicator = false;
+        SMDeliveryOutcome ipSmGwSMDeliveryOutcome = null;
+        Integer ipSmGwAbsentSubscriberDiagnosticSM = null;
+        IMSI imsi = null;
+        boolean singleAttemptDelivery = false;
+        CorrelationID correlationID = null;
+        boolean smsf3gppDeliveryOutcomeIndicator = false;
+        SMDeliveryOutcome smsf3gppDeliveryOutcome = null;
+        Integer smsf3gppAbsentSubscriberDiagnosticSM = null;
+        boolean smsfNon3gppDeliveryOutcomeIndicator = false;
+        SMDeliveryOutcome smsfNon3gppDeliveryOutcome = null;
+        Integer smsfNon3gppAbsentSubscriberDiagnosticSM = null;
         clientDialogSms.addReportSMDeliveryStatusRequest(msisdn1, serviceCentreAddress, sMDeliveryOutcome,
                 sbsentSubscriberDiagnosticSM, MAPExtensionContainerTest.GetTestExtensionContainer(), gprsSupportIndicator,
-                deliveryOutcomeIndicator, additionalSMDeliveryOutcome, additionalAbsentSubscriberDiagnosticSM);
+                deliveryOutcomeIndicator, additionalSMDeliveryOutcome, additionalAbsentSubscriberDiagnosticSM, ipSmGwIndicator,
+                ipSmGwSMDeliveryOutcome, ipSmGwAbsentSubscriberDiagnosticSM, imsi, singleAttemptDelivery, correlationID,
+                smsf3gppDeliveryOutcomeIndicator, smsf3gppDeliveryOutcome, smsf3gppAbsentSubscriberDiagnosticSM,
+                smsfNon3gppDeliveryOutcomeIndicator, smsfNon3gppDeliveryOutcome, smsfNon3gppAbsentSubscriberDiagnosticSM);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusIndication, null, sequence++));
         clientDialogSms.send();
@@ -664,7 +680,7 @@ public class Client extends EventTestHarness {
                 AddressNature.network_specific_number, NumberingPlan.national, "999000");
         SMDeliveryOutcome sMDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
         clientDialogSms.addReportSMDeliveryStatusRequest(sequence, msisdn1, serviceCentreAddress, sMDeliveryOutcome, null,
-                null, false, false, null, null);
+                null, false, false, null, null, false, null, null, null, false, null, false, null, null, false, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusIndication, null, sequence++));
         clientDialogSms.send();
@@ -1458,7 +1474,7 @@ public class Client extends EventTestHarness {
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForSMIndication, null, sequence++));
 
         clientDialogSms.addReportSMDeliveryStatusRequest(msisdn, serviceCentreAddress, SMDeliveryOutcome.absentSubscriber,
-                null, null, false, false, null, null);
+                null, null, false, false, null, null, false, null, null, null, false, null, false, null, null, false, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusIndication, null, sequence++));
 

@@ -569,9 +569,24 @@ public class Client extends TestHarnessSmsMt {
                 boolean deliveryOutcomeIndicator = false;
                 SMDeliveryOutcome additionalSMDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
                 Integer additionalAbsentSubscriberDiagnosticSM = AbsentSubscriberDiagnosticSM.NoPagingResponseViaTheSGSN.getCode();
+                boolean ipSmGwIndicator = false;
+                SMDeliveryOutcome ipSmGwSMDeliveryOutcome = null;
+                Integer ipSmGwAbsentSubscriberDiagnosticSM = null;
+                IMSI imsi = null;
+                boolean singleAttemptDelivery = false;
+                CorrelationID correlationID = null;
+                boolean smsf3gppDeliveryOutcomeIndicator = false;
+                SMDeliveryOutcome smsf3gppDeliveryOutcome = null;
+                Integer smsf3gppAbsentSubscriberDiagnosticSM = null;
+                boolean smsfNon3gppDeliveryOutcomeIndicator = false;
+                SMDeliveryOutcome smsfNon3gppDeliveryOutcome = null;
+                Integer smsfNon3gppAbsentSubscriberDiagnosticSM = null;
 
                 mapDialogSms.addReportSMDeliveryStatusRequest(msisdn, serviceCentreAddress, sMDeliveryOutcome, absentSubscriberDiagnosticSM,
-                    extensionContainer, gprsSupportIndicator, deliveryOutcomeIndicator, additionalSMDeliveryOutcome, additionalAbsentSubscriberDiagnosticSM);
+                    extensionContainer, gprsSupportIndicator, deliveryOutcomeIndicator, additionalSMDeliveryOutcome,
+                    additionalAbsentSubscriberDiagnosticSM, ipSmGwIndicator, ipSmGwSMDeliveryOutcome, ipSmGwAbsentSubscriberDiagnosticSM, imsi,
+                    singleAttemptDelivery, correlationID, smsf3gppDeliveryOutcomeIndicator, smsf3gppDeliveryOutcome, smsf3gppAbsentSubscriberDiagnosticSM,
+                    smsfNon3gppDeliveryOutcomeIndicator, smsfNon3gppDeliveryOutcome, smsfNon3gppAbsentSubscriberDiagnosticSM);
                 mapDialogSms.send();
             }
         } catch (MAPException e) {

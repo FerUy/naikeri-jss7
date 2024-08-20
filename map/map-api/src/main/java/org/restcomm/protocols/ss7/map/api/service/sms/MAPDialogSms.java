@@ -115,7 +115,7 @@ public interface MAPDialogSms extends MAPDialog {
             MAPExtensionContainer extensionContainer, Boolean mwdSet, IpSmGwGuidance ipSmGwGuidance) throws MAPException;
 
     /**
-     * Sending MAP-SEND-ROUTING-INFO-FOR-SM request
+     * Sending MAP-REPORT-SM-DELIVERY-STATUS request
      *
      * @param msisdn mandatory
      * @param serviceCentreAddress mandatory
@@ -126,18 +126,39 @@ public interface MAPDialogSms extends MAPDialog {
      * @param deliveryOutcomeIndicator optional
      * @param additionalSMDeliveryOutcome optional
      * @param additionalAbsentSubscriberDiagnosticSM optional
+     * @param ipSmGwIndicator optional
+     * @param ipSmGwSMDeliveryOutcome optional
+     * @param ipSmGwAbsentSubscriberDiagnosticSM optional
+     * @param imsi optional
+     * @param singleAttemptDelivery optional
+     * @param correlationID optional
+     * @param smsf3gppDeliveryOutcomeIndicator optional
+     * @param smsf3gppDeliveryOutcome optional
+     * @param smsf3gppAbsentSubscriberDiagnosticSM optional
+     * @param smsfNon3gppDeliveryOutcomeIndicator optional
+     * @param smsfNon3gppDeliveryOutcome optional
+     * @param smsfNon3gppAbsentSubscriberDiagnosticSM optional
+     *
      */
     Long addReportSMDeliveryStatusRequest(ISDNAddressString msisdn, AddressString serviceCentreAddress, SMDeliveryOutcome sMDeliveryOutcome,
             Integer absentSubscriberDiagnosticSM, MAPExtensionContainer extensionContainer, boolean gprsSupportIndicator, boolean deliveryOutcomeIndicator,
-            SMDeliveryOutcome additionalSMDeliveryOutcome, Integer additionalAbsentSubscriberDiagnosticSM) throws MAPException;
+            SMDeliveryOutcome additionalSMDeliveryOutcome, Integer additionalAbsentSubscriberDiagnosticSM,
+            boolean ipSmGwIndicator, SMDeliveryOutcome ipSmGwSMDeliveryOutcome, Integer ipSmGwAbsentSubscriberDiagnosticSM,
+            IMSI imsi, boolean singleAttemptDelivery, CorrelationID correlationID, boolean smsf3gppDeliveryOutcomeIndicator,
+            SMDeliveryOutcome smsf3gppDeliveryOutcome, Integer smsf3gppAbsentSubscriberDiagnosticSM, boolean smsfNon3gppDeliveryOutcomeIndicator,
+            SMDeliveryOutcome smsfNon3gppDeliveryOutcome, Integer smsfNon3gppAbsentSubscriberDiagnosticSM) throws MAPException;
 
     Long addReportSMDeliveryStatusRequest(int customInvokeTimeout, ISDNAddressString msisdn, AddressString serviceCentreAddress,
             SMDeliveryOutcome sMDeliveryOutcome, Integer absentSubscriberDiagnosticSM, MAPExtensionContainer extensionContainer, boolean gprsSupportIndicator,
-            boolean deliveryOutcomeIndicator, SMDeliveryOutcome additionalSMDeliveryOutcome, Integer additionalAbsentSubscriberDiagnosticSM)
+            boolean deliveryOutcomeIndicator, SMDeliveryOutcome additionalSMDeliveryOutcome, Integer additionalAbsentSubscriberDiagnosticSM,
+            boolean ipSmGwIndicator, SMDeliveryOutcome ipSmGwSMDeliveryOutcome, Integer ipSmGwAbsentSubscriberDiagnosticSM,
+            IMSI imsi, boolean singleAttemptDelivery, CorrelationID correlationID, boolean smsf3gppDeliveryOutcomeIndicator,
+            SMDeliveryOutcome smsf3gppDeliveryOutcome, Integer smsf3gppAbsentSubscriberDiagnosticSM, boolean smsfNon3gppDeliveryOutcomeIndicator,
+            SMDeliveryOutcome smsfNon3gppDeliveryOutcome, Integer smsfNon3gppAbsentSubscriberDiagnosticSM)
             throws MAPException;
 
     /**
-     * Sending MAP-SEND-ROUTING-INFO-FOR-SM response
+     * Sending MAP-REPORT-SM-DELIVERY-STATUS response
      *
      * @param storedMSISDN optional
      * @param extensionContainer optional

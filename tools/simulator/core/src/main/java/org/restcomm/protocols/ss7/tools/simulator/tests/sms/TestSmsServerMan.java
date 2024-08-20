@@ -1103,7 +1103,9 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
                             sMDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
                     }
 
-                    curDialog.addReportSMDeliveryStatusRequest(msisdn, serviceCentreAddress, sMDeliveryOutcome, null, null, false, false, null, null);
+                    curDialog.addReportSMDeliveryStatusRequest(msisdn, serviceCentreAddress, sMDeliveryOutcome, null, null, false, false, null, null,
+                            false, null, null, null, false, null, false, null, null, false,
+                            null, null);
                     curDialog.send();
 
                     currentRequestDef += "Sent RsmdsReq;";

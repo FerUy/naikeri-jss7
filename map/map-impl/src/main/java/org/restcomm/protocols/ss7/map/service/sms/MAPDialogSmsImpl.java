@@ -39,7 +39,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
 
@@ -374,16 +374,26 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
     public Long addReportSMDeliveryStatusRequest(ISDNAddressString msisdn, AddressString serviceCentreAddress,
             SMDeliveryOutcome sMDeliveryOutcome, Integer absentSubscriberDiagnosticSM,
             MAPExtensionContainer extensionContainer, boolean gprsSupportIndicator, boolean deliveryOutcomeIndicator,
-            SMDeliveryOutcome additionalSMDeliveryOutcome, Integer additionalAbsentSubscriberDiagnosticSM) throws MAPException {
+            SMDeliveryOutcome additionalSMDeliveryOutcome, Integer additionalAbsentSubscriberDiagnosticSM,
+            boolean ipSmGwIndicator, SMDeliveryOutcome ipSmGwSMDeliveryOutcome, Integer ipSmGwAbsentSubscriberDiagnosticSM,
+            IMSI imsi, boolean singleAttemptDelivery, CorrelationID correlationID, boolean smsf3gppDeliveryOutcomeIndicator,
+            SMDeliveryOutcome smsf3gppDeliveryOutcome, Integer smsf3gppAbsentSubscriberDiagnosticSM, boolean smsfNon3gppDeliveryOutcomeIndicator,
+            SMDeliveryOutcome smsfNon3gppDeliveryOutcome, Integer smsfNon3gppAbsentSubscriberDiagnosticSM) throws MAPException {
         return this.addReportSMDeliveryStatusRequest(_Timer_Default, msisdn, serviceCentreAddress, sMDeliveryOutcome,
                 absentSubscriberDiagnosticSM, extensionContainer, gprsSupportIndicator, deliveryOutcomeIndicator,
-                additionalSMDeliveryOutcome, additionalAbsentSubscriberDiagnosticSM);
+                additionalSMDeliveryOutcome, additionalAbsentSubscriberDiagnosticSM,
+                ipSmGwIndicator, ipSmGwSMDeliveryOutcome, ipSmGwAbsentSubscriberDiagnosticSM, imsi, singleAttemptDelivery, correlationID, smsf3gppDeliveryOutcomeIndicator,
+                smsf3gppDeliveryOutcome, smsf3gppAbsentSubscriberDiagnosticSM, smsfNon3gppDeliveryOutcomeIndicator, smsfNon3gppDeliveryOutcome, smsfNon3gppAbsentSubscriberDiagnosticSM);
     }
 
     public Long addReportSMDeliveryStatusRequest(int customInvokeTimeout, ISDNAddressString msisdn,
             AddressString serviceCentreAddress, SMDeliveryOutcome sMDeliveryOutcome, Integer absentSubscriberDiagnosticSM,
             MAPExtensionContainer extensionContainer, boolean gprsSupportIndicator, boolean deliveryOutcomeIndicator,
-            SMDeliveryOutcome additionalSMDeliveryOutcome, Integer additionalAbsentSubscriberDiagnosticSM) throws MAPException {
+            SMDeliveryOutcome additionalSMDeliveryOutcome, Integer additionalAbsentSubscriberDiagnosticSM,
+            boolean ipSmGwIndicator, SMDeliveryOutcome ipSmGwSMDeliveryOutcome, Integer ipSmGwAbsentSubscriberDiagnosticSM,
+            IMSI imsi, boolean singleAttemptDelivery, CorrelationID correlationID, boolean smsf3gppDeliveryOutcomeIndicator,
+            SMDeliveryOutcome smsf3gppDeliveryOutcome, Integer smsf3gppAbsentSubscriberDiagnosticSM, boolean smsfNon3gppDeliveryOutcomeIndicator,
+            SMDeliveryOutcome smsfNon3gppDeliveryOutcome, Integer smsfNon3gppAbsentSubscriberDiagnosticSM) throws MAPException {
 
         MAPApplicationContextVersion mapApplicationContextVersion = this.mapApplicationContext.getApplicationContextVersion();
         if (this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.shortMsgGatewayContext
@@ -409,7 +419,10 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
             ReportSMDeliveryStatusRequestImpl reportSMDeliveryStatusRequest = new ReportSMDeliveryStatusRequestImpl(this.getApplicationContext()
                     .getApplicationContextVersion().getVersion(), msisdn, serviceCentreAddress, sMDeliveryOutcome,
                     absentSubscriberDiagnosticSM, extensionContainer, gprsSupportIndicator, deliveryOutcomeIndicator,
-                    additionalSMDeliveryOutcome, additionalAbsentSubscriberDiagnosticSM);
+                    additionalSMDeliveryOutcome, additionalAbsentSubscriberDiagnosticSM, ipSmGwIndicator, ipSmGwSMDeliveryOutcome,
+                    ipSmGwAbsentSubscriberDiagnosticSM, imsi, singleAttemptDelivery, correlationID, smsf3gppDeliveryOutcomeIndicator,
+                    smsf3gppDeliveryOutcome, smsf3gppAbsentSubscriberDiagnosticSM, smsfNon3gppDeliveryOutcomeIndicator, smsfNon3gppDeliveryOutcome,
+                    smsfNon3gppAbsentSubscriberDiagnosticSM);
             AsnOutputStream aos = new AsnOutputStream();
             reportSMDeliveryStatusRequest.encodeData(aos);
 

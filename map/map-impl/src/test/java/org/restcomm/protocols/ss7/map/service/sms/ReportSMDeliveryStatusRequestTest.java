@@ -1,6 +1,7 @@
 package org.restcomm.protocols.ss7.map.service.sms;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
@@ -23,7 +24,7 @@ import org.testng.annotations.Test;
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class ReportSMDeliveryStatusRequestTest {
 
@@ -85,8 +86,8 @@ public class ReportSMDeliveryStatusRequestTest {
         assertEquals(ind.getSMDeliveryOutcome(), SMDeliveryOutcome.successfulTransfer);
         assertEquals((int) ind.getAbsentSubscriberDiagnosticSM(), 444);
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(ind.getExtensionContainer()));
-        assertEquals((boolean) ind.getGprsSupportIndicator(), true);
-        assertEquals((boolean) ind.getDeliveryOutcomeIndicator(), false);
+        assertTrue(ind.getGprsSupportIndicator());
+        assertFalse(ind.getDeliveryOutcomeIndicator());
         assertEquals(ind.getAdditionalSMDeliveryOutcome(), SMDeliveryOutcome.memoryCapacityExceeded);
         assertEquals((int) ind.getAdditionalAbsentSubscriberDiagnosticSM(), 555);
 
@@ -118,7 +119,10 @@ public class ReportSMDeliveryStatusRequestTest {
                 "7222333111");
         AddressString sca = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "100937453");
         ReportSMDeliveryStatusRequestImpl ind = new ReportSMDeliveryStatusRequestImpl(2, msisdn, sca,
-                SMDeliveryOutcome.absentSubscriber, null, null, false, false, null, null);
+                SMDeliveryOutcome.absentSubscriber, null, null, false, false, null,
+                null, false, null, null, null, false, null,
+                false, null, null, false, null,
+                null);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
@@ -127,7 +131,10 @@ public class ReportSMDeliveryStatusRequestTest {
         byte[] rawData = getEncodedData();
         assertTrue(Arrays.equals(rawData, encodedData));
 
-        ind = new ReportSMDeliveryStatusRequestImpl(1, msisdn, sca, null, null, null, false, false, null, null);
+        ind = new ReportSMDeliveryStatusRequestImpl(1, msisdn, sca, null, null, null, false,
+                false, null, null, false, null, null,
+                null, false, null, false, null, null, false,
+                null, null);
 
         asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
@@ -140,7 +147,9 @@ public class ReportSMDeliveryStatusRequestTest {
         sca = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "333222111");
         ind = new ReportSMDeliveryStatusRequestImpl(3, msisdn, sca, SMDeliveryOutcome.successfulTransfer, 444,
                 MAPExtensionContainerTest.GetTestExtensionContainer(), true, false, SMDeliveryOutcome.memoryCapacityExceeded,
-                555);
+                555, false, null, null, null, false, null,
+                false, null, null, false, null,
+                null);
 
         asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
