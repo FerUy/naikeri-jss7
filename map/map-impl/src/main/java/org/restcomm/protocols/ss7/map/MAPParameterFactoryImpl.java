@@ -870,8 +870,8 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
         return new SM_RP_SMEAImpl(addressField);
     }
 
-    public MWStatus createMWStatus(boolean scAddressNotIncluded, boolean mnrfSet, boolean mcefSet, boolean mnrgSet) {
-        return new MWStatusImpl(scAddressNotIncluded, mnrfSet, mcefSet, mnrgSet);
+    public MWStatus createMWStatus(boolean scAddressNotIncluded, boolean mnrfSet, boolean mcefSet, boolean mnrgSet, boolean mnr5gSet, boolean mnr5gn3gSet) {
+        return new MWStatusImpl(scAddressNotIncluded, mnrfSet, mcefSet, mnrgSet, mnr5gSet, mnr5gn3gSet);
     }
 
     public LocationInfoWithLMSI createLocationInfoWithLMSI(ISDNAddressString networkNodeNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,

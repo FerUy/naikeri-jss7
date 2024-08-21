@@ -59,6 +59,8 @@ public class InformServiceCentreRequestTest {
         assertTrue(mwStatus.getMnrfSet());
         assertFalse(mwStatus.getMcefSet());
         assertFalse(mwStatus.getMnrgSet());
+        assertFalse(mwStatus.getMnr5gSet());
+        assertFalse(mwStatus.getMnr5gn3gSet());
 
         rawData = getEncodedDataFull();
         asn = new AsnInputStream(rawData);
@@ -85,18 +87,18 @@ public class InformServiceCentreRequestTest {
         Assert.assertTrue(mwStatus.getMnrfSet());
         Assert.assertFalse(mwStatus.getMcefSet());
         Assert.assertTrue(mwStatus.getMnrgSet());
-        Assert.assertNotNull(absentSubscriberDiagnosticSM);
-        Assert.assertEquals(555, (int) absentSubscriberDiagnosticSM);
-        Assert.assertNotNull(additionalAbsentSubscriberDiagnosticSM);
-        Assert.assertEquals(444, (int) additionalAbsentSubscriberDiagnosticSM);
+        Assert.assertFalse(mwStatus.getMnr5gSet());
+        Assert.assertFalse(mwStatus.getMnr5gn3gSet());
+        Assert.assertEquals(555, absentSubscriberDiagnosticSM);
+        Assert.assertEquals(444, additionalAbsentSubscriberDiagnosticSM);
         Assert.assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(extensionContainer));
     }
 
     @Test(groups = { "functional.encode", "service.sms" })
     public void testEncode() throws Exception {
 
-        MWStatus mwStatus = new MWStatusImpl(false, true, false, false);
-        InformServiceCentreRequestImpl isc = new InformServiceCentreRequestImpl(null, mwStatus, null, null, null);
+        MWStatus mwStatus = new MWStatusImpl(false, true, false, false, false, false);
+        InformServiceCentreRequestImpl isc = new InformServiceCentreRequestImpl(null, mwStatus, null, null, null, null, null);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         isc.encodeAll(asnOS);
@@ -107,11 +109,14 @@ public class InformServiceCentreRequestTest {
 
         ISDNAddressString storedMSISDN = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                 "111222333");
-        mwStatus = new MWStatusImpl(false, true, false, true);
+        mwStatus = new MWStatusImpl(false, true, false, true, false, false);
         Integer absentSubscriberDiagnosticSM = 555;
         Integer additionalAbsentSubscriberDiagnosticSM = 444;
+        Integer smsf3gppAbsentSubscriberDiagnosticSM = null;
+        Integer smsfNon3gppAbsentSubscriberDiagnosticSM = null;
         isc = new InformServiceCentreRequestImpl(storedMSISDN, mwStatus, MAPExtensionContainerTest.GetTestExtensionContainer(),
-                absentSubscriberDiagnosticSM, additionalAbsentSubscriberDiagnosticSM);
+                absentSubscriberDiagnosticSM, additionalAbsentSubscriberDiagnosticSM, smsf3gppAbsentSubscriberDiagnosticSM,
+                smsfNon3gppAbsentSubscriberDiagnosticSM);
 
         asnOS.reset();
         isc.encodeAll(asnOS);

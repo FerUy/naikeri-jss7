@@ -27,19 +27,24 @@ import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 public class InformServiceCentreRequestImpl extends SmsMessageImpl implements InformServiceCentreRequest {
 
     protected static final int _TAG_AdditionalAbsentSubscriberDiagnosticSM = 0;
+    protected static final int _TAG_SMSF_3GPP_AbsentSubscriberDiagnosticSM = 1;
+    protected static final int _TAG_SMSF_NON_3GPP_AbsentSubscriberDiagnosticSM = 2;
 
     private ISDNAddressString storedMSISDN;
     private MWStatus mwStatus;
     private MAPExtensionContainer extensionContainer;
     private Integer absentSubscriberDiagnosticSM;
     private Integer additionalAbsentSubscriberDiagnosticSM;
+    private Integer smsf3gppAbsentSubscriberDiagnosticSM;
+    private Integer smsfNon3gppAbsentSubscriberDiagnosticSM;
 
     public InformServiceCentreRequestImpl() {
     }
 
     public InformServiceCentreRequestImpl(ISDNAddressString storedMSISDN, MWStatus mwStatus,
             MAPExtensionContainer extensionContainer, Integer absentSubscriberDiagnosticSM,
-            Integer additionalAbsentSubscriberDiagnosticSM) {
+            Integer additionalAbsentSubscriberDiagnosticSM, Integer smsf3gppAbsentSubscriberDiagnosticSM,
+            Integer smsfNon3gppAbsentSubscriberDiagnosticSM) {
         this.storedMSISDN = storedMSISDN;
         this.mwStatus = mwStatus;
         this.extensionContainer = extensionContainer;
@@ -47,32 +52,49 @@ public class InformServiceCentreRequestImpl extends SmsMessageImpl implements In
         this.additionalAbsentSubscriberDiagnosticSM = additionalAbsentSubscriberDiagnosticSM;
     }
 
+    @Override
     public MAPMessageType getMessageType() {
         return MAPMessageType.InformServiceCentre_Request;
     }
 
+    @Override
     public int getOperationCode() {
         return MAPOperationCode.informServiceCentre;
     }
 
+    @Override
     public ISDNAddressString getStoredMSISDN() {
         return this.storedMSISDN;
     }
 
+    @Override
     public MWStatus getMwStatus() {
         return this.mwStatus;
     }
 
+    @Override
     public MAPExtensionContainer getExtensionContainer() {
         return this.extensionContainer;
     }
 
+    @Override
     public Integer getAbsentSubscriberDiagnosticSM() {
         return this.absentSubscriberDiagnosticSM;
     }
 
+    @Override
     public Integer getAdditionalAbsentSubscriberDiagnosticSM() {
         return this.additionalAbsentSubscriberDiagnosticSM;
+    }
+
+    @Override
+    public Integer getSmsf3gppAbsentSubscriberDiagnosticSM() {
+        return smsf3gppAbsentSubscriberDiagnosticSM;
+    }
+
+    @Override
+    public Integer getSmsfNon3gppAbsentSubscriberDiagnosticSM() {
+        return smsfNon3gppAbsentSubscriberDiagnosticSM;
     }
 
     public int getTag() throws MAPException {
@@ -184,6 +206,24 @@ public class InformServiceCentreRequestImpl extends SmsMessageImpl implements In
                         additionalAbsentSubscriberDiagnosticSM = (int) ais.readInteger();
                         break;
 
+                    case InformServiceCentreRequestImpl._TAG_SMSF_3GPP_AbsentSubscriberDiagnosticSM:
+                        // smsf3gppAbsentSubscriberDiagnosticSM
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException(
+                                    "Error while decoding informServiceCentreRequest: Parameter smsf3gppAbsentSubscriberDiagnosticSM is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        smsf3gppAbsentSubscriberDiagnosticSM = (int) ais.readInteger();
+                        break;
+
+                    case InformServiceCentreRequestImpl._TAG_SMSF_NON_3GPP_AbsentSubscriberDiagnosticSM:
+                        // smsfNon3gppAbsentSubscriberDiagnosticSM
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException(
+                                    "Error while decoding informServiceCentreRequest: Parameter smsfNon3gppAbsentSubscriberDiagnosticSM is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        smsfNon3gppAbsentSubscriberDiagnosticSM = (int) ais.readInteger();
+                        break;
+
                     default:
                         ais.advanceElement();
                         break;
@@ -210,19 +250,33 @@ public class InformServiceCentreRequestImpl extends SmsMessageImpl implements In
     }
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
-        if (this.storedMSISDN != null)
-            ((ISDNAddressStringImpl) this.storedMSISDN).encodeAll(asnOutputStream);
-        if (this.mwStatus != null)
-            ((MWStatusImpl) this.mwStatus).encodeAll(asnOutputStream);
-        if (this.extensionContainer != null)
-            ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
         try {
+            if (this.storedMSISDN != null)
+                ((ISDNAddressStringImpl) this.storedMSISDN).encodeAll(asnOutputStream);
+
+            if (this.mwStatus != null)
+                ((MWStatusImpl) this.mwStatus).encodeAll(asnOutputStream);
+
+            if (this.extensionContainer != null)
+                ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
+
             if (this.absentSubscriberDiagnosticSM != null)
                 asnOutputStream.writeInteger(this.absentSubscriberDiagnosticSM);
+
             if (this.additionalAbsentSubscriberDiagnosticSM != null)
                 asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC,
                         InformServiceCentreRequestImpl._TAG_AdditionalAbsentSubscriberDiagnosticSM,
                         this.additionalAbsentSubscriberDiagnosticSM);
+
+            if (this.smsf3gppAbsentSubscriberDiagnosticSM != null)
+                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC,
+                        InformServiceCentreRequestImpl._TAG_SMSF_3GPP_AbsentSubscriberDiagnosticSM,
+                        this.smsf3gppAbsentSubscriberDiagnosticSM);
+
+            if (this.smsfNon3gppAbsentSubscriberDiagnosticSM != null)
+                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC,
+                        InformServiceCentreRequestImpl._TAG_SMSF_NON_3GPP_AbsentSubscriberDiagnosticSM,
+                        this.smsfNon3gppAbsentSubscriberDiagnosticSM);
         } catch (IOException e) {
             throw new MAPException("IOException when encoding InformServiceCentreRequest: " + e.getMessage(), e);
         } catch (AsnException e) {
@@ -241,23 +295,31 @@ public class InformServiceCentreRequestImpl extends SmsMessageImpl implements In
 
         if (this.storedMSISDN != null) {
             sb.append(", storedMSISDN=");
-            sb.append(this.storedMSISDN.toString());
+            sb.append(this.storedMSISDN);
         }
         if (this.mwStatus != null) {
             sb.append(", mwStatus=");
-            sb.append(this.mwStatus.toString());
+            sb.append(this.mwStatus);
         }
         if (this.extensionContainer != null) {
             sb.append(", extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
         }
         if (this.absentSubscriberDiagnosticSM != null) {
             sb.append(", absentSubscriberDiagnosticSM=");
-            sb.append(this.absentSubscriberDiagnosticSM.toString());
+            sb.append(this.absentSubscriberDiagnosticSM);
         }
         if (this.additionalAbsentSubscriberDiagnosticSM != null) {
             sb.append(", additionalAbsentSubscriberDiagnosticSM=");
-            sb.append(this.additionalAbsentSubscriberDiagnosticSM.toString());
+            sb.append(this.additionalAbsentSubscriberDiagnosticSM);
+        }
+        if (this.smsf3gppAbsentSubscriberDiagnosticSM != null) {
+            sb.append(", smsf3gppAbsentSubscriberDiagnosticSM=");
+            sb.append(this.smsf3gppAbsentSubscriberDiagnosticSM);
+        }
+        if (this.smsfNon3gppAbsentSubscriberDiagnosticSM != null) {
+            sb.append(", smsfNon3gppAbsentSubscriberDiagnosticSM=");
+            sb.append(this.smsfNon3gppAbsentSubscriberDiagnosticSM);
         }
 
         sb.append("]");

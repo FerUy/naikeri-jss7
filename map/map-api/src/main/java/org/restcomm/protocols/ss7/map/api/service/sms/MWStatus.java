@@ -12,9 +12,8 @@ MW-Status ::= BIT STRING {
 -- bits 4 to 15 shall be ignored if received and not understood
 </code>
  *
- *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface MWStatus extends Serializable {
 
@@ -26,4 +25,7 @@ public interface MWStatus extends Serializable {
 
     boolean getMnrgSet();
 
+    boolean getMnr5gSet();
+
+    boolean getMnr5gn3gSet();
 }

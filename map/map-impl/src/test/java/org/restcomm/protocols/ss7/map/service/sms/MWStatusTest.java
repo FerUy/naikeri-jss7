@@ -1,6 +1,7 @@
 package org.restcomm.protocols.ss7.map.service.sms;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -40,16 +41,18 @@ public class MWStatusTest {
         assertEquals(tag, Tag.STRING_BIT);
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
-        assertEquals((boolean) mws.getMcefSet(), false);
-        assertEquals((boolean) mws.getMnrfSet(), true);
-        assertEquals((boolean) mws.getMnrgSet(), false);
-        assertEquals((boolean) mws.getScAddressNotIncluded(), false);
+        assertFalse(mws.getMcefSet());
+        assertTrue(mws.getMnrfSet());
+        assertFalse(mws.getMnrgSet());
+        assertFalse(mws.getMnr5gSet());
+        assertFalse(mws.getMnr5gn3gSet());
+        assertFalse(mws.getScAddressNotIncluded());
     }
 
     @Test(groups = { "functional.encode", "service.sms" })
     public void testEncode() throws Exception {
 
-        MWStatusImpl mws = new MWStatusImpl(false, true, false, false);
+        MWStatusImpl mws = new MWStatusImpl(false, true, false, false, false, false);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         mws.encodeAll(asnOS);
@@ -62,7 +65,7 @@ public class MWStatusTest {
 
     @Test(groups = { "functional.serialize", "service.sms" })
     public void testSerialization() throws Exception {
-        MWStatusImpl original = new MWStatusImpl(false, true, false, false);
+        MWStatusImpl original = new MWStatusImpl(false, true, false, false, false, false);
 
         // serialize
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -82,6 +85,8 @@ public class MWStatusTest {
         assertEquals(copy.getScAddressNotIncluded(), original.getScAddressNotIncluded());
         assertEquals(copy.getMnrfSet(), original.getMnrfSet());
         assertEquals(copy.getMnrgSet(), original.getMnrgSet());
+        assertEquals(copy.getMnr5gSet(), original.getMnr5gSet());
+        assertEquals(copy.getMnr5gn3gSet(), original.getMnr5gn3gSet());
     }
 
 }

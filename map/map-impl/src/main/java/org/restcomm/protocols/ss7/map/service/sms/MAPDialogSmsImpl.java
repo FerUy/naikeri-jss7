@@ -482,14 +482,17 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
 
     public Long addInformServiceCentreRequest(ISDNAddressString storedMSISDN, MWStatus mwStatus,
             MAPExtensionContainer extensionContainer, Integer absentSubscriberDiagnosticSM,
-            Integer additionalAbsentSubscriberDiagnosticSM) throws MAPException {
+            Integer additionalAbsentSubscriberDiagnosticSM, Integer smsf3gppAbsentSubscriberDiagnosticSM,
+            Integer smsfNon3gppAbsentSubscriberDiagnosticSM) throws MAPException {
         return this.addInformServiceCentreRequest(_Timer_Default, storedMSISDN, mwStatus, extensionContainer,
-                absentSubscriberDiagnosticSM, additionalAbsentSubscriberDiagnosticSM);
+                absentSubscriberDiagnosticSM, additionalAbsentSubscriberDiagnosticSM, smsf3gppAbsentSubscriberDiagnosticSM,
+                smsfNon3gppAbsentSubscriberDiagnosticSM);
     }
 
     public Long addInformServiceCentreRequest(int customInvokeTimeout, ISDNAddressString storedMSISDN, MWStatus mwStatus,
             MAPExtensionContainer extensionContainer, Integer absentSubscriberDiagnosticSM,
-            Integer additionalAbsentSubscriberDiagnosticSM) throws MAPException {
+            Integer additionalAbsentSubscriberDiagnosticSM, Integer smsf3gppAbsentSubscriberDiagnosticSM,
+            Integer smsfNon3gppAbsentSubscriberDiagnosticSM) throws MAPException {
 
         MAPApplicationContextVersion mapApplicationContextVersion = this.mapApplicationContext.getApplicationContextVersion();
         if (this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.shortMsgGatewayContext
@@ -509,7 +512,8 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
             invoke.setOperationCode(operationCode);
 
             InformServiceCentreRequestImpl informServiceCentreRequest = new InformServiceCentreRequestImpl(storedMSISDN, mwStatus, extensionContainer,
-                    absentSubscriberDiagnosticSM, additionalAbsentSubscriberDiagnosticSM);
+                    absentSubscriberDiagnosticSM, additionalAbsentSubscriberDiagnosticSM, smsf3gppAbsentSubscriberDiagnosticSM,
+                    smsfNon3gppAbsentSubscriberDiagnosticSM);
             AsnOutputStream aos = new AsnOutputStream();
             informServiceCentreRequest.encodeData(aos);
 

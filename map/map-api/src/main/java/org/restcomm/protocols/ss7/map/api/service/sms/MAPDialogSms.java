@@ -174,14 +174,18 @@ public interface MAPDialogSms extends MAPDialog {
      * @param extensionContainer optional
      * @param absentSubscriberDiagnosticSM optional
      * @param additionalAbsentSubscriberDiagnosticSM optional
+     * @param smsf3gppAbsentSubscriberDiagnosticSM optional
+     * @param smsfNon3gppAbsentSubscriberDiagnosticSM optional
      */
     Long addInformServiceCentreRequest(ISDNAddressString storedMSISDN, MWStatus mwStatus,
             MAPExtensionContainer extensionContainer, Integer absentSubscriberDiagnosticSM,
-            Integer additionalAbsentSubscriberDiagnosticSM) throws MAPException;
+            Integer additionalAbsentSubscriberDiagnosticSM, Integer smsf3gppAbsentSubscriberDiagnosticSM,
+            Integer smsfNon3gppAbsentSubscriberDiagnosticSM) throws MAPException;
 
     Long addInformServiceCentreRequest(int customInvokeTimeout, ISDNAddressString storedMSISDN, MWStatus mwStatus,
             MAPExtensionContainer extensionContainer, Integer absentSubscriberDiagnosticSM,
-            Integer additionalAbsentSubscriberDiagnosticSM) throws MAPException;
+            Integer additionalAbsentSubscriberDiagnosticSM, Integer smsf3gppAbsentSubscriberDiagnosticSM,
+            Integer smsfNon3gppAbsentSubscriberDiagnosticSM) throws MAPException;
 
     /**
      * Sending MAP-SEND-ROUTING-INFO-FOR-SM request

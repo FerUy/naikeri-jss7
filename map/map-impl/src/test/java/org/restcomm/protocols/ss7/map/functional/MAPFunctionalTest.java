@@ -3971,15 +3971,17 @@ public class MAPFunctionalTest extends SccpHarness {
 
                 ISDNAddressString storedMSISDN = this.mapParameterFactory.createISDNAddressString(
                         AddressNature.international_number, NumberingPlan.ISDN, "111222333");
-                MWStatus mwStatus = this.mapParameterFactory.createMWStatus(false, true, false, true);
+                MWStatus mwStatus = this.mapParameterFactory.createMWStatus(false, true, false, true, false, false);
                 Integer absentSubscriberDiagnosticSM = 555;
                 Integer additionalAbsentSubscriberDiagnosticSM = 444;
+                Integer smsf3gppAbsentSubscriberDiagnosticSM = null;
+                Integer smsfNon3gppAbsentSubscriberDiagnosticSM = null;
 
                 try {
                     d.addSendRoutingInfoForSMResponse(sendRoutingInfoForSMInd.getInvokeId(), imsi, locationInfoWithLMSI, null,
                             null, null);
                     d.addInformServiceCentreRequest(storedMSISDN, mwStatus, null, absentSubscriberDiagnosticSM,
-                            additionalAbsentSubscriberDiagnosticSM);
+                            additionalAbsentSubscriberDiagnosticSM, smsf3gppAbsentSubscriberDiagnosticSM, smsfNon3gppAbsentSubscriberDiagnosticSM);
                 } catch (MAPException e) {
                     this.error("Error while adding SendRoutingInfoForSMResponse", e);
                     fail("Error while adding SendRoutingInfoForSMResponse");
@@ -5758,11 +5760,11 @@ TC-END + provideSubscriberInfoResponse
 
                 assertEquals(origReference.getAddressNature(), AddressNature.international_number);
                 assertEquals(origReference.getNumberingPlan(), NumberingPlan.ISDN);
-                assertTrue(origReference.getAddress().equals("11335577"));
+                assertEquals(origReference.getAddress(), "11335577");
 
                 assertEquals(destReference.getAddressNature(), AddressNature.international_number);
                 assertEquals(destReference.getNumberingPlan(), NumberingPlan.ISDN);
-                assertTrue(destReference.getAddress().equals("22446688"));
+                assertEquals(destReference.getAddress(), "22446688");
 
                 assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(extensionContainer));
 
@@ -5775,17 +5777,17 @@ TC-END + provideSubscriberInfoResponse
 
                 MAPDialogMobility d = ind.getMAPDialog();
 
-                Assert.assertTrue(ind.getIMEI().getIMEI().equals("333333334444444"));
+                assertEquals(ind.getIMEI().getIMEI(), "333333334444444");
                 Assert.assertNull(ind.getRequestedEquipmentInfo());
                 Assert.assertNull(ind.getExtensionContainer());
 
                 assertEquals(d.getReceivedOrigReference().getAddressNature(), AddressNature.international_number);
                 assertEquals(d.getReceivedOrigReference().getNumberingPlan(), NumberingPlan.ISDN);
-                assertTrue(d.getReceivedOrigReference().getAddress().equals("11335577"));
+                assertEquals(d.getReceivedOrigReference().getAddress(), "11335577");
 
                 assertEquals(d.getReceivedDestReference().getAddressNature(), AddressNature.international_number);
                 assertEquals(d.getReceivedDestReference().getNumberingPlan(), NumberingPlan.ISDN);
-                assertTrue(d.getReceivedDestReference().getAddress().equals("22446688"));
+                assertEquals(d.getReceivedDestReference().getAddress(), "22446688");
 
                 assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(d.getReceivedExtensionContainer()));
 

@@ -1262,20 +1262,20 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
                 case SRIInformServiceCenter.MWD_NO:
                     break;
                 case SRIInformServiceCenter.MWD_mcef:
-                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, false, true, false);
+                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, false, true, false, false, false);
                     break;
                 case SRIInformServiceCenter.MWD_mnrf:
-                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, true, false, false);
+                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, true, false, false, false, false);
                     break;
                 case SRIInformServiceCenter.MWD_mcef_mnrf:
-                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, true, true, false);
+                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, true, true, false, false, false);
                     break;
                 case SRIInformServiceCenter.MWD_mnrg:
-                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, false, false, true);
+                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, false, false, true, false, false);
                     break;
                 }
                 if (mwStatus != null) {
-                    curDialog.addInformServiceCentreRequest(null, mwStatus, null, null, null);
+                    curDialog.addInformServiceCentreRequest(null, mwStatus, null, null, null, null, null);
 
                     this.countIscReq++;
                     uData = this.createIscReqData(curDialog.getLocalDialogId(), mwStatus);
