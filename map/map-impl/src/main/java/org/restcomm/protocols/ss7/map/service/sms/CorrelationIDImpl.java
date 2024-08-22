@@ -135,17 +135,17 @@ public class CorrelationIDImpl extends SequenceBase implements CorrelationID {
 
         if(this.hlrId!=null) {
             sb.append("hlrId=");
-            sb.append(this.hlrId.toString());
+            sb.append(this.hlrId);
             sb.append(", ");
         }
         if(this.sipUriA!=null) {
             sb.append("sipUriA=");
-            sb.append(this.sipUriA.toString());
+            sb.append(this.sipUriA);
             sb.append(", ");
         }
         if (this.sipUriB != null) {
             sb.append(", sipUriB=");
-            sb.append(this.sipUriB.toString());
+            sb.append(this.sipUriB);
         }
 
         sb.append("]");

@@ -22,7 +22,7 @@ import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class InformServiceCentreRequestImpl extends SmsMessageImpl implements InformServiceCentreRequest {
 
@@ -50,6 +50,8 @@ public class InformServiceCentreRequestImpl extends SmsMessageImpl implements In
         this.extensionContainer = extensionContainer;
         this.absentSubscriberDiagnosticSM = absentSubscriberDiagnosticSM;
         this.additionalAbsentSubscriberDiagnosticSM = additionalAbsentSubscriberDiagnosticSM;
+        this.smsf3gppAbsentSubscriberDiagnosticSM = smsf3gppAbsentSubscriberDiagnosticSM;
+        this.smsfNon3gppAbsentSubscriberDiagnosticSM = smsfNon3gppAbsentSubscriberDiagnosticSM;
     }
 
     @Override
@@ -140,6 +142,8 @@ public class InformServiceCentreRequestImpl extends SmsMessageImpl implements In
         this.extensionContainer = null;
         this.absentSubscriberDiagnosticSM = null;
         this.additionalAbsentSubscriberDiagnosticSM = null;
+        this.smsf3gppAbsentSubscriberDiagnosticSM = null;
+        this.smsfNon3gppAbsentSubscriberDiagnosticSM = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         while (true) {

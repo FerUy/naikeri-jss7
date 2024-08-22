@@ -3,6 +3,7 @@ package org.restcomm.protocols.ss7.map.service.sms;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -26,7 +27,7 @@ import org.testng.annotations.Test;
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class InformServiceCentreRequestTest {
 
@@ -77,6 +78,8 @@ public class InformServiceCentreRequestTest {
         mwStatus = isc.getMwStatus();
         int absentSubscriberDiagnosticSM = isc.getAbsentSubscriberDiagnosticSM();
         int additionalAbsentSubscriberDiagnosticSM = isc.getAdditionalAbsentSubscriberDiagnosticSM();
+        Integer smsf3gppAbsentSubscriberDiagnosticSM = isc.getSmsf3gppAbsentSubscriberDiagnosticSM();
+        Integer smsfNon3gppAbsentSubscriberDiagnosticSM = isc.getSmsfNon3gppAbsentSubscriberDiagnosticSM();
 
         Assert.assertNotNull(storedMSISDN);
         Assert.assertEquals(AddressNature.international_number, storedMSISDN.getAddressNature());
@@ -91,6 +94,8 @@ public class InformServiceCentreRequestTest {
         Assert.assertFalse(mwStatus.getMnr5gn3gSet());
         Assert.assertEquals(555, absentSubscriberDiagnosticSM);
         Assert.assertEquals(444, additionalAbsentSubscriberDiagnosticSM);
+        Assert.assertNull(smsf3gppAbsentSubscriberDiagnosticSM);
+        Assert.assertNull(smsfNon3gppAbsentSubscriberDiagnosticSM);
         Assert.assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(extensionContainer));
     }
 

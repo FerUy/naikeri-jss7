@@ -11,8 +11,13 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.MAPOperationCode;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
+import org.restcomm.protocols.ss7.map.api.service.sms.SmsGmscAlertEvent;
 import org.restcomm.protocols.ss7.map.primitives.AddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.service.sms.AlertServiceCentreRequestImpl;
@@ -21,7 +26,7 @@ import org.testng.annotations.Test;
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class AlertServiceCentreRequestTest {
 
@@ -59,7 +64,19 @@ public class AlertServiceCentreRequestTest {
         ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                 "29113123311");
         AddressString sca = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "49883700292");
-        AlertServiceCentreRequestImpl asc = new AlertServiceCentreRequestImpl(msisdn, sca);
+        IMSI imsi = null;
+        CorrelationID correlationID = null;
+        Time maximumUeAvailabilityTime = null;
+        SmsGmscAlertEvent smsGmscAlertEvent = null;
+        NetworkNodeDiameterAddress smsGmscDiameterAddress = null;
+        ISDNAddressString newSGSNNumber = null;
+        NetworkNodeDiameterAddress newSGSNDiameterAddress = null;
+        ISDNAddressString newMMENumber = null;
+        NetworkNodeDiameterAddress newMMEDiameterAddress = null;
+        ISDNAddressString newMSCNumber = null;
+        AlertServiceCentreRequestImpl asc = new AlertServiceCentreRequestImpl(msisdn, sca, imsi, correlationID,
+                maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                newMMENumber, newMMEDiameterAddress, newMSCNumber);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);

@@ -32,7 +32,7 @@ import java.io.IOException;
  *
  * @author sergey vetyutnev
  * @author eva ogallar
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements SendRoutingInfoForSMRequest {
 
@@ -49,7 +49,7 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
     protected static final int _TAG_imsi = 12;
     protected static final int _TAG_singleAttemptDelivery = 13;
     protected static final int _TAG_t4TriggerIndicator = 14;
-    protected static final int _TAG_correlationId = 15;
+    protected static final int _TAG_correlationID = 15;
     protected static final int _TAG_smsf_supportIndicator = 16;
 
     protected String _PrimitiveName = "SendRoutingInfoForSMRequest";
@@ -350,7 +350,7 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
                                 this.singleAttemptDelivery = true;
                                 break;
 
-                            case _TAG_correlationId:
+                            case _TAG_correlationID:
                                 if (ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".correlationID: Parameter is primitive",
@@ -409,6 +409,7 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
 
         try {
             ((ISDNAddressStringImpl) this.msisdn).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_msisdn);
+
             asnOutputStream.writeBoolean(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_sm_RP_PRI, this.sm_RP_PRI);
 
             ((AddressStringImpl) this.serviceCentreAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
@@ -446,7 +447,7 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_singleAttemptDelivery);
 
             if (this.correlationID != null)
-                ((CorrelationIDImpl) this.correlationID).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_correlationId);
+                ((CorrelationIDImpl) this.correlationID).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_correlationID);
 
             if (this.smsfSupportIndicator)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smsf_supportIndicator);

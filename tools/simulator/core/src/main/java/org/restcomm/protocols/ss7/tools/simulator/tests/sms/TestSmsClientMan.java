@@ -25,8 +25,11 @@ import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NetworkResource;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.InformServiceCentreRequest;
@@ -47,6 +50,7 @@ import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_DA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_OA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.SmsGmscAlertEvent;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
 import org.restcomm.protocols.ss7.map.api.smstpdu.AddressField;
 import org.restcomm.protocols.ss7.map.api.smstpdu.CharacterSet;
@@ -780,12 +784,24 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
             AddressString serviceCentreAddressDA = mapProvider.getMAPParameterFactory().createAddressString(
                     this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getAddressNature(),
                     this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getNumberingPlan(), serviceCentreAddr);
+            IMSI imsi = null;
+            CorrelationID correlationID = null;
+            Time maximumUeAvailabilityTime = null;
+            SmsGmscAlertEvent smsGmscAlertEvent = null;
+            NetworkNodeDiameterAddress smsGmscDiameterAddress = null;
+            ISDNAddressString newSGSNNumber = null;
+            NetworkNodeDiameterAddress newSGSNDiameterAddress = null;
+            ISDNAddressString newMMENumber = null;
+            NetworkNodeDiameterAddress newMMEDiameterAddress = null;
+            ISDNAddressString newMSCNumber = null;
 
             MAPDialogSms curDialog = mapProvider.getMAPServiceSms().createNewDialog(mapAppContext, this.mapMan.createOrigAddress(), null,
                     this.mapMan.createDestAddress(serviceCentreAddr, this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getSmscSsn()),
                     null);
 
-            curDialog.addAlertServiceCentreRequest(msisdn, serviceCentreAddressDA);
+            curDialog.addAlertServiceCentreRequest(msisdn, serviceCentreAddressDA, imsi, correlationID,
+                    maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                    newMMENumber, newMMEDiameterAddress, newMSCNumber);
             curDialog.send();
             if (vers == MAPApplicationContextVersion.version1)
                 curDialog.release();

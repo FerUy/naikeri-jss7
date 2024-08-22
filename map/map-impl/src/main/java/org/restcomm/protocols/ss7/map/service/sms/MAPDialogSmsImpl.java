@@ -13,6 +13,8 @@ import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCode;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertReason;
 import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
@@ -27,6 +29,7 @@ import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_DA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_MTI;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_OA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_SMEA;
+import org.restcomm.protocols.ss7.map.api.service.sms.SmsGmscAlertEvent;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
 import org.restcomm.protocols.ss7.tcap.api.TCAPException;
 import org.restcomm.protocols.ss7.tcap.api.tc.component.InvokeClass;
@@ -536,12 +539,21 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
         }
     }
 
-    public Long addAlertServiceCentreRequest(ISDNAddressString msisdn, AddressString serviceCentreAddress) throws MAPException {
-        return this.addAlertServiceCentreRequest(_Timer_Default, msisdn, serviceCentreAddress);
+    public Long addAlertServiceCentreRequest(ISDNAddressString msisdn, AddressString serviceCentreAddress, IMSI imsi,
+            CorrelationID correlationID, Time maximumUeAvailabilityTime, SmsGmscAlertEvent smsGmscAlertEvent,
+            NetworkNodeDiameterAddress smsGmscDiameterAddress, ISDNAddressString newSGSNNumber,
+            NetworkNodeDiameterAddress newSGSNDiameterAddress, ISDNAddressString newMMENumber,
+            NetworkNodeDiameterAddress newMMEDiameterAddress, ISDNAddressString newMSCNumber) throws MAPException {
+        return this.addAlertServiceCentreRequest(_Timer_Default, msisdn, serviceCentreAddress, imsi, correlationID,
+                maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                newMMENumber, newMMEDiameterAddress, newMSCNumber);
     }
 
     public Long addAlertServiceCentreRequest(int customInvokeTimeout, ISDNAddressString msisdn,
-            AddressString serviceCentreAddress) throws MAPException {
+            AddressString serviceCentreAddress, IMSI imsi, CorrelationID correlationID, Time maximumUeAvailabilityTime,
+            SmsGmscAlertEvent smsGmscAlertEvent, NetworkNodeDiameterAddress smsGmscDiameterAddress, ISDNAddressString newSGSNNumber,
+            NetworkNodeDiameterAddress newSGSNDiameterAddress, ISDNAddressString newMMENumber, NetworkNodeDiameterAddress newMMEDiameterAddress,
+            ISDNAddressString newMSCNumber) throws MAPException {
 
         if (this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.shortMsgAlertContext
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version1 && this.mapApplicationContext
@@ -568,7 +580,9 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
                 operationCode.setLocalOperationCode((long) MAPOperationCode.alertServiceCentre);
             invoke.setOperationCode(operationCode);
 
-            AlertServiceCentreRequestImpl alertServiceCentreRequest = new AlertServiceCentreRequestImpl(msisdn, serviceCentreAddress);
+            AlertServiceCentreRequestImpl alertServiceCentreRequest = new AlertServiceCentreRequestImpl(msisdn, serviceCentreAddress, imsi, correlationID,
+                    maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                    newMMENumber, newMMEDiameterAddress, newMSCNumber);
             AsnOutputStream aos = new AsnOutputStream();
             alertServiceCentreRequest.encodeData(aos);
 
@@ -612,13 +626,14 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
 
     @Override
     public Long addReadyForSMRequest(IMSI imsi, AlertReason alertReason, boolean alertReasonIndicator, MAPExtensionContainer extensionContainer,
-            boolean additionalAlertReasonIndicator) throws MAPException {
-        return addReadyForSMRequest(_Timer_Default, imsi, alertReason, alertReasonIndicator, extensionContainer, additionalAlertReasonIndicator);
+            boolean additionalAlertReasonIndicator, Time maximumUeAvailabilityTime) throws MAPException {
+        return addReadyForSMRequest(_Timer_Default, imsi, alertReason, alertReasonIndicator, extensionContainer, additionalAlertReasonIndicator,
+                maximumUeAvailabilityTime);
     }
 
     @Override
     public Long addReadyForSMRequest(int customInvokeTimeout, IMSI imsi, AlertReason alertReason, boolean alertReasonIndicator,
-            MAPExtensionContainer extensionContainer, boolean additionalAlertReasonIndicator) throws MAPException {
+            MAPExtensionContainer extensionContainer, boolean additionalAlertReasonIndicator, Time maximumUeAvailabilityTime) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.mwdMngtContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2 && this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3))
@@ -634,7 +649,8 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
         operationCode.setLocalOperationCode((long) MAPOperationCode.readyForSM);
         invoke.setOperationCode(operationCode);
 
-        ReadyForSMRequestImpl readyForSMRequest = new ReadyForSMRequestImpl(imsi, alertReason, alertReasonIndicator, extensionContainer, additionalAlertReasonIndicator);
+        ReadyForSMRequestImpl readyForSMRequest = new ReadyForSMRequestImpl(imsi, alertReason, alertReasonIndicator, extensionContainer,
+                additionalAlertReasonIndicator, maximumUeAvailabilityTime);
         AsnOutputStream aos = new AsnOutputStream();
         readyForSMRequest.encodeData(aos);
 

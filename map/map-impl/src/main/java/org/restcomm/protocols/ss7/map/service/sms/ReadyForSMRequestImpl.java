@@ -14,15 +14,17 @@ import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertReason;
 import org.restcomm.protocols.ss7.map.api.service.sms.ReadyForSMRequest;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
+import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
 
 /**
 *
 * @author sergey vetyutnev
-*
+* @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
 */
 public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMRequest {
 
@@ -36,17 +38,19 @@ public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMR
     private boolean alertReasonIndicator;
     private MAPExtensionContainer extensionContainer;
     private boolean additionalAlertReasonIndicator;
+    private Time maximumUeAvailabilityTime;
 
     public ReadyForSMRequestImpl() {
     }
 
     public ReadyForSMRequestImpl(IMSI imsi, AlertReason alertReason, boolean alertReasonIndicator, MAPExtensionContainer extensionContainer,
-            boolean additionalAlertReasonIndicator) {
+            boolean additionalAlertReasonIndicator, Time maximumUeAvailabilityTime) {
         this.imsi = imsi;
         this.alertReason = alertReason;
         this.alertReasonIndicator = alertReasonIndicator;
         this.extensionContainer = extensionContainer;
         this.additionalAlertReasonIndicator = additionalAlertReasonIndicator;
+        this.maximumUeAvailabilityTime = maximumUeAvailabilityTime;
     }
 
     @Override
@@ -82,6 +86,11 @@ public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMR
     @Override
     public boolean getAdditionalAlertReasonIndicator() {
         return additionalAlertReasonIndicator;
+    }
+
+    @Override
+    public Time getMaximumUeAvailabilityTime() {
+        return maximumUeAvailabilityTime;
     }
 
     @Override
@@ -132,9 +141,9 @@ public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMR
         this.alertReasonIndicator = false;
         this.extensionContainer = null;
         this.additionalAlertReasonIndicator = false;
+        this.maximumUeAvailabilityTime = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
-        int num = 0;
         while (true) {
             if (ais.available() == 0)
                 break;
@@ -164,7 +173,14 @@ public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMR
                     this.extensionContainer = new MAPExtensionContainerImpl();
                     ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
                     break;
-
+                case Tag.STRING_OCTET:
+                    if (!ais.isTagPrimitive())
+                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                + ".expirationDate: Parameter is not primitive",
+                                MAPParsingComponentExceptionReason.MistypedParameter);
+                    this.maximumUeAvailabilityTime = new TimeImpl();
+                    ((TimeImpl) this.maximumUeAvailabilityTime).decodeAll(ais);
+                    break;
                 default:
                     ais.advanceElement();
                     break;
@@ -194,14 +210,13 @@ public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMR
                 ais.advanceElement();
             }
 
-            num++;
         }
 
         if (this.imsi == null)
-            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ": Parameter imsi is mandator but not found",
+            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ": Parameter imsi is mandatory but not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
         if (this.alertReason == null)
-            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ": Parameter alertReason is mandator but not found",
+            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ": Parameter alertReason is mandatory but not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
     }
 
@@ -227,19 +242,25 @@ public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMR
         try {
             if (this.imsi == null)
                 throw new MAPException("IMSI parameter must not be null");
+
             if (this.alertReason == null)
                 throw new MAPException("alertReason parameter must not be null");
 
             ((IMSIImpl) this.imsi).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_imsi);
+
             asnOutputStream.writeInteger(Tag.CLASS_UNIVERSAL, Tag.ENUMERATED, this.alertReason.getCode());
 
             if (this.alertReasonIndicator)
                 asnOutputStream.writeNull();
+
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
 
             if (this.additionalAlertReasonIndicator)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_additionalAlertReasonIndicator);
+
+            if (maximumUeAvailabilityTime != null)
+                ((TimeImpl) this.maximumUeAvailabilityTime).encodeAll(asnOutputStream);
 
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
@@ -274,6 +295,10 @@ public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMR
         }
         if (this.additionalAlertReasonIndicator) {
             sb.append("additionalAlertReasonIndicator, ");
+        }
+        if (this.maximumUeAvailabilityTime != null) {
+            sb.append("maximumUeAvailabilityTime=");
+            sb.append(maximumUeAvailabilityTime);
         }
 
         sb.append("]");

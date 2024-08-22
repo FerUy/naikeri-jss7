@@ -30,7 +30,45 @@ public class TimeImpl extends OctetStringBase implements Time {
     public TimeImpl(int year, int month, int day, int hour, int minute, int second) {
         super(4, 4, "Time");
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.set(year, month - 1, day, hour, minute, second);
+        switch (month) {
+            case 1:
+                month = Calendar.JANUARY;
+                break;
+            case 2:
+                month = Calendar.FEBRUARY;
+                break;
+            case 3:
+                month = Calendar.MARCH;
+                break;
+            case 4:
+                month = Calendar.APRIL;
+                break;
+            case 5:
+                month = Calendar.MAY;
+                break;
+            case 6:
+                month = Calendar.JUNE;
+                break;
+            case 7:
+                month = Calendar.JULY;
+                break;
+            case 8:
+                month = Calendar.AUGUST;
+                break;
+            case 9:
+                month = Calendar.SEPTEMBER;
+                break;
+            case 10:
+                month = Calendar.OCTOBER;
+                break;
+            case 11:
+                month = Calendar.NOVEMBER;
+                break;
+            case 12:
+                month = Calendar.DECEMBER;
+                break;
+        }
+        cal.set(year, month, day, hour, minute, second);
         long ntpTime = getNtpTime(cal.getTimeInMillis());
         this.data = new byte[4];
         System.arraycopy(longToBytes(ntpTime), 4, this.data, 0, 4);

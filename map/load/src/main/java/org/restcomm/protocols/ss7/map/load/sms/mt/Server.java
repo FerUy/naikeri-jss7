@@ -40,10 +40,12 @@ import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.InformServiceCentreRequest;
@@ -62,6 +64,7 @@ import org.restcomm.protocols.ss7.map.api.service.sms.ReportSMDeliveryStatusRequ
 import org.restcomm.protocols.ss7.map.api.service.sms.ReportSMDeliveryStatusResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.SmsGmscAlertEvent;
 import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageAbsentSubscriberSMImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
@@ -747,8 +750,20 @@ public class Server extends TestHarnessSmsMt {
 
             ISDNAddressString msisdn = reportSMDeliveryStatusRequestIndication.getMsisdn();
             AddressString serviceCentreAddress = reportSMDeliveryStatusRequestIndication.getServiceCentreAddress();
+            IMSI imsi = null;
+            CorrelationID correlationID = null;
+            Time maximumUeAvailabilityTime = null;
+            SmsGmscAlertEvent smsGmscAlertEvent = null;
+            NetworkNodeDiameterAddress smsGmscDiameterAddress = null;
+            ISDNAddressString newSGSNNumber = null;
+            NetworkNodeDiameterAddress newSGSNDiameterAddress = null;
+            ISDNAddressString newMMENumber = null;
+            NetworkNodeDiameterAddress newMMEDiameterAddress = null;
+            ISDNAddressString newMSCNumber = null;
 
-            mapDialogSmsAlertServiceCentre.addAlertServiceCentreRequest(msisdn, serviceCentreAddress);
+            mapDialogSmsAlertServiceCentre.addAlertServiceCentreRequest(msisdn, serviceCentreAddress, imsi, correlationID,
+                    maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                    newMMENumber, newMMEDiameterAddress, newMSCNumber);
 
             mapDialogSmsAlertServiceCentre.send();
 

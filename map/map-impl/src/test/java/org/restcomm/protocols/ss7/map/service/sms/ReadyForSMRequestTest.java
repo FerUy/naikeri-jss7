@@ -70,13 +70,14 @@ public class ReadyForSMRequestTest {
         assertTrue(impl.getAlertReasonIndicator());
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(impl.getExtensionContainer()));
         assertTrue(impl.getAdditionalAlertReasonIndicator());
+        assertNull(impl.getMaximumUeAvailabilityTime());
     }
 
     @Test(groups = { "functional.encode", "service.sms" })
     public void testEncode() throws Exception {
 
         IMSI imsi = new IMSIImpl("1111122222333");
-        ReadyForSMRequestImpl impl = new ReadyForSMRequestImpl(imsi, AlertReason.memoryAvailable, false, null, false);
+        ReadyForSMRequestImpl impl = new ReadyForSMRequestImpl(imsi, AlertReason.memoryAvailable, false, null, false, null);
 //        IMSI imsi, AlertReason alertReason, boolean alertReasonIndicator, MAPExtensionContainer extensionContainer,
 //        boolean additionalAlertReasonIndicator
 
@@ -89,7 +90,7 @@ public class ReadyForSMRequestTest {
         assertTrue(Arrays.equals(rawData, encodedData));
 
 
-        impl = new ReadyForSMRequestImpl(imsi, AlertReason.memoryAvailable, true, MAPExtensionContainerTest.GetTestExtensionContainer(), true);
+        impl = new ReadyForSMRequestImpl(imsi, AlertReason.memoryAvailable, true, MAPExtensionContainerTest.GetTestExtensionContainer(), true, null);
 
         asnOS = new AsnOutputStream();
 

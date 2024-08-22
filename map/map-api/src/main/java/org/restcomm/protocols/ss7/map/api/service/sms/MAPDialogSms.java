@@ -7,12 +7,14 @@ import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCode;
 
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface MAPDialogSms extends MAPDialog {
 
@@ -192,10 +194,28 @@ public interface MAPDialogSms extends MAPDialog {
      *
      * @param msisdn mandatory
      * @param serviceCentreAddress mandatory
+     * @param imsi optional
+     * @param correlationID optional
+     * @param maximumUeAvailabilityTime optional
+     * @param smsGmscAlertEvent optional
+     * @param smsGmscDiameterAddress optional
+     * @param newSGSNNumber optional
+     * @param newSGSNDiameterAddress optional
+     * @param newMMENumber optional
+     * @param newMMEDiameterAddress optional
+     * @param newMSCNumber optional
      */
-    Long addAlertServiceCentreRequest(ISDNAddressString msisdn, AddressString serviceCentreAddress) throws MAPException;
+    Long addAlertServiceCentreRequest(ISDNAddressString msisdn, AddressString serviceCentreAddress, IMSI imsi,
+            CorrelationID correlationID, Time maximumUeAvailabilityTime, SmsGmscAlertEvent smsGmscAlertEvent,
+            NetworkNodeDiameterAddress smsGmscDiameterAddress, ISDNAddressString newSGSNNumber,
+            NetworkNodeDiameterAddress newSGSNDiameterAddress, ISDNAddressString newMMENumber,
+            NetworkNodeDiameterAddress newMMEDiameterAddress, ISDNAddressString newMSCNumber) throws MAPException;
 
-    Long addAlertServiceCentreRequest(int customInvokeTimeout, ISDNAddressString msisdn, AddressString serviceCentreAddress) throws MAPException;
+    Long addAlertServiceCentreRequest(int customInvokeTimeout, ISDNAddressString msisdn, AddressString serviceCentreAddress, IMSI imsi,
+            CorrelationID correlationID, Time maximumUeAvailabilityTime, SmsGmscAlertEvent smsGmscAlertEvent,
+            NetworkNodeDiameterAddress smsGmscDiameterAddress, ISDNAddressString newSGSNNumber,
+            NetworkNodeDiameterAddress newSGSNDiameterAddress, ISDNAddressString newMMENumber,
+            NetworkNodeDiameterAddress newMMEDiameterAddress, ISDNAddressString newMSCNumber) throws MAPException;
 
     /**
      * Sending MAP-SEND-ROUTING-INFO-FOR-SM response
@@ -204,10 +224,10 @@ public interface MAPDialogSms extends MAPDialog {
 
 
     Long addReadyForSMRequest(IMSI imsi, AlertReason alertReason, boolean alertReasonIndicator, MAPExtensionContainer extensionContainer,
-            boolean additionalAlertReasonIndicator) throws MAPException;
+            boolean additionalAlertReasonIndicator, Time maximumUeAvailabilityTime) throws MAPException;
 
     Long addReadyForSMRequest(int customInvokeTimeout, IMSI imsi, AlertReason alertReason, boolean alertReasonIndicator,
-            MAPExtensionContainer extensionContainer, boolean additionalAlertReasonIndicator) throws MAPException;
+            MAPExtensionContainer extensionContainer, boolean additionalAlertReasonIndicator, Time maximumUeAvailabilityTime) throws MAPException;
 
     void addReadyForSMResponse(long invokeId, MAPExtensionContainer extensionContainer) throws MAPException;
 

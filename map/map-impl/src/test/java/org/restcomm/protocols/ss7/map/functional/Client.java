@@ -40,6 +40,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.ProtocolId;
 import org.restcomm.protocols.ss7.map.api.primitives.SignalInfo;
 import org.restcomm.protocols.ss7.map.api.primitives.SubscriberIdentity;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.primitives.USSDString;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.CUGCheckInfo;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.CallDiversionTreatmentIndicator;
@@ -68,6 +69,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EP
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LocationArea;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.TypeOfUpdate;
@@ -120,6 +122,7 @@ import org.restcomm.protocols.ss7.map.api.service.sms.SMDeliveryOutcome;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_DA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_MTI;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_OA;
+import org.restcomm.protocols.ss7.map.api.service.sms.SmsGmscAlertEvent;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.ForwardingReason;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.MAPDialogSupplementary;
@@ -359,7 +362,19 @@ public class Client extends EventTestHarness {
                 NumberingPlan.ISDN, "111222333");
         AddressString serviceCentreAddress = this.mapParameterFactory.createAddressString(AddressNature.subscriber_number,
                 NumberingPlan.national, "0011");
-        clientDialogSms.addAlertServiceCentreRequest(msisdn, serviceCentreAddress);
+        IMSI imsi = null;
+        CorrelationID correlationID = null;
+        Time maximumUeAvailabilityTime = null;
+        SmsGmscAlertEvent smsGmscAlertEvent = null;
+        NetworkNodeDiameterAddress smsGmscDiameterAddress = null;
+        ISDNAddressString newSGSNNumber = null;
+        NetworkNodeDiameterAddress newSGSNDiameterAddress = null;
+        ISDNAddressString newMMENumber = null;
+        NetworkNodeDiameterAddress newMMEDiameterAddress = null;
+        ISDNAddressString newMSCNumber = null;
+        clientDialogSms.addAlertServiceCentreRequest(msisdn, serviceCentreAddress, imsi, correlationID,
+                maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                newMMENumber, newMMEDiameterAddress, newMSCNumber);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.AlertServiceCentreIndication, null, sequence++));
         clientDialogSms.send();
@@ -421,7 +436,19 @@ public class Client extends EventTestHarness {
                 NumberingPlan.ISDN, "111222333");
         AddressString serviceCentreAddress = this.mapParameterFactory.createAddressString(AddressNature.subscriber_number,
                 NumberingPlan.national, "0011");
-        AlertServiceCentreRequestImpl req = new AlertServiceCentreRequestImpl(msisdn, serviceCentreAddress);
+        IMSI imsi = null;
+        CorrelationID correlationID = null;
+        Time maximumUeAvailabilityTime = null;
+        SmsGmscAlertEvent smsGmscAlertEvent = null;
+        NetworkNodeDiameterAddress smsGmscDiameterAddress = null;
+        ISDNAddressString newSGSNNumber = null;
+        NetworkNodeDiameterAddress newSGSNDiameterAddress = null;
+        ISDNAddressString newMMENumber = null;
+        NetworkNodeDiameterAddress newMMEDiameterAddress = null;
+        ISDNAddressString newMSCNumber = null;
+        AlertServiceCentreRequestImpl req = new AlertServiceCentreRequestImpl(msisdn, serviceCentreAddress, imsi, correlationID,
+                maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                newMMENumber, newMMEDiameterAddress, newMSCNumber);
         AsnOutputStream aos = new AsnOutputStream();
         req.encodeData(aos);
 
@@ -495,7 +522,19 @@ public class Client extends EventTestHarness {
                 NumberingPlan.ISDN, "111222333");
         AddressString serviceCentreAddress = this.mapParameterFactory.createAddressString(AddressNature.subscriber_number,
                 NumberingPlan.national, "0011");
-        clientDialogSms.addAlertServiceCentreRequest(msisdn, serviceCentreAddress);
+        IMSI imsi = null;
+        CorrelationID correlationID = null;
+        Time maximumUeAvailabilityTime = null;
+        SmsGmscAlertEvent smsGmscAlertEvent = null;
+        NetworkNodeDiameterAddress smsGmscDiameterAddress = null;
+        ISDNAddressString newSGSNNumber = null;
+        NetworkNodeDiameterAddress newSGSNDiameterAddress = null;
+        ISDNAddressString newMMENumber = null;
+        NetworkNodeDiameterAddress newMMEDiameterAddress = null;
+        ISDNAddressString newMSCNumber = null;
+        clientDialogSms.addAlertServiceCentreRequest(msisdn, serviceCentreAddress, imsi, correlationID,
+                maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                newMMENumber, newMMEDiameterAddress, newMSCNumber);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.AlertServiceCentreIndication, null, sequence++));
         clientDialogSms.send();
@@ -1904,7 +1943,7 @@ public class Client extends EventTestHarness {
         clientDialogSms = this.mapProvider.getMAPServiceSms().createNewDialog(appCnt, this.thisAddress, null, this.remoteAddress, null);
 
         IMSI imsi = this.mapParameterFactory.createIMSI("88888777773333");
-        clientDialogSms.addReadyForSMRequest(imsi, AlertReason.memoryAvailable, false, null, false);
+        clientDialogSms.addReadyForSMRequest(imsi, AlertReason.memoryAvailable, false, null, false, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReadyForSM, null, sequence++));
         clientDialogSms.send();
