@@ -258,10 +258,8 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".networkNodeDiameterAddress: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais3 = ais.readSequenceStream();
-                            ais3.readTag();
                             this.networkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl();
-                            ((NetworkNodeDiameterAddressImpl) this.networkNodeDiameterAddress).decodeAll(ais3);
+                            ((NetworkNodeDiameterAddressImpl) this.networkNodeDiameterAddress).decodeAll(ais);
                             break;
 
                         case _TAG_AdditionalNetworkNodeDiameterAddress:
@@ -269,10 +267,8 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".additionalNetworkNodeDiameterAddress: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais4 = ais.readSequenceStream();
-                            ais4.readTag();
                             this.additionalNetworkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl();
-                            ((NetworkNodeDiameterAddressImpl) this.additionalNetworkNodeDiameterAddress).decodeAll(ais4);
+                            ((NetworkNodeDiameterAddressImpl) this.additionalNetworkNodeDiameterAddress).decodeAll(ais);
                             break;
 
                         case _TAG_ThirdNumber:
@@ -280,10 +276,10 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".thirdNumber: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais5 = ais.readSequenceStream();
-                            ais5.readTag();
+                            AsnInputStream ais3 = ais.readSequenceStream();
+                            ais3.readTag();
                             this.thirdNumber = new AdditionalNumberImpl();
-                            ((AdditionalNumberImpl) this.thirdNumber).decodeAll(ais5);
+                            ((AdditionalNumberImpl) this.thirdNumber).decodeAll(ais3);
                             break;
 
                         case _TAG_ThirdNetworkNodeDiameterAddress:
@@ -291,10 +287,8 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".thirdNetworkNodeDiameterAddress: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais6 = ais.readSequenceStream();
-                            ais6.readTag();
                             this.thirdNetworkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl();
-                            ((NetworkNodeDiameterAddressImpl) this.thirdNetworkNodeDiameterAddress).decodeAll(ais6);
+                            ((NetworkNodeDiameterAddressImpl) this.thirdNetworkNodeDiameterAddress).decodeAll(ais);
                             break;
 
                         case _TAG_ImsNodeIndicator:
@@ -307,14 +301,12 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                             break;
 
                         case _TAG_SMSF_3GPP_Number:
-                            if (ais.isTagPrimitive())
+                            if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".smsf3gppNumber: Parameter is primitive",
+                                        + ".smsf3gppNumber: Parameter is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais7 = ais.readSequenceStream();
-                            ais7.readTag();
                             this.smsf3gppNumber = new ISDNAddressStringImpl();
-                            ((ISDNAddressStringImpl) this.smsf3gppNumber).decodeAll(ais7);
+                            ((ISDNAddressStringImpl) this.smsf3gppNumber).decodeAll(ais);
                             break;
 
                         case _TAG_SMSF_3GPP_DiameterAddress:
@@ -322,21 +314,17 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".smsf3gppDiameterAddress: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais8 = ais.readSequenceStream();
-                            ais8.readTag();
                             this.smsf3gppDiameterAddress = new NetworkNodeDiameterAddressImpl();
-                            ((NetworkNodeDiameterAddressImpl) this.smsf3gppDiameterAddress).decodeAll(ais8);
+                            ((NetworkNodeDiameterAddressImpl) this.smsf3gppDiameterAddress).decodeAll(ais);
                             break;
 
                         case _TAG_SMSF_NON_3GPP_Number:
-                            if (ais.isTagPrimitive())
+                            if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".smsfNon3gppNumber: Parameter is primitive",
+                                        + ".smsfNon3gppNumber: Parameter is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais9 = ais.readSequenceStream();
-                            ais9.readTag();
                             this.smsfNon3gppNumber = new ISDNAddressStringImpl();
-                            ((ISDNAddressStringImpl) this.smsfNon3gppNumber).decodeAll(ais9);
+                            ((ISDNAddressStringImpl) this.smsfNon3gppNumber).decodeAll(ais);
                             break;
 
                         case _TAG_SMSF_NON_3GPP_DiameterAddress:
@@ -344,10 +332,8 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".smsfNon3gppDiameterAddress: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais10 = ais.readSequenceStream();
-                            ais10.readTag();
                             this.smsfNon3gppDiameterAddress = new NetworkNodeDiameterAddressImpl();
-                            ((NetworkNodeDiameterAddressImpl) this.smsfNon3gppDiameterAddress).decodeAll(ais10);
+                            ((NetworkNodeDiameterAddressImpl) this.smsfNon3gppDiameterAddress).decodeAll(ais);
                             break;
 
                         case _TAG_SMSF_3GPP_AddressIndicator:
@@ -404,44 +390,43 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_GprsNodeIndicator);
 
             if (this.additionalNumber != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_AdditionalNumber);
+                try {
+                    asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_AdditionalNumber);
+                } catch (AsnException e) {
+                    throw new MAPException("AsnException while encoding parameter additionalNumber");
+                }
                 int pos = asnOutputStream.StartContentDefiniteLength();
-                ((AdditionalNumberImpl) this.additionalNumber).encodeAll(asnOutputStream);
+                ((AdditionalNumberImpl) this.additionalNumber).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
+                        ((AdditionalNumberImpl) this.additionalNumber).getTag());
                 asnOutputStream.FinalizeContent(pos);
             }
 
-            if (networkNodeDiameterAddress != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_NetworkNodeDiameterAddress);
-                int pos = asnOutputStream.StartContentDefiniteLength();
-                ((NetworkNodeDiameterAddressImpl) this.networkNodeDiameterAddress).encodeAll(asnOutputStream);
-                asnOutputStream.FinalizeContent(pos);
-            }
+            if (networkNodeDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.networkNodeDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_NetworkNodeDiameterAddress);
 
-            if (additionalNetworkNodeDiameterAddress != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_AdditionalNetworkNodeDiameterAddress);
-                int pos = asnOutputStream.StartContentDefiniteLength();
-                ((NetworkNodeDiameterAddressImpl) this.additionalNetworkNodeDiameterAddress).encodeAll(asnOutputStream);
-                asnOutputStream.FinalizeContent(pos);
-            }
+            if (additionalNetworkNodeDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.additionalNetworkNodeDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_AdditionalNetworkNodeDiameterAddress);
 
             if (this.thirdNumber != null) {
                 if (this.thirdNumber != this.additionalNumber) {
-                    asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_ThirdNumber);
+                    try {
+                        asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_ThirdNumber);
+                    } catch (AsnException e) {
+                        throw new MAPException("AsnException while encoding parameter thirdNumber");
+                    }
                     int pos = asnOutputStream.StartContentDefiniteLength();
-                    ((AdditionalNumberImpl) this.thirdNumber).encodeAll(asnOutputStream);
+                    ((AdditionalNumberImpl) this.thirdNumber).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
+                            ((AdditionalNumberImpl) this.thirdNumber).getTag());
                     asnOutputStream.FinalizeContent(pos);
+
                 } else {
                     throw new MAPException("Exception when encoding " + _PrimitiveName + ".additionalNumber: " +
                             "additionalNumber and thirdNumber shall not both contain the same type of number");
                 }
             }
 
-            if (thirdNetworkNodeDiameterAddress != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_ThirdNetworkNodeDiameterAddress);
-                int pos = asnOutputStream.StartContentDefiniteLength();
-                ((NetworkNodeDiameterAddressImpl) this.thirdNetworkNodeDiameterAddress).encodeAll(asnOutputStream);
-                asnOutputStream.FinalizeContent(pos);
-            }
+            if (thirdNetworkNodeDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.thirdNetworkNodeDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_ThirdNetworkNodeDiameterAddress);
 
             if (imsNodeIndicator) {
                 if (!gprsNodeIndicator)
@@ -455,23 +440,15 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                 ((ISDNAddressStringImpl) this.smsf3gppNumber).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                         _TAG_SMSF_3GPP_Number);
 
-            if (smsf3gppDiameterAddress != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_SMSF_3GPP_DiameterAddress);
-                int pos = asnOutputStream.StartContentDefiniteLength();
-                ((NetworkNodeDiameterAddressImpl) this.smsf3gppDiameterAddress).encodeAll(asnOutputStream);
-                asnOutputStream.FinalizeContent(pos);
-            }
+            if (smsf3gppDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.smsf3gppDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SMSF_3GPP_DiameterAddress);
 
             if (smsfNon3gppNumber != null)
                 ((ISDNAddressStringImpl) this.smsfNon3gppNumber).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                         _TAG_SMSF_NON_3GPP_Number);
 
-            if (smsfNon3gppDiameterAddress != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_SMSF_NON_3GPP_DiameterAddress);
-                int pos = asnOutputStream.StartContentDefiniteLength();
-                ((NetworkNodeDiameterAddressImpl) this.smsfNon3gppDiameterAddress).encodeAll(asnOutputStream);
-                asnOutputStream.FinalizeContent(pos);
-            }
+            if (smsfNon3gppDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.smsfNon3gppDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SMSF_NON_3GPP_DiameterAddress);
 
             if (smsf3gppAddressIndicator) {
                 if (!gprsNodeIndicator && !imsNodeIndicator)
@@ -487,7 +464,7 @@ public class LocationInfoWithLMSIImpl extends SequenceBase implements LocationIn
                     asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SMSF_NON_3GPP_AddressIndicator);
                 else
                     throw new MAPException("Exception when encoding " + _PrimitiveName + ".smsfNon3gppAddressIndicator: " +
-                            "at most one of gprsNodeIndicator, imsNodeIndicator, smsf3gppAddressIndicator " +
+                            "at most one of gprsNodeIndicator, imsNodeIndicator, smsf3gppAddressIndicator" +
                             " and smsfNon3gppAddressIndicator shall be present");
             }
 

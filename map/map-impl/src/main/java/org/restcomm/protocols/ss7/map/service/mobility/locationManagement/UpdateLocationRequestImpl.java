@@ -360,7 +360,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                             + ".ePLMNList: Parameter is primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 AsnInputStream ais2 = ais.readSequenceStream();
-                                PlmnId plmnId;
+                                PlmnIdImpl plmnId;
                                 this.ePLMNList = new ArrayList<>();
                                 while (true) {
                                     if (ais2.available() == 0)
@@ -372,7 +372,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                                 + ": bad tag or tagClass or is not primitive when decoding trackingAreaIdList",
                                                 MAPParsingComponentExceptionReason.MistypedParameter);
                                     plmnId = new PlmnIdImpl();
-                                    ((PlmnIdImpl) plmnId).decodeAll(ais2);
+                                    plmnId.decodeAll(ais2);
                                     this.ePLMNList.add(plmnId);
                                 }
                                 break;
