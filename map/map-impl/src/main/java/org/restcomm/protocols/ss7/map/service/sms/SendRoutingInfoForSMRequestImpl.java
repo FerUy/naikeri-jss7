@@ -39,7 +39,7 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
     protected static final int _TAG_msisdn = 0;
     protected static final int _TAG_sm_RP_PRI = 1;
     protected static final int _TAG_serviceCentreAddress = 2;
-    protected static final int _TAG_teleservice = 5;
+    protected static final int _TAG_teleservice = 5; // MAP V1 only
     protected static final int _TAG_extensionContainer = 6;
     protected static final int _TAG_gprsSupportIndicator = 7;
     protected static final int _TAG_sm_RP_MTI = 8;
@@ -68,7 +68,6 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
     private boolean singleAttemptDelivery;
     private IMSI imsi;
     private CorrelationID correlationID;
-
     private boolean smsfSupportIndicator;
 
     public SendRoutingInfoForSMRequestImpl() {
@@ -213,9 +212,10 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
         this.imsi = null;
         this.t4TriggerIndicator = false;
         this.singleAttemptDelivery = false;
-        this.teleservice = null;
         this.correlationID = null;
         this.smsfSupportIndicator = false;
+        // MAP V1 only
+        // this.teleservice = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -296,7 +296,9 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
                                 this.sM_RP_SMEA.decodeAll(ais);
                                 break;
 
+                            // MAP V1 only
                             case _TAG_teleservice:
+
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".teleservice: Parameter is not primitive",
@@ -428,9 +430,6 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
             if (this.sM_RP_SMEA != null)
                 this.sM_RP_SMEA.encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_sm_RP_SMEA);
 
-            if (this.teleservice != null)
-                ((TeleserviceCodeImpl) this.teleservice).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_teleservice);
-
             if (this.smDeliveryNotIntended != null)
                 asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smDeliveryNotIntended, this.smDeliveryNotIntended.getCode());
 
@@ -451,6 +450,10 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
 
             if (this.smsfSupportIndicator)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smsf_supportIndicator);
+
+            // MAP V1 only
+            if (this.teleservice != null)
+                ((TeleserviceCodeImpl) this.teleservice).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_teleservice);
 
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);

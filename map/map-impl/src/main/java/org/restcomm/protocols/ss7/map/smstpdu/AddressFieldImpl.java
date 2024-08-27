@@ -50,7 +50,7 @@ public class AddressFieldImpl implements AddressField {
             int addressLength = inputStream.read();
             if (addressLength == -1)
                 throw new MAPException("Error creating AddressField: Address-Length field not found");
-            if (addressLength < 0 || addressLength > 20)
+            if (addressLength > 20)
                 throw new MAPException(
                         "Error creating AddressField: Address-Length field must be equal from 0 to 20, found: addressLength");
 

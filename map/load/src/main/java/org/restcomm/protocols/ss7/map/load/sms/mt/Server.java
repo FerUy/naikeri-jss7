@@ -95,6 +95,8 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 import java.util.Random;
 
+import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
+
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
@@ -206,6 +208,7 @@ public class Server extends TestHarnessSmsMt {
 
         this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
         this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
+        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -506,7 +509,7 @@ public class Server extends TestHarnessSmsMt {
         try {
             server.initializeStack(ipChannelType);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception when starting stack of load class for MT Server.", e);
         }
     }
 
@@ -728,7 +731,7 @@ public class Server extends TestHarnessSmsMt {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Interrupted Exception when closing dialog at onReportSMDeliveryStatusRequest", e);
             }
 
             AddressString destinationAddressString = reportSMDeliveryStatusRequestIndication.getMAPDialog().getReceivedOrigReference();

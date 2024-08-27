@@ -65,6 +65,7 @@ import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_OA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_SMEA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.SipUri;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
 import org.restcomm.protocols.ss7.map.api.smstpdu.AbsoluteTimeStamp;
 import org.restcomm.protocols.ss7.map.api.smstpdu.AddressField;
@@ -78,7 +79,11 @@ import org.restcomm.protocols.ss7.map.api.smstpdu.UserData;
 import org.restcomm.protocols.ss7.map.api.smstpdu.UserDataHeader;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
 import org.restcomm.protocols.ss7.map.primitives.AddressStringImpl;
+import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
+import org.restcomm.protocols.ss7.map.service.sms.CorrelationIDImpl;
+import org.restcomm.protocols.ss7.map.service.sms.SM_RP_SMEAImpl;
+import org.restcomm.protocols.ss7.map.service.sms.SipUriImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.AbsoluteTimeStampImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.AddressFieldImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.ApplicationPortAddressing16BitAddressImpl;
@@ -112,11 +117,15 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Random;
+
+import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
 /**
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class Client extends TestHarnessSmsMt {
 
@@ -154,6 +163,8 @@ public class Client extends TestHarnessSmsMt {
     private RateLimiter rateLimiterObj = null;
 
     private CsvWriter csvWriter;
+
+    static Long imsiForSRI = 901405105680000L;
 
     protected void initializeStack(IpChannelType ipChannelType) throws Exception {
 
@@ -240,6 +251,7 @@ public class Client extends TestHarnessSmsMt {
 
         this.router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
         this.router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
+        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -286,8 +298,8 @@ public class Client extends TestHarnessSmsMt {
     private void initiateMTSM() throws MAPException {
         NetworkIdState networkIdState = this.mapStack.getMAPProvider().getNetworkIdState(0);
         int executorCongestionLevel = this.mapStack.getMAPProvider().getExecutorCongestionLevel();
-        if (!(networkIdState == null
-                || networkIdState.isAvailable() && networkIdState.getCongLevel() <= 0 && executorCongestionLevel <= 0)) {
+        if (!(networkIdState == null || networkIdState.isAvailable() && networkIdState.getCongLevel() <= 0
+                && executorCongestionLevel <= 0)) {
             // congestion or unavailable
             logger.warn("**** Outgoing congestion control: MAP load test client: networkIdState=" + networkIdState
                     + ", executorCongestionLevel=" + executorCongestionLevel);
@@ -295,7 +307,7 @@ public class Client extends TestHarnessSmsMt {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("InterruptedException when sending initiating MT SM");
             }
         }
 
@@ -319,20 +331,74 @@ public class Client extends TestHarnessSmsMt {
         AddressString serviceCentreAddress = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
         MAPExtensionContainer mapExtensionContainer = null;
         boolean gprsSupportIndicator = false;
-        // SM_RP_MTI sM_RP_MTI = SM_RP_MTI.getInstance(0); // SMS_DELIVER
         SM_RP_MTI sM_RP_MTI = null;
+        TypeOfNumber typeOfNumber = TypeOfNumber.InternationalNumber;
+        NumberingPlanIdentification numberingPlanIdentification = NumberingPlanIdentification.ISDNTelephoneNumberingPlan;
+        String addressValue = "491710460020";
+        AddressField addressField = new AddressFieldImpl(typeOfNumber, numberingPlanIdentification, addressValue);
         SM_RP_SMEA sM_RP_SMEA = null;
-        // SMDeliveryNotIntended smDeliveryNotIntended = SMDeliveryNotIntended.getInstance(0); // onlyIMSIRequested
         SMDeliveryNotIntended smDeliveryNotIntended = null;
         boolean ipSmGwGuidanceIndicator = false;
         IMSI imsi = null;
         boolean t4TriggerIndicator = false;
         boolean singleAttemptDelivery = false;
-        //TeleserviceCodeValue teleserviceCodeValue = TeleserviceCodeValue.allShortMessageServices;
-        // TeleserviceCode teleserviceCode = new TeleserviceCodeImpl(teleserviceCodeValue);
         TeleserviceCode teleserviceCode = null;
+        String uriA = msisdn.getAddress() + "@naikeri.com";
+        SipUri sipUriA;
+        SipUri sipUriB;
         CorrelationID correlationID = null;
         boolean smsfSupportIndicator = false;
+
+        Random rand = new Random();
+        int param = rand.nextInt(5) + 1;
+        switch (param) {
+            case 1:
+                break;
+            case 2:
+                gprsSupportIndicator = true;
+                sM_RP_MTI = SM_RP_MTI.getInstance(0);
+                smDeliveryNotIntended = SMDeliveryNotIntended.getInstance(0);
+                ipSmGwGuidanceIndicator = true;
+                imsi = new IMSIImpl(String.valueOf(imsiForSRI));
+                sipUriA = new SipUriImpl(uriA.getBytes(StandardCharsets.UTF_8));
+                sipUriB = new SipUriImpl("mtLoadTest@naikeri.com".getBytes(StandardCharsets.UTF_8));
+                correlationID = new CorrelationIDImpl(imsi, sipUriA, sipUriB);
+                smsfSupportIndicator = true;
+                break;
+            case 3:
+                sM_RP_MTI = SM_RP_MTI.getInstance(0);
+                smDeliveryNotIntended = SMDeliveryNotIntended.getInstance(0);
+                ipSmGwGuidanceIndicator = true;
+                t4TriggerIndicator = true;
+                singleAttemptDelivery = true;
+                imsi = new IMSIImpl(String.valueOf(imsiForSRI));
+                uriA = msisdn.getAddress() + "@naikeri.com";
+                sipUriA = new SipUriImpl(uriA.getBytes(StandardCharsets.UTF_8));
+                sipUriB = new SipUriImpl("mtLoadTest@naikeri.com".getBytes(StandardCharsets.UTF_8));
+                correlationID = new CorrelationIDImpl(imsi, sipUriA, sipUriB);
+                smsfSupportIndicator = true;
+                break;
+            case 4:
+                gprsSupportIndicator = true;
+                sM_RP_MTI = SM_RP_MTI.getInstance(0);
+                sM_RP_SMEA = new SM_RP_SMEAImpl(addressField);
+                smDeliveryNotIntended = SMDeliveryNotIntended.getInstance(0);
+                t4TriggerIndicator = true;
+                singleAttemptDelivery = true;
+                smsfSupportIndicator = true;
+                break;
+            case 5:
+                gprsSupportIndicator = true;
+                // SM_RP_MTI sM_RP_MTI = SM_RP_MTI.getInstance(0); // SMS_DELIVER
+                sM_RP_MTI = SM_RP_MTI.getInstance(0);
+                imsi = new IMSIImpl(String.valueOf(imsiForSRI));
+                uriA = msisdn.getAddress() + "@naikeri.com";
+                sipUriA = new SipUriImpl(uriA.getBytes(StandardCharsets.UTF_8));
+                sipUriB = new SipUriImpl("mtLoadTest@naikeri.com".getBytes(StandardCharsets.UTF_8));
+                correlationID = new CorrelationIDImpl(imsi, sipUriA, sipUriB);
+                smsfSupportIndicator = true;
+                break;
+        }
 
         mapDialogSms.addSendRoutingInfoForSMRequest(msisdn, sm_RP_PRI, serviceCentreAddress, mapExtensionContainer,
             gprsSupportIndicator, sM_RP_MTI, sM_RP_SMEA, smDeliveryNotIntended, ipSmGwGuidanceIndicator,
@@ -528,7 +594,7 @@ public class Client extends TestHarnessSmsMt {
             client.terminate();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception when starting stack of load class for MT Client", e);
         }
     }
 
@@ -772,7 +838,7 @@ public class Client extends TestHarnessSmsMt {
                 logger.warn("Completed 10000 Dialogs, dialogs per second: " + (float) (10000 / sec));
             }
         } else {
-            if (this.endCount >= NDIALOGS && !endReportPrinted) {
+            if (!endReportPrinted) {
                 endReportPrinted = true;
                 long current = System.currentTimeMillis();
                 logger.warn("Start Time = " + start);
@@ -986,9 +1052,9 @@ public class Client extends TestHarnessSmsMt {
             // start the MT-SM process again now that's reported available
             initiateMTSM();
         } catch (MAPException e) {
-            logger.error("Error while processing onAlertServiceCentreRequest ", e);
+            logger.error("MAP Exception while processing onAlertServiceCentreRequest ", e);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception while processing onAlertServiceCentreRequest.", e);
         }
     }
 

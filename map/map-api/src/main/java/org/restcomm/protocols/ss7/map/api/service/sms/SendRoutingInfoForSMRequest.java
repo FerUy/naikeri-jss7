@@ -86,8 +86,8 @@ public interface SendRoutingInfoForSMRequest extends SmsMessage {
 
     CorrelationID getCorrelationID();
 
+    boolean getSmsfSupportIndicator();
+
     // for MAP V1 only
     TeleserviceCode getTeleservice();
-
-    boolean getSmsfSupportIndicator();
 }
