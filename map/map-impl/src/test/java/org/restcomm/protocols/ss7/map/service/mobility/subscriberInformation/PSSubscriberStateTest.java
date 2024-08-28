@@ -20,8 +20,6 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.NotReachableReason;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PDPContextInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberStateChoice;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.PDPContextInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.PSSubscriberStateImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -170,7 +168,7 @@ public class PSSubscriberStateTest {
         assertEquals(copy.getNetDetNotReachable(), original.getNetDetNotReachable());
 
 
-        ArrayList<PDPContextInfo> lst = new ArrayList<PDPContextInfo>();
+        ArrayList<PDPContextInfo> lst = new ArrayList<>();
         PDPContextInfoImpl pdpCI = new PDPContextInfoImpl(10, true, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         lst.add(pdpCI);

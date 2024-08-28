@@ -11,10 +11,12 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
+import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationSetList;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationTriplet;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpcAv;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpsAuthenticationSetList;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationSetListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationTripletImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpcAvImpl;
@@ -66,6 +68,7 @@ public class SendAuthenticationInfoResponseTest {
 
         assertNull(asc.getEpsAuthenticationSetList());
         assertNull(asc.getExtensionContainer());
+        assertNull(asc.getUeUsageType());
 
         rawData = getEncodedData_V3_Eps();
         asn = new AsnInputStream(rawData);
@@ -88,6 +91,7 @@ public class SendAuthenticationInfoResponseTest {
         assertTrue(Arrays.equals(easl.getEpcAv().get(0).getKasme(), EpcAvTest.getKasmeData()));
 
         assertNull(asc.getExtensionContainer());
+        assertNull(asc.getUeUsageType());
 
         rawData = getEncodedData_V2_tripl();
         asn = new AsnInputStream(rawData);
@@ -108,21 +112,25 @@ public class SendAuthenticationInfoResponseTest {
 
         assertNull(asc.getEpsAuthenticationSetList());
         assertNull(asc.getExtensionContainer());
+        assertNull(asc.getUeUsageType());
     }
 
     @Test(groups = { "functional.encode" })
     public void testEncode() throws Exception {
 
+        long mapProtocolVersion = 3;
         ArrayList<AuthenticationTriplet> ats = new ArrayList<AuthenticationTriplet>();
         AuthenticationTripletImpl at = new AuthenticationTripletImpl(AuthenticationTripletTest.getRandData(),
                 AuthenticationTripletTest.getSresData(), AuthenticationTripletTest.getKcData());
         ats.add(at);
         TripletListImpl tl = new TripletListImpl(ats);
-        AuthenticationSetListImpl asl = new AuthenticationSetListImpl(tl);
-        asl.setMapProtocolVersion(3);
-        SendAuthenticationInfoResponseImpl asc = new SendAuthenticationInfoResponseImpl(3, asl, null, null);
-        // long mapProtocolVersion, AuthenticationSetList authenticationSetList, MAPExtensionContainer extensionContainer,
-        // EpsAuthenticationSetList epsAuthenticationSetList
+        AuthenticationSetListImpl authenticationSetList = new AuthenticationSetListImpl(tl);
+        authenticationSetList.setMapProtocolVersion(mapProtocolVersion);
+        MAPExtensionContainer extensionContainer = null;
+        EpsAuthenticationSetList epsAuthenticationSetList = null;
+        UEUsageType ueUsageType = null;
+        SendAuthenticationInfoResponseImpl asc = new SendAuthenticationInfoResponseImpl(mapProtocolVersion, authenticationSetList, extensionContainer,
+                epsAuthenticationSetList, ueUsageType);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -132,11 +140,12 @@ public class SendAuthenticationInfoResponseTest {
         assertTrue(Arrays.equals(rawData, encodedData));
 
         EpcAvImpl d1 = new EpcAvImpl(EpcAvTest.getRandData(), EpcAvTest.getXresData(), EpcAvTest.getAutnData(),
-                EpcAvTest.getKasmeData(), null);
+                EpcAvTest.getKasmeData(), extensionContainer);
         ArrayList<EpcAv> epcAvs = new ArrayList<EpcAv>();
         epcAvs.add(d1);
-        EpsAuthenticationSetListImpl easl = new EpsAuthenticationSetListImpl(epcAvs);
-        asc = new SendAuthenticationInfoResponseImpl(3, null, null, easl);
+        epsAuthenticationSetList = new EpsAuthenticationSetListImpl(epcAvs);
+        authenticationSetList = null;
+        asc = new SendAuthenticationInfoResponseImpl(mapProtocolVersion, authenticationSetList, extensionContainer, epsAuthenticationSetList, ueUsageType);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -145,14 +154,16 @@ public class SendAuthenticationInfoResponseTest {
         rawData = getEncodedData_V3_Eps();
         assertTrue(Arrays.equals(rawData, encodedData));
 
-        ats = new ArrayList<AuthenticationTriplet>();
+        mapProtocolVersion = 2;
+        ats = new ArrayList<>();
         at = new AuthenticationTripletImpl(TripletListTest.getRandData(), TripletListTest.getSresData(),
                 TripletListTest.getKcData());
         ats.add(at);
         tl = new TripletListImpl(ats);
-        asl = new AuthenticationSetListImpl(tl);
-        asl.setMapProtocolVersion(2);
-        asc = new SendAuthenticationInfoResponseImpl(2, asl, null, null);
+        authenticationSetList = new AuthenticationSetListImpl(tl);
+        authenticationSetList.setMapProtocolVersion(2);
+        epsAuthenticationSetList = null;
+        asc = new SendAuthenticationInfoResponseImpl(mapProtocolVersion, authenticationSetList, extensionContainer, epsAuthenticationSetList, ueUsageType);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);

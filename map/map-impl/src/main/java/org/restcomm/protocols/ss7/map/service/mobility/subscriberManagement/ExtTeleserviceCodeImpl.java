@@ -27,7 +27,7 @@ public class ExtTeleserviceCodeImpl extends OctetStringBase implements ExtTelese
     }
 
     public ExtTeleserviceCodeImpl(TeleserviceCodeValue value) {
-        super(1, 5, "TeleserviceCode");
+        super(1, 5, "ExtTeleserviceCode");
         setTeleserviceCode(value);
     }
 

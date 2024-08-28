@@ -2,6 +2,7 @@
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -9,12 +10,12 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBGeneralDataImpl;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Lasith Waruna Perera
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class ODBGeneralDataTest {
@@ -40,35 +41,35 @@ public class ODBGeneralDataTest {
         assertEquals(tag, Tag.STRING_BIT);
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
-        assertTrue(!imp.getAllOGCallsBarred());
+        assertFalse(imp.getAllOGCallsBarred());
         assertTrue(imp.getInternationalOGCallsBarred());
-        assertTrue(!imp.getInternationalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(imp.getInternationalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(imp.getPremiumRateInformationOGCallsBarred());
+        assertTrue(imp.getPremiumRateEntertainmentOGCallsBarred());
+        assertFalse(imp.getSsAccessBarred());
         assertTrue(imp.getInterzonalOGCallsBarred());
-        assertTrue(!imp.getInterzonalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(imp.getInterzonalOGCallsNotToHPLMNCountryBarred());
         assertTrue(imp.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(!imp.getPremiumRateInformationOGCallsBarred());
-        assertTrue(imp.getPremiumRateEntertainementOGCallsBarred());
-        assertTrue(!imp.getSsAccessBarred());
         assertTrue(imp.getAllECTBarred());
-        assertTrue(!imp.getChargeableECTBarred());
+        assertFalse(imp.getChargeableECTBarred());
         assertTrue(imp.getInternationalECTBarred());
-        assertTrue(!imp.getInterzonalECTBarred());
+        assertFalse(imp.getInterzonalECTBarred());
         assertTrue(imp.getDoublyChargeableECTBarred());
-        assertTrue(!imp.getMultipleECTBarred());
+        assertFalse(imp.getMultipleECTBarred());
         assertTrue(imp.getAllPacketOrientedServicesBarred());
-        assertTrue(!imp.getRoamerAccessToHPLMNAPBarred());
+        assertFalse(imp.getRoamerAccessToHPLMNAPBarred());
         assertTrue(imp.getRoamerAccessToVPLMNAPBarred());
-        assertTrue(!imp.getRoamingOutsidePLMNOGCallsBarred());
+        assertFalse(imp.getRoamingOutsidePLMNOGCallsBarred());
         assertTrue(imp.getAllICCallsBarred());
-        assertTrue(!imp.getRoamingOutsidePLMNICCallsBarred());
+        assertFalse(imp.getRoamingOutsidePLMNICCallsBarred());
         assertTrue(imp.getRoamingOutsidePLMNICountryICCallsBarred());
-        assertTrue(!imp.getRoamingOutsidePLMNBarred());
+        assertFalse(imp.getRoamingOutsidePLMNBarred());
         assertTrue(imp.getRoamingOutsidePLMNCountryBarred());
-        assertTrue(!imp.getRegistrationAllCFBarred());
+        assertFalse(imp.getRegistrationAllCFBarred());
         assertTrue(imp.getRegistrationCFNotToHPLMNBarred());
-        assertTrue(!imp.getRegistrationInterzonalCFBarred());
+        assertFalse(imp.getRegistrationInterzonalCFBarred());
         assertTrue(imp.getRegistrationInterzonalCFNotToHPLMNBarred());
-        assertTrue(!imp.getRegistrationInternationalCFBarred());
+        assertFalse(imp.getRegistrationInternationalCFBarred());
 
         rawData = getEncodedData1();
         asn = new AsnInputStream(rawData);
@@ -81,40 +82,40 @@ public class ODBGeneralDataTest {
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
         assertTrue(imp.getAllOGCallsBarred());
-        assertTrue(!imp.getInternationalOGCallsBarred());
+        assertFalse(imp.getInternationalOGCallsBarred());
         assertTrue(imp.getInternationalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(!imp.getInterzonalOGCallsBarred());
+        assertFalse(imp.getInterzonalOGCallsBarred());
         assertTrue(imp.getInterzonalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(!imp.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(imp.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
         assertTrue(imp.getPremiumRateInformationOGCallsBarred());
-        assertTrue(!imp.getPremiumRateEntertainementOGCallsBarred());
+        assertFalse(imp.getPremiumRateEntertainmentOGCallsBarred());
         assertTrue(imp.getSsAccessBarred());
-        assertTrue(!imp.getAllECTBarred());
+        assertFalse(imp.getAllECTBarred());
         assertTrue(imp.getChargeableECTBarred());
-        assertTrue(!imp.getInternationalECTBarred());
+        assertFalse(imp.getInternationalECTBarred());
         assertTrue(imp.getInterzonalECTBarred());
-        assertTrue(!imp.getDoublyChargeableECTBarred());
+        assertFalse(imp.getDoublyChargeableECTBarred());
         assertTrue(imp.getMultipleECTBarred());
-        assertTrue(!imp.getAllPacketOrientedServicesBarred());
+        assertFalse(imp.getAllPacketOrientedServicesBarred());
         assertTrue(imp.getRoamerAccessToHPLMNAPBarred());
-        assertTrue(!imp.getRoamerAccessToVPLMNAPBarred());
+        assertFalse(imp.getRoamerAccessToVPLMNAPBarred());
         assertTrue(imp.getRoamingOutsidePLMNOGCallsBarred());
-        assertTrue(!imp.getAllICCallsBarred());
+        assertFalse(imp.getAllICCallsBarred());
         assertTrue(imp.getRoamingOutsidePLMNICCallsBarred());
-        assertTrue(!imp.getRoamingOutsidePLMNICountryICCallsBarred());
+        assertFalse(imp.getRoamingOutsidePLMNICountryICCallsBarred());
         assertTrue(imp.getRoamingOutsidePLMNBarred());
-        assertTrue(!imp.getRoamingOutsidePLMNCountryBarred());
+        assertFalse(imp.getRoamingOutsidePLMNCountryBarred());
         assertTrue(imp.getRegistrationAllCFBarred());
-        assertTrue(!imp.getRegistrationCFNotToHPLMNBarred());
+        assertFalse(imp.getRegistrationCFNotToHPLMNBarred());
         assertTrue(imp.getRegistrationInterzonalCFBarred());
-        assertTrue(!imp.getRegistrationInterzonalCFNotToHPLMNBarred());
+        assertFalse(imp.getRegistrationInterzonalCFNotToHPLMNBarred());
         assertTrue(imp.getRegistrationInternationalCFBarred());
     }
 
     @Test(groups = { "functional.encode", "service.lsm" })
     public void testEncode() throws Exception {
 
-        ODBGeneralDataImpl imp = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true, false,
+        ODBGeneralDataImpl imp = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true, false,
                 true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true,
                 false);
 
@@ -123,7 +124,7 @@ public class ODBGeneralDataTest {
 
         assertTrue(Arrays.equals(getEncodedData(), asnOS.toByteArray()));
 
-        imp = new ODBGeneralDataImpl(true, false, true, false, true, false, true, false, true, false, true, false, true, false,
+        imp = new ODBGeneralDataImpl(true, false, true, true, false, true, false, true, false, false, true, false, true, false,
                 true, false, true, false, true, false, true, false, true, false, true, false, true, false, true);
 
         asnOS = new AsnOutputStream();

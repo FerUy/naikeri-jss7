@@ -16,8 +16,6 @@ import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
 
 /**
  *
- *
- *
  * @author amit bhayani
  *
  */
@@ -39,8 +37,8 @@ public class AdditionalNumberImpl implements AdditionalNumber, MAPAsnPrimitive {
     }
 
     /**
-     * @param mscNumber
-     * @param sgsnNumber
+     * @param mscNumber can be the MSC number or the SMS Router number or the MME number for MT SMS
+     * @param sgsnNumber can be the SGSN number or the SMS Router number
      */
     public AdditionalNumberImpl(ISDNAddressString mscNumber, ISDNAddressString sgsnNumber) {
         super();
@@ -209,11 +207,11 @@ public class AdditionalNumberImpl implements AdditionalNumber, MAPAsnPrimitive {
 
         if (this.mSCNumber != null) {
             sb.append("msc-Number=");
-            sb.append(this.mSCNumber.toString());
+            sb.append(this.mSCNumber);
         }
         if (this.sGSNNumber != null) {
             sb.append("sgsn-Number=");
-            sb.append(this.sGSNNumber.toString());
+            sb.append(this.sGSNNumber);
         }
 
         sb.append("]");

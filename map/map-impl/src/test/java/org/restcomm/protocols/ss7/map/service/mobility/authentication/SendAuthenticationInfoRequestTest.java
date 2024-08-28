@@ -13,6 +13,7 @@ import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
+import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
@@ -60,7 +61,7 @@ public class SendAuthenticationInfoRequestTest {
         assertEquals(asc.getMapProtocolVersion(), 3);
 
         IMSI imsi = asc.getImsi();
-        assertTrue(imsi.getData().equals("111222333444"));
+        assertEquals(imsi.getData(), "111222333444");
         assertEquals(asc.getRequestingNodeType(), RequestingNodeType.vlr);
         assertEquals(asc.getNumberOfRequestedVectors(), 4);
 
@@ -74,6 +75,7 @@ public class SendAuthenticationInfoRequestTest {
         assertFalse(asc.getSegmentationProhibited());
         assertFalse(asc.getImmediateResponsePreferred());
         assertTrue(asc.getAdditionalVectorsAreForEPS());
+        assertFalse(asc.getUeUsageTypeRequestIndication());
 
         rawData = getEncodedData2();
         asn = new AsnInputStream(rawData);
@@ -87,7 +89,7 @@ public class SendAuthenticationInfoRequestTest {
         assertEquals(asc.getMapProtocolVersion(), 3);
 
         imsi = asc.getImsi();
-        assertTrue(imsi.getData().equals("33333444444"));
+        assertEquals(imsi.getData(), "33333444444");
         assertEquals(asc.getRequestingNodeType(), RequestingNodeType.sgsn);
         assertEquals(asc.getNumberOfRequestedVectors(), 5);
 
@@ -103,6 +105,7 @@ public class SendAuthenticationInfoRequestTest {
         assertTrue(asc.getSegmentationProhibited());
         assertTrue(asc.getImmediateResponsePreferred());
         assertFalse(asc.getAdditionalVectorsAreForEPS());
+        assertFalse(asc.getUeUsageTypeRequestIndication());
 
         rawData = getEncodedData_V2();
         asn = new AsnInputStream(rawData);
@@ -116,7 +119,7 @@ public class SendAuthenticationInfoRequestTest {
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
         imsi = asc.getImsi();
-        assertTrue(imsi.getData().equals("250070222032767"));
+        assertEquals(imsi.getData(), "250070222032767");
         assertNull(asc.getRequestingNodeType());
         assertEquals(asc.getNumberOfRequestedVectors(), 0);
 
@@ -129,21 +132,28 @@ public class SendAuthenticationInfoRequestTest {
         assertFalse(asc.getSegmentationProhibited());
         assertFalse(asc.getImmediateResponsePreferred());
         assertFalse(asc.getAdditionalVectorsAreForEPS());
+        assertFalse(asc.getUeUsageTypeRequestIndication());
 
     }
 
     @Test(groups = { "functional.encode" })
     public void testEncode() throws Exception {
 
+        long mapProtocolVersion = 3;
         IMSIImpl imsi = new IMSIImpl("111222333444");
-        PlmnIdImpl plmnId = new PlmnIdImpl(getRequestingPlmnId());
-        SendAuthenticationInfoRequestImpl asc = new SendAuthenticationInfoRequestImpl(3, imsi, 4, false, false, null, null,
-                RequestingNodeType.vlr, plmnId, null, true);
-        // long mapProtocolVersion, IMSI imsi, int numberOfRequestedVectors, boolean segmentationProhibited,
-        // boolean immediateResponsePreferred, ReSynchronisationInfo reSynchronisationInfo, MAPExtensionContainer
-        // extensionContainer,
-        // RequestingNodeType requestingNodeType, PlmnId requestingPlmnId, Integer numberOfRequestedAdditionalVectors, boolean
-        // additionalVectorsAreForEPS
+        int numberOfRequestedVectors = 4;
+        boolean segmentationProhibited = false;
+        boolean immediateResponsePreferred = false;
+        ReSynchronisationInfo reSynchronisationInfo = null;
+        MAPExtensionContainer extensionContainer = null;
+        RequestingNodeType requestingNodeType = RequestingNodeType.vlr;
+        PlmnIdImpl requestingPlmnId = new PlmnIdImpl(getRequestingPlmnId());
+        Integer numberOfRequestedAdditionalVectors = null;
+        boolean additionalVectorsAreForEPS = true;
+        boolean ueUsageTypeRequestIndicator = false;
+        SendAuthenticationInfoRequestImpl asc = new SendAuthenticationInfoRequestImpl(mapProtocolVersion, imsi, numberOfRequestedVectors,
+                segmentationProhibited, immediateResponsePreferred, reSynchronisationInfo, extensionContainer, requestingNodeType,
+                requestingPlmnId, numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndicator);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -153,9 +163,18 @@ public class SendAuthenticationInfoRequestTest {
         assertTrue(Arrays.equals(rawData, encodedData));
 
         imsi = new IMSIImpl("33333444444");
-        ReSynchronisationInfoImpl rsi = new ReSynchronisationInfoImpl(ReSynchronisationInfoTest.getRandData(),
+        numberOfRequestedVectors = 5;
+        segmentationProhibited = true;
+        immediateResponsePreferred = true;
+        reSynchronisationInfo = new ReSynchronisationInfoImpl(ReSynchronisationInfoTest.getRandData(),
                 ReSynchronisationInfoTest.getAutsData());
-        asc = new SendAuthenticationInfoRequestImpl(3, imsi, 5, true, true, rsi, null, RequestingNodeType.sgsn, null, 6, false);
+        requestingNodeType = RequestingNodeType.sgsn;
+        requestingPlmnId = null;
+        numberOfRequestedAdditionalVectors = 6;
+        additionalVectorsAreForEPS = false;
+        asc = new SendAuthenticationInfoRequestImpl(mapProtocolVersion, imsi, numberOfRequestedVectors, segmentationProhibited,
+                immediateResponsePreferred, reSynchronisationInfo, extensionContainer, requestingNodeType, requestingPlmnId,
+                numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndicator);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);
@@ -164,8 +183,17 @@ public class SendAuthenticationInfoRequestTest {
         rawData = getEncodedData2();
         assertTrue(Arrays.equals(rawData, encodedData));
 
+        mapProtocolVersion = 2;
         imsi = new IMSIImpl("250070222032767");
-        asc = new SendAuthenticationInfoRequestImpl(2, imsi, 0, false, false, null, null, null, null, null, false);
+        numberOfRequestedVectors = 0;
+        segmentationProhibited = false;
+        immediateResponsePreferred = false;
+        reSynchronisationInfo = null;
+        requestingNodeType = null;
+        numberOfRequestedAdditionalVectors = null;
+        asc = new SendAuthenticationInfoRequestImpl(mapProtocolVersion, imsi, numberOfRequestedVectors, segmentationProhibited,
+                immediateResponsePreferred, reSynchronisationInfo, extensionContainer, requestingNodeType, requestingPlmnId,
+                numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndicator);
 
         asnOS = new AsnOutputStream();
         asc.encodeAll(asnOS);

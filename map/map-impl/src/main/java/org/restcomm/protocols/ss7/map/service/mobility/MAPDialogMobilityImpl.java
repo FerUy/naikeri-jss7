@@ -34,6 +34,8 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.EpsAut
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.FailureCause;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.EquipmentStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIu;
@@ -41,9 +43,12 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AD
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancellationType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SMSRegisterRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.TypeOfUpdate;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UESRVCCCapability;
@@ -57,24 +62,31 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClipData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClirData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EctData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSISDNBS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ODBInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedSubscriptionInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AccessRestrictionData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AdjacentAccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSAllocationRetentionPriority;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGSubscriptionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.Category;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ChargingCharacteristics;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EDRXCycleLength;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSSubscriptionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSSubscriptionDataWithdraw;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtAccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionDataWithdraw;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.IMSIGroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LCSInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAInformationWithdraw;
@@ -159,16 +171,18 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     public Long addSendAuthenticationInfoRequest(IMSI imsi, int numberOfRequestedVectors, boolean segmentationProhibited,
             boolean immediateResponsePreferred, ReSynchronisationInfo reSynchronisationInfo,
             MAPExtensionContainer extensionContainer, RequestingNodeType requestingNodeType, PlmnId requestingPlmnId,
-            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS) throws MAPException {
+            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS,
+            boolean ueUsageTypeRequestIndication) throws MAPException {
         return this.addSendAuthenticationInfoRequest(_Timer_Default, imsi, numberOfRequestedVectors, segmentationProhibited,
                 immediateResponsePreferred, reSynchronisationInfo, extensionContainer, requestingNodeType, requestingPlmnId,
-                numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS);
+                numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndication);
     }
 
     public Long addSendAuthenticationInfoRequest(int customInvokeTimeout, IMSI imsi, int numberOfRequestedVectors,
             boolean segmentationProhibited, boolean immediateResponsePreferred, ReSynchronisationInfo reSynchronisationInfo,
             MAPExtensionContainer extensionContainer, RequestingNodeType requestingNodeType, PlmnId requestingPlmnId,
-            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS) throws MAPException {
+            Integer numberOfRequestedAdditionalVectors, boolean additionalVectorsAreForEPS,
+            boolean ueUsageTypeRequestIndication) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.infoRetrievalContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2 && this.mapApplicationContext
@@ -186,11 +200,11 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         invoke.setOperationCode(operationCode);
 
         if (imsi != null) {
-            // parameter is optional: is no imsi is included we will not add a parameter
+            // parameter is optional: if no IMSI is included we will not add a parameter
             SendAuthenticationInfoRequestImpl sendAuthenticationInfoRequest = new SendAuthenticationInfoRequestImpl(this.mapApplicationContext
                     .getApplicationContextVersion().getVersion(), imsi, numberOfRequestedVectors, segmentationProhibited,
                     immediateResponsePreferred, reSynchronisationInfo, extensionContainer, requestingNodeType,
-                    requestingPlmnId, numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS);
+                    requestingPlmnId, numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndication);
             AsnOutputStream aos = new AsnOutputStream();
             sendAuthenticationInfoRequest.encodeData(aos);
 
@@ -216,19 +230,21 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     }
 
     public void addSendAuthenticationInfoResponse(long invokeId, AuthenticationSetList authenticationSetList,
-            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList) throws MAPException {
+            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
+            UEUsageType ueUsageType) throws MAPException {
         doAddSendAuthenticationInfoResponse(false, invokeId, authenticationSetList, extensionContainer,
-                epsAuthenticationSetList);
+                epsAuthenticationSetList, ueUsageType);
     }
 
     public void addSendAuthenticationInfoResponse_NonLast(long invokeId, AuthenticationSetList authenticationSetList,
-            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList) throws MAPException {
-        doAddSendAuthenticationInfoResponse(true, invokeId, authenticationSetList, extensionContainer, epsAuthenticationSetList);
+            MAPExtensionContainer extensionContainer, EpsAuthenticationSetList epsAuthenticationSetList,
+            UEUsageType ueUsageType) throws MAPException {
+        doAddSendAuthenticationInfoResponse(true, invokeId, authenticationSetList, extensionContainer, epsAuthenticationSetList, ueUsageType);
     }
 
     protected void doAddSendAuthenticationInfoResponse(boolean nonLast, long invokeId,
             AuthenticationSetList authenticationSetList, MAPExtensionContainer extensionContainer,
-            EpsAuthenticationSetList epsAuthenticationSetList) throws MAPException {
+            EpsAuthenticationSetList epsAuthenticationSetList, UEUsageType ueUsageType) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.infoRetrievalContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2 && this.mapApplicationContext
@@ -247,7 +263,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
             SendAuthenticationInfoResponseImpl sendAuthenticationInfoResponse = new SendAuthenticationInfoResponseImpl(this.mapApplicationContext
                     .getApplicationContextVersion().getVersion(), authenticationSetList, extensionContainer,
-                    epsAuthenticationSetList);
+                    epsAuthenticationSetList, ueUsageType);
             AsnOutputStream aos = new AsnOutputStream();
             sendAuthenticationInfoResponse.encodeData(aos);
 
@@ -369,17 +385,18 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     public Long addUpdateLocationRequest(IMSI imsi, ISDNAddressString mscNumber, ISDNAddressString roamingNumber,
             ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer, VLRCapability vlrCapability,
             boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE, GSNAddress vGmlcAddress, ADDInfo addInfo,
-            PagingArea pagingArea, boolean skipSubscriberDataUpdate, boolean restorationIndicator) throws MAPException {
+            PagingArea pagingArea, boolean skipSubscriberDataUpdate, boolean restorationIndicator, ArrayList<PlmnId> EPLMNList,
+            NetworkNodeDiameterAddress mmeDiameterAddress) throws MAPException {
         return addUpdateLocationRequest(_Timer_Default, imsi, mscNumber, roamingNumber, vlrNumber, lmsi, extensionContainer,
                 vlrCapability, informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
-                skipSubscriberDataUpdate, restorationIndicator);
+                skipSubscriberDataUpdate, restorationIndicator, EPLMNList, mmeDiameterAddress);
     }
 
     public Long addUpdateLocationRequest(int customInvokeTimeout, IMSI imsi, ISDNAddressString mscNumber,
             ISDNAddressString roamingNumber, ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
             VLRCapability vlrCapability, boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE,
             GSNAddress vGmlcAddress, ADDInfo addInfo, PagingArea pagingArea, boolean skipSubscriberDataUpdate,
-            boolean restorationIndicator) throws MAPException {
+            boolean restorationIndicator, ArrayList<PlmnId> EPLMNList, NetworkNodeDiameterAddress mmeDiameterAddress) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.networkLocUpContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version1
@@ -400,7 +417,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         UpdateLocationRequestImpl updateLocationRequest = new UpdateLocationRequestImpl(this.mapApplicationContext.getApplicationContextVersion().getVersion(),
                 imsi, mscNumber, roamingNumber, vlrNumber, lmsi, extensionContainer, vlrCapability,
                 informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
-                skipSubscriberDataUpdate, restorationIndicator);
+                skipSubscriberDataUpdate, restorationIndicator, EPLMNList, mmeDiameterAddress);
         AsnOutputStream aos = new AsnOutputStream();
         updateLocationRequest.encodeData(aos);
 
@@ -998,7 +1015,8 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
                 bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
                 regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, null, null,
                 null, false, null, null, false, null, null, null, null, null, null, null, null, false, null, null, false, null,
-                null, null, false, false, null);
+                null, null, false, false, null, null, null, false, false,false, false, null, null, null, false, null, null, null,
+                null, false);
     }
 
     @Override
@@ -1017,7 +1035,12 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             EPSSubscriptionData epsSubscriptionData, ArrayList<CSGSubscriptionData> csgSubscriptionDataList,
             boolean ueReachabilityRequestIndicator, ISDNAddressString sgsnNumber, DiameterIdentity mmeName,
             Long subscribedPeriodicRAUTAUtimer, boolean vplmnLIPAAllowed, Boolean mdtUserConsent,
-            Long subscribedPeriodicLAUtimer) throws MAPException {
+            Long subscribedPeriodicLAUtimer, ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList,
+            ISDNAddressString additionalMSISDN, boolean psAndSMSOnlyServiceProvision, boolean smsInSGSNAllowed,
+            boolean csToPsSRVCCAllowedIndicator, boolean pcscfRestorationRequest, ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList,
+            ArrayList<IMSIGroupId> imsiGroupIdList, UEUsageType ueUsageType, boolean userPlaneIntegrityProtectionIndicator,
+            Long dlBufferingSuggestedPacketCount, ArrayList<ResetId> resetIdList, ArrayList<EDRXCycleLength> eDRXCycleLengthList,
+            ExtAccessRestrictionData extAccessRestrictionData, boolean iabOperationAllowedIndicator) throws MAPException {
 
         return this.addInsertSubscriberDataRequest(_Timer_Default, imsi, msisdn, category, subscriberStatus, bearerServiceList,
                 teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionData,
@@ -1026,7 +1049,11 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
                 lmuIndicator, lcsInformation, istAlertTimer, superChargerSupportedInHLR, mcSsInfo,
                 csAllocationRetentionPriority, sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData,
                 icsIndicator, epsSubscriptionData, csgSubscriptionDataList, ueReachabilityRequestIndicator, sgsnNumber,
-                mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer);
+                mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer,
+                vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision, smsInSGSNAllowed,
+                csToPsSRVCCAllowedIndicator, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
+                eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
     }
 
     @Override
@@ -1045,7 +1072,12 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             EPSSubscriptionData epsSubscriptionData, ArrayList<CSGSubscriptionData> csgSubscriptionDataList,
             boolean ueReachabilityRequestIndicator, ISDNAddressString sgsnNumber, DiameterIdentity mmeName,
             Long subscribedPeriodicRAUTAUtimer, boolean vplmnLIPAAllowed, Boolean mdtUserConsent,
-            Long subscribedPeriodicLAUtimer) throws MAPException {
+            Long subscribedPeriodicLAUtimer, ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList,
+            ISDNAddressString additionalMSISDN, boolean psAndSMSOnlyServiceProvision, boolean smsInSGSNAllowed,
+            boolean csToPsSRVCCAllowedIndicator, boolean pcscfRestorationRequest, ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList,
+            ArrayList<IMSIGroupId> imsiGroupIdList, UEUsageType ueUsageType, boolean userPlaneIntegrityProtectionIndicator,
+            Long dlBufferingSuggestedPacketCount, ArrayList<ResetId> resetIdList, ArrayList<EDRXCycleLength> eDRXCycleLengthList,
+            ExtAccessRestrictionData extAccessRestrictionData, boolean iabOperationAllowedIndicator) throws MAPException {
 
         boolean isSubscriberDataMngtContext = false;
         boolean isNetworkLocUpContext = false;
@@ -1063,7 +1095,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         if ((this.mapApplicationContext.getApplicationContextName() == MAPApplicationContextName.gprsLocationUpdateContext)
                 && (this.mapApplicationContext.getApplicationContextVersion() == MAPApplicationContextVersion.version3))
             isGprsLocationUpdateContext = true;
-        if (isSubscriberDataMngtContext == false && isNetworkLocUpContext == false && isGprsLocationUpdateContext == false)
+        if (!isSubscriberDataMngtContext && !isNetworkLocUpContext && !isGprsLocationUpdateContext)
             throw new MAPException("Bad application context name for InsertSubscriberDataRequest: must be networkLocUpContext_V1, V2 or V3 or "
                             + "subscriberDataMngtContext_V1, V2 or V3 or gprsLocationUpdateContext_V3");
 
@@ -1087,7 +1119,10 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
                 lcsInformation, istAlertTimer, superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority,
                 sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData,
                 csgSubscriptionDataList, ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer,
-                vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer);
+                vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
+                smsInSGSNAllowed, csToPsSRVCCAllowedIndicator, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
+                eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
 
         AsnOutputStream aos = new AsnOutputStream();
         insertSubscriberDataRequest.encodeData(aos);
@@ -1118,14 +1153,15 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             RegionalSubscriptionResponse regionalSubscriptionResponse) throws MAPException {
 
         this.addInsertSubscriberDataResponse(invokeId, teleserviceList, bearerServiceList, ssList, odbGeneralData,
-                regionalSubscriptionResponse, null, null, null, null);
+                regionalSubscriptionResponse, null, null, null, null, null);
     }
 
     @Override
     public void addInsertSubscriberDataResponse(long invokeId, ArrayList<ExtTeleserviceCode> teleserviceList,
             ArrayList<ExtBearerServiceCode> bearerServiceList, ArrayList<SSCode> ssList, ODBGeneralData odbGeneralData,
             RegionalSubscriptionResponse regionalSubscriptionResponse, SupportedCamelPhases supportedCamelPhases,
-            MAPExtensionContainer extensionContainer, OfferedCamel4CSIs offeredCamel4CSIs, SupportedFeatures supportedFeatures)
+            MAPExtensionContainer extensionContainer, OfferedCamel4CSIs offeredCamel4CSIs, SupportedFeatures supportedFeatures,
+            ExtSupportedFeatures extSupportedFeatures)
             throws MAPException {
 
         boolean isSubscriberDataMngtContext = false;
@@ -1162,7 +1198,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
                 && this.mapApplicationContext.getApplicationContextVersion().getVersion() != 1) {
             InsertSubscriberDataResponseImpl insertSubscriberDataResponse = new InsertSubscriberDataResponseImpl(this.mapApplicationContext.getApplicationContextVersion().getVersion(),
                     teleserviceList, bearerServiceList, ssList, odbGeneralData, regionalSubscriptionResponse, supportedCamelPhases, extensionContainer,
-                    offeredCamel4CSIs, supportedFeatures);
+                    offeredCamel4CSIs, supportedFeatures, extSupportedFeatures);
             AsnOutputStream aos = new AsnOutputStream();
             insertSubscriberDataResponse.encodeData(aos);
 
@@ -1507,7 +1543,10 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             boolean informPreviousNetworkEntity, boolean psLCSNotSupportedByUE, GSNAddress vGmlcAddress, ADDInfo addInfo,
             EPSInfo epsInfo, boolean servingNodeTypeIndicator, boolean skipSubscriberDataUpdate, UsedRATType usedRATType,
             boolean gprsSubscriptionDataNotNeeded, boolean nodeTypeIndicator, boolean areaRestricted,
-            boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability)
+            boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
+            ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
+            boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
+            boolean removalOfMMERegistrationForSMS, ArrayList<PlmnId> adjacentPLMNList)
             throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.gprsLocationUpdateContext)
@@ -1528,7 +1567,8 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
                 extensionContainer, sgsnCapability, informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo,
                 epsInfo, servingNodeTypeIndicator, skipSubscriberDataUpdate, usedRATType, gprsSubscriptionDataNotNeeded,
                 nodeTypeIndicator, areaRestricted, ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability,
-                this.mapApplicationContext.getApplicationContextVersion().getVersion());
+                ePLMNList, mmeNumberForMTSMS, smsRegisterRequest, smsOnly, sgsnName, sgsnRealm, lgdSupportIndicator,
+                removalOfMMERegistrationForSMS, adjacentPLMNList, this.mapApplicationContext.getApplicationContextVersion().getVersion());
 
         AsnOutputStream aos = new AsnOutputStream();
         updateGprsLocationRequest.encodeData(aos);
@@ -1560,18 +1600,22 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             boolean psLCSNotSupportedByUE, GSNAddress vGmlcAddress, ADDInfo addInfo, EPSInfo epsInfo,
             boolean servingNodeTypeIndicator, boolean skipSubscriberDataUpdate, UsedRATType usedRATType,
             boolean gprsSubscriptionDataNotNeeded, boolean nodeTypeIndicator, boolean areaRestricted,
-            boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability)
+            boolean ueReachableIndicator, boolean epsSubscriptionDataNotNeeded, UESRVCCCapability uesrvccCapability,
+            ArrayList<PlmnId> ePLMNList, ISDNAddressString mmeNumberForMTSMS, SMSRegisterRequest smsRegisterRequest,
+            boolean smsOnly, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm, boolean lgdSupportIndicator,
+            boolean removalOfMMERegistrationForSMS, ArrayList<PlmnId> adjacentPLMNList)
             throws MAPException {
         return addUpdateGprsLocationRequest(_Timer_Default, imsi, sgsnNumber, sgsnAddress, extensionContainer, sgsnCapability,
                 informPreviousNetworkEntity, psLCSNotSupportedByUE, vGmlcAddress, addInfo, epsInfo, servingNodeTypeIndicator,
                 skipSubscriberDataUpdate, usedRATType, gprsSubscriptionDataNotNeeded, nodeTypeIndicator, areaRestricted,
-                ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability);
+                ueReachableIndicator, epsSubscriptionDataNotNeeded, uesrvccCapability, ePLMNList, mmeNumberForMTSMS,
+                smsRegisterRequest, smsOnly, sgsnName, sgsnRealm, lgdSupportIndicator, removalOfMMERegistrationForSMS,
+                adjacentPLMNList);
     }
 
     @Override
-    public void addUpdateGprsLocationResponse(long invokeId, ISDNAddressString hlrNumber,
-            MAPExtensionContainer extensionContainer, boolean addCapability, boolean sgsnMmeSeparationSupported)
-            throws MAPException {
+    public void addUpdateGprsLocationResponse(long invokeId, ISDNAddressString hlrNumber, MAPExtensionContainer extensionContainer,
+            boolean addCapability, boolean sgsnMmeSeparationSupported, boolean mmeRegisteredForSMS) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.gprsLocationUpdateContext)
                 || (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3))
@@ -1589,7 +1633,7 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         resultLast.setOperationCode(operationCode);
 
         UpdateGprsLocationResponseImpl updateGprsLocationResponse = new UpdateGprsLocationResponseImpl(hlrNumber, extensionContainer, addCapability,
-                sgsnMmeSeparationSupported);
+                sgsnMmeSeparationSupported, mmeRegisteredForSMS);
 
         AsnOutputStream aos = new AsnOutputStream();
         updateGprsLocationResponse.encodeData(aos);
@@ -1607,7 +1651,9 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
     @Override
     public Long addPurgeMSRequest(int customInvokeTimeout, IMSI imsi, ISDNAddressString vlrNumber,
-            ISDNAddressString sgsnNumber, MAPExtensionContainer extensionContainer) throws MAPException {
+            ISDNAddressString sgsnNumber, MAPExtensionContainer extensionContainer,
+            LocationInformation locationInformation, LocationInformationGPRS locationInformationGPRS,
+            LocationInformationEPS locationInformationEPS) throws MAPException {
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.msPurgingContext)
                 || ((this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3)
                 && (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2)))
@@ -1624,8 +1670,8 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         operationCode.setLocalOperationCode((long) MAPOperationCode.purgeMS);
         invoke.setOperationCode(operationCode);
 
-        PurgeMSRequestImpl purgeMSRequest = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer, this.mapApplicationContext
-                .getApplicationContextVersion().getVersion());
+        PurgeMSRequestImpl purgeMSRequest = new PurgeMSRequestImpl(imsi, vlrNumber, sgsnNumber, extensionContainer,
+                locationInformation, locationInformationGPRS, locationInformationEPS, this.mapApplicationContext.getApplicationContextVersion().getVersion());
 
         AsnOutputStream aos = new AsnOutputStream();
         purgeMSRequest.encodeData(aos);
@@ -1653,8 +1699,10 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
     @Override
     public Long addPurgeMSRequest(IMSI imsi, ISDNAddressString vlrNumber, ISDNAddressString sgsnNumber,
-            MAPExtensionContainer extensionContainer) throws MAPException {
-        return addPurgeMSRequest(_Timer_Default, imsi, vlrNumber, sgsnNumber, extensionContainer);
+            MAPExtensionContainer extensionContainer, LocationInformation locationInformation, LocationInformationGPRS locationInformationGPRS,
+            LocationInformationEPS locationInformationEPS) throws MAPException {
+        return addPurgeMSRequest(_Timer_Default, imsi, vlrNumber, sgsnNumber, extensionContainer, locationInformation,
+                locationInformationGPRS, locationInformationEPS);
     }
 
     @Override

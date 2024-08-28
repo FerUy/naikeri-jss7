@@ -23,12 +23,11 @@ import java.io.IOException;
 /**
  *
  * @author sergey vetyutnev
- *
  */
 public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements SendRoutingInfoForSMResponse {
 
     protected static final int _TAG_LocationInfoWithLMSI = 0;
-    protected static final int _TAG_mwdSet = 2;
+    protected static final int _TAG_mwdSet = 2; // MAP V1 Only
     protected static final int _TAG_ExtensionContainer = 4;
     protected static final int _TAG_IpSmGwGuidance = 5;
 
@@ -156,6 +155,7 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
                 default:
                     if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
                         switch (tag) {
+
                             case _TAG_ExtensionContainer:
                                 if (ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -164,7 +164,9 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
                                 this.extensionContainer = new MAPExtensionContainerImpl();
                                 ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
                                 break;
+
                             case _TAG_mwdSet:
+                                // MAP V1 Only
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".mwdSet: Parameter mwdSet is not primitive",
@@ -219,14 +221,17 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
         if (this.imsi == null || this.locationInfoWithLMSI == null)
             throw new MAPException("imsi and locationInfoWithLMSI must not be null");
-
         ((IMSIImpl) this.imsi).encodeAll(asnOutputStream);
+
         ((LocationInfoWithLMSIImpl) this.locationInfoWithLMSI).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                 _TAG_LocationInfoWithLMSI);
+
         if (this.extensionContainer != null)
             ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                     _TAG_ExtensionContainer);
+
         if (this.mwdSet != null) {
+            // MAP V1 Only
             try {
                 asnOutputStream.writeBoolean(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_mwdSet, this.mwdSet);
             } catch (IOException e) {
@@ -235,9 +240,9 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
                 throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
             }
         }
+
         if (this.ipSmGwGuidance != null) {
-            ((IpSmGwGuidanceImpl) this.ipSmGwGuidance).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_IpSmGwGuidance);
+            ((IpSmGwGuidanceImpl) this.ipSmGwGuidance).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_IpSmGwGuidance);
         }
     }
 
@@ -252,23 +257,23 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
 
         if (this.imsi != null) {
             sb.append(", imsi=");
-            sb.append(this.imsi.toString());
+            sb.append(this.imsi);
         }
         if (this.locationInfoWithLMSI != null) {
             sb.append(", locationInfoWithLMSI=");
-            sb.append(this.locationInfoWithLMSI.toString());
+            sb.append(this.locationInfoWithLMSI);
         }
         if (this.extensionContainer != null) {
             sb.append(", extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
         }
         if (this.mwdSet != null) {
             sb.append(", mwdSet=");
-            sb.append(this.mwdSet.toString());
+            sb.append(this.mwdSet);
         }
         if (this.ipSmGwGuidance != null) {
             sb.append(", ipSmGwGuidance=");
-            sb.append(this.ipSmGwGuidance.toString());
+            sb.append(this.ipSmGwGuidance);
         }
 
         sb.append("]");

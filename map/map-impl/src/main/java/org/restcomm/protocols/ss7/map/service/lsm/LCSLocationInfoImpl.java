@@ -316,7 +316,7 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                         "Error while encoding LCSLocationInfo the optional parameter gprsNodeIndicator encoding failed ", e);
             } catch (AsnException e) {
                 throw new MAPException(
-                        "Error while encoding LCSLocationInfo the optional parameter gprsNodeIndicator encoding failed ", e);
+                        "AsnException while encoding LCSLocationInfo the optional parameter gprsNodeIndicator encoding failed ", e);
             }
         }
 

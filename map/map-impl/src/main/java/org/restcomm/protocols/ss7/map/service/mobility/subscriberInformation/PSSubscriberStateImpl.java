@@ -84,23 +84,27 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
      * @see org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive#getTag()
      */
     public int getTag() throws MAPException {
-        if (this.choice == PSSubscriberStateChoice.notProvidedFromSGSNorMME) {
-            return _ID_notProvidedFromSGSNorMME;
-        } else if (this.choice == PSSubscriberStateChoice.psDetached) {
-            return _ID_ps_Detached;
-        } else if (this.choice == PSSubscriberStateChoice.psAttachedNotReachableForPaging) {
-            return _ID_ps_AttachedNotReachableForPaging;
-        } else if (this.choice == PSSubscriberStateChoice.psAttachedReachableForPaging) {
-            return _ID_ps_AttachedReachableForPaging;
-        } else if (this.choice == PSSubscriberStateChoice.psPDPActiveNotReachableForPaging) {
-            return _ID_ps_PDP_ActiveNotReachableForPaging;
-        } else if (this.choice == PSSubscriberStateChoice.psPDPActiveReachableForPaging) {
-            return _ID_ps_PDP_ActiveReachableForPaging;
-        } else if (this.choice == PSSubscriberStateChoice.netDetNotReachable) {
-            return Tag.ENUMERATED;
+        if (this.choice == null)
+            throw new MAPException("Error encoding " + _PrimitiveName + ": No choice value");
+
+        switch (this.choice) {
+            case notProvidedFromSGSNorMME:
+                return _ID_notProvidedFromSGSNorMME;
+            case psDetached:
+                return _ID_ps_Detached;
+            case psAttachedNotReachableForPaging:
+                return _ID_ps_AttachedNotReachableForPaging;
+            case psAttachedReachableForPaging:
+                return _ID_ps_AttachedReachableForPaging;
+            case psPDPActiveNotReachableForPaging:
+                return _ID_ps_PDP_ActiveNotReachableForPaging;
+            case psPDPActiveReachableForPaging:
+                return _ID_ps_PDP_ActiveReachableForPaging;
+            case netDetNotReachable:
+                return Tag.ENUMERATED;
         }
 
-        throw new MAPException("Error encoding " + _PrimitiveName + ": Bad hoice value");
+        throw new MAPException("Error encoding " + _PrimitiveName + ": Bad choice value");
     }
 
     /*
@@ -235,8 +239,7 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
                     break;
 
                 case _ID_ps_PDP_ActiveReachableForPaging:
-                    if (asnInputStream
-                        .isTagPrimitive())
+                    if (asnInputStream.isTagPrimitive())
                         throw new MAPParsingComponentException(
                                 "Error while decoding psPDPActiveReachableForPaging choice: Parameter is primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
@@ -257,7 +260,7 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
 
     private void decodePdpContextInfoList(AsnInputStream asnInputStream, int length) throws AsnException, IOException,
             MAPParsingComponentException {
-        this.pdpContextInfoList = new ArrayList<PDPContextInfo>();
+        this.pdpContextInfoList = new ArrayList<>();
         while (true) {
             if (asnInputStream.available() == 0)
                 break;
@@ -331,7 +334,7 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
                 case psPDPActiveNotReachableForPaging:
                 case psPDPActiveReachableForPaging:
 
-                    if (this.pdpContextInfoList.size() < 1 || this.pdpContextInfoList.size() > 50)
+                    if (this.pdpContextInfoList.isEmpty() || this.pdpContextInfoList.size() > 50)
                         throw new MAPException("Error while encoding " + _PrimitiveName
                                 + ": pdpContextInfoList size must be from 1 to 50");
 
@@ -358,12 +361,12 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
         sb.append(" [");
 
         if (this.choice != null)
-            sb.append(this.choice.toString());
+            sb.append(this.choice);
         if (this.netDetNotReachable != null) {
             sb.append(", netDetNotReachable=");
-            sb.append(this.netDetNotReachable.toString());
+            sb.append(this.netDetNotReachable);
         }
-        if (this.pdpContextInfoList != null && this.pdpContextInfoList.size() > 0) {
+        if (this.pdpContextInfoList != null && !this.pdpContextInfoList.isEmpty()) {
             sb.append(", pdpContextInfoList [");
             for (PDPContextInfo p : pdpContextInfoList) {
                 sb.append("PDPContextInfo=");
@@ -381,7 +384,7 @@ public class PSSubscriberStateImpl implements PSSubscriberState, MAPAsnPrimitive
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<PSSubscriberStateImpl> PS_SUBSCRIBER_STATE_XML = new XMLFormat<PSSubscriberStateImpl>(
+    protected static final XMLFormat<PSSubscriberStateImpl> PS_SUBSCRIBER_STATE_XML = new XMLFormat<>(
             PSSubscriberStateImpl.class) {
 
         @Override

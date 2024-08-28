@@ -40,7 +40,8 @@ MAP V3: RoutingInfoForSM-Arg ::= SEQUENCE {
   imsi                    [12] IMSI OPTIONAL,
   t4-Trigger-Indicator    [14] NULL OPTIONAL,
   singleAttemptDelivery   [13] NULL OPTIONAL,
-  correlationID           [15] CorrelationID OPTIONAL
+  correlationID           [15] CorrelationID OPTIONAL,
+  smsf-supportIndicator   [16] NULL OPTIONAL
 }
 
 MAP V2: RoutingInfoForSM-Arg ::= SEQUENCE {
@@ -85,7 +86,8 @@ public interface SendRoutingInfoForSMRequest extends SmsMessage {
 
     CorrelationID getCorrelationID();
 
+    boolean getSmsfSupportIndicator();
+
     // for MAP V1 only
     TeleserviceCode getTeleservice();
-
 }

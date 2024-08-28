@@ -112,10 +112,12 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIuB;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.EPSInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISRInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ISTSupportIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LAC;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.LocationArea;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PDNGWUpdate;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
@@ -123,6 +125,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Su
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedLCSCapabilitySets;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedRATTypes;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.VLRCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.IMSIWithLMSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AdditionalRequestedCAMELSubscriptionInfo;
@@ -135,6 +138,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallWaitingData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClipData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClirData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DaylightSavingTime;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DomainType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EUtranCgi;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EctData;
@@ -143,8 +147,10 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GPRSMSClass;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeodeticInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GeographicalInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.IMSVoiceOverPsSessionsIndication;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LIPAPermission;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation5GS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationEPS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformationGPRS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationNumberMap;
@@ -163,7 +169,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedCAMELSubscriptionInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedServingNode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedNodes;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedSubscriptionInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RouteingNumber;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SIPTOPermission;
@@ -172,6 +178,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TAId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TEID;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TransactionId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AMBR;
@@ -572,10 +579,14 @@ public interface MAPParameterFactory {
      */
     MAPUserAbortChoice createMAPUserAbortChoice();
 
-    MWStatus createMWStatus(boolean scAddressNotIncluded, boolean mnrfSet, boolean mcefSet, boolean mnrgSet);
+    MWStatus createMWStatus(boolean scAddressNotIncluded, boolean mnrfSet, boolean mcefSet, boolean mnrgSet, boolean mnr5gSet, boolean mnr5gn3gSet);
 
     LocationInfoWithLMSI createLocationInfoWithLMSI(ISDNAddressString networkNodeNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
-            boolean gprsNodeIndicator, AdditionalNumber additionalNumber);
+            boolean gprsNodeIndicator, AdditionalNumber additionalNumber, NetworkNodeDiameterAddress networkNodeDiameterAddress,
+            NetworkNodeDiameterAddress additionalNetworkNodeDiameterAddress, AdditionalNumber thirdNumber,
+            NetworkNodeDiameterAddress thirdNetworkNodeDiameterAddress, boolean imsNodeIndicator, ISDNAddressString smsf3gppNumber,
+            NetworkNodeDiameterAddress smsf3gppDiameterAddress, ISDNAddressString smsfNon3gppNumber, NetworkNodeDiameterAddress smsfNon3gppDiameterAddress,
+            boolean smsf3gppAddressIndicator, boolean smsfNon3gppAddressIndicator);
 
     /**
      * Creates a new instance of {@link MAPPrivateExtension} for {@link MAPExtensionContainer}
@@ -667,7 +678,7 @@ public interface MAPParameterFactory {
             boolean mgCsi, boolean psiEnhancements);
 
     SupportedRATTypes createSupportedRATTypes(boolean utran, boolean geran, boolean gan, boolean i_hspa_evolution,
-            boolean e_utran);
+            boolean e_utran, boolean nb_iot);
 
     ADDInfo createADDInfo(IMEI imeisv, boolean skipSubscriberDataUpdate);
 
@@ -808,7 +819,7 @@ public interface MAPParameterFactory {
 
     RequestedInfo createRequestedInfo(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer,
             boolean currentLocation, DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo,
-            boolean locationInformationEPSSupported, boolean tadsData, RequestedServingNode requestedServingNode,
+            boolean locationInformationEPSSupported, boolean tadsData, RequestedNodes requestedNodes,
             boolean servingNodeIndication, boolean localTimeZoneRequest);
 
     RouteingNumber createRouteingNumber(String data);
@@ -816,7 +827,10 @@ public interface MAPParameterFactory {
     SubscriberInfo createSubscriberInfo(LocationInformation locationInformation, SubscriberState subscriberState,
             MAPExtensionContainer extensionContainer, LocationInformationGPRS locationInformationGPRS,
             PSSubscriberState psSubscriberState, IMEI imei, MSClassmark2 msClassmark2, GPRSMSClass gprsMSClass,
-            MNPInfoRes mnpInfoRes);
+            MNPInfoRes mnpInfoRes, IMSVoiceOverPsSessionsIndication imsVoiceOverPsSessionsIndication,
+            Time lastUEActivityTime, UsedRATType lastRATType, PSSubscriberState epsSubscriberState,
+            LocationInformationEPS locationInformationEPS, TimeZone timeZone, DaylightSavingTime daylightSavingTime,
+            LocationInformation5GS locationInformation5GS);
 
     UserCSGInformation createUserCSGInformation(CSGId csgId, MAPExtensionContainer extensionContainer,
             Integer accessMode, Integer cmi);
@@ -1105,7 +1119,11 @@ public interface MAPParameterFactory {
             boolean regSub, boolean trace, boolean lcsAllPrivExcep, boolean lcsUniversal, boolean lcsCallSessionRelated,
             boolean lcsCallSessionUnrelated, boolean lcsPLMNOperator, boolean lcsServiceType, boolean lcsAllMOLRSS,
             boolean lcsBasicSelfLocation, boolean lcsAutonomousSelfLocation, boolean lcsTransferToThirdParty, boolean smMoPp,
-            boolean barringOutgoingCalls, boolean baoc, boolean boic, boolean boicExHC);
+            boolean barringOutgoingCalls, boolean baoc, boolean boic, boolean boicExHC, boolean localTimeZoneRetrieval,
+            boolean additionalMsisdn, boolean smsInMME, boolean smsInSGSN, boolean ueReachabilityNotification,
+            boolean stateLocationInformationRetrieval, boolean partialPurge, boolean gddInSGSN, boolean sgsnCAMELCapability,
+            boolean pcscfRestoration, boolean dedicatedCoreNetworks, boolean nonIPPDNTypeAPNs, boolean nonIPPDPTypeAPNs,
+            boolean nrAsSecondaryRAT);
 
     AccessRestrictionData createAccessRestrictionData(boolean utranNotAllowed, boolean geranNotAllowed,
             boolean ganNotAllowed, boolean iHspaEvolutionNotAllowed, boolean eUtranNotAllowed,
@@ -1329,7 +1347,9 @@ public interface MAPParameterFactory {
             SupportedCamelPhases supportedCamelPhases, SupportedLCSCapabilitySets supportedLCSCapabilitySets,
             OfferedCamel4CSIs offeredCamel4CSIs, boolean smsCallBarringSupportIndicator,
             SupportedRATTypes supportedRATTypesIndicator, SupportedFeatures supportedFeatures, boolean tAdsDataRetrieval,
-            Boolean homogeneousSupportOfIMSVoiceOverPSSessions);
+            Boolean homogeneousSupportOfIMSVoiceOverPSSessions, boolean cancellationTypeInitialAttach,
+            boolean misdnlessOperationSupported, boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions,
+            boolean resetIdsSupported, ExtSupportedFeatures extSupportedFeatures);
 
     OfferedCamel4Functionalities createOfferedCamel4Functionalities(boolean initiateCallAttempt, boolean splitLeg, boolean moveLeg, boolean disconnectLeg,
             boolean entityReleased, boolean dfcWithArgument, boolean playTone, boolean dtmfMidCall, boolean chargingIndicator, boolean alertingDP,

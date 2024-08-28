@@ -11,6 +11,7 @@ import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SGSNCapability;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SuperChargerInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
@@ -27,6 +28,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Supp
  *
  * @author Lasith Waruna Perera
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
@@ -42,6 +44,11 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
     private static final int TAG_supportedFeatures = 9;
     private static final int TAG_tAdsDataRetrieval = 10;
     private static final int TAG_homogeneousSupportOfIMSVoiceOverPSSessions = 11;
+    private static final int TAG_cancellationTypeInitialAttach = 12;
+    private static final int TAG_misdnlessOperationSupported = 14;
+    private static final int TAG_updateOfHomogeneousSupportOfIMSVoiceOverPSSessions = 15;
+    private static final int TAG_resetIdsSupported = 16;
+    private static final int TAG_extSupportedFeatures = 17;
 
     private boolean solsaSupportIndicator;
     private MAPExtensionContainer extensionContainer;
@@ -55,6 +62,12 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
     private SupportedFeatures supportedFeatures;
     private boolean tAdsDataRetrieval;
     private Boolean homogeneousSupportOfIMSVoiceOverPSSessions;
+    private boolean cancellationTypeInitialAttach;
+    private boolean misdnlessOperationSupported;
+    private boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions;
+    private boolean resetIdsSupported;
+    private ExtSupportedFeatures extSupportedFeatures;
+
 
     public SGSNCapabilityImpl() {
         super("SGSNCapability");
@@ -64,8 +77,11 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
             SuperChargerInfo superChargerSupportedInServingNetworkEntity, boolean gprsEnhancementsSupportIndicator,
             SupportedCamelPhases supportedCamelPhases, SupportedLCSCapabilitySets supportedLCSCapabilitySets,
             OfferedCamel4CSIs offeredCamel4CSIs, boolean smsCallBarringSupportIndicator,
-            SupportedRATTypes supportedRATTypesIndicator, SupportedFeatures supportedFeatures, boolean tAdsDataRetrieval,
-            Boolean homogeneousSupportOfIMSVoiceOverPSSessions) {
+            SupportedRATTypes supportedRATTypesIndicator, SupportedFeatures supportedFeatures,
+            boolean tAdsDataRetrieval, Boolean homogeneousSupportOfIMSVoiceOverPSSessions,
+            boolean cancellationTypeInitialAttach, boolean misdnlessOperationSupported,
+            boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions, boolean resetIdsSupported,
+            ExtSupportedFeatures extSupportedFeatures) {
         super("SGSNCapability");
         this.solsaSupportIndicator = solsaSupportIndicator;
         this.extensionContainer = extensionContainer;
@@ -79,6 +95,11 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
         this.supportedFeatures = supportedFeatures;
         this.tAdsDataRetrieval = tAdsDataRetrieval;
         this.homogeneousSupportOfIMSVoiceOverPSSessions = homogeneousSupportOfIMSVoiceOverPSSessions;
+        this.cancellationTypeInitialAttach = cancellationTypeInitialAttach;
+        this.misdnlessOperationSupported = misdnlessOperationSupported;
+        this.updateOfHomogeneousSupportOfIMSVoiceOverPSSessions = updateOfHomogeneousSupportOfIMSVoiceOverPSSessions;
+        this.resetIdsSupported = resetIdsSupported;
+        this.extSupportedFeatures = extSupportedFeatures;
     }
 
     @Override
@@ -142,6 +163,31 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
     }
 
     @Override
+    public boolean getCancellationTypeInitialAttach() {
+        return this.cancellationTypeInitialAttach;
+    }
+
+    @Override
+    public boolean getMsisdnlessOperationSupported() {
+        return this.misdnlessOperationSupported;
+    }
+
+    @Override
+    public boolean getUpdateOfHomogeneousSupportOfIMSVoiceOverPSSessions() {
+        return this.updateOfHomogeneousSupportOfIMSVoiceOverPSSessions;
+    }
+
+    @Override
+    public boolean getResetIdsSupported() {
+        return this.resetIdsSupported;
+    }
+
+    @Override
+    public ExtSupportedFeatures getExtSupportedFeatures() {
+        return this.extSupportedFeatures;
+    }
+
+    @Override
     protected void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
         this.solsaSupportIndicator = false;
         this.extensionContainer = null;
@@ -155,6 +201,11 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
         this.supportedFeatures = null;
         this.tAdsDataRetrieval = false;
         this.homogeneousSupportOfIMSVoiceOverPSSessions = null;
+        this.cancellationTypeInitialAttach = false;
+        this.misdnlessOperationSupported = false;
+        this.updateOfHomogeneousSupportOfIMSVoiceOverPSSessions = false;
+        this.resetIdsSupported = false;
+        this.extSupportedFeatures = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
 
@@ -269,6 +320,46 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                     this.homogeneousSupportOfIMSVoiceOverPSSessions = ais.readBoolean();
                     break;
+                    case TAG_cancellationTypeInitialAttach:
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".cancellationTypeInitialAttach: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.cancellationTypeInitialAttach = true;
+                        break;
+                    case TAG_misdnlessOperationSupported:
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".misdnlessOperationSupported: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.misdnlessOperationSupported = true;
+                        break;
+                    case TAG_updateOfHomogeneousSupportOfIMSVoiceOverPSSessions:
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".updateOfHomogeneousSupportOfIMSVoiceOverPSSessions: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.updateOfHomogeneousSupportOfIMSVoiceOverPSSessions = true;
+                        break;
+                    case TAG_resetIdsSupported:
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".resetIdsSupported: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.resetIdsSupported = true;
+                        break;
+                    case TAG_extSupportedFeatures:
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".extSupportedFeatures: Parameter extSupportedFeatures is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.extSupportedFeatures = new ExtSupportedFeaturesImpl();
+                        ((ExtSupportedFeaturesImpl) this.extSupportedFeatures).decodeAll(ais);
+                        break;
                 default:
                     ais.advanceElement();
                     break;
@@ -325,15 +416,29 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
                 ((SupportedFeaturesImpl) this.supportedFeatures).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                         TAG_supportedFeatures);
 
-            if (this.smsCallBarringSupportIndicator)
-                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_smsCallBarringSupportIndicator);
-
             if (this.tAdsDataRetrieval)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_tAdsDataRetrieval);
 
             if (this.homogeneousSupportOfIMSVoiceOverPSSessions != null) {
                 asnOutputStream.writeBoolean(Tag.CLASS_CONTEXT_SPECIFIC, TAG_homogeneousSupportOfIMSVoiceOverPSSessions,
                         this.homogeneousSupportOfIMSVoiceOverPSSessions);
+            }
+
+            if (this.cancellationTypeInitialAttach)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_cancellationTypeInitialAttach);
+
+            if (this.misdnlessOperationSupported)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_misdnlessOperationSupported);
+
+            if (this.updateOfHomogeneousSupportOfIMSVoiceOverPSSessions)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_updateOfHomogeneousSupportOfIMSVoiceOverPSSessions);
+
+            if (this.resetIdsSupported)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, TAG_resetIdsSupported);
+
+            if (this.extSupportedFeatures != null) {
+                ((ExtSupportedFeaturesImpl) this.extSupportedFeatures).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
+                        TAG_extSupportedFeatures);
             }
 
         } catch (IOException e) {
@@ -355,13 +460,13 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(", ");
         }
 
         if (this.superChargerSupportedInServingNetworkEntity != null) {
             sb.append("superChargerSupportedInServingNetworkEntity=");
-            sb.append(this.superChargerSupportedInServingNetworkEntity.toString());
+            sb.append(this.superChargerSupportedInServingNetworkEntity);
             sb.append(", ");
         }
 
@@ -371,19 +476,19 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
 
         if (this.supportedCamelPhases != null) {
             sb.append("supportedCamelPhases=");
-            sb.append(this.supportedCamelPhases.toString());
+            sb.append(this.supportedCamelPhases);
             sb.append(", ");
         }
 
         if (this.supportedLCSCapabilitySets != null) {
             sb.append("supportedLCSCapabilitySets=");
-            sb.append(this.supportedLCSCapabilitySets.toString());
+            sb.append(this.supportedLCSCapabilitySets);
             sb.append(", ");
         }
 
         if (this.offeredCamel4CSIs != null) {
             sb.append("offeredCamel4CSIs=");
-            sb.append(this.offeredCamel4CSIs.toString());
+            sb.append(this.offeredCamel4CSIs);
             sb.append(", ");
         }
 
@@ -393,13 +498,13 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
 
         if (this.supportedRATTypesIndicator != null) {
             sb.append("supportedRATTypesIndicator=");
-            sb.append(this.supportedRATTypesIndicator.toString());
+            sb.append(this.supportedRATTypesIndicator);
             sb.append(", ");
         }
 
         if (this.supportedFeatures != null) {
             sb.append("supportedFeatures=");
-            sb.append(this.supportedFeatures.toString());
+            sb.append(this.supportedFeatures);
             sb.append(", ");
         }
 
@@ -409,7 +514,29 @@ public class SGSNCapabilityImpl extends SequenceBase implements SGSNCapability {
 
         if (this.homogeneousSupportOfIMSVoiceOverPSSessions != null) {
             sb.append("homogeneousSupportOfIMSVoiceOverPSSessions=");
-            sb.append(this.homogeneousSupportOfIMSVoiceOverPSSessions.toString());
+            sb.append(this.homogeneousSupportOfIMSVoiceOverPSSessions);
+            sb.append(", ");
+        }
+
+        if (this.cancellationTypeInitialAttach) {
+            sb.append("cancellationTypeInitialAttach, ");
+        }
+
+        if (this.misdnlessOperationSupported) {
+            sb.append("misdnlessOperationSupported, ");
+        }
+
+        if (this.updateOfHomogeneousSupportOfIMSVoiceOverPSSessions) {
+            sb.append("updateOfHomogeneousSupportOfIMSVoiceOverPSSessions, ");
+        }
+
+        if (this.resetIdsSupported) {
+            sb.append("resetIdsSupported, ");
+        }
+
+        if (this.extSupportedFeatures != null) {
+            sb.append("extSupportedFeatures=");
+            sb.append(this.extSupportedFeatures);
         }
 
         sb.append("]");

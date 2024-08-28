@@ -37,6 +37,20 @@ public class SupportedFeaturesImpl extends BitStringBase implements SupportedFea
     private static final int _INDEX_baoc = 23;
     private static final int _INDEX_boic = 24;
     private static final int _INDEX_boicExHC = 25;
+    private static final int _INDEX_localTimeZoneRetrieval = 26;
+    private static final int _INDEX_additionalMsisdn = 27;
+    private static final int _INDEX_smsInMME = 28 ;
+    private static final int _INDEX_smsInSGSN = 29;
+    private static final int _INDEX_ueReachabilityNotification = 30;
+    private static final int _INDEX_stateLocationInformationRetrieval = 31;
+    private static final int _INDEX_partialPurge = 32;
+    private static final int _INDEX_gddInSGSN = 33;
+    private static final int _INDEX_sgsnCAMELCapability = 34;
+    private static final int _INDEX_pcscfRestoration = 35;
+    private static final int _INDEX_dedicatedCoreNetworks = 36;
+    private static final int _INDEX_nonIPPDNTypeAPNs = 37;
+    private static final int _INDEX_nonIPPDPTypeAPNs = 38;
+    private static final int _INDEX_nrAsSecondaryRAT = 39;
 
     public SupportedFeaturesImpl() {
         super(26, 40, 26, "SupportedFeatures");
@@ -48,8 +62,13 @@ public class SupportedFeaturesImpl extends BitStringBase implements SupportedFea
             boolean regSub, boolean trace, boolean lcsAllPrivExcep, boolean lcsUniversal, boolean lcsCallSessionRelated,
             boolean lcsCallSessionUnrelated, boolean lcsPLMNOperator, boolean lcsServiceType, boolean lcsAllMOLRSS,
             boolean lcsBasicSelfLocation, boolean lcsAutonomousSelfLocation, boolean lcsTransferToThirdParty, boolean smMoPp,
-            boolean barringOutgoingCalls, boolean baoc, boolean boic, boolean boicExHC) {
-        super(26, 40, 26, "SupportedFeatures");
+            boolean barringOutgoingCalls, boolean baoc, boolean boic, boolean boicExHC, boolean localTimeZoneRetrieval,
+            boolean additionalMsisdn, boolean smsInMME, boolean smsInSGSN, boolean ueReachabilityNotification,
+            boolean stateLocationInformationRetrieval, boolean partialPurge, boolean gddInSGSN, boolean sgsnCAMELCapability,
+            boolean pcscfRestoration, boolean dedicatedCoreNetworks, boolean nonIPPDNTypeAPNs, boolean nonIPPDPTypeAPNs,
+            boolean nrAsSecondaryRAT) {
+
+        super(26, 40, 40, "SupportedFeatures");
 
         if (odbAllApn)
             this.bitString.set(_INDEX_odbAllApn);
@@ -103,6 +122,34 @@ public class SupportedFeaturesImpl extends BitStringBase implements SupportedFea
             this.bitString.set(_INDEX_boic);
         if (boicExHC)
             this.bitString.set(_INDEX_boicExHC);
+        if (localTimeZoneRetrieval)
+            this.bitString.set(_INDEX_localTimeZoneRetrieval);
+        if (additionalMsisdn)
+            this.bitString.set(_INDEX_additionalMsisdn);
+        if (smsInMME)
+            this.bitString.set(_INDEX_smsInMME);
+        if (smsInSGSN)
+            this.bitString.set(_INDEX_smsInSGSN);
+        if (ueReachabilityNotification)
+            this.bitString.set(_INDEX_ueReachabilityNotification);
+        if (stateLocationInformationRetrieval)
+            this.bitString.set(_INDEX_stateLocationInformationRetrieval);
+        if (partialPurge)
+            this.bitString.set(_INDEX_partialPurge);
+        if (gddInSGSN)
+            this.bitString.set(_INDEX_gddInSGSN);
+        if (sgsnCAMELCapability)
+            this.bitString.set(_INDEX_sgsnCAMELCapability);
+        if (pcscfRestoration)
+            this.bitString.set(_INDEX_pcscfRestoration);
+        if (dedicatedCoreNetworks)
+            this.bitString.set(_INDEX_dedicatedCoreNetworks);
+        if (nonIPPDNTypeAPNs)
+            this.bitString.set(_INDEX_nonIPPDNTypeAPNs);
+        if (nonIPPDPTypeAPNs)
+            this.bitString.set(_INDEX_nonIPPDPTypeAPNs);
+        if (nrAsSecondaryRAT)
+            this.bitString.set(_INDEX_nrAsSecondaryRAT);
     }
 
     @Override
@@ -236,10 +283,81 @@ public class SupportedFeaturesImpl extends BitStringBase implements SupportedFea
     }
 
     @Override
+    public boolean getLocalTimeZoneRetrieval() {
+        return this.bitString.get(_INDEX_localTimeZoneRetrieval);
+    }
+
+    @Override
+    public boolean getAdditionalMsisdn() {
+        return this.bitString.get(_INDEX_additionalMsisdn);
+    }
+
+    @Override
+    public boolean getSmsInMME() {
+        return this.bitString.get(_INDEX_smsInMME);
+    }
+
+    @Override
+    public boolean getSmsInSGSN() {
+        return this.bitString.get(_INDEX_smsInSGSN);
+    }
+
+    @Override
+    public boolean getUeReachabilityNotification() {
+        return this.bitString.get(_INDEX_ueReachabilityNotification);
+    }
+
+    @Override
+    public boolean getStateLocationInformationRetrieval() {
+        return this.bitString.get(_INDEX_stateLocationInformationRetrieval);
+    }
+
+    @Override
+    public boolean getPartialPurge() {
+        return this.bitString.get(_INDEX_partialPurge);
+    }
+
+    @Override
+    public boolean getGddInSGSN() {
+        return this.bitString.get(_INDEX_gddInSGSN);
+    }
+
+    @Override
+    public boolean getSgsnCAMELCapability() {
+        return this.bitString.get(_INDEX_sgsnCAMELCapability);
+    }
+
+    @Override
+    public boolean getPcscfRestoration() {
+        return this.bitString.get(_INDEX_pcscfRestoration);
+    }
+
+    @Override
+    public boolean getDedicatedCoreNetworks() {
+        return this.bitString.get(_INDEX_dedicatedCoreNetworks);
+    }
+
+    @Override
+    public boolean getNonIPPDNTypeAPNs() {
+        return this.bitString.get(_INDEX_nonIPPDNTypeAPNs);
+    }
+
+    @Override
+    public boolean getNonIPPDPTypeAPNs() {
+        return this.bitString.get(_INDEX_nonIPPDPTypeAPNs);
+    }
+
+    @Override
+    public boolean getNrAsSecondaryRAT() {
+        return this.bitString.get(_INDEX_nrAsSecondaryRAT);
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(_PrimitiveName);
         sb.append(" [");
+
         if (this.getOdbAllApn())
             sb.append("odbAllApn, ");
         if (this.getOdbHPLMNApn())
@@ -291,7 +409,35 @@ public class SupportedFeaturesImpl extends BitStringBase implements SupportedFea
         if (this.getBoic())
             sb.append("boic, ");
         if (this.getBoicExHC())
-            sb.append("boicExHC ");
+            sb.append("boicExHC, ");
+        if (this.getLocalTimeZoneRetrieval())
+            sb.append("localTimeZoneRetrieval, ");
+        if (this.getAdditionalMsisdn())
+            sb.append("additionalMsisdn, ");
+        if (this.getSmsInMME())
+            sb.append("smsInMME, ");
+        if (this.getSmsInSGSN())
+            sb.append("smsInSGSN, ");
+        if (this.getUeReachabilityNotification())
+            sb.append("ue-Reachability-Notification, ");
+        if (this.getStateLocationInformationRetrieval())
+            sb.append("state-Location-Information-Retrieval, ");
+        if (this.getPartialPurge())
+            sb.append("partialPurge, ");
+        if (this.getGddInSGSN())
+            sb.append("gddInSGSN, ");
+        if (this.getSgsnCAMELCapability())
+            sb.append("sgsnCAMELCapability, ");
+        if (this.getPcscfRestoration())
+            sb.append("pcscf-Restoration, ");
+        if (this.getDedicatedCoreNetworks())
+            sb.append("dedicatedCoreNetworks, ");
+        if (this.getNonIPPDNTypeAPNs())
+            sb.append("non-IP-PDN-Type-APNs, ");
+        if (this.getNonIPPDPTypeAPNs())
+            sb.append("non-IP-PDP-Type-APNs, ");
+        if (this.getNrAsSecondaryRAT())
+            sb.append("nrAsSecondaryRAT, ");
 
         sb.append("]");
         return sb.toString();

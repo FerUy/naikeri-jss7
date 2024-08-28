@@ -20,7 +20,7 @@ public enum SMDeliveryNotIntended {
 
     private int code;
 
-    private SMDeliveryNotIntended(int code) {
+    SMDeliveryNotIntended(int code) {
         this.code = code;
     }
 

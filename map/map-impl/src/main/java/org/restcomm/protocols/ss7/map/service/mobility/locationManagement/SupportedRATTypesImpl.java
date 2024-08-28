@@ -27,15 +27,17 @@ public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive
     private static final int _INDEX_gan = 2;
     private static final int _INDEX_i_hspa_evolution = 3;
     private static final int _INDEX_e_utran = 4;
+    private static final int _INDEX_nb_iot = 5;
 
     public static final String _PrimitiveName = "SupportedRATTypes";
 
-    private BitSetStrictLength bitString = new BitSetStrictLength(5);
+    private BitSetStrictLength bitString = new BitSetStrictLength(6);
 
     public SupportedRATTypesImpl() {
     }
 
-    public SupportedRATTypesImpl(boolean utran, boolean geran, boolean gan, boolean i_hspa_evolution, boolean e_utran) {
+    public SupportedRATTypesImpl(boolean utran, boolean geran, boolean gan, boolean i_hspa_evolution, boolean e_utran,
+                                 boolean nb_iot) {
         if (utran)
             this.bitString.set(_INDEX_utran);
         if (geran)
@@ -46,6 +48,8 @@ public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive
             this.bitString.set(_INDEX_i_hspa_evolution);
         if (e_utran)
             this.bitString.set(_INDEX_e_utran);
+        if (nb_iot)
+            this.bitString.set(_INDEX_nb_iot);
     }
 
     public int getTag() throws MAPException {
@@ -80,6 +84,10 @@ public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive
         return this.bitString.get(_INDEX_e_utran);
     }
 
+    public boolean getNbIot() {
+        return this.bitString.get(_INDEX_nb_iot);
+    }
+
     public void decodeAll(AsnInputStream asnInputStream) throws MAPParsingComponentException {
         try {
             int length = asnInputStream.readLength();
@@ -108,7 +116,7 @@ public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive
     private void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
         if (length < 1 || length > 2)
             throw new MAPParsingComponentException("Error decoding " + _PrimitiveName
-                    + ": the field must contain from 1 or 2 octets. Contains: " + length,
+                    + ": the field must contain 1 or 2 octets. Contains: " + length,
                     MAPParsingComponentExceptionReason.MistypedParameter);
 
         this.bitString = asnInputStream.readBitStringData(length);
@@ -178,7 +186,9 @@ public class SupportedRATTypesImpl implements SupportedRATTypes, MAPAsnPrimitive
         if (getIHspaEvolution())
             sb.append("i_hspa_evolution, ");
         if (getEUtran())
-            sb.append("e_utran, ");
+            sb.append("e-utran, ");
+        if (getNbIot())
+            sb.append("nb-iot");
 
         sb.append("]");
 

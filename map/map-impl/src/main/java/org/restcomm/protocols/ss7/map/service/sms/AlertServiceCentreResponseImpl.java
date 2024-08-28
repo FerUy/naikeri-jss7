@@ -11,10 +11,12 @@ import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreResponse;
 
+/**
+ * @author sergey vetyutnev
+ */
 public class AlertServiceCentreResponseImpl extends SmsMessageImpl implements AlertServiceCentreResponse {
 
     public int getTag() throws MAPException {
-
         throw new MAPException("AlertServiceCentreResponse has no MAP message primitive");
     }
 
@@ -27,7 +29,6 @@ public class AlertServiceCentreResponseImpl extends SmsMessageImpl implements Al
     }
 
     public int getTagClass() {
-
         return Tag.CLASS_UNIVERSAL;
     }
 

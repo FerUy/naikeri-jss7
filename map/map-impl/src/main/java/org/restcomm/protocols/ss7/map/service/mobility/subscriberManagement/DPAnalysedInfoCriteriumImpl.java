@@ -89,7 +89,6 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
 
             switch (num) {
                 case 0:
-
                     if (tag != Tag.STRING_OCTET || ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ".dialledNumber: Parameter is bad tag, tag class or not primitive",
@@ -103,7 +102,7 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ".serviceKey :Parameter is bad tag, tag class or not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
-                    this.serviceKey = (long) ais.readInteger();
+                    this.serviceKey = ais.readInteger();
                     break;
                 case 2:
                     if (tag != Tag.STRING_OCTET || ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive())
@@ -114,7 +113,7 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
                     ((ISDNAddressStringImpl) this.gsmSCFAddress).decodeAll(ais);
                     break;
                 case 3:
-                    if (tag != Tag.INTEGER || ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive())
+                    if (tag != Tag.ENUMERATED || ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ".defaultCallHandling: Parameter is bad tag, tag class or not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
@@ -139,7 +138,7 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
                                     break;
                             }
                         }
-                            break;
+                        break;
                         default:
                             ais.advanceElement();
                             break;
@@ -151,25 +150,25 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
 
         if (this.dialledNumber == null) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Parament dialledNumber is mandatory but does not found",
+                    + ": Parameter dialledNumber is mandatory but not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
 
         if (this.gsmSCFAddress == null) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Parament gsmSCFAddress is mandatory but does not found",
+                    + ": Parameter gsmSCFAddress is mandatory but not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
 
         if (this.defaultCallHandling == null) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Parament defaultCallHandling is mandatory but does not found",
+                    + ": Parameter defaultCallHandling is mandatory but not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
 
         if (this.serviceKey == -1) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Parament serviceKey is mandatory but does not found",
+                    + ": Parameter serviceKey is mandatory but not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
     }
@@ -193,7 +192,7 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
 
             ((ISDNAddressStringImpl) this.gsmSCFAddress).encodeAll(asnOutputStream);
 
-            asnOutputStream.writeInteger(this.defaultCallHandling.getCode());
+            asnOutputStream.writeInteger(Tag.CLASS_UNIVERSAL, Tag.ENUMERATED, this.defaultCallHandling.getCode());
 
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
@@ -208,11 +207,11 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.dialledNumber != null) {
             sb.append("dialledNumber=");
-            sb.append(this.dialledNumber.toString());
+            sb.append(this.dialledNumber);
             sb.append(", ");
         }
 
@@ -222,19 +221,19 @@ public class DPAnalysedInfoCriteriumImpl extends SequenceBase implements DPAnaly
 
         if (this.gsmSCFAddress != null) {
             sb.append("gsmSCFAddress=");
-            sb.append(this.gsmSCFAddress.toString());
+            sb.append(this.gsmSCFAddress);
             sb.append(", ");
         }
 
         if (this.defaultCallHandling != null) {
             sb.append("defaultCallHandling=");
-            sb.append(this.defaultCallHandling.toString());
+            sb.append(this.defaultCallHandling);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(" ");
         }
         sb.append("]");

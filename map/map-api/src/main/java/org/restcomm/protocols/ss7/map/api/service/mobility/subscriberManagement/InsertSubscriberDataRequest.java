@@ -9,6 +9,8 @@ import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NAEAPreferredCI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 
 /**
@@ -36,35 +38,50 @@ InsertSubscriberData ::= OPERATION
 ERRORS { DataMissing, UnexpectedDataValue, UnidentifiedSubscriber}
 
 MAP V3: InsertSubscriberDataArg ::= SEQUENCE {
-  imsi                  [0] IMSI OPTIONAL,
+  imsi                                           [0] IMSI OPTIONAL,
   COMPONENTS OF SubscriberData,
-  extensionContainer    [14] ExtensionContainer OPTIONAL,
+  extensionContainer                             [14] ExtensionContainer OPTIONAL,
   ...,
-  naea-PreferredCI      [15] NAEA-PreferredCI OPTIONAL,
+  naea-PreferredCI                               [15] NAEA-PreferredCI OPTIONAL,
   -- naea-PreferredCI is included at the discretion of the HLR operator.
-  gprsSubscriptionData  [16] GPRSSubscriptionData OPTIONAL,
+  gprsSubscriptionData                           [16] GPRSSubscriptionData OPTIONAL,
   roamingRestrictedInSgsnDueToUnsupportedFeature [23] NULL OPTIONAL,
-  networkAccessMode     [24] NetworkAccessMode OPTIONAL,
-  lsaInformation        [25] LSAInformation OPTIONAL,
-  lmu-Indicator         [21] NULL OPTIONAL,
-  lcsInformation        [22] LCSInformation OPTIONAL,
-  istAlertTimer         [26] IST-AlertTimerValue OPTIONAL,
-  superChargerSupportedInHLR [27] AgeIndicator OPTIONAL,
-  mc-SS-Info            [28] MC-SS-Info OPTIONAL,
-  cs-AllocationRetentionPriority [29] CS-AllocationRetentionPriority OPTIONAL,
-  sgsn-CAMEL-SubscriptionInfo    [17] SGSN-CAMEL-SubscriptionInfo OPTIONAL,
-  chargingCharacteristics        [18] ChargingCharacteristics OPTIONAL,
-  accessRestrictionData          [19] AccessRestrictionData OPTIONAL,
-  ics-Indicator                  [20] BOOLEAN OPTIONAL,
-  eps-SubscriptionData           [31] EPS-SubscriptionData OPTIONAL,
-  csg-SubscriptionDataList       [32] CSG-SubscriptionDataList OPTIONAL,
-  ue-ReachabilityRequestIndicator [33] NULL OPTIONAL,
-  sgsn-Number                    [34] ISDN-AddressString OPTIONAL,
-  mme-Name                       [35] DiameterIdentity OPTIONAL,
-  subscribedPeriodicRAUTAUtimer  [36] SubscribedPeriodicRAUTAUtimer OPTIONAL,
-  vplmnLIPAAllowed               [37] NULL OPTIONAL,
-  mdtUserConsent                 [38] BOOLEAN OPTIONAL,
-  subscribedPeriodicLAUtimer     [39] SubscribedPeriodicLAUtimer OPTIONAL
+  networkAccessMode                              [24] NetworkAccessMode OPTIONAL,
+  lsaInformation                                 [25] LSAInformation OPTIONAL,
+  lmu-Indicator                                  [21] NULL OPTIONAL,
+  lcsInformation                                 [22] LCSInformation OPTIONAL,
+  istAlertTimer                                  [26] IST-AlertTimerValue OPTIONAL,
+  superChargerSupportedInHLR                     [27] AgeIndicator OPTIONAL,
+  mc-SS-Info                                     [28] MC-SS-Info OPTIONAL,
+  cs-AllocationRetentionPriority                 [29] CS-AllocationRetentionPriority OPTIONAL,
+  sgsn-CAMEL-SubscriptionInfo                    [17] SGSN-CAMEL-SubscriptionInfo OPTIONAL,
+  chargingCharacteristics                        [18] ChargingCharacteristics OPTIONAL,
+  accessRestrictionData                          [19] AccessRestrictionData OPTIONAL,
+  ics-Indicator                                  [20] BOOLEAN OPTIONAL,
+  eps-SubscriptionData                           [31] EPS-SubscriptionData OPTIONAL,
+  csg-SubscriptionDataList                       [32] CSG-SubscriptionDataList OPTIONAL,
+  ue-ReachabilityRequestIndicator                [33] NULL OPTIONAL,
+  sgsn-Number                                    [34] ISDN-AddressString OPTIONAL,
+  mme-Name                                       [35] DiameterIdentity OPTIONAL,
+  subscribedPeriodicRAUTAUtimer                  [36] SubscribedPeriodicRAUTAUtimer OPTIONAL,
+  vplmnLIPAAllowed                               [37] NULL OPTIONAL,
+  mdtUserConsent                                 [38] BOOLEAN OPTIONAL,
+  subscribedPeriodicLAUtimer                     [39] SubscribedPeriodicLAUtimer OPTIONAL
+  vplmn-Csg-SubscriptionDataList                 [40] VPLMN-CSG-SubscriptionDataList OPTIONAL,
+  additionalMSISDN                               [41] ISDN-AddressString OPTIONAL,
+  psAndSMS-OnlyServiceProvision                  [42] NULL OPTIONAL,
+  smsInSGSNAllowed                               [43] NULL OPTIONAL,
+  cs-to-ps-SRVCC-Allowed-Indicator               [44] NULL OPTIONAL,
+  pcscf-Restoration-Request                      [45] NULL OPTIONAL,
+  adjacentAccessRestrictionDataList              [46] AdjacentAccessRestrictionDataList OPTIONAL,
+  imsi-Group-Id-List                             [47] IMSI-GroupIdList OPTIONAL,
+  ueUsageType                                    [48] UE-UsageType OPTIONAL,
+  userPlaneIntegrityProtectionIndicator          [49] NULL OPTIONAL,
+  dl-Buffering-Suggested-Packet-Count            [50] DL-Buffering-Suggested-Packet-Count OPTIONAL,
+  reset-Id-List                                  [51] Reset-Id-List OPTIONAL,
+  eDRX-Cycle-Length-List                         [52] EDRX-Cycle-Length-List OPTIONAL,
+  ext-AccessRestrictionData                      [53] Ext-AccessRestrictionData OPTIONAL,
+  iab-Operation-Allowed-Indicator                [54] NULL OPTIONAL
 }
 -- If the Network Access Mode parameter is sent, it shall be present only in
 -- the first sequence if segmentation is used
@@ -117,10 +134,11 @@ SubscribedPeriodicRAUTAUtimer ::= INTEGER (0..4294967295)
 SubscribedPeriodicLAUtimer ::= INTEGER (0..4294967295)
 -- This parameter carries the subscribed periodic LAU timer value in seconds.
 </code>
- *
+ * <p>
  *
  *
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public interface InsertSubscriberDataRequest extends MobilityMessage {
@@ -201,4 +219,33 @@ public interface InsertSubscriberDataRequest extends MobilityMessage {
 
     Long getSubscribedPeriodicLAUtimer();
 
+    ArrayList<CSGSubscriptionData> getVPLMNCSGSubscriptionDataList();
+
+    ISDNAddressString getAdditionalMSISDN();
+
+    boolean getPSandSMSOnlyServiceProvision();
+
+    boolean getSMSInSGSNAllowed();
+
+    boolean getCsToPsSRVCCAllowedIndicator();
+
+    boolean getPCSCFRestorationRequest();
+
+    ArrayList<AdjacentAccessRestrictionData> getAdjacentAccessRestrictionDataList();
+
+    ArrayList<IMSIGroupId> getIMSIGroupIdList();
+
+    UEUsageType getUEUsageType();
+
+    boolean getUserPlaneIntegrityProtectionIndicator();
+
+    Long getDLBufferingSuggestedPacketCount();
+
+    ArrayList<ResetId> getResetIdList();
+
+    ArrayList<EDRXCycleLength> getEDRXCycleLengthList();
+
+    ExtAccessRestrictionData getExtAccessRestrictionData();
+
+    boolean getIabOperationAllowedIndicator();
 }

@@ -25,8 +25,11 @@ import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NetworkResource;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.InformServiceCentreRequest;
@@ -47,6 +50,7 @@ import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_DA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_OA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.SmsGmscAlertEvent;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
 import org.restcomm.protocols.ss7.map.api.smstpdu.AddressField;
 import org.restcomm.protocols.ss7.map.api.smstpdu.CharacterSet;
@@ -90,8 +94,7 @@ import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface
  * @author sergey vetyutnev
  *
  */
-public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBean, Stoppable, MAPDialogListener,
-        MAPServiceSmsListener {
+public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBean, Stoppable, MAPDialogListener, MAPServiceSmsListener {
 
     public static String SOURCE_NAME = "TestSmsClient";
 
@@ -781,12 +784,24 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
             AddressString serviceCentreAddressDA = mapProvider.getMAPParameterFactory().createAddressString(
                     this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getAddressNature(),
                     this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getNumberingPlan(), serviceCentreAddr);
+            IMSI imsi = null;
+            CorrelationID correlationID = null;
+            Time maximumUeAvailabilityTime = null;
+            SmsGmscAlertEvent smsGmscAlertEvent = null;
+            NetworkNodeDiameterAddress smsGmscDiameterAddress = null;
+            ISDNAddressString newSGSNNumber = null;
+            NetworkNodeDiameterAddress newSGSNDiameterAddress = null;
+            ISDNAddressString newMMENumber = null;
+            NetworkNodeDiameterAddress newMMEDiameterAddress = null;
+            ISDNAddressString newMSCNumber = null;
 
             MAPDialogSms curDialog = mapProvider.getMAPServiceSms().createNewDialog(mapAppContext, this.mapMan.createOrigAddress(), null,
                     this.mapMan.createDestAddress(serviceCentreAddr, this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getSmscSsn()),
                     null);
 
-            curDialog.addAlertServiceCentreRequest(msisdn, serviceCentreAddressDA);
+            curDialog.addAlertServiceCentreRequest(msisdn, serviceCentreAddressDA, imsi, correlationID,
+                    maximumUeAvailabilityTime, smsGmscAlertEvent, smsGmscDiameterAddress, newSGSNNumber, newSGSNDiameterAddress,
+                    newMMENumber, newMMEDiameterAddress, newMSCNumber);
             curDialog.send();
             if (vers == MAPApplicationContextVersion.version1)
                 curDialog.release();
@@ -1146,7 +1161,7 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
                 this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getAddressNature(),
                 this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getNumberingPlan(),
                 this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getSriResponseVlr());
-        LocationInfoWithLMSI li = null;
+        LocationInfoWithLMSI li;
         boolean informServiceCentrePossible = false;
 
         try {
@@ -1164,7 +1179,9 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
 
             switch (sriReaction.intValue()) {
             case SRIReaction.VAL_RETURN_SUCCESS:
-                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, null, null, false, null);
+                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, null, null, false, null,
+                        null, null, null, null, false, null, null,
+                        null, null, false, false);
                 curDialog.addSendRoutingInfoForSMResponse(invokeId, imsi, li, null, null, null);
 
                 this.countSriResp++;
@@ -1179,7 +1196,9 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
 
             case SRIReaction.VAL_RETURN_SUCCESS_WITH_LMSI:
                 LMSI lmsi = mapProvider.getMAPParameterFactory().createLMSI(new byte[] { 11, 12, 13, 14 });
-                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, null, false, null);
+                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, null, false, null,
+                        null, null, null, null, false, null, null,
+                        null, null, false, false);
                 curDialog.addSendRoutingInfoForSMResponse(invokeId, imsi, li, null, null, null);
 
                 this.countSriResp++;
@@ -1259,20 +1278,20 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
                 case SRIInformServiceCenter.MWD_NO:
                     break;
                 case SRIInformServiceCenter.MWD_mcef:
-                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, false, true, false);
+                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, false, true, false, false, false);
                     break;
                 case SRIInformServiceCenter.MWD_mnrf:
-                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, true, false, false);
+                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, true, false, false, false, false);
                     break;
                 case SRIInformServiceCenter.MWD_mcef_mnrf:
-                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, true, true, false);
+                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, true, true, false, false, false);
                     break;
                 case SRIInformServiceCenter.MWD_mnrg:
-                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, false, false, true);
+                    mwStatus = mapProvider.getMAPParameterFactory().createMWStatus(scAddressNotIncluded, false, false, true, false, false);
                     break;
                 }
                 if (mwStatus != null) {
-                    curDialog.addInformServiceCentreRequest(null, mwStatus, null, null, null);
+                    curDialog.addInformServiceCentreRequest(null, mwStatus, null, null, null, null, null);
 
                     this.countIscReq++;
                     uData = this.createIscReqData(curDialog.getLocalDialogId(), mwStatus);

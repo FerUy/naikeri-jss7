@@ -259,7 +259,7 @@ public class UserCSGInformationImpl implements UserCSGInformation, MAPAsnPrimiti
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
 
         if (this.csgId == null)
-            throw new MAPException("Parametr csgId must not be null");
+            throw new MAPException("Parameter csgId must not be null");
 
         try {
             ((CSGIdImpl) this.csgId).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _ID_csgId);

@@ -1066,7 +1066,9 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
             switch (sriReaction.intValue()) {
             case SRIReaction.VAL_RETURN_SUCCESS:
             case SRIReaction.VAL_RETURN_SUCCESS_WITH_LMSI:
-                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, null, null, false, null);
+                li = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, null, null, false, null,
+                        null, null, null, null, false, null, null,
+                        null, null, false, false);
                 curDialog.addSendRoutingInfoForSMResponse(invokeId, imsi, li, null, null, null);
 
                 this.countSriResp++;
@@ -1077,7 +1079,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
                 break;
 
             case SRIReaction.VAL_ERROR_ABSENT_SUBSCRIBER:
-                MAPErrorMessage mapErrorMessage = null;
+                MAPErrorMessage mapErrorMessage;
                 switch (curDialog.getApplicationContext().getApplicationContextVersion()) {
                 case version1:
                     Boolean mwdSet = null;

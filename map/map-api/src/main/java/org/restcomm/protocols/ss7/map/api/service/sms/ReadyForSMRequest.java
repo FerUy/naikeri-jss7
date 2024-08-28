@@ -3,6 +3,7 @@ package org.restcomm.protocols.ss7.map.api.service.sms;
 
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
 
 /**
  *
@@ -30,16 +31,17 @@ ERRORS { DataMissing, UnexpectedDataValue, FacilityNotSupported, UnknownSubscrib
 MAP V3:
 
 ReadyForSM-Arg ::= SEQUENCE {
-  imsi                   [0] IMSI,
-  alertReason            AlertReason,
-  alertReasonIndicator   NULL OPTIONAL,
+  imsi                               [0] IMSI,
+  alertReason                        AlertReason,
+  alertReasonIndicator               NULL OPTIONAL,
   -- alertReasonIndicator is set only when the alertReason
   -- sent to HLR is for GPRS
-  extensionContainer     ExtensionContainer OPTIONAL,
+  extensionContainer                 ExtensionContainer OPTIONAL,
   ...,
-  additionalAlertReasonIndicator [1] NULL OPTIONAL
+  additionalAlertReasonIndicator     [1] NULL  OPTIONAL
   -- additionalAlertReasonIndicator is set only when the alertReason
   -- sent to HLR is for IP-SM-GW
+  maximumUeAvailabilityTime          Time  OPTIONAL
 }
 
 MAP V2:
@@ -51,9 +53,8 @@ ReadyForSM-Arg ::= SEQUENCE {
 }
 </code>
  *
- *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface ReadyForSMRequest extends SmsMessage {
 
@@ -67,4 +68,5 @@ public interface ReadyForSMRequest extends SmsMessage {
 
     boolean getAdditionalAlertReasonIndicator();
 
+    Time getMaximumUeAvailabilityTime();
 }

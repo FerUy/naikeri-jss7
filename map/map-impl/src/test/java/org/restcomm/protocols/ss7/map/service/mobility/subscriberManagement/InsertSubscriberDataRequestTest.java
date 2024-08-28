@@ -5,8 +5,10 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -23,16 +25,25 @@ import org.restcomm.protocols.ss7.map.api.primitives.ISDNSubaddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NAEACIC;
 import org.restcomm.protocols.ss7.map.api.primitives.NAEAPreferredCI;
+import org.restcomm.protocols.ss7.map.api.primitives.NetworkIdentificationPlanValue;
+import org.restcomm.protocols.ss7.map.api.primitives.NetworkIdentificationTypeValue;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientInternalID;
+import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UsedRATType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LIPAPermission;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PDPContext;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SIPTOPermission;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.*;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.CliRestrictionOption;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.OverrideCategory;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.SSSubscriptionOption;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.FTNAddressStringImpl;
@@ -42,94 +53,20 @@ import org.restcomm.protocols.ss7.map.primitives.ISDNSubaddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
 import org.restcomm.protocols.ss7.map.primitives.NAEACICImpl;
 import org.restcomm.protocols.ss7.map.primitives.NAEAPreferredCIImpl;
+import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.LCSClientExternalIDImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.authentication.UEUsageTypeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.ResetIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.PDPContextImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AMBRImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationProfileImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNOIReplacementImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AccessRestrictionDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AdditionalInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AdditionalSubscriptionsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AgeIndicatorImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AllocationRetentionPriorityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSAllocationRetentionPriorityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGIdImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGSubscriptionDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CategoryImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CauseValueImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ChargingCharacteristicsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.DCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.DPAnalysedInfoCriteriumImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.DestinationNumberCriteriaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSQoSSubscribedImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSSubscriptionDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext2QoSSubscribedImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext3QoSSubscribedImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Ext4QoSSubscribedImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBasicServiceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtForwFeatureImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtForwInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtForwOptionsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtPDPTypeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtQoSSubscribedImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSStatusImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExternalClientImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.FQDNImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GPRSCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GPRSCamelTDPDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GPRSSubscriptionDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GroupIdImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.InsertSubscriberDataRequestImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LCSInformationImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LCSPrivacyClassImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAAttributesImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSADataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAInformationImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LongGroupIdImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MCSSInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MGCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MMCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MOLRClassImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MTsmsCAMELTDPCriteriaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OBcsmCamelTDPDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OBcsmCamelTdpCriteriaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBGeneralDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBHPLMNDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDNGWIdentityImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDNTypeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPAddressImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.PDPTypeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.QoSSubscribedImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SGSNCAMELSubscriptionInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCAMELTDPDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCamelDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ServiceTypeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SpecificAPNInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTDPDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTdpCriteriaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VlrCamelSubscriptionInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VoiceBroadcastDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VoiceGroupCallDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ZoneCodeImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
+import org.restcomm.protocols.ss7.map.service.supplementary.SSSubscriptionOptionImpl;
 import org.testng.annotations.Test;
 
 /**
  * 
  * @author Lasith Waruna Perera
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  * 
  */
 public class InsertSubscriberDataRequestTest {
@@ -158,7 +95,7 @@ public class InsertSubscriberDataRequestTest {
                 -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33,
                 -125, 0, -124, 0, -89, 22, 48, 17, 48, 15, 10, 1, 12, 2, 1, 3, -128, 4, -111, 34, 50, -11, -127, 1, 1, -128, 1, 2, -88, 21, 48, 19, 10, 1, 13,
                 -96, 6, -126, 1, 38, -125, 1, 16, -95, 6, 4, 1, 7, 4, 1, 6, -87, 111, -96, 61, 48, 59, 4, 4, -111, 34, 50, -12, 2, 1, 7, 4, 4, -111, 34, 50,
-                -11, 2, 1, 0, 48, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25,
+                -11, 10, 1, 0, 48, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25,
                 26, -95, 3, 31, 32, 33, -127, 1, 2, -94, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3,
                 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -125, 0, -124, 0, -86, 108, -96, 58, 48, 56, -128, 1, 1, -127, 1, 3, -126, 4, -111, 34, 50, -11,
                 -125, 1, 0, -92, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25,
@@ -284,7 +221,7 @@ public class InsertSubscriberDataRequestTest {
                 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, (byte) 161, 3, 31, 32,
                 33, (byte) 131, 0, (byte) 132, 0, (byte) 167, 22, 48, 17, 48, 15, 10, 1, 12, 2, 1, 3, (byte) 128, 4, (byte) 145, 34, 50, (byte) 245,
                 (byte) 129, 1, 1, (byte) 128, 1, 2, (byte) 168, 21, 48, 19, 10, 1, 13, (byte) 160, 6, (byte) 130, 1, 38, (byte) 131, 1, 16, (byte) 161, 6, 4,
-                1, 7, 4, 1, 6, (byte) 169, 111, (byte) 160, 61, 48, 59, 4, 4, (byte) 145, 34, 50, (byte) 244, 2, 1, 7, 4, 4, (byte) 145, 34, 50, (byte) 245, 2,
+                1, 7, 4, 1, 6, (byte) 169, 111, (byte) 160, 61, 48, 59, 4, 4, (byte) 145, 34, 50, (byte) 244, 2, 1, 7, 4, 4, (byte) 145, 34, 50, (byte) 245, 10,
                 1, 0, 48, 39, (byte) 160, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25,
                 26, (byte) 161, 3, 31, 32, 33, (byte) 129, 1, 2, (byte) 162, 39, (byte) 160, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42,
                 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, (byte) 161, 3, 31, 32, 33, (byte) 131, 0, (byte) 132, 0, (byte) 170, 108, (byte) 160, 58,
@@ -295,73 +232,301 @@ public class InsertSubscriberDataRequestTest {
                 1, 2 };
     }
 
+
+    private byte[] getDataCsTest() {
+        return new byte[] { 0x30, (byte) 0x82,
+                0x03, 0x4b, (byte) 0x81, 0x09, (byte) 0x91, (byte) 0x88, 0x22, 0x58,
+                0x01, 0x65, 0x28, 0x54, (byte) 0xf1, (byte) 0x82, 0x01, 0x0a,
+                (byte) 0x83, 0x01, 0x00, (byte) 0xa6, 0x06, 0x04, 0x01, 0x21,
+                0x04, 0x01, 0x22, (byte) 0xa7, 0x16, (byte) 0xa3, 0x09, 0x04,
+                0x01, 0x11, (byte) 0x84, 0x01, 0x05, (byte) 0x81, 0x01, 0x01,
+                (byte) 0xa3, 0x09, 0x04, 0x01, 0x12, (byte) 0x84, 0x01, 0x05,
+                (byte) 0x82, 0x01, 0x02, (byte) 0xa8, 0x0b, 0x03, 0x05, 0x03,
+                0x1c, 0x06, 0x48, (byte) 0xf8, 0x03, 0x02, 0x04, (byte) 0x80,
+                (byte) 0x89, 0x00, (byte) 0xab, 0x0f, 0x30, 0x0d, 0x04, 0x03,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x05, 0x00, (byte) 0x80, 0x04, (byte) 0xf5,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xac, 0x25, 0x30, 0x23, 0x04,
+                0x03, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x03, 0x02, 0x05, (byte) 0xe0,
+                (byte) 0x80, 0x12, 0x00, (byte) 0xc0, 0x00, 0x00, (byte) 0x80, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, (byte) 0x81, 0x04, (byte) 0xf5, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xad, (byte) 0x82, 0x01, 0x32, (byte) 0xa0, 0x1d,
+                0x30, 0x14, 0x30, 0x12, 0x0a, 0x01, 0x04, 0x02,
+                0x01, 0x07, (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01,
+                0x64, 0x00, (byte) 0x92, (byte) 0x81, 0x01, 0x00, (byte) 0x80, 0x01,
+                0x02, (byte) 0x81, 0x00, (byte) 0x82, 0x00, (byte) 0xa2, 0x17, 0x30,
+                0x11, 0x30, 0x06, 0x04, 0x01, 0x11, 0x04, 0x01,
+                0x12, 0x04, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64,
+                0x00, (byte) 0x92, (byte) 0x80, 0x00, (byte) 0x81, 0x00, (byte) 0xa4, 0x25,
+                0x30, 0x23, 0x0a, 0x01, 0x04, (byte) 0xa0, 0x13, (byte) 0x80,
+                0x01, 0x01, (byte) 0xa1, 0x09, 0x04, 0x07, (byte) 0x91, (byte) 0x94,
+                0x71, 0x41, (byte) 0x87, 0x40, 0x23, (byte) 0xa2, 0x03, 0x02,
+                0x01, 0x01, (byte) 0x82, 0x01, 0x01, (byte) 0xa3, 0x06, 0x04,
+                0x01, 0x51, 0x04, 0x01, 0x39, (byte) 0x83, 0x00, (byte) 0xa5,
+                0x18, 0x30, 0x06, 0x04, 0x01, 0x02, 0x04, 0x01,
+                0x00, 0x02, 0x01, 0x07, (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x94,
+                0x71, 0x01, 0x64, 0x00, (byte) 0x92, (byte) 0x82, 0x00, (byte) 0x83,
+                0x00, (byte) 0xa6, 0x1d, (byte) 0xa0, 0x14, 0x30, 0x12, (byte) 0x80,
+                0x01, 0x02, (byte) 0x81, 0x01, 0x07, (byte) 0x82, 0x07, (byte) 0x91,
+                (byte) 0x94, 0x71, 0x01, 0x64, 0x00, (byte) 0x92, (byte) 0x83, 0x01,
+                0x00, (byte) 0x81, 0x01, 0x02, (byte) 0x83, 0x00, (byte) 0x84, 0x00,
+                (byte) 0xa7, 0x31, 0x30, 0x28, 0x30, 0x12, 0x0a, 0x01,
+                0x0e, 0x02, 0x01, 0x07, (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x94,
+                0x71, 0x01, 0x64, 0x00, (byte) 0x92, (byte) 0x81, 0x01, 0x00,
+                0x30, 0x12, 0x0a, 0x01, 0x0d, 0x02, 0x01, 0x07,
+                (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64, 0x00,
+                (byte) 0x92, (byte) 0x81, 0x01, 0x00, (byte) 0x80, 0x01, 0x02, (byte) 0x81,
+                0x00, (byte) 0x82, 0x00, (byte) 0xa8, 0x0d, 0x30, 0x0b, 0x0a,
+                0x01, 0x0e, (byte) 0xa1, 0x06, 0x04, 0x01, 0x15, 0x04,
+                0x01, 0x39, (byte) 0xa9, 0x23, (byte) 0xa0, 0x1a, 0x30, 0x18,
+                0x04, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x41, (byte) 0x87, 0x40,
+                0x23, 0x02, 0x01, 0x07, 0x04, 0x07, (byte) 0x91, (byte) 0x94,
+                0x71, 0x01, 0x64, 0x00, (byte) 0x92, 0x0a, 0x01, 0x00,
+                (byte) 0x81, 0x01, 0x02, (byte) 0x83, 0x00, (byte) 0x84, 0x00, (byte) 0xaa,
+                0x1d, (byte) 0xa0, 0x14, 0x30, 0x12, (byte) 0x80, 0x01, 0x02,
+                (byte) 0x81, 0x01, 0x07, (byte) 0x82, 0x07, (byte) 0x91, (byte) 0x94, 0x71,
+                0x01, 0x64, 0x00, (byte) 0x92, (byte) 0x83, 0x01, 0x00, (byte) 0x81,
+                0x01, 0x02, (byte) 0x83, 0x00, (byte) 0x84, 0x00, (byte) 0xab, 0x10,
+                0x30, 0x0e, 0x0a, 0x01, 0x02, (byte) 0xa0, 0x09, 0x0a,
+                0x01, 0x00, 0x0a, 0x01, 0x01, 0x0a, 0x01, 0x02,
+                (byte) 0xaf, 0x05, (byte) 0x80, 0x03, 0x23, 0x54, 0x08, (byte) 0x98,
+                0x01, 0x00, (byte) 0x9a, 0x02, 0x00, (byte) 0xc8, (byte) 0xbc, 0x0c,
+                (byte) 0x80, 0x01, 0x21, (byte) 0x81, 0x01, 0x0a, (byte) 0x82, 0x01,
+                0x02, (byte) 0x83, 0x01, 0x04, (byte) 0x9d, 0x01, 0x04, (byte) 0x92,
+                0x02, 0x02, 0x00, (byte) 0x93, 0x02, 0x02, 0x24, (byte) 0x94,
+                0x01, (byte) 0xff, (byte) 0xbf, 0x1f, 0x75, (byte) 0x80, 0x09, 0x51,
+                0x5c, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
+                (byte) 0x82, 0x01, 0x00, (byte) 0xa3, 0x08, (byte) 0x80, 0x02, 0x08,
+                0x00, (byte) 0x81, 0x02, 0x10, 0x00, (byte) 0xa4, 0x4e, 0x02,
+                0x01, 0x01, 0x05, 0x00, (byte) 0xa1, 0x47, 0x30, 0x45,
+                (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x01, 0x03, (byte) 0x83, 0x09,
+                0x08, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x65,
+                0x74, (byte) 0xa4, 0x0e, (byte) 0x80, 0x01, 0x05, (byte) 0xa1, 0x09,
+                (byte) 0x80, 0x01, 0x09, (byte) 0x81, 0x01, (byte) (byte) 0xff, (byte) 0x82, 0x01,
+                0x00, (byte) 0x87, 0x00, (byte) 0x88, 0x02, 0x02, 0x00, (byte) 0xa9,
+                0x08, (byte) 0x80, 0x02, 0x08, 0x00, (byte) 0x81, 0x02, 0x10,
+                0x00, (byte) 0x8c, 0x01, 0x15, (byte) 0x8d, 0x09, 0x51, 0x5c,
+                0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, (byte) 0x8e,
+                0x01, 0x00, (byte) 0x8f, 0x01, 0x02, (byte) 0x86, 0x07, (byte) 0x91,
+                (byte) 0x94, 0x71, 0x01, (byte) 0x94, 0x00, 0x00, (byte) 0x87, 0x00,
+                (byte) 0x88, 0x00, (byte) 0xbf, 0x20, 0x1c, 0x30, 0x1a, 0x03,
+                0x05, 0x05, (byte) 0xc0, 0x00, 0x00, 0x60, 0x04, 0x04,
+                (byte) 0xea, 0x31, 0x74, 0x6a, (byte) 0xa0, 0x0b, 0x04, 0x09,
+                0x08, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x65,
+                0x74, (byte) 0x9f, 0x21, 0x00, (byte) 0x9f, 0x22, 0x07, (byte) 0x91,
+                (byte) 0x94, 0x71, 0x01, (byte) 0x94, 0x00, 0x00, (byte) 0x9f, 0x23,
+                0x31, 0x6d, 0x6d, 0x65, 0x63, 0x32, 0x30, 0x2e,
+                0x6d, 0x6d, 0x65, 0x67, 0x69, 0x38, 0x30, 0x30,
+                0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63,
+                0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37,
+                0x34, 0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e,
+                0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f,
+                0x72, 0x67, (byte) 0x9f, 0x24, 0x02, 0x01, 0x2c, (byte) 0x9f,
+                0x25, 0x00, (byte) 0x9f, 0x26, 0x01, 0x00, (byte) 0x9f, 0x27,
+                0x02, 0x01, 0x68, (byte) 0xbf, 0x28, 0x1c, 0x30, 0x1a,
+                0x03, 0x05, 0x05, (byte) 0xc0, 0x00, 0x00, 0x60, 0x04,
+                0x04, (byte) 0xea, 0x31, 0x74, 0x6a, (byte) 0xa0, 0x0b, 0x04,
+                0x09, 0x08, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e,
+                0x65, 0x74, (byte) 0x9f, 0x29, 0x08, (byte) 0x91, (byte) 0x94, 0x71,
+                0x01, 0x65, 0x28, 0x54, (byte) 0xf1, (byte) 0x9f, 0x2a, 0x00,
+                (byte) 0x9f, 0x2b, 0x00, (byte) 0x9f, 0x2c, 0x00, (byte) 0x9f, 0x2d,
+                0x00, (byte) 0xbf, 0x2e, 0x12, 0x30, 0x10, (byte) 0x80, 0x03,
+                0x62, (byte) 0x92, (byte) 0x99, (byte) 0x81, 0x02, 0x02, 0x24, (byte) 0x82,
+                0x05, 0x00, (byte) 0x80, 0x00, 0x00, 0x00, (byte) 0xbf, 0x2f,
+                0x0f, 0x30, 0x0d, (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x03,
+                0x62, (byte) 0x92, (byte) 0x99, (byte) 0x82, 0x03, 0x31, 0x32, 0x30,
+                (byte) 0x9f, 0x30, 0x04, 0x00, 0x00, 0x00, (byte) 0x87, (byte) 0x9f,
+                0x31, 0x00, (byte) 0x9f, 0x32, 0x01, 0x00, (byte) 0xbf, 0x33,
+                0x06, 0x04, 0x04, 0x01, 0x02, 0x04, (byte) 0x80, (byte) 0xbf,
+                0x34, 0x08, 0x30, 0x06, (byte) 0x80, 0x01, 0x05, (byte) 0x81,
+                0x01, 0x02, (byte) 0x9f, 0x35, 0x05, 0x00, (byte) 0x80, 0x00,
+                0x00, 0x00, (byte) 0x9f, 0x36, 0x00
+        };
+    }
+
+    private byte[] getDataPsTest() {
+        return new byte[] { 0x30, (byte) 0x82,
+                0x03, 0x75, (byte) 0x81, 0x09, (byte) 0x91, (byte) 0x88, 0x22, 0x58,
+                0x01, 0x65, 0x28, 0x54, (byte) 0xf1, (byte) 0x82, 0x01, 0x0a,
+                (byte) 0x83, 0x01, 0x00, (byte) 0xa4, 0x06, 0x04, 0x01, 0x10,
+                0x04, 0x01, 0x18, (byte) 0xa6, 0x09, 0x04, 0x01, 0x70,
+                0x04, 0x01, 0x21, 0x04, 0x01, 0x22, (byte) 0xa7, 0x16,
+                (byte) 0xa3, 0x09, 0x04, 0x01, 0x11, (byte) 0x84, 0x01, 0x0d,
+                (byte) 0x81, 0x01, 0x01, (byte) 0xa3, 0x09, 0x04, 0x01, 0x12,
+                (byte) 0x84, 0x01, 0x05, (byte) 0x82, 0x01, 0x02, (byte) 0x89, 0x00,
+                (byte) 0xaa, 0x0c, 0x04, 0x02, 0x00, 0x01, 0x04, 0x02,
+                0x00, 0x02, 0x04, 0x02, 0x00, 0x03, (byte) 0xab, 0x0f,
+                0x30, 0x0d, 0x04, 0x03, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x05,
+                0x00, (byte) 0x80, 0x04, (byte) 0xf5, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xb0,
+                0x60, 0x05, 0x00, (byte) 0xa1, 0x51, 0x30, 0x4f, 0x02,
+                0x01, 0x01, (byte) 0x90, 0x02, (byte) 0xf1, 0x21, (byte) 0x91, 0x01,
+                0x15, (byte) 0x92, 0x03, 0x27, 0x32, 0x05, (byte) 0x93, 0x00,
+                (byte) 0x94, 0x09, 0x08, 0x69, 0x6e, 0x74, 0x65, 0x72,
+                0x6e, 0x65, 0x74, (byte) 0x80, 0x09, 0x09, 0x72, (byte) 0x97,
+                (byte) 0x80, 0x40, 0x00, (byte) 0xa3, 0x40, 0x00, (byte) 0x81, 0x02,
+                0x08, 0x00, (byte) 0x82, 0x03, 0x10, 0x00, 0x00, (byte) 0x83,
+                0x02, 0x00, 0x00, (byte) 0x84, 0x01, 0x5b, (byte) 0x85, 0x09,
+                0x51, 0x5c, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+                0x59, (byte) 0x86, 0x02, 0x3a, 0x3b, (byte) 0x87, 0x01, 0x3c,
+                (byte) 0x88, 0x01, 0x00, (byte) 0x89, 0x01, 0x02, (byte) 0x83, 0x09,
+                0x51, 0x5c, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+                0x59, (byte) 0x97, 0x00, (byte) 0x98, 0x01, 0x02, (byte) 0xb9, 0x13,
+                0x05, 0x00, (byte) 0x81, 0x01, 0x00, (byte) 0xa2, 0x0c, 0x30,
+                0x0a, (byte) 0x80, 0x03, 0x0c, 0x0a, 0x01, (byte) 0x81, 0x01,
+                0x31, (byte) 0x82, 0x00, (byte) 0x95, 0x00, (byte) 0xb6, (byte) 0x82, 0x01,
+                (byte) 0x95, (byte) 0xa0, 0x0a, 0x04, 0x08, (byte) 0x91, (byte) 0x94, 0x71,
+                0x01, 0x64, 0x00, 0x23, (byte) 0xf1, (byte) 0xa1, (byte) 0x82, 0x01,
+                0x1b, 0x30, 0x46, 0x04, 0x01, (byte) 0xc0, 0x04, 0x01,
+                0x08, (byte) 0x80, 0x01, 0x00, (byte) 0xa1, 0x12, 0x30, 0x10,
+                0x30, 0x08, (byte) 0x80, 0x06, (byte) 0x9f, 0x78, (byte) 0x94, 0x72,
+                (byte) 0x94, (byte) 0xf2, (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x01, 0x00,
+                (byte) 0xa2, 0x06, 0x0a, 0x01, 0x00, 0x0a, 0x01, 0x01,
+                (byte) 0xa4, 0x12, 0x30, 0x10, 0x30, 0x08, (byte) 0x80, 0x06,
+                (byte) 0x9f, 0x78, (byte) 0x94, 0x72, (byte) 0x94, (byte) 0xf2, (byte) 0x80, 0x01,
+                0x01, (byte) 0x81, 0x01, 0x00, (byte) 0xa5, 0x0b, 0x30, 0x09,
+                0x02, 0x01, 0x01, (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x01,
+                0x00, 0x30, 0x43, 0x04, 0x01, (byte) 0xc2, 0x04, 0x01,
+                0x04, (byte) 0x80, 0x01, 0x01, (byte) 0xa1, 0x12, 0x30, 0x10,
+                0x30, 0x08, (byte) 0x80, 0x06, (byte) 0x9f, (byte) 0x93, 0x28, (byte) 0x97,
+                0x22, (byte) 0xf2, (byte) 0x80, 0x01, 0x00, (byte) 0x81, 0x01, 0x01,
+                (byte) 0xa2, 0x03, 0x0a, 0x01, 0x01, (byte) 0xa4, 0x12, 0x30,
+                0x10, 0x30, 0x08, (byte) 0x80, 0x06, (byte) 0x9f, (byte) 0x93, 0x28,
+                (byte) 0x97, 0x22, (byte) 0xf2, (byte) 0x80, 0x01, 0x00, (byte) 0x81, 0x01,
+                0x01, (byte) 0xa5, 0x0b, 0x30, 0x09, 0x02, 0x01, 0x02,
+                (byte) 0x80, 0x01, 0x00, (byte) 0x81, 0x01, 0x01, 0x30, 0x45,
+                0x04, 0x01, (byte) 0xb0, 0x04, 0x01, 0x02, (byte) 0x80, 0x01,
+                0x03, (byte) 0xa1, 0x13, 0x30, 0x11, 0x30, 0x09, (byte) 0x80,
+                0x07, (byte) 0x9f, 0x32, 0x45, 0x23, 0x25, 0x32, (byte) 0xf4,
+                (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x01, 0x03, (byte) 0xa2, 0x03,
+                0x0a, 0x01, 0x04, (byte) 0xa4, 0x13, 0x30, 0x11, 0x30,
+                0x09, (byte) 0x80, 0x07, (byte) 0x9f, 0x32, 0x45, 0x23, 0x25,
+                0x32, (byte) 0xf4, (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x01, 0x03,
+                (byte) 0xa5, 0x0b, 0x30, 0x09, 0x02, 0x01, 0x03, (byte) 0x80,
+                0x01, 0x01, (byte) 0x81, 0x01, 0x03, 0x30, 0x45, 0x04,
+                0x01, (byte) 0xf0, 0x04, 0x01, 0x01, (byte) 0x80, 0x01, 0x02,
+                (byte) 0xa1, 0x13, 0x30, 0x11, 0x30, 0x09, (byte) 0x80, 0x07,
+                (byte) 0x9f, (byte) 0x95, (byte) 0x98, 0x09, (byte) 0x92, 0x28, 0x54, (byte) 0x80,
+                0x01, 0x00, (byte) 0x81, 0x01, 0x02, (byte) 0xa2, 0x03, 0x0a,
+                0x01, 0x03, (byte) 0xa4, 0x13, 0x30, 0x11, 0x30, 0x09,
+                (byte) 0x80, 0x07, (byte) 0x9f, (byte) 0x95, (byte) 0x98, 0x09, (byte) 0x92, 0x28,
+                0x54, (byte) 0x80, 0x01, 0x00, (byte) 0x81, 0x01, 0x02, (byte) 0xa5,
+                0x0b, 0x30, 0x09, 0x02, 0x01, 0x04, (byte) 0x80, 0x01,
+                0x00, (byte) 0x81, 0x01, 0x02, (byte) 0xa2, 0x18, 0x30, 0x06,
+                0x04, 0x01, (byte) 0xc0, 0x04, 0x01, 0x08, 0x30, 0x06,
+                0x04, 0x01, (byte) 0xc2, 0x04, 0x01, 0x04, 0x30, 0x06,
+                0x04, 0x01, (byte) 0xb0, 0x04, 0x01, 0x02, (byte) 0xa3, 0x4e,
+                0x30, 0x4c, 0x04, 0x01, (byte) 0xf1, 0x04, 0x01, 0x0d,
+                (byte) 0x80, 0x01, 0x00, (byte) 0xa1, 0x12, 0x30, 0x10, 0x30,
+                0x08, (byte) 0x80, 0x06, (byte) 0x9f, 0x78, (byte) 0x94, 0x72, (byte) 0x94,
+                (byte) 0xf2, (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x01, 0x00, (byte) 0xa2,
+                0x0c, 0x0a, 0x01, 0x00, 0x0a, 0x01, 0x01, 0x0a,
+                0x01, 0x04, 0x0a, 0x01, 0x03, (byte) 0xa4, 0x12, 0x30,
+                0x10, 0x30, 0x08, (byte) 0x80, 0x06, (byte) 0x9f, 0x78, (byte) 0x94,
+                0x72, (byte) 0x94, (byte) 0xf2, (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x01,
+                0x00, (byte) 0xa5, 0x0b, 0x30, 0x09, 0x02, 0x01, 0x05,
+                (byte) 0x80, 0x01, 0x01, (byte) 0x81, 0x01, 0x00, (byte) 0x9a, 0x01,
+                0x0f, (byte) 0x9b, 0x03, 0x04, 0x01, 0x30, (byte) 0xb1, (byte) 0x81,
+                (byte) 0x86, (byte) 0xa0, 0x1d, (byte) 0xa0, 0x14, 0x30, 0x12, (byte) 0x80,
+                0x01, 0x01, (byte) 0x81, 0x01, 0x0c, (byte) 0x82, 0x07, (byte) 0x91,
+                (byte) 0x94, 0x71, 0x01, 0x64, 0x00, (byte) 0x92, (byte) 0x83, 0x01,
+                0x00, (byte) 0x81, 0x01, 0x03, (byte) 0x83, 0x00, (byte) 0x84, 0x00,
+                (byte) 0xa1, 0x1d, (byte) 0xa0, 0x14, 0x30, 0x12, (byte) 0x80, 0x01,
+                0x02, (byte) 0x81, 0x01, 0x07, (byte) 0x82, 0x07, (byte) 0x91, (byte) 0x94,
+                0x71, 0x01, 0x64, 0x00, (byte) 0x92, (byte) 0x83, 0x01, 0x00,
+                (byte) 0x81, 0x01, 0x03, (byte) 0x83, 0x00, (byte) 0x84, 0x00, (byte) 0xa3,
+                0x1d, (byte) 0xa0, 0x14, 0x30, 0x12, (byte) 0x80, 0x01, 0x02,
+                (byte) 0x81, 0x01, 0x07, (byte) 0x82, 0x07, (byte) 0x91, (byte) 0x94, 0x71,
+                0x01, 0x64, 0x00, (byte) 0x92, (byte) 0x83, 0x01, 0x00, (byte) 0x81,
+                0x01, 0x03, (byte) 0x83, 0x00, (byte) 0x84, 0x00, (byte) 0xa4, 0x10,
+                0x30, 0x0e, 0x0a, 0x01, 0x02, (byte) 0xa0, 0x09, 0x0a,
+                0x01, 0x00, 0x0a, 0x01, 0x01, 0x0a, 0x01, 0x02,
+                (byte) 0xa5, 0x15, 0x30, 0x03, 0x04, 0x01, (byte) 0x83, 0x02,
+                0x01, 0x07, (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01,
+                0x64, 0x00, (byte) 0x92, (byte) 0x82, 0x00, (byte) 0x83, 0x00, (byte) 0x92,
+                0x02, 0x08, 0x00, (byte) 0x93, 0x02, 0x02, 0x24, (byte) 0x94,
+                0x01, (byte) 0xff, (byte) 0x9f, 0x21, 0x00, (byte) 0x9f, 0x22, 0x07,
+                (byte) 0x91, (byte) 0x94, 0x71, 0x01, (byte) 0x94, 0x00, 0x00, (byte) 0x9f,
+                0x23, 0x31, 0x6d, 0x6d, 0x65, 0x63, 0x32, 0x30,
+                0x2e, 0x6d, 0x6d, 0x65, 0x67, 0x69, 0x38, 0x30,
+                0x30, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e,
+                0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63,
+                0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70, 0x70,
+                0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e,
+                0x6f, 0x72, 0x67, (byte) 0x9f, 0x24, 0x02, 0x01, 0x68,
+                (byte) 0x9f, 0x25, 0x00, (byte) 0x9f, 0x26, 0x01, (byte) 0xff, (byte) 0x9f,
+                0x27, 0x02, 0x01, 0x2c, (byte) 0x9f, 0x2a, 0x00, (byte) 0x9f,
+                0x2b, 0x00, (byte) 0x9f, 0x2c, 0x00, (byte) 0x9f, 0x2d, 0x00,
+                (byte) 0x9f, 0x31, 0x00, (byte) 0x9f, 0x32, 0x01, 0x03
+        };
+    }
+
     private byte[] getISDNSubaddressStringData() {
         return new byte[] { 2, 5 };
     }
 
     public byte[] getNAEACICIData() {
         return new byte[] { 15, 48, 5 };
-    };
+    }
 
     public byte[] getAPNOIReplacementData() {
         return new byte[] { 48, 12, 17, 17, 119, 22, 62, 34, 12 };
-    };
+    }
 
     public byte[] getPDPTypeData() {
         return new byte[] { 5, 3 };
-    };
+    }
 
     public byte[] getPDPAddressData() {
         return new byte[] { 5, 6, 7 };
-    };
+    }
 
     public byte[] getPDPAddressData2() {
         return new byte[] { 4, 6, 5 };
-    };
+    }
 
     public byte[] getQoSSubscribedData() {
         return new byte[] { 4, 7, 7 };
-    };
+    }
 
     public byte[] getAPNData() {
         return new byte[] { 6, 7 };
-    };
+    }
 
     public byte[] getExtQoSSubscribedData() {
         return new byte[] { 1, 7 };
-    };
+    }
 
     public byte[] getExt2QoSSubscribedData() {
         return new byte[] { 1, 8 };
-    };
+    }
 
     public byte[] getExt3QoSSubscribedData() {
         return new byte[] { 2, 6 };
-    };
+    }
 
     public byte[] getChargingCharacteristicsData() {
         return new byte[] { 6, 5 };
-    };
+    }
 
     public byte[] getExtPDPTypeData() {
         return new byte[] { 6, 5 };
-    };
+    }
 
     public byte[] getDataLSAIdentity() {
         return new byte[] { 12, 34, 26 };
-    };
+    }
 
     public byte[] getAgeIndicatorData() {
         return new byte[] { 48 };
-    };
+    }
 
     public byte[] getFQDNData() {
         return new byte[] { 4, 1, 6, 8, 3, 2, 5, 6, 1, 7 };
-    };
+    }
 
     public byte[] getTimeData() {
         return new byte[] { 10, 22, 41, 34 };
-    };
+    }
 
     private byte[] getDiameterIdentity() {
         return new byte[] { 41, 42, 43, 44, 45, 46, 47, 48, 49 };
@@ -381,11 +546,11 @@ public class InsertSubscriberDataRequestTest {
 
         // imsi
         IMSI imsi = prim.getImsi();
-        assertTrue(imsi.getData().equals("1111122222"));
+        assertEquals(imsi.getData(), "1111122222");
 
         // msisdn
         ISDNAddressString msisdn = prim.getMsisdn();
-        assertTrue(msisdn.getAddress().equals("22234"));
+        assertEquals(msisdn.getAddress(), "22234");
         assertEquals(msisdn.getAddressNature(), AddressNature.international_number);
         assertEquals(msisdn.getNumberingPlan(), NumberingPlan.ISDN);
 
@@ -433,7 +598,6 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(forwardingInfo.getSsCode().getSupplementaryCodeValue(), SupplementaryCodeValue.allSS);
 
         ArrayList<ExtForwFeature> forwardingFeatureList = forwardingInfo.getForwardingFeatureList();
-        ;
         assertNotNull(forwardingFeatureList);
         assertEquals(forwardingFeatureList.size(), 1);
         ExtForwFeature extForwFeature = forwardingFeatureList.get(0);
@@ -449,20 +613,20 @@ public class InsertSubscriberDataRequestTest {
 
         ISDNAddressString forwardedToNumber = extForwFeature.getForwardedToNumber();
         assertNotNull(forwardedToNumber);
-        assertTrue(forwardedToNumber.getAddress().equals("22228"));
+        assertEquals(forwardedToNumber.getAddress(), "22228");
         assertEquals(forwardedToNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(forwardedToNumber.getNumberingPlan(), NumberingPlan.ISDN);
 
         assertTrue(Arrays.equals(extForwFeature.getForwardedToSubaddress().getData(), this.getISDNSubaddressStringData()));
         assertTrue(extForwFeature.getForwardingOptions().getNotificationToCallingParty());
         assertTrue(extForwFeature.getForwardingOptions().getNotificationToForwardingParty());
-        assertTrue(!extForwFeature.getForwardingOptions().getRedirectingPresentation());
+        assertFalse(extForwFeature.getForwardingOptions().getRedirectingPresentation());
         assertEquals(extForwFeature.getForwardingOptions().getExtForwOptionsForwardingReason(), ExtForwOptionsForwardingReason.msBusy);
         assertNotNull(extForwFeature.getNoReplyConditionTime());
         assertEquals(extForwFeature.getNoReplyConditionTime().intValue(), 2);
         FTNAddressString longForwardedToNumber = extForwFeature.getLongForwardedToNumber();
         assertNotNull(longForwardedToNumber);
-        assertTrue(longForwardedToNumber.getAddress().equals("22227"));
+        assertEquals(longForwardedToNumber.getAddress(), "22227");
         assertEquals(longForwardedToNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(longForwardedToNumber.getNumberingPlan(), NumberingPlan.ISDN);
         // end provisionedSS
@@ -470,39 +634,39 @@ public class InsertSubscriberDataRequestTest {
         // start odbData
         ODBData odbData = prim.getODBData();
         ODBGeneralData oDBGeneralData = odbData.getODBGeneralData();
-        assertTrue(!oDBGeneralData.getAllOGCallsBarred());
+        assertFalse(oDBGeneralData.getAllOGCallsBarred());
         assertTrue(oDBGeneralData.getInternationalOGCallsBarred());
-        assertTrue(!oDBGeneralData.getInternationalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(oDBGeneralData.getInternationalOGCallsNotToHPLMNCountryBarred());
         assertTrue(oDBGeneralData.getInterzonalOGCallsBarred());
-        assertTrue(!oDBGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(oDBGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
         assertTrue(oDBGeneralData.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(!oDBGeneralData.getPremiumRateInformationOGCallsBarred());
-        assertTrue(oDBGeneralData.getPremiumRateEntertainementOGCallsBarred());
-        assertTrue(!oDBGeneralData.getSsAccessBarred());
+        assertFalse(oDBGeneralData.getPremiumRateInformationOGCallsBarred());
+        assertTrue(oDBGeneralData.getPremiumRateEntertainmentOGCallsBarred());
+        assertFalse(oDBGeneralData.getSsAccessBarred());
         assertTrue(oDBGeneralData.getAllECTBarred());
-        assertTrue(!oDBGeneralData.getChargeableECTBarred());
+        assertFalse(oDBGeneralData.getChargeableECTBarred());
         assertTrue(oDBGeneralData.getInternationalECTBarred());
-        assertTrue(!oDBGeneralData.getInterzonalECTBarred());
+        assertFalse(oDBGeneralData.getInterzonalECTBarred());
         assertTrue(oDBGeneralData.getDoublyChargeableECTBarred());
-        assertTrue(!oDBGeneralData.getMultipleECTBarred());
+        assertFalse(oDBGeneralData.getMultipleECTBarred());
         assertTrue(oDBGeneralData.getAllPacketOrientedServicesBarred());
-        assertTrue(!oDBGeneralData.getRoamerAccessToHPLMNAPBarred());
+        assertFalse(oDBGeneralData.getRoamerAccessToHPLMNAPBarred());
         assertTrue(oDBGeneralData.getRoamerAccessToVPLMNAPBarred());
-        assertTrue(!oDBGeneralData.getRoamingOutsidePLMNOGCallsBarred());
+        assertFalse(oDBGeneralData.getRoamingOutsidePLMNOGCallsBarred());
         assertTrue(oDBGeneralData.getAllICCallsBarred());
-        assertTrue(!oDBGeneralData.getRoamingOutsidePLMNICCallsBarred());
+        assertFalse(oDBGeneralData.getRoamingOutsidePLMNICCallsBarred());
         assertTrue(oDBGeneralData.getRoamingOutsidePLMNICountryICCallsBarred());
-        assertTrue(!oDBGeneralData.getRoamingOutsidePLMNBarred());
+        assertFalse(oDBGeneralData.getRoamingOutsidePLMNBarred());
         assertTrue(oDBGeneralData.getRoamingOutsidePLMNCountryBarred());
-        assertTrue(!oDBGeneralData.getRegistrationAllCFBarred());
+        assertFalse(oDBGeneralData.getRegistrationAllCFBarred());
         assertTrue(oDBGeneralData.getRegistrationCFNotToHPLMNBarred());
-        assertTrue(!oDBGeneralData.getRegistrationInterzonalCFBarred());
+        assertFalse(oDBGeneralData.getRegistrationInterzonalCFBarred());
         assertTrue(oDBGeneralData.getRegistrationInterzonalCFNotToHPLMNBarred());
-        assertTrue(!oDBGeneralData.getRegistrationInternationalCFBarred());
+        assertFalse(oDBGeneralData.getRegistrationInternationalCFBarred());
         ODBHPLMNData odbHplmnData = odbData.getOdbHplmnData();
-        assertTrue(!odbHplmnData.getPlmnSpecificBarringType1());
+        assertFalse(odbHplmnData.getPlmnSpecificBarringType1());
         assertTrue(odbHplmnData.getPlmnSpecificBarringType2());
-        assertTrue(!odbHplmnData.getPlmnSpecificBarringType3());
+        assertFalse(odbHplmnData.getPlmnSpecificBarringType3());
         assertTrue(odbHplmnData.getPlmnSpecificBarringType4());
         assertNotNull(odbData.getExtensionContainer());
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(odbData.getExtensionContainer()));
@@ -524,8 +688,8 @@ public class InsertSubscriberDataRequestTest {
         assertNotNull(vbsSubscriptionData);
         assertEquals(vbsSubscriptionData.size(), 1);
         VoiceBroadcastData voiceBroadcastData = vbsSubscriptionData.get(0);
-        assertTrue(voiceBroadcastData.getGroupId().getGroupId().equals(""));
-        assertTrue(voiceBroadcastData.getLongGroupId().getLongGroupId().equals("5"));
+        assertEquals(voiceBroadcastData.getGroupId().getGroupId(), "");
+        assertEquals(voiceBroadcastData.getLongGroupId().getLongGroupId(), "5");
         assertTrue(voiceBroadcastData.getBroadcastInitEntitlement());
         assertNotNull(voiceBroadcastData.getExtensionContainer());
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(voiceBroadcastData.getExtensionContainer()));
@@ -536,8 +700,8 @@ public class InsertSubscriberDataRequestTest {
         assertNotNull(vgcsSubscriptionData);
         assertEquals(vgcsSubscriptionData.size(), 1);
         VoiceGroupCallData voiceGroupCallData = vgcsSubscriptionData.get(0);
-        assertTrue(voiceGroupCallData.getGroupId().getGroupId().equals(""));
-        assertTrue(voiceGroupCallData.getLongGroupId().getLongGroupId().equals("5"));
+        assertEquals(voiceGroupCallData.getGroupId().getGroupId(), "");
+        assertEquals(voiceGroupCallData.getLongGroupId().getLongGroupId(), "5");
         assertNotNull(voiceGroupCallData.getExtensionContainer());
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(voiceGroupCallData.getExtensionContainer()));
         assertTrue(voiceGroupCallData.getAdditionalSubscriptions().getEmergencyReset());
@@ -558,7 +722,7 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(cd.getServiceKey(), 3);
         assertEquals(cd.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(cd.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(cd.getGsmSCFAddress().getAddress().equals("1122333"));
+        assertEquals(cd.getGsmSCFAddress().getAddress(), "1122333");
         assertEquals(cd.getDefaultCallHandling(), DefaultCallHandling.releaseCall);
         assertNull(cd.getExtensionContainer());
 
@@ -580,7 +744,7 @@ public class InsertSubscriberDataRequestTest {
         assertNotNull(one);
         assertEquals(one.getSupplementaryCodeValue(), SupplementaryCodeValue.allCommunityOfInterestSS);
         ISDNAddressString gsmSCFAddress = ssCamelData.getGsmSCFAddress();
-        assertTrue(gsmSCFAddress.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddress.getAddress(), "22235");
         assertEquals(gsmSCFAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddress.getNumberingPlan(), NumberingPlan.ISDN);
         assertNotNull(ssCamelData.getExtensionContainer());
@@ -601,12 +765,12 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(destinationNumberList.size(), 2);
         ISDNAddressString destinationNumberOne = destinationNumberList.get(0);
         assertNotNull(destinationNumberOne);
-        assertTrue(destinationNumberOne.getAddress().equals("22234"));
+        assertEquals(destinationNumberOne.getAddress(), "22234");
         assertEquals(destinationNumberOne.getAddressNature(), AddressNature.international_number);
         assertEquals(destinationNumberOne.getNumberingPlan(), NumberingPlan.ISDN);
         ISDNAddressString destinationNumberTwo = destinationNumberList.get(1);
         assertNotNull(destinationNumberTwo);
-        assertTrue(destinationNumberTwo.getAddress().equals("22235"));
+        assertEquals(destinationNumberTwo.getAddress(), "22235");
         assertEquals(destinationNumberTwo.getAddressNature(), AddressNature.international_number);
         assertEquals(destinationNumberTwo.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(destinationNumberCriteria.getMatchType().getCode(), MatchType.enabling.getCode());
@@ -646,10 +810,10 @@ public class InsertSubscriberDataRequestTest {
         MMCode mmCode2 = mobilityTriggers.get(1);
         assertNotNull(mmCode2);
         assertEquals(MMCodeValue.IMSIAttach, mmCode2.getMMCodeValue());
-        assertNotNull(mCsi.getServiceKey());
+        assertNotNull(mCsi);
         assertEquals(mCsi.getServiceKey(), 3);
         ISDNAddressString gsmSCFAddressTwo = mCsi.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressTwo.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressTwo.getAddress(), "22235");
         assertEquals(gsmSCFAddressTwo.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressTwo.getNumberingPlan(), NumberingPlan.ISDN);
         assertNotNull(mCsi.getExtensionContainer());
@@ -666,7 +830,7 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(smsCAMELTDPData.getServiceKey(), 3);
         assertEquals(smsCAMELTDPData.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
         ISDNAddressString gsmSCFAddressSmsCAMELTDPData = smsCAMELTDPData.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressSmsCAMELTDPData.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressSmsCAMELTDPData.getAddress(), "22235");
         assertEquals(gsmSCFAddressSmsCAMELTDPData.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressSmsCAMELTDPData.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(smsCAMELTDPData.getDefaultSMSHandling(), DefaultSMSHandling.continueTransaction);
@@ -684,7 +848,7 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(tbcsmCamelTDPData.getServiceKey(), 3);
         assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(tbcsmCamelTDPData.getGsmSCFAddress().getAddress().equals("22235"));
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddress(), "22235");
         assertEquals(tbcsmCamelTDPData.getDefaultCallHandling(), DefaultCallHandling.releaseCall);
         assertNull(tbcsmCamelTDPData.getExtensionContainer());
         assertNull(vtCsi.getExtensionContainer());
@@ -717,12 +881,12 @@ public class InsertSubscriberDataRequestTest {
         DPAnalysedInfoCriterium dpAnalysedInfoCriterium = dpAnalysedInfoCriteriaList.get(0);
         assertNotNull(dpAnalysedInfoCriterium);
         ISDNAddressString dialledNumber = dpAnalysedInfoCriterium.getDialledNumber();
-        assertTrue(dialledNumber.getAddress().equals("22234"));
+        assertEquals(dialledNumber.getAddress(), "22234");
         assertEquals(dialledNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(dialledNumber.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(dpAnalysedInfoCriterium.getServiceKey(), 7);
         ISDNAddressString gsmSCFAddressDp = dpAnalysedInfoCriterium.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressDp.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressDp.getAddress(), "22235");
         assertEquals(gsmSCFAddressDp.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressDp.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(dpAnalysedInfoCriterium.getDefaultCallHandling(), DefaultCallHandling.continueCall);
@@ -741,7 +905,7 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(smsCAMELTDPDataOfMtSmsCSI.getServiceKey(), 3);
         assertEquals(smsCAMELTDPDataOfMtSmsCSI.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
         ISDNAddressString gsmSCFAddressOfMtSmsCSI = smsCAMELTDPDataOfMtSmsCSI.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressOfMtSmsCSI.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressOfMtSmsCSI.getAddress(), "22235");
         assertEquals(gsmSCFAddressOfMtSmsCSI.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressOfMtSmsCSI.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(smsCAMELTDPDataOfMtSmsCSI.getDefaultSMSHandling(), DefaultSMSHandling.continueTransaction);
@@ -766,7 +930,7 @@ public class InsertSubscriberDataRequestTest {
 
         MTSMSTPDUType mtSMSTPDUTypeTwo = tPDUTypeCriterion.get(1);
         assertNotNull(mtSMSTPDUTypeTwo);
-        assertTrue(mtSMSTPDUTypeTwo == MTSMSTPDUType.smsSTATUSREPORT);
+        assertSame(mtSMSTPDUTypeTwo, MTSMSTPDUType.smsSTATUSREPORT);
         assertEquals(mtsmsCAMELTDPCriteria.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
         // end vlrCamelSubscriptionInfo
 
@@ -780,7 +944,7 @@ public class InsertSubscriberDataRequestTest {
         // start gprsSubscriptionData
         GPRSSubscriptionData gprsSubscriptionData = prim.getGPRSSubscriptionData();
 
-        assertTrue(!gprsSubscriptionData.getCompleteDataListIncluded());
+        assertFalse(gprsSubscriptionData.getCompleteDataListIncluded());
         ArrayList<PDPContext> gprsDataList = gprsSubscriptionData.getGPRSDataList();
         assertNotNull(gprsDataList);
         assertEquals(gprsDataList.size(), 1);
@@ -857,7 +1021,7 @@ public class InsertSubscriberDataRequestTest {
         assertNotNull(gmlcList);
         assertEquals(gmlcList.size(), 1);
         ISDNAddressString isdnAddressString = gmlcList.get(0);
-        assertTrue(isdnAddressString.getAddress().equals("22235"));
+        assertEquals(isdnAddressString.getAddress(), "22235");
         assertEquals(isdnAddressString.getAddressNature(), AddressNature.international_number);
         assertEquals(isdnAddressString.getNumberingPlan(), NumberingPlan.ISDN);
         ArrayList<LCSPrivacyClass> lcsPrivacyExceptionList = lcsInformation.getLcsPrivacyExceptionList();
@@ -880,7 +1044,7 @@ public class InsertSubscriberDataRequestTest {
         MAPExtensionContainer extensionContainerExternalClient = externalClient.getExtensionContainer();
         LCSClientExternalID clientIdentity = externalClient.getClientIdentity();
         ISDNAddressString externalAddress = clientIdentity.getExternalAddress();
-        assertTrue(externalAddress.getAddress().equals("22228"));
+        assertEquals(externalAddress.getAddress(), "22228");
         assertEquals(externalAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(externalAddress.getNumberingPlan(), NumberingPlan.ISDN);
         assertNotNull(clientIdentity.getExtensionContainer());
@@ -902,7 +1066,7 @@ public class InsertSubscriberDataRequestTest {
         externalClient = extExternalClientList.get(0);
         clientIdentity = externalClient.getClientIdentity();
         externalAddress = clientIdentity.getExternalAddress();
-        assertTrue(externalAddress.getAddress().equals("22228"));
+        assertEquals(externalAddress.getAddress(), "22228");
         assertEquals(externalAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(externalAddress.getNumberingPlan(), NumberingPlan.ISDN);
         assertNotNull(clientIdentity.getExtensionContainer());
@@ -956,7 +1120,7 @@ public class InsertSubscriberDataRequestTest {
         extensionContainerExternalClient = externalClient.getExtensionContainer();
         clientIdentity = externalClient.getClientIdentity();
         externalAddress = clientIdentity.getExternalAddress();
-        assertTrue(externalAddress.getAddress().equals("22228"));
+        assertEquals(externalAddress.getAddress(), "22228");
         assertEquals(externalAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(externalAddress.getNumberingPlan(), NumberingPlan.ISDN);
         assertNotNull(clientIdentity.getExtensionContainer());
@@ -978,7 +1142,7 @@ public class InsertSubscriberDataRequestTest {
         externalClient = extExternalClientList.get(0);
         clientIdentity = externalClient.getClientIdentity();
         externalAddress = clientIdentity.getExternalAddress();
-        assertTrue(externalAddress.getAddress().equals("22228"));
+        assertEquals(externalAddress.getAddress(), "22228");
         assertEquals(externalAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(externalAddress.getNumberingPlan(), NumberingPlan.ISDN);
         assertNotNull(clientIdentity.getExtensionContainer());
@@ -1003,7 +1167,7 @@ public class InsertSubscriberDataRequestTest {
         // end lcsPrivacyClass
 
         // istAlertTimer
-        assertTrue(prim.getIstAlertTimer().equals(new Integer(21)));
+        assertEquals(Integer.valueOf(21), prim.getIstAlertTimer());
 
         // superChargerSupportedInHLR
         AgeIndicator superChargerSupportedInHLR = prim.getSuperChargerSupportedInHLR();
@@ -1039,7 +1203,7 @@ public class InsertSubscriberDataRequestTest {
 
         MAPExtensionContainer extensionContainergprsCamelTDPData = gprsCamelTDPData.getExtensionContainer();
         ISDNAddressString gsmSCFAddressSgsnCamelSubscriptionInfo = gprsCamelTDPData.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressSgsnCamelSubscriptionInfo.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressSgsnCamelSubscriptionInfo.getAddress(), "22235");
         assertEquals(gsmSCFAddressSgsnCamelSubscriptionInfo.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressSgsnCamelSubscriptionInfo.getNumberingPlan(), NumberingPlan.ISDN);
 
@@ -1065,7 +1229,7 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(oneSgsnCamelSubscriptionInfo.getServiceKey(), 3);
         assertEquals(oneSgsnCamelSubscriptionInfo.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
         ISDNAddressString gsmSCFAddressMoSmsCsi = oneSgsnCamelSubscriptionInfo.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressMoSmsCsi.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressMoSmsCsi.getAddress(), "22235");
         assertEquals(gsmSCFAddressMoSmsCsi.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressMoSmsCsi.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(oneSgsnCamelSubscriptionInfo.getDefaultSMSHandling(), DefaultSMSHandling.continueTransaction);
@@ -1086,7 +1250,7 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(oneSmsCamelTdpDataListMtSmsCsi.getServiceKey(), 3);
         assertEquals(oneSmsCamelTdpDataListMtSmsCsi.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
         ISDNAddressString gsmSCFAddressmtSmsCsi = oneSgsnCamelSubscriptionInfo.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressmtSmsCsi.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressmtSmsCsi.getAddress(), "22235");
         assertEquals(gsmSCFAddressmtSmsCsi.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressmtSmsCsi.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(oneSgsnCamelSubscriptionInfo.getDefaultSMSHandling(), DefaultSMSHandling.continueTransaction);
@@ -1130,7 +1294,7 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(mgCsi.getServiceKey(), 3);
 
         ISDNAddressString gsmSCFAddressMgCsi = mgCsi.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressMgCsi.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressMgCsi.getAddress(), "22235");
         assertEquals(gsmSCFAddressMgCsi.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressMgCsi.getNumberingPlan(), NumberingPlan.ISDN);
 
@@ -1149,11 +1313,11 @@ public class InsertSubscriberDataRequestTest {
 
         // start accessRestrictionData
         AccessRestrictionData accessRestrictionData = prim.getAccessRestrictionData();
-        assertTrue(!accessRestrictionData.getUtranNotAllowed());
+        assertFalse(accessRestrictionData.getUtranNotAllowed());
         assertTrue(accessRestrictionData.getGeranNotAllowed());
-        assertTrue(!accessRestrictionData.getGanNotAllowed());
+        assertFalse(accessRestrictionData.getGanNotAllowed());
         assertTrue(accessRestrictionData.getIHspaEvolutionNotAllowed());
-        assertTrue(!accessRestrictionData.getEUtranNotAllowed());
+        assertFalse(accessRestrictionData.getEUtranNotAllowed());
         assertTrue(accessRestrictionData.getHoToNon3GPPAccessNotAllowed());
         // end accessRestrictionData
 
@@ -1181,7 +1345,7 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(epsSubscriptionData.getRfspId().intValue(), 4);
 
         ISDNAddressString stnSr = epsSubscriptionData.getStnSr();
-        assertTrue(stnSr.getAddress().equals("22228"));
+        assertEquals(stnSr.getAddress(), "22228");
         assertEquals(stnSr.getAddressNature(), AddressNature.international_number);
         assertEquals(stnSr.getNumberingPlan(), NumberingPlan.ISDN);
 
@@ -1212,7 +1376,6 @@ public class InsertSubscriberDataRequestTest {
         assertTrue(allocationRetentionPriority.getPreEmptionCapability());
         assertTrue(allocationRetentionPriority.getPreEmptionVulnerability());
         assertNotNull(allocationRetentionPriority.getExtensionContainer());
-        ;
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(allocationRetentionPriority.getExtensionContainer()));
         assertNotNull(extensionContainerePSQoSSubscribed);
         assertEquals(ePSQoSSubscribed.getQoSClassIdentifier(), QoSClassIdentifier.QCI_1);
@@ -1259,9 +1422,9 @@ public class InsertSubscriberDataRequestTest {
         assertTrue(Arrays.equals(this.getFQDNData(), pdnGwNameSpecificAPNInfo.getData()));
         assertNotNull(pdnGWIdentitySpecificAPNInfo.getExtensionContainer());
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(pdnGWIdentitySpecificAPNInfo.getExtensionContainer()));
-        MAPExtensionContainer extensionContainerspecificAPNInfo = specificAPNInfo.getExtensionContainer();
-        assertNotNull(extensionContainerspecificAPNInfo);
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(extensionContainerspecificAPNInfo));
+        MAPExtensionContainer extensionContainerSpecificAPNInfo = specificAPNInfo.getExtensionContainer();
+        assertNotNull(extensionContainerSpecificAPNInfo);
+        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(extensionContainerSpecificAPNInfo));
 
         assertTrue(Arrays.equals(specificAPNInfo.getAPN().getData(), this.getAPNData()));
 
@@ -1303,7 +1466,7 @@ public class InsertSubscriberDataRequestTest {
         // start sgsnNumber
         ISDNAddressString sgsnNumber = prim.getSgsnNumber();
         assertNotNull(sgsnNumber);
-        assertTrue(sgsnNumber.getAddress().equals("22228"));
+        assertEquals(sgsnNumber.getAddress(), "22228");
         assertEquals(sgsnNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(sgsnNumber.getNumberingPlan(), NumberingPlan.ISDN);
         // end sgsnNumber
@@ -1313,7 +1476,7 @@ public class InsertSubscriberDataRequestTest {
         assertTrue(Arrays.equals(mmeName.getData(), this.getDiameterIdentity()));
 
         // SubscribedPeriodicRAUTAUtimer
-        assertTrue(prim.getSubscribedPeriodicRAUTAUtimer().equals(new Long(2)));
+        assertEquals(Long.valueOf(2), prim.getSubscribedPeriodicRAUTAUtimer());
 
         // vplmnLIPAAllowed
         assertTrue(prim.getVplmnLIPAAllowed());
@@ -1324,231 +1487,191 @@ public class InsertSubscriberDataRequestTest {
         assertTrue(mdtUserConsent);
 
         // SubscribedPeriodicLAUtimer
-        assertTrue(prim.getSubscribedPeriodicLAUtimer().equals(new Long(2)));
+        assertEquals(Long.valueOf(2), prim.getSubscribedPeriodicLAUtimer());
 
         // extensionContainer
         MAPExtensionContainer extensionContainer = prim.getExtensionContainer();
         assertNotNull(extensionContainer);
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(extensionContainer));
-        // End ISD MAP Protocol Version 3 message Testing
+        // End MAP ISD message 1 Testing
 
-        // Start MAP Protocol Version 2 message Testing
-        data = this.getData1();
+        /*
+         Start MAP ISD message Testing 2 (taken from MAP load tests in CS domain)
+         */
+        data = this.getDataCsTest();
         asn = new AsnInputStream(data);
         tag = asn.readTag();
-        prim = new InsertSubscriberDataRequestImpl(2);
-        prim.decodeAll(asn);
+        InsertSubscriberDataRequestImpl isd = new InsertSubscriberDataRequestImpl(3);
+        isd.decodeAll(asn);
 
         assertEquals(tag, Tag.SEQUENCE);
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
         // imsi
-        imsi = prim.getImsi();
-        assertTrue(imsi.getData().equals("1111122222"));
+        imsi = isd.getImsi();
+        assertNull(imsi);
 
         // msisdn
-        msisdn = prim.getMsisdn();
-        assertTrue(msisdn.getAddress().equals("22234"));
+        msisdn = isd.getMsisdn();
         assertEquals(msisdn.getAddressNature(), AddressNature.international_number);
         assertEquals(msisdn.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(msisdn.getAddress(), "882285105682451");
 
         // category
-        category = prim.getCategory();
-        assertEquals(category.getData(), 5);
+        category = isd.getCategory();
+        assertEquals(category.getData(), 10);
 
         // subscriberStatus
-        subscriberStatus = prim.getSubscriberStatus();
-        assertEquals(subscriberStatus, SubscriberStatus.operatorDeterminedBarring);
+        subscriberStatus = isd.getSubscriberStatus();
+        assertEquals(subscriberStatus, SubscriberStatus.serviceGranted);
 
         // bearerServiceList
-        bearerServiceList = prim.getBearerServiceList();
-        assertNotNull(bearerServiceList);
-        assertEquals(bearerServiceList.size(), 1);
-        extBearerServiceCode = bearerServiceList.get(0);
-        assertEquals(extBearerServiceCode.getBearerServiceCodeValue(), BearerServiceCodeValue.padAccessCA_9600bps);
+        bearerServiceList = isd.getBearerServiceList();
+        assertNull(bearerServiceList);
 
         // teleserviceList
-        teleserviceList = prim.getTeleserviceList();
+        teleserviceList = isd.getTeleserviceList();
         assertNotNull(teleserviceList);
-        assertEquals(teleserviceList.size(), 1);
+        assertEquals(teleserviceList.size(), 2);
         extTeleserviceCode = teleserviceList.get(0);
-        assertEquals(extTeleserviceCode.getTeleserviceCodeValue(), TeleserviceCodeValue.allSpeechTransmissionServices);
+        assertEquals(extTeleserviceCode.getTeleserviceCodeValue(), TeleserviceCodeValue.shortMessageMT_PP);
+        extTeleserviceCode = teleserviceList.get(1);
+        assertEquals(extTeleserviceCode.getTeleserviceCodeValue(), TeleserviceCodeValue.shortMessageMO_PP);
 
-        // start provisionedSS
-        provisionedSS = prim.getProvisionedSS();
+        // provisionedSS
+        provisionedSS = isd.getProvisionedSS();
         assertNotNull(provisionedSS);
-        assertEquals(provisionedSS.size(), 1);
+        assertEquals(provisionedSS.size(), 2);
+
         extSSInfo = provisionedSS.get(0);
+        assertEquals(extSSInfo.getSsData().getSsCode().getSupplementaryCodeValue().getCode(), 17);
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitA());
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitP());
+        assertFalse(extSSInfo.getSsData().getSsStatus().getBitQ());
+        assertFalse(extSSInfo.getSsData().getSsStatus().getBitR());
+        assertEquals(extSSInfo.getSsData().getSSSubscriptionOption().getOverrideCategory().getCode(), 1);
 
-        forwardingInfo = extSSInfo.getForwardingInfo();
-        callBarringInfo = extSSInfo.getCallBarringInfo();
-        cugInfo = extSSInfo.getCugInfo();
-        ssData = extSSInfo.getSsData();
-        emlppInfo = extSSInfo.getEmlppInfo();
+        extSSInfo = provisionedSS.get(1);
+        assertEquals(extSSInfo.getSsData().getSsCode().getSupplementaryCodeValue().getCode(), 18);
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitA());
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitP());
+        assertFalse(extSSInfo.getSsData().getSsStatus().getBitQ());
+        assertFalse(extSSInfo.getSsData().getSsStatus().getBitR());
+        assertEquals(extSSInfo.getSsData().getSSSubscriptionOption().getCliRestrictionOption().getCode(), 2);
 
-        assertNotNull(forwardingInfo);
-        assertNull(callBarringInfo);
-        assertNull(cugInfo);
-        assertNull(ssData);
-        assertNull(emlppInfo);
-
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(forwardingInfo.getExtensionContainer()));
-        assertEquals(forwardingInfo.getSsCode().getSupplementaryCodeValue(), SupplementaryCodeValue.allSS);
-
-        forwardingFeatureList = forwardingInfo.getForwardingFeatureList();
-        ;
-        assertNotNull(forwardingFeatureList);
-        assertEquals(forwardingFeatureList.size(), 1);
-        extForwFeature = forwardingFeatureList.get(0);
-        assertNotNull(extForwFeature);
-
-        assertEquals(extForwFeature.getBasicService().getExtBearerService().getBearerServiceCodeValue(), BearerServiceCodeValue.padAccessCA_9600bps);
-        assertNull(extForwFeature.getBasicService().getExtTeleservice());
-        assertNotNull(extForwFeature.getSsStatus());
-        assertTrue(extForwFeature.getSsStatus().getBitA());
-        assertTrue(extForwFeature.getSsStatus().getBitP());
-        assertTrue(extForwFeature.getSsStatus().getBitQ());
-        assertTrue(extForwFeature.getSsStatus().getBitR());
-
-        forwardedToNumber = extForwFeature.getForwardedToNumber();
-        assertNotNull(forwardedToNumber);
-        assertTrue(forwardedToNumber.getAddress().equals("22228"));
-        assertEquals(forwardedToNumber.getAddressNature(), AddressNature.international_number);
-        assertEquals(forwardedToNumber.getNumberingPlan(), NumberingPlan.ISDN);
-
-        assertTrue(Arrays.equals(extForwFeature.getForwardedToSubaddress().getData(), this.getISDNSubaddressStringData()));
-        assertTrue(extForwFeature.getForwardingOptions().getNotificationToCallingParty());
-        assertTrue(extForwFeature.getForwardingOptions().getNotificationToForwardingParty());
-        assertTrue(!extForwFeature.getForwardingOptions().getRedirectingPresentation());
-        assertEquals(extForwFeature.getForwardingOptions().getExtForwOptionsForwardingReason(), ExtForwOptionsForwardingReason.msBusy);
-        assertNotNull(extForwFeature.getNoReplyConditionTime());
-        assertEquals(extForwFeature.getNoReplyConditionTime().intValue(), 2);
-        longForwardedToNumber = extForwFeature.getLongForwardedToNumber();
-        assertNotNull(longForwardedToNumber);
-        assertTrue(longForwardedToNumber.getAddress().equals("22227"));
-        assertEquals(longForwardedToNumber.getAddressNature(), AddressNature.international_number);
-        assertEquals(longForwardedToNumber.getNumberingPlan(), NumberingPlan.ISDN);
-        // end provisionedSS
-
-        // start odbData
-        odbData = prim.getODBData();
+        // odbData
+        odbData = isd.getODBData();
         oDBGeneralData = odbData.getODBGeneralData();
-        assertTrue(!oDBGeneralData.getAllOGCallsBarred());
-        assertTrue(oDBGeneralData.getInternationalOGCallsBarred());
-        assertTrue(!oDBGeneralData.getInternationalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(oDBGeneralData.getInterzonalOGCallsBarred());
-        assertTrue(!oDBGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(oDBGeneralData.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
-        assertTrue(!oDBGeneralData.getPremiumRateInformationOGCallsBarred());
-        assertTrue(oDBGeneralData.getPremiumRateEntertainementOGCallsBarred());
-        assertTrue(!oDBGeneralData.getSsAccessBarred());
-        assertTrue(oDBGeneralData.getAllECTBarred());
-        assertTrue(!oDBGeneralData.getChargeableECTBarred());
-        assertTrue(oDBGeneralData.getInternationalECTBarred());
-        assertTrue(!oDBGeneralData.getInterzonalECTBarred());
+        assertFalse(oDBGeneralData.getAllOGCallsBarred());
+        assertFalse(oDBGeneralData.getInternationalOGCallsBarred());
+        assertFalse(oDBGeneralData.getInternationalOGCallsNotToHPLMNCountryBarred());
+        assertTrue(oDBGeneralData.getPremiumRateInformationOGCallsBarred());
+        assertTrue(oDBGeneralData.getPremiumRateEntertainmentOGCallsBarred());
+        assertTrue(oDBGeneralData.getSsAccessBarred());
+        assertFalse(oDBGeneralData.getInterzonalOGCallsBarred());
+        assertFalse(oDBGeneralData.getInterzonalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(oDBGeneralData.getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred());
+        assertFalse(oDBGeneralData.getAllECTBarred());
+        assertFalse(oDBGeneralData.getChargeableECTBarred());
+        assertFalse(oDBGeneralData.getInternationalECTBarred());
+        assertFalse(oDBGeneralData.getInterzonalECTBarred());
         assertTrue(oDBGeneralData.getDoublyChargeableECTBarred());
-        assertTrue(!oDBGeneralData.getMultipleECTBarred());
-        assertTrue(oDBGeneralData.getAllPacketOrientedServicesBarred());
-        assertTrue(!oDBGeneralData.getRoamerAccessToHPLMNAPBarred());
+        assertTrue(oDBGeneralData.getMultipleECTBarred());
+        assertFalse(oDBGeneralData.getAllPacketOrientedServicesBarred());
+        assertFalse(oDBGeneralData.getRoamerAccessToHPLMNAPBarred());
         assertTrue(oDBGeneralData.getRoamerAccessToVPLMNAPBarred());
-        assertTrue(!oDBGeneralData.getRoamingOutsidePLMNOGCallsBarred());
-        assertTrue(oDBGeneralData.getAllICCallsBarred());
-        assertTrue(!oDBGeneralData.getRoamingOutsidePLMNICCallsBarred());
-        assertTrue(oDBGeneralData.getRoamingOutsidePLMNICountryICCallsBarred());
-        assertTrue(!oDBGeneralData.getRoamingOutsidePLMNBarred());
-        assertTrue(oDBGeneralData.getRoamingOutsidePLMNCountryBarred());
-        assertTrue(!oDBGeneralData.getRegistrationAllCFBarred());
+        assertFalse(oDBGeneralData.getRoamingOutsidePLMNOGCallsBarred());
+        assertFalse(oDBGeneralData.getAllICCallsBarred());
+        assertTrue(oDBGeneralData.getRoamingOutsidePLMNICCallsBarred());
+        assertFalse(oDBGeneralData.getRoamingOutsidePLMNICountryICCallsBarred());
+        assertFalse(oDBGeneralData.getRoamingOutsidePLMNBarred());
+        assertFalse(oDBGeneralData.getRoamingOutsidePLMNCountryBarred());
+        assertTrue(oDBGeneralData.getRegistrationAllCFBarred());
         assertTrue(oDBGeneralData.getRegistrationCFNotToHPLMNBarred());
-        assertTrue(!oDBGeneralData.getRegistrationInterzonalCFBarred());
+        assertTrue(oDBGeneralData.getRegistrationInterzonalCFBarred());
         assertTrue(oDBGeneralData.getRegistrationInterzonalCFNotToHPLMNBarred());
-        assertTrue(!oDBGeneralData.getRegistrationInternationalCFBarred());
+        assertTrue(oDBGeneralData.getRegistrationInternationalCFBarred());
+
         odbHplmnData = odbData.getOdbHplmnData();
-        assertTrue(!odbHplmnData.getPlmnSpecificBarringType1());
-        assertTrue(odbHplmnData.getPlmnSpecificBarringType2());
-        assertTrue(!odbHplmnData.getPlmnSpecificBarringType3());
-        assertTrue(odbHplmnData.getPlmnSpecificBarringType4());
-        assertNotNull(odbData.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(odbData.getExtensionContainer()));
-        // end odbData
+        assertTrue(odbHplmnData.getPlmnSpecificBarringType1());
+        assertFalse(odbHplmnData.getPlmnSpecificBarringType2());
+        assertFalse(odbHplmnData.getPlmnSpecificBarringType3());
+        assertFalse(odbHplmnData.getPlmnSpecificBarringType4());
+        assertNull(odbData.getExtensionContainer());
 
         // start roamingRestrictionDueToUnsupportedFeature
-        assertTrue(prim.getRoamingRestrictionDueToUnsupportedFeature());
+        assertTrue(isd.getRoamingRestrictionDueToUnsupportedFeature());
 
         // start regionalSubscriptionData
-        regionalSubscriptionData = prim.getRegionalSubscriptionData();
-        assertNotNull(regionalSubscriptionData);
-        assertEquals(regionalSubscriptionData.size(), 1);
-        zoneCode = regionalSubscriptionData.get(0);
-        assertEquals(zoneCode.getValue(), 2);
-        // end regionalSubscriptionData
+        regionalSubscriptionData = isd.getRegionalSubscriptionData();
+        assertNull(regionalSubscriptionData);
 
         // start vbsSubscriptionData
-        vbsSubscriptionData = prim.getVbsSubscriptionData();
+        vbsSubscriptionData = isd.getVbsSubscriptionData();
         assertNotNull(vbsSubscriptionData);
         assertEquals(vbsSubscriptionData.size(), 1);
         voiceBroadcastData = vbsSubscriptionData.get(0);
-        assertTrue(voiceBroadcastData.getGroupId().getGroupId().equals(""));
-        assertTrue(voiceBroadcastData.getLongGroupId().getLongGroupId().equals("5"));
+        assertNotNull(voiceBroadcastData.getGroupId());
+        assertEquals(voiceBroadcastData.getLongGroupId().getLongGroupId(), "5");
         assertTrue(voiceBroadcastData.getBroadcastInitEntitlement());
-        assertNotNull(voiceBroadcastData.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(voiceBroadcastData.getExtensionContainer()));
-        // end vbsSubscriptionData
+        assertNull(voiceBroadcastData.getExtensionContainer());
 
         // start vgcsSubscriptionData
-        vgcsSubscriptionData = prim.getVgcsSubscriptionData();
+        vgcsSubscriptionData = isd.getVgcsSubscriptionData();
         assertNotNull(vgcsSubscriptionData);
         assertEquals(vgcsSubscriptionData.size(), 1);
         voiceGroupCallData = vgcsSubscriptionData.get(0);
-        assertTrue(voiceGroupCallData.getGroupId().getGroupId().equals(""));
-        assertTrue(voiceGroupCallData.getLongGroupId().getLongGroupId().equals("5"));
-        assertNotNull(voiceGroupCallData.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(voiceGroupCallData.getExtensionContainer()));
+        assertNotNull(voiceBroadcastData.getGroupId());
+        assertEquals(voiceGroupCallData.getLongGroupId().getLongGroupId(), "5");
         assertTrue(voiceGroupCallData.getAdditionalSubscriptions().getEmergencyReset());
-        assertFalse(voiceGroupCallData.getAdditionalSubscriptions().getEmergencyUplinkRequest());
+        assertTrue(voiceGroupCallData.getAdditionalSubscriptions().getEmergencyUplinkRequest());
         assertTrue(voiceGroupCallData.getAdditionalSubscriptions().getPrivilegedUplinkRequest());
         assertNotNull(voiceGroupCallData.getAdditionalInfo());
         assertTrue(voiceGroupCallData.getAdditionalInfo().getData().get(0));
-        // end vgcsSubscriptionData
+        assertTrue(voiceGroupCallData.getAdditionalInfo().getData().get(1));
+        assertTrue(voiceGroupCallData.getAdditionalInfo().getData().get(24));
+        assertNull(voiceGroupCallData.getExtensionContainer());
 
         // start vlrCamelSubscriptionInfo
-        vlrCamelSubscriptionInfo = prim.getVlrCamelSubscriptionInfo();
+        vlrCamelSubscriptionInfo = isd.getVlrCamelSubscriptionInfo();
 
         oCsi = vlrCamelSubscriptionInfo.getOCsi();
         lst = oCsi.getOBcsmCamelTDPDataList();
         assertEquals(lst.size(), 1);
         cd = lst.get(0);
         assertEquals(cd.getOBcsmTriggerDetectionPoint(), OBcsmTriggerDetectionPoint.routeSelectFailure);
-        assertEquals(cd.getServiceKey(), 3);
+        assertEquals(cd.getServiceKey(), 7);
         assertEquals(cd.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(cd.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(cd.getGsmSCFAddress().getAddress().equals("1122333"));
-        assertEquals(cd.getDefaultCallHandling(), DefaultCallHandling.releaseCall);
+        assertEquals(cd.getGsmSCFAddress().getAddress(), "491710460029");
+        assertEquals(cd.getDefaultCallHandling(), DefaultCallHandling.continueCall);
         assertNull(cd.getExtensionContainer());
 
         assertNull(oCsi.getExtensionContainer());
         assertEquals((int) oCsi.getCamelCapabilityHandling(), 2);
-        assertFalse(oCsi.getNotificationToCSE());
-        assertFalse(oCsi.getCsiActive());
+        assertTrue(oCsi.getNotificationToCSE());
+        assertTrue(oCsi.getCsiActive());
 
-        assertNotNull(vlrCamelSubscriptionInfo.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(vlrCamelSubscriptionInfo.getExtensionContainer()));
+        assertNull(vlrCamelSubscriptionInfo.getExtensionContainer());
 
         ssCsi = vlrCamelSubscriptionInfo.getSsCsi();
         ssCamelData = ssCsi.getSsCamelData();
 
         ssEventList = ssCamelData.getSsEventList();
         assertNotNull(ssEventList);
-        assertEquals(ssEventList.size(), 1);
-        one = ssEventList.get(0);
-        assertNotNull(one);
-        assertEquals(one.getSupplementaryCodeValue(), SupplementaryCodeValue.allCommunityOfInterestSS);
+        assertEquals(ssEventList.size(), 2);
+        SSCode ssEvent1 = ssEventList.get(0);
+        assertNotNull(ssEvent1);
+        assertEquals(ssEvent1.getSupplementaryCodeValue(), SupplementaryCodeValue.clip);
+        SSCode ssEvent2 = ssEventList.get(1);
+        assertNotNull(ssEvent2);
+        assertEquals(ssEvent2.getSupplementaryCodeValue(), SupplementaryCodeValue.clir);
         gsmSCFAddress = ssCamelData.getGsmSCFAddress();
-        assertTrue(gsmSCFAddress.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddress.getAddress(), "491710460029");
         assertEquals(gsmSCFAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddress.getNumberingPlan(), NumberingPlan.ISDN);
-        assertNotNull(ssCamelData.getExtensionContainer());
-        assertNotNull(ssCsi.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(ssCsi.getExtensionContainer()));
+        assertNull(ssCamelData.getExtensionContainer());
+        assertNull(ssCsi.getExtensionContainer());
         assertTrue(ssCsi.getCsiActive());
         assertTrue(ssCsi.getNotificationToCSE());
 
@@ -1561,43 +1684,29 @@ public class InsertSubscriberDataRequestTest {
         destinationNumberCriteria = oBcsmCamelTdpCriteria.getDestinationNumberCriteria();
         destinationNumberList = destinationNumberCriteria.getDestinationNumberList();
         assertNotNull(destinationNumberList);
-        assertEquals(destinationNumberList.size(), 2);
+        assertEquals(destinationNumberList.size(), 1);
         destinationNumberOne = destinationNumberList.get(0);
         assertNotNull(destinationNumberOne);
-        assertTrue(destinationNumberOne.getAddress().equals("22234"));
+        assertEquals(destinationNumberOne.getAddress(), "491714780432");
         assertEquals(destinationNumberOne.getAddressNature(), AddressNature.international_number);
         assertEquals(destinationNumberOne.getNumberingPlan(), NumberingPlan.ISDN);
-        destinationNumberTwo = destinationNumberList.get(1);
-        assertNotNull(destinationNumberTwo);
-        assertTrue(destinationNumberTwo.getAddress().equals("22235"));
-        assertEquals(destinationNumberTwo.getAddressNature(), AddressNature.international_number);
-        assertEquals(destinationNumberTwo.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(destinationNumberCriteria.getMatchType().getCode(), MatchType.enabling.getCode());
         destinationNumberLengthList = destinationNumberCriteria.getDestinationNumberLengthList();
         assertNotNull(destinationNumberLengthList);
-        assertEquals(destinationNumberLengthList.size(), 3);
-        assertEquals(destinationNumberLengthList.get(0).intValue(), 2);
-        assertEquals(destinationNumberLengthList.get(1).intValue(), 4);
-        assertEquals(destinationNumberLengthList.get(2).intValue(), 1);
-        assertEquals(oBcsmCamelTdpCriteria.getOBcsmTriggerDetectionPoint(), OBcsmTriggerDetectionPoint.collectedInfo);
-        assertNotNull(oBcsmCamelTdpCriteria.getBasicServiceCriteria());
-        assertEquals(oBcsmCamelTdpCriteria.getBasicServiceCriteria().size(), 2);
-        basicServiceOne = oBcsmCamelTdpCriteria.getBasicServiceCriteria().get(0);
-        assertNotNull(basicServiceOne);
-        assertEquals(basicServiceOne.getExtBearerService().getBearerServiceCodeValue(), BearerServiceCodeValue.padAccessCA_9600bps);
+        assertEquals(destinationNumberLengthList.size(), 1);
+        assertEquals(oBcsmCamelTdpCriteria.getOBcsmTriggerDetectionPoint(), OBcsmTriggerDetectionPoint.routeSelectFailure);
+        assertNull(oBcsmCamelTdpCriteria.getBasicServiceCriteria());
 
-        basicServiceTwo = oBcsmCamelTdpCriteria.getBasicServiceCriteria().get(1);
-        assertNotNull(basicServiceTwo);
-        assertEquals(basicServiceTwo.getExtTeleservice().getTeleserviceCodeValue(), TeleserviceCodeValue.allSpeechTransmissionServices);
-
-        assertEquals(oBcsmCamelTdpCriteria.getCallTypeCriteria(), CallTypeCriteria.forwarded);
+        assertEquals(oBcsmCamelTdpCriteria.getCallTypeCriteria(), CallTypeCriteria.notForwarded);
         oCauseValueCriteria = oBcsmCamelTdpCriteria.getOCauseValueCriteria();
         assertNotNull(oCauseValueCriteria);
-        assertEquals(oCauseValueCriteria.size(), 1);
+        assertEquals(oCauseValueCriteria.size(), 2);
         assertNotNull(oCauseValueCriteria.get(0));
-        assertEquals(oCauseValueCriteria.get(0).getData(), 7);
+        assertEquals(oCauseValueCriteria.get(0).getData(), 81);
+        assertNotNull(oCauseValueCriteria.get(1));
+        assertEquals(oCauseValueCriteria.get(1).getData(), 57);
 
-        assertFalse(vlrCamelSubscriptionInfo.getTifCsi());
+        assertTrue(vlrCamelSubscriptionInfo.getTifCsi());
 
         mCsi = vlrCamelSubscriptionInfo.getMCsi();
         mobilityTriggers = mCsi.getMobilityTriggers();
@@ -1605,18 +1714,17 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(mobilityTriggers.size(), 2);
         mmCode = mobilityTriggers.get(0);
         assertNotNull(mmCode);
-        assertEquals(MMCodeValue.GPRSAttach, mmCode.getMMCodeValue());
+        assertEquals(MMCodeValue.IMSIAttach, mmCode.getMMCodeValue());
         mmCode2 = mobilityTriggers.get(1);
         assertNotNull(mmCode2);
-        assertEquals(MMCodeValue.IMSIAttach, mmCode2.getMMCodeValue());
-        assertNotNull(mCsi.getServiceKey());
-        assertEquals(mCsi.getServiceKey(), 3);
+        assertEquals(MMCodeValue.LocationUpdateInSameVLR, mmCode2.getMMCodeValue());
+        assertNotNull(mCsi);
+        assertEquals(mCsi.getServiceKey(), 7);
         gsmSCFAddressTwo = mCsi.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressTwo.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressTwo.getAddress(), "491710460029");
         assertEquals(gsmSCFAddressTwo.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressTwo.getNumberingPlan(), NumberingPlan.ISDN);
-        assertNotNull(mCsi.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(mCsi.getExtensionContainer()));
+        assertNull(mCsi.getExtensionContainer());
         assertTrue(mCsi.getCsiActive());
         assertTrue(mCsi.getNotificationToCSE());
 
@@ -1626,52 +1734,60 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(smsCamelTdpDataList.size(), 1);
         smsCAMELTDPData = smsCamelTdpDataList.get(0);
         assertNotNull(smsCAMELTDPData);
-        assertEquals(smsCAMELTDPData.getServiceKey(), 3);
-        assertEquals(smsCAMELTDPData.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
+        assertEquals(smsCAMELTDPData.getServiceKey(), 7);
+        assertEquals(smsCAMELTDPData.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsDeliveryRequest);
         gsmSCFAddressSmsCAMELTDPData = smsCAMELTDPData.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressSmsCAMELTDPData.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressSmsCAMELTDPData.getAddress(), "491710460029");
         assertEquals(gsmSCFAddressSmsCAMELTDPData.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressSmsCAMELTDPData.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(smsCAMELTDPData.getDefaultSMSHandling(), DefaultSMSHandling.continueTransaction);
-        assertNotNull(smsCAMELTDPData.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(smsCAMELTDPData.getExtensionContainer()));
+        assertNull(smsCAMELTDPData.getExtensionContainer());
         assertTrue(smsCsi.getCsiActive());
         assertTrue(smsCsi.getNotificationToCSE());
-        assertEquals(smsCsi.getCamelCapabilityHandling().intValue(), 8);
+        assertEquals(smsCsi.getCamelCapabilityHandling().intValue(), 2);
 
         vtCsi = vlrCamelSubscriptionInfo.getVtCsi();
         tbcsmCamelTDPDatalst = vtCsi.getTBcsmCamelTDPDataList();
         assertEquals(lst.size(), 1);
         tbcsmCamelTDPData = tbcsmCamelTDPDatalst.get(0);
-        assertEquals(tbcsmCamelTDPData.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.termAttemptAuthorized);
-        assertEquals(tbcsmCamelTDPData.getServiceKey(), 3);
+        assertEquals(tbcsmCamelTDPData.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.tNoAnswer);
+        assertEquals(tbcsmCamelTDPData.getServiceKey(), 7);
         assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(tbcsmCamelTDPData.getGsmSCFAddress().getAddress().equals("22235"));
-        assertEquals(tbcsmCamelTDPData.getDefaultCallHandling(), DefaultCallHandling.releaseCall);
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddress(), "491710460029");
+        assertEquals(tbcsmCamelTDPData.getDefaultCallHandling(), DefaultCallHandling.continueCall);
         assertNull(tbcsmCamelTDPData.getExtensionContainer());
         assertNull(vtCsi.getExtensionContainer());
         assertEquals((int) vtCsi.getCamelCapabilityHandling(), 2);
-        assertFalse(vtCsi.getNotificationToCSE());
-        assertFalse(vtCsi.getCsiActive());
+        assertTrue(vtCsi.getNotificationToCSE());
+        assertTrue(vtCsi.getCsiActive());
+        tbcsmCamelTDPData = tbcsmCamelTDPDatalst.get(1);
+        assertEquals(tbcsmCamelTDPData.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.tBusy);
+        assertEquals(tbcsmCamelTDPData.getServiceKey(), 7);
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddress(), "491710460029");
+        assertEquals(tbcsmCamelTDPData.getDefaultCallHandling(), DefaultCallHandling.continueCall);
+        assertNull(tbcsmCamelTDPData.getExtensionContainer());
+        assertNull(vtCsi.getExtensionContainer());
+        assertEquals((int) vtCsi.getCamelCapabilityHandling(), 2);
+        assertTrue(vtCsi.getNotificationToCSE());
+        assertTrue(vtCsi.getCsiActive());
 
         tBcsmCamelTdpCriteriaList = vlrCamelSubscriptionInfo.getTBcsmCamelTdpCriteriaList();
         assertNotNull(tBcsmCamelTdpCriteriaList);
         assertEquals(tBcsmCamelTdpCriteriaList.size(), 1);
         assertNotNull(tBcsmCamelTdpCriteriaList.get(0));
         tbcsmCamelTdpCriteria = tBcsmCamelTdpCriteriaList.get(0);
-        assertEquals(tbcsmCamelTdpCriteria.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.tBusy);
-        assertNotNull(tbcsmCamelTdpCriteria.getBasicServiceCriteria());
-        assertEquals(tbcsmCamelTdpCriteria.getBasicServiceCriteria().size(), 2);
-        assertNotNull(tbcsmCamelTdpCriteria.getBasicServiceCriteria().get(0));
-        assertNotNull(tbcsmCamelTdpCriteria.getBasicServiceCriteria().get(1));
+        assertEquals(tbcsmCamelTdpCriteria.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.tNoAnswer);
+        assertNull(tbcsmCamelTdpCriteria.getBasicServiceCriteria());
         oCauseValueCriteriaLst = tbcsmCamelTdpCriteria.getTCauseValueCriteria();
         assertNotNull(oCauseValueCriteriaLst);
         assertEquals(oCauseValueCriteriaLst.size(), 2);
         assertNotNull(oCauseValueCriteriaLst.get(0));
-        assertEquals(oCauseValueCriteriaLst.get(0).getData(), 7);
+        assertEquals(oCauseValueCriteriaLst.get(0).getData(), 21);
         assertNotNull(oCauseValueCriteriaLst.get(1));
-        assertEquals(oCauseValueCriteriaLst.get(1).getData(), 6);
+        assertEquals(oCauseValueCriteriaLst.get(1).getData(), 57);
 
         dCsi = vlrCamelSubscriptionInfo.getDCsi();
         dpAnalysedInfoCriteriaList = dCsi.getDPAnalysedInfoCriteriaList();
@@ -1680,17 +1796,16 @@ public class InsertSubscriberDataRequestTest {
         dpAnalysedInfoCriterium = dpAnalysedInfoCriteriaList.get(0);
         assertNotNull(dpAnalysedInfoCriterium);
         dialledNumber = dpAnalysedInfoCriterium.getDialledNumber();
-        assertTrue(dialledNumber.getAddress().equals("22234"));
+        assertEquals(dialledNumber.getAddress(), "491714780432");
         assertEquals(dialledNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(dialledNumber.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(dpAnalysedInfoCriterium.getServiceKey(), 7);
         gsmSCFAddressDp = dpAnalysedInfoCriterium.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressDp.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressDp.getAddress(), "491710460029");
         assertEquals(gsmSCFAddressDp.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressDp.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(dpAnalysedInfoCriterium.getDefaultCallHandling(), DefaultCallHandling.continueCall);
-        assertNotNull(dCsi.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(dCsi.getExtensionContainer()));
+        assertNull(dCsi.getExtensionContainer());
         assertEquals(dCsi.getCamelCapabilityHandling().intValue(), 2);
         assertTrue(dCsi.getCsiActive());
         assertTrue(dCsi.getNotificationToCSE());
@@ -1701,19 +1816,18 @@ public class InsertSubscriberDataRequestTest {
         assertEquals(smsCamelTdpDataListOfmtSmsCSI.size(), 1);
         smsCAMELTDPDataOfMtSmsCSI = smsCamelTdpDataListOfmtSmsCSI.get(0);
         assertNotNull(smsCAMELTDPDataOfMtSmsCSI);
-        assertEquals(smsCAMELTDPDataOfMtSmsCSI.getServiceKey(), 3);
-        assertEquals(smsCAMELTDPDataOfMtSmsCSI.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
+        assertEquals(smsCAMELTDPDataOfMtSmsCSI.getServiceKey(), 7);
+        assertEquals(smsCAMELTDPDataOfMtSmsCSI.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsDeliveryRequest);
         gsmSCFAddressOfMtSmsCSI = smsCAMELTDPDataOfMtSmsCSI.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressOfMtSmsCSI.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressOfMtSmsCSI.getAddress(), "491710460029");
         assertEquals(gsmSCFAddressOfMtSmsCSI.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressOfMtSmsCSI.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(smsCAMELTDPDataOfMtSmsCSI.getDefaultSMSHandling(), DefaultSMSHandling.continueTransaction);
-        assertNotNull(smsCAMELTDPDataOfMtSmsCSI.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(smsCAMELTDPDataOfMtSmsCSI.getExtensionContainer()));
-        assertNotNull(mtSmsCSI.getExtensionContainer());
+        assertNull(smsCAMELTDPDataOfMtSmsCSI.getExtensionContainer());
+        assertNull(mtSmsCSI.getExtensionContainer());
         assertTrue(mtSmsCSI.getCsiActive());
         assertTrue(mtSmsCSI.getNotificationToCSE());
-        assertEquals(mtSmsCSI.getCamelCapabilityHandling().intValue(), 8);
+        assertEquals(mtSmsCSI.getCamelCapabilityHandling().intValue(), 2);
 
         mtSmsCamelTdpCriteriaList = vlrCamelSubscriptionInfo.getMtSmsCamelTdpCriteriaList();
         assertNotNull(mtSmsCamelTdpCriteriaList);
@@ -1722,17 +1836,775 @@ public class InsertSubscriberDataRequestTest {
 
         tPDUTypeCriterion = mtsmsCAMELTDPCriteria.getTPDUTypeCriterion();
         assertNotNull(tPDUTypeCriterion);
-        assertEquals(tPDUTypeCriterion.size(), 2);
+        assertEquals(tPDUTypeCriterion.size(), 3);
         mtSMSTPDUTypeOne = tPDUTypeCriterion.get(0);
         assertNotNull(mtSMSTPDUTypeOne);
         assertEquals(mtSMSTPDUTypeOne, MTSMSTPDUType.smsDELIVER);
-
         mtSMSTPDUTypeTwo = tPDUTypeCriterion.get(1);
         assertNotNull(mtSMSTPDUTypeTwo);
-        assertTrue(mtSMSTPDUTypeTwo == MTSMSTPDUType.smsSTATUSREPORT);
-        assertEquals(mtsmsCAMELTDPCriteria.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
+        assertSame(mtSMSTPDUTypeTwo, MTSMSTPDUType.smsSUBMITREPORT);
+        assertEquals(mtsmsCAMELTDPCriteria.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsDeliveryRequest);
+        mtSMSTPDUTypeTwo = tPDUTypeCriterion.get(2);
+        assertNotNull(mtSMSTPDUTypeTwo);
+        assertSame(mtSMSTPDUTypeTwo, MTSMSTPDUType.smsSTATUSREPORT);
+        assertEquals(mtsmsCAMELTDPCriteria.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsDeliveryRequest);
         // end vlrCamelSubscriptionInfo
 
+        // naeaPreferredCI
+        naeaPreferredCI = isd.getNAEAPreferredCI();
+        assertEquals(naeaPreferredCI.getNaeaPreferredCIC().getNetworkIdentificationPlanValue(), NetworkIdentificationPlanValue.spare_1);
+        assertEquals(naeaPreferredCI.getNaeaPreferredCIC().getNetworkIdentificationTypeValue(), NetworkIdentificationTypeValue.nationalNetworkIdentification);
+        assertEquals(naeaPreferredCI.getNaeaPreferredCIC().getCarrierCode(), "4580");
+        assertNull(naeaPreferredCI.getExtensionContainer());
+
+        // gprsSubscriptionData
+        gprsSubscriptionData = isd.getGPRSSubscriptionData();
+        assertNull(gprsSubscriptionData);
+
+        // roamingRestrictedInSgsnDueToUnsupportedFeature
+        assertFalse(isd.getRoamingRestrictedInSgsnDueToUnsupportedFeature());
+
+        // networkAccessMode
+        assertEquals(isd.getNetworkAccessMode(), NetworkAccessMode.packetAndCircuit);
+
+        // lsaInformation
+        assertNull(isd.getLSAInformation());
+
+        // lmuIndicator
+        assertFalse(isd.getLmuIndicator());
+
+        // lcsInformation
+        assertNull(isd.getLCSInformation());
+
+        // istAlertTimer
+        assertEquals(isd.getIstAlertTimer().intValue(), 200);
+
+        // superChargerSupportedInHLR
+        assertNull(isd.getSuperChargerSupportedInHLR());
+
+        // mcSsInfo
+        MCSSInfo mcssInfo = isd.getMcSsInfo();
+        assertEquals(mcssInfo.getSSCode().getSupplementaryCodeValue(), SupplementaryCodeValue.cfu);
+        assertFalse(mcssInfo.getSSStatus().getBitP());
+        assertTrue(mcssInfo.getSSStatus().getBitQ());
+        assertTrue(mcssInfo.getSSStatus().getBitR());
+        assertFalse(mcssInfo.getSSStatus().getBitA());
+        assertEquals(mcssInfo.getNbrSB(), 2);
+        assertEquals(mcssInfo.getNbrUser(), 4);
+        assertNull(mcssInfo.getExtensionContainer());
+
+        // csAllocationRetentionPriority
+        csAllocationRetentionPriority = isd.getCSAllocationRetentionPriority();
+        assertEquals(csAllocationRetentionPriority.getData(), 4);
+
+        // sgsnCamelSubscriptionInfo
+        assertNull(isd.getSgsnCamelSubscriptionInfo());
+
+        // chargingCharacteristics
+        chargingCharacteristics = isd.getChargingCharacteristics();
+        assertFalse(chargingCharacteristics.isChargingByHotBillingCharging());
+        assertFalse(chargingCharacteristics.isNormalCharging());
+        assertTrue(chargingCharacteristics.isFlatRateChargingCharging());
+        assertFalse(chargingCharacteristics.isPrepaidCharging());
+
+        // accessRestrictionData
+        accessRestrictionData = isd.getAccessRestrictionData();
+        assertFalse(accessRestrictionData.getGeranNotAllowed());
+        assertFalse(accessRestrictionData.getUtranNotAllowed());
+        assertTrue(accessRestrictionData.getGanNotAllowed());
+        assertFalse(accessRestrictionData.getEUtranNotAllowed());
+        assertFalse(accessRestrictionData.getIHspaEvolutionNotAllowed());
+        assertTrue(accessRestrictionData.getHoToNon3GPPAccessNotAllowed());
+
+        // icsIndicator
+        icsIndicator = isd.getIcsIndicator();
+        assertTrue(icsIndicator);
+
+        // epsSubscriptionData
+        epsSubscriptionData = isd.getEpsSubscriptionData();
+        apnConfiguration = epsSubscriptionData.getAPNConfigurationProfile().getEPSDataList().get(0);
+        assertEquals(apnConfiguration.getContextId(), 1);
+        assertEquals(apnConfiguration.getPDNType().getPDNTypeValue(), PDNTypeValue.IPv4v6);
+        assertNull(apnConfiguration.getServedPartyIPIPv4Address());
+        assertEquals(apnConfiguration.getApn().getApn(), "internet");
+        assertEquals(apnConfiguration.getEPSQoSSubscribed().getAllocationRetentionPriority().getPriorityLevel(), 9);
+        assertTrue(apnConfiguration.getEPSQoSSubscribed().getAllocationRetentionPriority().getPreEmptionCapability());
+        assertFalse(apnConfiguration.getEPSQoSSubscribed().getAllocationRetentionPriority().getPreEmptionVulnerability());
+        assertNull(apnConfiguration.getPdnGwIdentity());
+        assertNull(apnConfiguration.getPdnGwAllocationType());
+        assertTrue(apnConfiguration.getVplmnAddressAllowed());
+        assertFalse(apnConfiguration.getChargingCharacteristics().isNormalCharging());
+        assertFalse(apnConfiguration.getChargingCharacteristics().isPrepaidCharging());
+        assertTrue(apnConfiguration.getChargingCharacteristics().isFlatRateChargingCharging());
+        assertFalse(apnConfiguration.getChargingCharacteristics().isChargingByHotBillingCharging());
+        assertEquals(apnConfiguration.getAmbr().getMaxRequestedBandwidthUL(), 2048);
+        assertEquals(apnConfiguration.getAmbr().getMaxRequestedBandwidthDL(), 4096);
+        assertNull(apnConfiguration.getAmbr().getExtensionContainer());
+        assertNull(apnConfiguration.getSpecificAPNInfoList());
+        assertNull(apnConfiguration.getExtensionContainer());
+        assertEquals(apnConfiguration.getServedPartyIPIPv6Address().getData(), new byte[] {21});
+        assertEquals(apnConfiguration.getApnOiReplacement().getData(), new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
+        assertEquals(apnConfiguration.getSiptoPermission(), SIPTOPermission.siptoAllowed);
+        assertEquals(apnConfiguration.getLipaPermission(), LIPAPermission.lipaConditional);
+        assertNull(epsSubscriptionData.getAPNConfigurationProfile().getExtensionContainer());
+        assertEquals(epsSubscriptionData.getApnOiReplacement().getData(), new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
+        assertEquals(epsSubscriptionData.getRfspId().intValue(), 0);
+        assertEquals(epsSubscriptionData.getAmbr().getMaxRequestedBandwidthUL(), 2048);
+        assertEquals(epsSubscriptionData.getAmbr().getMaxRequestedBandwidthDL(), 4096);
+        assertNull(epsSubscriptionData.getAmbr().getExtensionContainer());
+        assertEquals(epsSubscriptionData.getAPNConfigurationProfile().getDefaultContext(), 1);
+        assertTrue(epsSubscriptionData.getAPNConfigurationProfile().getCompleteDataListIncluded());
+        assertEquals(epsSubscriptionData.getAPNConfigurationProfile().getEPSDataList().get(0), apnConfiguration);
+        assertEquals(epsSubscriptionData.getStnSr().getAddressNature(), AddressNature.international_number);
+        assertEquals(epsSubscriptionData.getStnSr().getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(epsSubscriptionData.getStnSr().getAddress(), "491710490000");
+        assertNull(epsSubscriptionData.getExtensionContainer());
+        assertTrue(epsSubscriptionData.getMpsCSPriority());
+        assertTrue(epsSubscriptionData.getMpsEPSPriority());
+
+        // csgSubscriptionDataList
+        csgSubscriptionDataList = isd.getCsgSubscriptionDataList();
+        assertTrue(csgSubscriptionDataList.get(0).getCsgId().getData().get(0));
+        assertTrue(csgSubscriptionDataList.get(0).getCsgId().getData().get(1));
+        assertTrue(csgSubscriptionDataList.get(0).getCsgId().getData().get(25));
+        assertTrue(csgSubscriptionDataList.get(0).getCsgId().getData().get(26));
+        assertEquals(csgSubscriptionDataList.get(0).getExpirationDate().getYear(), 2024);
+        assertEquals(csgSubscriptionDataList.get(0).getExpirationDate().getMonth(), 7);
+        assertEquals(csgSubscriptionDataList.get(0).getExpirationDate().getDay(), 4);
+        assertEquals(csgSubscriptionDataList.get(0).getExpirationDate().getHour(), 19);
+        assertEquals(csgSubscriptionDataList.get(0).getExpirationDate().getMinute(), 20);
+        assertEquals(csgSubscriptionDataList.get(0).getExpirationDate().getSecond(), 10);
+        assertNull(csgSubscriptionDataList.get(0).getExtensionContainer());
+        assertEquals(csgSubscriptionDataList.get(0).getLipaAllowedAPNList().get(0).getApn(), "internet");
+
+        // ueReachabilityRequestIndicator
+        boolean ueReachabilityRequestIndicator = isd.getUeReachabilityRequestIndicator();
+        assertTrue(ueReachabilityRequestIndicator);
+
+        // sgsnNumber
+        sgsnNumber = isd.getSgsnNumber();
+        assertEquals(sgsnNumber.getAddressNature(), AddressNature.international_number);
+        assertEquals(sgsnNumber.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(sgsnNumber.getAddress(), "491710490000");
+
+        // mmeName
+        mmeName = isd.getMmeName();
+        assertEquals(mmeName.getData(), "mmec20.mmegi800.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+
+        // subscribedPeriodicRAUTAUtimer
+        Long subscribedPeriodicRAUTAUtimer = isd.getSubscribedPeriodicRAUTAUtimer();
+        assertEquals(subscribedPeriodicRAUTAUtimer.longValue(), 300L);
+
+        // vplmnLIPAAllowed
+        boolean vplmnLIPAAllowed = isd.getVplmnLIPAAllowed();
+        assertTrue(vplmnLIPAAllowed);
+
+        // mdtUserConsent
+        mdtUserConsent = isd.getMdtUserConsent();
+        assertFalse(mdtUserConsent);
+
+        // subscribedPeriodicLAUtimer
+        Long subscribedPeriodicLAUtimer = isd.getSubscribedPeriodicLAUtimer();
+        assertEquals(subscribedPeriodicLAUtimer.longValue(), 360L);
+
+        // vplmnCSGSubscriptionDataList
+        ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList = isd.getVPLMNCSGSubscriptionDataList();
+        assertTrue(vplmnCSGSubscriptionDataList.get(0).getCsgId().getData().get(0));
+        assertTrue(vplmnCSGSubscriptionDataList.get(0).getCsgId().getData().get(1));
+        assertTrue(vplmnCSGSubscriptionDataList.get(0).getCsgId().getData().get(25));
+        assertTrue(vplmnCSGSubscriptionDataList.get(0).getCsgId().getData().get(26));
+        assertEquals(vplmnCSGSubscriptionDataList.get(0).getExpirationDate().getYear(), 2024);
+        assertEquals(vplmnCSGSubscriptionDataList.get(0).getExpirationDate().getMonth(), 7);
+        assertEquals(vplmnCSGSubscriptionDataList.get(0).getExpirationDate().getDay(), 4);
+        assertEquals(vplmnCSGSubscriptionDataList.get(0).getExpirationDate().getHour(), 19);
+        assertEquals(vplmnCSGSubscriptionDataList.get(0).getExpirationDate().getMinute(), 20);
+        assertEquals(vplmnCSGSubscriptionDataList.get(0).getExpirationDate().getSecond(), 10);
+        assertNull(vplmnCSGSubscriptionDataList.get(0).getExtensionContainer());
+        assertEquals(vplmnCSGSubscriptionDataList.get(0).getLipaAllowedAPNList().get(0).getApn(), "internet");
+
+        // additionalMSISDN
+        ISDNAddressString additionalMSISDN = isd.getAdditionalMSISDN();
+        assertEquals(additionalMSISDN.getAddressNature(), AddressNature.international_number);
+        assertEquals(additionalMSISDN.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(additionalMSISDN.getAddress(), "4917105682451");
+
+        // psAndSMSOnlyServiceProvision
+        boolean psAndSMSOnlyServiceProvision = isd.getPSandSMSOnlyServiceProvision();
+        assertTrue(psAndSMSOnlyServiceProvision);
+
+        // smsInSGSNAllowed
+        boolean smsInSGSNAllowed = isd.getSMSInSGSNAllowed();
+        assertTrue(smsInSGSNAllowed);
+
+        // csToPsSRVCCAllowedIndicator
+        boolean csToPsSRVCCAllowedIndicator = isd.getCsToPsSRVCCAllowedIndicator();
+        assertTrue(csToPsSRVCCAllowedIndicator);
+
+        // pcscfRestorationRequest
+        boolean pcscfRestorationRequest = isd.getPCSCFRestorationRequest();
+        assertTrue(pcscfRestorationRequest);
+
+        // adjacentAccessRestrictionDataList
+        ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList = isd.getAdjacentAccessRestrictionDataList();
+        assertTrue(adjacentAccessRestrictionDataList.get(0).getExtAccessRestrictionData().getNrAsSecondaryRATNotAllowed());
+        assertFalse(adjacentAccessRestrictionDataList.get(0).getExtAccessRestrictionData().getUnlicensedSpectrumAsSecondaryRATNotAllowed());
+        assertFalse(adjacentAccessRestrictionDataList.get(0).getAccessRestrictionData().getGeranNotAllowed());
+        assertFalse(adjacentAccessRestrictionDataList.get(0).getAccessRestrictionData().getUtranNotAllowed());
+        assertTrue(adjacentAccessRestrictionDataList.get(0).getAccessRestrictionData().getGanNotAllowed());
+        assertFalse(adjacentAccessRestrictionDataList.get(0).getAccessRestrictionData().getEUtranNotAllowed());
+        assertFalse(adjacentAccessRestrictionDataList.get(0).getAccessRestrictionData().getIHspaEvolutionNotAllowed());
+        assertTrue(adjacentAccessRestrictionDataList.get(0).getAccessRestrictionData().getHoToNon3GPPAccessNotAllowed());
+        assertEquals(adjacentAccessRestrictionDataList.get(0).getPLMNId().getMcc(), 262);
+        assertEquals(adjacentAccessRestrictionDataList.get(0).getPLMNId().getMnc(), 999);
+
+        // imsiGroupIdList
+        ArrayList<IMSIGroupId> imsiGroupIdList = isd.getIMSIGroupIdList();
+        assertEquals(imsiGroupIdList.get(0).getGroupServiceId().longValue(), 1L);
+        assertEquals(imsiGroupIdList.get(0).getLocalGroupId().getData(), "120".getBytes(StandardCharsets.UTF_8));
+
+        // ueUsageType
+        UEUsageType ueUsageType = isd.getUEUsageType();
+        assertEquals(ueUsageType.getData(), new byte[] {0, 0, 0, (byte) 0x87});
+
+        boolean userPlaneIntegrityProtectionIndicator = isd.getUserPlaneIntegrityProtectionIndicator();
+        assertTrue(userPlaneIntegrityProtectionIndicator);
+
+        // dlBufferingSuggestedPacketCount
+        Long dlBufferingSuggestedPacketCount = isd.getDLBufferingSuggestedPacketCount();
+        assertEquals(dlBufferingSuggestedPacketCount.longValue(), 0L);
+
+        // resetIdList
+        ArrayList<ResetId> resetIdList = isd.getResetIdList();
+        assertEquals(resetIdList.get(0).getData(), new byte[] {1, 2, 4, (byte) 0x80});
+
+        // eDRXCycleLengthList
+        ArrayList<EDRXCycleLength> eDRXCycleLengthList = isd.getEDRXCycleLengthList();
+        assertEquals(eDRXCycleLengthList.get(0).getUsedRATType().getCode(), 5);
+        assertEquals(eDRXCycleLengthList.get(0).getEDRXCycleLengthValue().getData(), new byte[] { 0x02 });
+
+        // iabOperationAllowedIndicator
+        boolean iabOperationAllowedIndicator = isd.getIabOperationAllowedIndicator();
+        assertTrue(iabOperationAllowedIndicator);
+
+        /*
+         Start MAP ISD message Testing 3 (taken from MAP load tests in PS domain)
+         */
+        data = this.getDataPsTest();
+        asn = new AsnInputStream(data);
+        tag = asn.readTag();
+        isd = new InsertSubscriberDataRequestImpl(3);
+        isd.decodeAll(asn);
+
+        assertEquals(tag, Tag.SEQUENCE);
+        assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
+
+        // imsi
+        imsi = isd.getImsi();
+        assertNull(imsi);
+
+        // msisdn
+        msisdn = isd.getMsisdn();
+        assertEquals(msisdn.getAddressNature(), AddressNature.international_number);
+        assertEquals(msisdn.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(msisdn.getAddress(), "882285105682451");
+
+        // category
+        category = isd.getCategory();
+        assertEquals(category.getData(), 10);
+
+        // subscriberStatus
+        subscriberStatus = isd.getSubscriberStatus();
+        assertEquals(subscriberStatus, SubscriberStatus.serviceGranted);
+
+        // bearerServiceList
+        bearerServiceList = isd.getBearerServiceList();
+        assertEquals(bearerServiceList.get(0).getBearerServiceCodeValue(), BearerServiceCodeValue.allDataCDAServices);
+        assertEquals(bearerServiceList.get(1).getBearerServiceCodeValue(), BearerServiceCodeValue.allDataCDS_Services);
+
+        // teleserviceList
+        teleserviceList = isd.getTeleserviceList();
+        assertNotNull(teleserviceList);
+        assertEquals(teleserviceList.size(), 3);
+        extTeleserviceCode = teleserviceList.get(0);
+        assertEquals(extTeleserviceCode.getTeleserviceCodeValue(), TeleserviceCodeValue.allDataTeleservices);
+        extTeleserviceCode = teleserviceList.get(1);
+        assertEquals(extTeleserviceCode.getTeleserviceCodeValue(), TeleserviceCodeValue.shortMessageMT_PP);
+        extTeleserviceCode = teleserviceList.get(2);
+        assertEquals(extTeleserviceCode.getTeleserviceCodeValue(), TeleserviceCodeValue.shortMessageMO_PP);
+
+        // provisionedSS
+        provisionedSS = isd.getProvisionedSS();
+        assertNotNull(provisionedSS);
+        assertEquals(provisionedSS.size(), 2);
+
+        extSSInfo = provisionedSS.get(0);
+        assertEquals(extSSInfo.getSsData().getSsCode().getSupplementaryCodeValue().getCode(), 17);
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitQ());
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitP());
+        assertFalse(extSSInfo.getSsData().getSsStatus().getBitR());
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitA());
+        assertEquals(extSSInfo.getSsData().getSSSubscriptionOption().getOverrideCategory().getCode(), 1);
+
+        extSSInfo = provisionedSS.get(1);
+        assertEquals(extSSInfo.getSsData().getSsCode().getSupplementaryCodeValue().getCode(), 18);
+        assertFalse(extSSInfo.getSsData().getSsStatus().getBitQ());
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitP());
+        assertFalse(extSSInfo.getSsData().getSsStatus().getBitR());
+        assertTrue(extSSInfo.getSsData().getSsStatus().getBitA());
+        assertEquals(extSSInfo.getSsData().getSSSubscriptionOption().getCliRestrictionOption().getCode(), 2);
+
+        // odbData
+        odbData = isd.getODBData();
+        assertNull((odbData));
+
+        // roamingRestrictionDueToUnsupportedFeature
+        assertTrue(isd.getRoamingRestrictedInSgsnDueToUnsupportedFeature());
+
+        //regionalSubscriptionData
+        regionalSubscriptionData = isd.getRegionalSubscriptionData();
+        assertEquals(regionalSubscriptionData.get(0).getValue(), 1);
+        assertEquals(regionalSubscriptionData.get(1).getValue(), 2);
+        assertEquals(regionalSubscriptionData.get(2).getValue(), 3);
+
+        // vbsSubscriptionData
+        vbsSubscriptionData = isd.getVbsSubscriptionData();
+        assertNotNull(vbsSubscriptionData);
+        assertEquals(vbsSubscriptionData.size(), 1);
+        voiceBroadcastData = vbsSubscriptionData.get(0);
+        assertNotNull(voiceBroadcastData.getGroupId());
+        assertEquals(voiceBroadcastData.getLongGroupId().getLongGroupId(), "5");
+        assertTrue(voiceBroadcastData.getBroadcastInitEntitlement());
+        assertNull(voiceBroadcastData.getExtensionContainer());
+
+        // vgcsSubscriptionData
+        assertNull(isd.getVgcsSubscriptionData());
+
+        // vlrCamelSubscriptionInfo
+        assertNull(isd.getVlrCamelSubscriptionInfo());
+
+        // naeaPreferredCI
+        assertNull(isd.getNAEAPreferredCI());
+
+        // gprsSubscriptionData
+        gprsSubscriptionData = isd.getGPRSSubscriptionData();
+        assertTrue(gprsSubscriptionData.getCompleteDataListIncluded());
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getPDPContextId(), 1);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getPDPType().getPDPTypeValue(), PDPTypeValue.IPv4);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getPDPAddress().getData(), new byte[] { 21 });
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getQoSSubscribed().getReliabilityClass(), QoSSubscribed_ReliabilityClass.reserved_7);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getQoSSubscribed().getDelayClass(), QoSSubscribed_DelayClass.delay_Class_4_bestEffort);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getQoSSubscribed().getPrecedenceClass(), QoSSubscribed_PrecedenceClass.normalPriority);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getQoSSubscribed().getMeanThroughput(), QoSSubscribed_MeanThroughput._2000_octetH);
+        assertTrue(gprsSubscriptionData.getGPRSDataList().get(0).isVPLMNAddressAllowed());
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getAPN().getApn(), "internet");
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getAllocationRetentionPriority(), 9);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getDeliveryOfErroneousSdus(),
+                ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getDeliveryOrder(),
+                ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getTrafficClass(),
+                ExtQoSSubscribed_TrafficClass.interactiveClass);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getMaximumSduSize().getMaximumSduSize(), 1502);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getMaximumBitRateForUplink().getBitRate(), 576);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getMaximumBitRateForDownlink().getBitRate(), 64);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getResidualBER(),
+                ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getSduErrorRatio(),
+                ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getTrafficHandlingPriority(),
+                ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getTransferDelay().getTransferDelay(), 1800);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getGuaranteedBitRateForUplink().getBitRate(), 64);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtQoSSubscribed().getGuaranteedBitRateForDownlink().getBitRate(), 0);
+        assertTrue(gprsSubscriptionData.getGPRSDataList().get(0).getChargingCharacteristics().isNormalCharging());
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExt2QoSSubscribed().getSourceStatisticsDescriptor(),
+                Ext2QoSSubscribed_SourceStatisticsDescriptor.unknown);
+        assertTrue(gprsSubscriptionData.getGPRSDataList().get(0).getExt2QoSSubscribed().isOptimisedForSignallingTraffic());
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExt2QoSSubscribed().getMaximumBitRateForDownlinkExtended().getBitRate(), 0);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExt2QoSSubscribed().getGuaranteedBitRateForDownlinkExtended().getBitRate(), 0);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExt3QoSSubscribed().getMaximumBitRateForUplinkExtended().getBitRate(), 0);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExt3QoSSubscribed().getGuaranteedBitRateForUplinkExtended().getBitRate(), 0);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExt4QoSSubscribed().getData(), 91);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getAPNOIReplacement().getData(), new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getExtPDPType().getData(), new byte[] { 58, 59 });
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getSIPTOPermission(), SIPTOPermission.siptoAllowed);
+        assertEquals(gprsSubscriptionData.getGPRSDataList().get(0).getLIPAPermission(), LIPAPermission.lipaConditional);
+
+        // networkAccessMode
+        assertEquals(isd.getNetworkAccessMode(), NetworkAccessMode.onlyPacket);
+
+        // lsaInformation
+        lsaInformation = isd.getLSAInformation();
+        assertTrue(lsaInformation.getCompleteDataListIncluded());
+        assertEquals(lsaInformation.getLSAOnlyAccessIndicator(), LSAOnlyAccessIndicator.accessOutsideLSAsAllowed);
+        assertEquals(lsaInformation.getLSADataList().get(0).getLSAIdentity().getData(), new byte[] { 12, 10, 1 });
+        assertEquals(lsaInformation.getLSADataList().get(0).getLSAAttributes().getLSAIdentificationPriority(), LSAIdentificationPriorityValue.Priority_2);
+        assertTrue(lsaInformation.getLSADataList().get(0).getLSAAttributes().isPreferentialAccessAvailable());
+        assertTrue(lsaInformation.getLSADataList().get(0).getLSAAttributes().isActiveModeSupportAvailable());
+        assertTrue(lsaInformation.getLSADataList().get(0).getLsaActiveModeIndicator());
+        assertNull(lsaInformation.getLSADataList().get(0).getExtensionContainer());
+        assertNull(lsaInformation.getExtensionContainer());
+
+        // lmuIndicator
+        assertTrue(isd.getLmuIndicator());
+
+        // lcsInformation
+        lcsInformation = isd.getLCSInformation();
+        // LCSInformationImpl(gmlcList, lcsPrivacyExceptionList, molrList, addLcsPrivacyExceptionList);
+        assertEquals(lcsInformation.getGmlcList().get(0).getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(lcsInformation.getGmlcList().get(0).getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getGmlcList().get(0).getAddress(), "4917104600321");
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getSsCode().getSupplementaryCodeValue(),
+                SupplementaryCodeValue.allMOLR_SS);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getSsCode().getSupplementaryCodeValue(),
+                SupplementaryCodeValue.autonomousSelfLocation);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getSsCode().getSupplementaryCodeValue(),
+                SupplementaryCodeValue.allLCSPrivacyException);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getSsCode().getSupplementaryCodeValue(),
+                SupplementaryCodeValue.allPLMN_specificSS);
+        assertTrue(lcsInformation.getLcsPrivacyExceptionList().get(0).getSsStatus().getBitQ());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(0).getSsStatus().getBitP());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(0).getSsStatus().getBitR());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(0).getSsStatus().getBitA());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(1).getSsStatus().getBitQ());
+        assertTrue(lcsInformation.getLcsPrivacyExceptionList().get(1).getSsStatus().getBitP());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(1).getSsStatus().getBitR());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(1).getSsStatus().getBitA());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(2).getSsStatus().getBitQ());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(2).getSsStatus().getBitP());
+        assertTrue(lcsInformation.getLcsPrivacyExceptionList().get(2).getSsStatus().getBitR());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(2).getSsStatus().getBitA());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(3).getSsStatus().getBitQ());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(3).getSsStatus().getBitP());
+        assertFalse(lcsInformation.getLcsPrivacyExceptionList().get(3).getSsStatus().getBitR());
+        assertTrue(lcsInformation.getLcsPrivacyExceptionList().get(3).getSsStatus().getBitA());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyLocationAllowed);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getNotificationToMSUser(),
+                NotificationToMSUser.notifyAndVerifyLocationAllowedIfNoResponse);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getNotificationToMSUser(),
+                NotificationToMSUser.locationNotAllowed);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getNotificationToMSUser(),
+                NotificationToMSUser.notifyAndVerifyLocationNotAllowedIfNoResponse);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "874927492");
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getClientIdentity().getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "398279222");
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(1).getExternalClientList().get(0).getClientIdentity().getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "23543252234");
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(2).getExternalClientList().get(0).getClientIdentity().getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "598990298245");
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(3).getExternalClientList().get(0).getClientIdentity().getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.homeCountry);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.gmlcList);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.homeCountry);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.gmlcList);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyLocationAllowed);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExternalClientList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyAndVerifyLocationAllowedIfNoResponse);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExternalClientList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.locationNotAllowed);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExternalClientList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyAndVerifyLocationNotAllowedIfNoResponse);
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(1).getExternalClientList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(2).getExternalClientList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(3).getExternalClientList().get(0).getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getPLMNClientList().get(0), LCSClientInternalID.broadcastService);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getPLMNClientList().get(0), LCSClientInternalID.oandMHPLMN);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getPLMNClientList().get(0), LCSClientInternalID.targetMSsubscribedService);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getPLMNClientList().get(0), LCSClientInternalID.anonymousLocation);
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(1).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(2).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(3).getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "398279222");
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(1).getExtExternalClientList().get(0).getClientIdentity().getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "23543252234");
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(2).getExtExternalClientList().get(0).getClientIdentity().getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "598990298245");
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(3).getExtExternalClientList().get(0).getClientIdentity().getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getExtExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.homeCountry);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExtExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.gmlcList);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExtExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.homeCountry);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExtExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.gmlcList);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getExtExternalClientList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyLocationAllowed);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getExtExternalClientList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyAndVerifyLocationAllowedIfNoResponse);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getExtExternalClientList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.locationNotAllowed);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getExtExternalClientList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyAndVerifyLocationNotAllowedIfNoResponse);
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(0).getExtExternalClientList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(1).getExtExternalClientList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(2).getExtExternalClientList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(3).getExtExternalClientList().get(0).getExtensionContainer());
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getServiceTypeList().get(0).getServiceTypeIdentity(), 1);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getServiceTypeList().get(0).getServiceTypeIdentity(), 2);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getServiceTypeList().get(0).getServiceTypeIdentity(), 3);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getServiceTypeList().get(0).getServiceTypeIdentity(), 4);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getServiceTypeList().get(0).getGMLCRestriction(), GMLCRestriction.homeCountry);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getServiceTypeList().get(0).getGMLCRestriction(), GMLCRestriction.gmlcList);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getServiceTypeList().get(0).getGMLCRestriction(), GMLCRestriction.homeCountry);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getServiceTypeList().get(0).getGMLCRestriction(), GMLCRestriction.gmlcList);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(0).getServiceTypeList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyLocationAllowed);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(1).getServiceTypeList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyAndVerifyLocationAllowedIfNoResponse);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(2).getServiceTypeList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.locationNotAllowed);
+        assertEquals(lcsInformation.getLcsPrivacyExceptionList().get(3).getServiceTypeList().get(0).getNotificationToMSUser(),
+                NotificationToMSUser.notifyAndVerifyLocationNotAllowedIfNoResponse);
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(0).getServiceTypeList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(1).getServiceTypeList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(2).getServiceTypeList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getLcsPrivacyExceptionList().get(3).getServiceTypeList().get(0).getExtensionContainer());
+        assertEquals(lcsInformation.getMOLRList().get(0).getSsCode().getSupplementaryCodeValue(), SupplementaryCodeValue.allMOLR_SS);
+        assertEquals(lcsInformation.getMOLRList().get(1).getSsCode().getSupplementaryCodeValue(), SupplementaryCodeValue.autonomousSelfLocation);
+        assertEquals(lcsInformation.getMOLRList().get(2).getSsCode().getSupplementaryCodeValue(), SupplementaryCodeValue.allLCSPrivacyException);
+        assertTrue(lcsInformation.getMOLRList().get(0).getSsStatus().getBitQ());
+        assertFalse(lcsInformation.getMOLRList().get(0).getSsStatus().getBitP());
+        assertFalse(lcsInformation.getMOLRList().get(0).getSsStatus().getBitR());
+        assertFalse(lcsInformation.getMOLRList().get(0).getSsStatus().getBitA());
+        assertFalse(lcsInformation.getMOLRList().get(1).getSsStatus().getBitQ());
+        assertTrue(lcsInformation.getMOLRList().get(1).getSsStatus().getBitP());
+        assertFalse(lcsInformation.getMOLRList().get(1).getSsStatus().getBitR());
+        assertFalse(lcsInformation.getMOLRList().get(1).getSsStatus().getBitA());
+        assertFalse(lcsInformation.getMOLRList().get(2).getSsStatus().getBitQ());
+        assertFalse(lcsInformation.getMOLRList().get(2).getSsStatus().getBitP());
+        assertTrue(lcsInformation.getMOLRList().get(2).getSsStatus().getBitR());
+        assertFalse(lcsInformation.getMOLRList().get(2).getSsStatus().getBitA());
+        assertNull(lcsInformation.getMOLRList().get(0).getExtensionContainer());
+        assertNull(lcsInformation.getMOLRList().get(1).getExtensionContainer());
+        assertNull(lcsInformation.getMOLRList().get(2).getExtensionContainer());
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getSsCode().getSupplementaryCodeValue(),
+                SupplementaryCodeValue.plmn_specificSS_1);
+        assertTrue(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getSsStatus().getBitQ());
+        assertTrue(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getSsStatus().getBitP());
+        assertFalse(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getSsStatus().getBitR());
+        assertTrue(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getSsStatus().getBitA());
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "874927492");
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getGMLCRestriction(), GMLCRestriction.homeCountry);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getNotificationToMSUser(), NotificationToMSUser.notifyLocationAllowed);
+        assertNull(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExternalClientList().get(0).getClientIdentity().getExtensionContainer());
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getPLMNClientList().get(0), LCSClientInternalID.broadcastService);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getPLMNClientList().get(1), LCSClientInternalID.oandMHPLMN);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getPLMNClientList().get(2), LCSClientInternalID.targetMSsubscribedService);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getPLMNClientList().get(3), LCSClientInternalID.anonymousLocation);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddressNature(), AddressNature.international_number);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getExtExternalClientList().get(0).getClientIdentity().getExternalAddress().
+                getAddress(), "874927492");
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getServiceTypeList().get(0).getServiceTypeIdentity(), 5);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getServiceTypeList().get(0).getGMLCRestriction(), GMLCRestriction.homeCountry);
+        assertEquals(lcsInformation.getAddLcsPrivacyExceptionList().get(0).getServiceTypeList().get(0).getNotificationToMSUser(), NotificationToMSUser.notifyLocationAllowed);
+
+        // istAlertTimer
+        assertEquals(isd.getIstAlertTimer().intValue(), 15);
+
+        // superChargerSupportedInHLR
+        assertEquals(isd.getSuperChargerSupportedInHLR().getData(), new byte[] { 4, 1, 48 });
+
+        // mcSsInfo
+        assertNull(isd.getMcSsInfo());
+
+        // csAllocationRetentionPriority
+        assertNull(isd.getCSAllocationRetentionPriority());
+
+        // sgsnCamelSubscriptionInfo
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getGPRSCamelTDPDataList().get(0).getServiceKey(), 12);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getGPRSCamelTDPDataList().get(0).getGsmSCFAddress().getAddressNature(),
+                AddressNature.international_number);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getGPRSCamelTDPDataList().get(0).getGsmSCFAddress().getNumberingPlan(),
+                NumberingPlan.ISDN);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getGPRSCamelTDPDataList().get(0).getGsmSCFAddress().getAddress(),
+                "491710460029");
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getGPRSCamelTDPDataList().get(0).getDefaultSessionHandling(),
+                DefaultGPRSHandling.continueTransaction);
+        assertNull(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getGPRSCamelTDPDataList().get(0).getExtensionContainer());
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getCamelCapabilityHandling().intValue(), 3);
+        assertNull(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getExtensionContainer());
+        assertTrue(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getNotificationToCSE());
+        assertTrue(isd.getSgsnCamelSubscriptionInfo().getGprsCsi().getCsiActive());
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getSmsCamelTdpDataList().get(0).getServiceKey(), 7);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getSmsCamelTdpDataList().get(0).getSMSTriggerDetectionPoint(),
+                SMSTriggerDetectionPoint.smsDeliveryRequest);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getSmsCamelTdpDataList().get(0).getGsmSCFAddress().getAddressNature(),
+                AddressNature.international_number);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getSmsCamelTdpDataList().get(0).getGsmSCFAddress().getNumberingPlan(),
+                NumberingPlan.ISDN);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getSmsCamelTdpDataList().get(0).getGsmSCFAddress().getAddress(),
+                "491710460029");
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getSmsCamelTdpDataList().get(0).getDefaultSMSHandling(),
+                DefaultSMSHandling.continueTransaction);
+        assertNull(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getSmsCamelTdpDataList().get(0).getExtensionContainer());
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getCamelCapabilityHandling().intValue(), 3);
+        assertNull(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getExtensionContainer());
+        assertTrue(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getNotificationToCSE());
+        assertTrue(isd.getSgsnCamelSubscriptionInfo().getMoSmsCsi().getCsiActive());
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getSmsCamelTdpDataList().get(0).getServiceKey(), 7);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getSmsCamelTdpDataList().get(0).getSMSTriggerDetectionPoint(),
+                SMSTriggerDetectionPoint.smsDeliveryRequest);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getSmsCamelTdpDataList().get(0).getGsmSCFAddress().getAddressNature(),
+                AddressNature.international_number);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getSmsCamelTdpDataList().get(0).getGsmSCFAddress().getNumberingPlan(),
+                NumberingPlan.ISDN);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getSmsCamelTdpDataList().get(0).getGsmSCFAddress().getAddress(),
+                "491710460029");
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getSmsCamelTdpDataList().get(0).getDefaultSMSHandling(),
+                DefaultSMSHandling.continueTransaction);
+        assertNull(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getSmsCamelTdpDataList().get(0).getExtensionContainer());
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getCamelCapabilityHandling().intValue(), 3);
+        assertNull(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getExtensionContainer());
+        assertTrue(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getNotificationToCSE());
+        assertTrue(isd.getSgsnCamelSubscriptionInfo().getMtSmsCsi().getCsiActive());
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCamelTdpCriteriaList().get(0).getSMSTriggerDetectionPoint(),
+                SMSTriggerDetectionPoint.smsDeliveryRequest);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCamelTdpCriteriaList().get(0).getTPDUTypeCriterion().get(0), MTSMSTPDUType.smsDELIVER);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCamelTdpCriteriaList().get(0).getTPDUTypeCriterion().get(1), MTSMSTPDUType.smsSUBMITREPORT);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMtSmsCamelTdpCriteriaList().get(0).getTPDUTypeCriterion().get(2), MTSMSTPDUType.smsSTATUSREPORT);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMgCsi().getMobilityTriggers().get(0).getMMCodeValue(), MMCodeValue.GPRSAttach);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMgCsi().getServiceKey(), 7);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMgCsi().getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMgCsi().getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(isd.getSgsnCamelSubscriptionInfo().getMgCsi().getGsmSCFAddress().getAddress(), "491710460029");
+        assertNull(isd.getSgsnCamelSubscriptionInfo().getMgCsi().getExtensionContainer());
+        assertTrue(isd.getSgsnCamelSubscriptionInfo().getMgCsi().getNotificationToCSE());
+        assertTrue(isd.getSgsnCamelSubscriptionInfo().getMgCsi().getCsiActive());
+
+        // chargingCharacteristics
+        assertTrue(isd.getChargingCharacteristics().isNormalCharging());
+        assertFalse(isd.getChargingCharacteristics().isPrepaidCharging());
+        assertFalse(isd.getChargingCharacteristics().isFlatRateChargingCharging());
+        assertFalse(isd.getChargingCharacteristics().isFlatRateChargingCharging());
+
+        // accessRestrictionData
+        assertFalse(isd.getAccessRestrictionData().getGeranNotAllowed());
+        assertFalse(isd.getAccessRestrictionData().getUtranNotAllowed());
+        assertTrue(isd.getAccessRestrictionData().getGanNotAllowed());
+        assertFalse(isd.getAccessRestrictionData().getEUtranNotAllowed());
+        assertFalse(isd.getAccessRestrictionData().getIHspaEvolutionNotAllowed());
+        assertTrue(isd.getAccessRestrictionData().getHoToNon3GPPAccessNotAllowed());
+
+        // icsIndicator
+        assertTrue(isd.getIcsIndicator());
+
+        // epsSubscriptionData
+        assertNull(isd.getEpsSubscriptionData());
+
+        // csgSubscriptionDataList
+        assertNull(isd.getCsgSubscriptionDataList());
+
+        // ueReachabilityRequestIndicator
+        assertTrue(isd.getUeReachabilityRequestIndicator());
+
+        // sgsnNumber
+        assertEquals(isd.getSgsnNumber().getAddressNature(), AddressNature.international_number);
+        assertEquals(isd.getSgsnNumber().getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(isd.getSgsnNumber().getAddress(),"491710490000");
+
+        // mmeName
+        assertEquals(isd.getMmeName().getData(), "mmec20.mmegi800.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+
+        // subscribedPeriodicRAUTAUtimer
+        assertEquals(isd.getSubscribedPeriodicRAUTAUtimer().longValue(), 360L);
+
+        // vplmnLIPAAllowed
+        assertTrue(isd.getVplmnLIPAAllowed());
+
+        // mdtUserConsent
+        assertTrue(isd.getMdtUserConsent());
+
+        // subscribedPeriodicLAUtimer
+        assertEquals(isd.getSubscribedPeriodicLAUtimer().longValue(), 300L);
+
+        // vplmnCSGSubscriptionDataList
+        assertNull(isd.getVPLMNCSGSubscriptionDataList());
+
+        // additionalMSISDN
+        assertNull(isd.getAdditionalMSISDN());
+
+        // psAndSMSOnlyServiceProvision
+        assertTrue(isd.getPSandSMSOnlyServiceProvision());
+
+        // smsInSGSNAllowed
+        assertTrue(isd.getSMSInSGSNAllowed());
+
+        // csToPsSRVCCAllowedIndicator
+        assertTrue(isd.getCsToPsSRVCCAllowedIndicator());
+
+        // pcscfRestorationRequest
+        assertTrue(isd.getPCSCFRestorationRequest());
+
+        // adjacentAccessRestrictionDataList
+        assertNull(isd.getAdjacentAccessRestrictionDataList());
+
+        // imsiGroupIdList
+        assertNull(isd.getIMSIGroupIdList());
+
+        // ueUsageType
+        assertNull(isd.getUEUsageType());
+
+        // userPlaneIntegrityProtectionIndicator
+        assertTrue(isd.getUserPlaneIntegrityProtectionIndicator());
+
+        // dlBufferingSuggestedPacketCount
+        assertEquals(isd.getDLBufferingSuggestedPacketCount().longValue(), 3L);
+
+        // resetIdList
+        assertNull(isd.getResetIdList());
+
+        // eDRXCycleLengthList
+        assertNull(isd.getEDRXCycleLengthList());
+
+        // extAccessRestrictionData
+        assertNull(isd.getExtAccessRestrictionData());
+
+        // iabOperationAllowedIndicator
+        assertFalse(isd.getIabOperationAllowedIndicator());
     }
 
     @Test(groups = { "functional.encode", "service.mobility.subscriberManagement" })
@@ -1746,26 +2618,26 @@ public class InsertSubscriberDataRequestTest {
         SubscriberStatus subscriberStatus = SubscriberStatus.operatorDeterminedBarring;
 
         // bearerServiceList
-        ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<ExtBearerServiceCode>();
+        ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<>();
         ExtBearerServiceCodeImpl extBearerServiceCode = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.padAccessCA_9600bps);
         bearerServiceList.add(extBearerServiceCode);
 
         // teleserviceList
-        ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<ExtTeleserviceCode>();
+        ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
         ExtTeleserviceCode extTeleservice = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allSpeechTransmissionServices);
         teleserviceList.add(extTeleservice);
 
         // provisionedSS
-        ArrayList<ExtSSInfo> provisionedSS = new ArrayList<ExtSSInfo>();
+        ArrayList<ExtSSInfo> provisionedSS = new ArrayList<>();
         SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.allSS);
-        ArrayList<ExtForwFeature> forwardingFeatureList = new ArrayList<ExtForwFeature>();
+        ArrayList<ExtForwFeature> forwardingFeatureList = new ArrayList<>();
         ExtBearerServiceCodeImpl b = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.padAccessCA_9600bps);
         ExtBasicServiceCodeImpl basicService = new ExtBasicServiceCodeImpl(b);
         ExtSSStatusImpl ssStatus = new ExtSSStatusImpl(true, true, true, true);
         ISDNAddressString forwardedToNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22228");
         ISDNSubaddressString forwardedToSubaddress = new ISDNSubaddressStringImpl(this.getISDNSubaddressStringData());
         ExtForwOptions forwardingOptions = new ExtForwOptionsImpl(true, false, true, ExtForwOptionsForwardingReason.msBusy);
-        Integer noReplyConditionTime = new Integer(2);
+        Integer noReplyConditionTime = 2;
         FTNAddressString longForwardedToNumber = new FTNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22227");
         ExtForwFeatureImpl extForwFeature = new ExtForwFeatureImpl(basicService, ssStatus, forwardedToNumber, forwardedToSubaddress, forwardingOptions,
                 noReplyConditionTime, extensionContainer, longForwardedToNumber);
@@ -1775,7 +2647,7 @@ public class InsertSubscriberDataRequestTest {
         provisionedSS.add(extSSInfo);
 
         // odbData
-        ODBGeneralData oDBGeneralData = new ODBGeneralDataImpl(false, true, false, true, false, true, false, true, false, true, false, true, false, true,
+        ODBGeneralData oDBGeneralData = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true, false, true, false, true,
                 false, true, false, true, false, true, false, true, false, true, false, true, false, true, false);
         ODBHPLMNData odbHplmnData = new ODBHPLMNDataImpl(false, true, false, true);
         ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, extensionContainer);
@@ -1784,12 +2656,12 @@ public class InsertSubscriberDataRequestTest {
         boolean roamingRestrictionDueToUnsupportedFeature = true;
 
         // regionalSubscriptionData
-        ArrayList<ZoneCode> regionalSubscriptionData = new ArrayList<ZoneCode>();
+        ArrayList<ZoneCode> regionalSubscriptionData = new ArrayList<>();
         ZoneCodeImpl zoneCode = new ZoneCodeImpl(2);
         regionalSubscriptionData.add(zoneCode);
 
         // vbsSubscriptionData
-        ArrayList<VoiceBroadcastData> vbsSubscriptionData = new ArrayList<VoiceBroadcastData>();
+        ArrayList<VoiceBroadcastData> vbsSubscriptionData = new ArrayList<>();
         GroupId groupId = new GroupIdImpl("4");
         boolean broadcastInitEntitlement = true;
         LongGroupId longGroupId = new LongGroupIdImpl("5");
@@ -1797,7 +2669,7 @@ public class InsertSubscriberDataRequestTest {
         vbsSubscriptionData.add(voiceBroadcastData);
 
         // vgcsSubscriptionData
-        ArrayList<VoiceGroupCallData> vgcsSubscriptionData = new ArrayList<VoiceGroupCallData>();
+        ArrayList<VoiceGroupCallData> vgcsSubscriptionData = new ArrayList<>();
         AdditionalSubscriptions additionalSubscriptions = new AdditionalSubscriptionsImpl(true, false, true);
         BitSetStrictLength bitSetStrictLength = new BitSetStrictLength(1);
         bitSetStrictLength.set(0);
@@ -1808,24 +2680,24 @@ public class InsertSubscriberDataRequestTest {
 
         // start vlrCamelSubscriptionInfo
         TBcsmTriggerDetectionPoint tBcsmTriggerDetectionPoint = TBcsmTriggerDetectionPoint.tBusy;
-        ArrayList<ExtBasicServiceCode> basicServiceCriteria = new ArrayList<ExtBasicServiceCode>();
+        ArrayList<ExtBasicServiceCode> basicServiceCriteria = new ArrayList<>();
         ExtBasicServiceCodeImpl basicServiceOne = new ExtBasicServiceCodeImpl(b);
         ExtBasicServiceCodeImpl basicServiceTwo = new ExtBasicServiceCodeImpl(extTeleservice);
         basicServiceCriteria.add(basicServiceOne);
         basicServiceCriteria.add(basicServiceTwo);
 
-        ArrayList<CauseValue> tCauseValueCriteria = new ArrayList<CauseValue>();
+        ArrayList<CauseValue> tCauseValueCriteria = new ArrayList<>();
         tCauseValueCriteria.add(new CauseValueImpl(7));
         tCauseValueCriteria.add(new CauseValueImpl(6));
 
         ISDNAddressStringImpl gsmSCFAddressOne = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "1122333");
         OBcsmCamelTDPDataImpl cind = new OBcsmCamelTDPDataImpl(OBcsmTriggerDetectionPoint.routeSelectFailure, 3, gsmSCFAddressOne,
                 DefaultCallHandling.releaseCall, null);
-        ArrayList<OBcsmCamelTDPData> lst = new ArrayList<OBcsmCamelTDPData>();
+        ArrayList<OBcsmCamelTDPData> lst = new ArrayList<>();
         lst.add(cind);
 
         OCSI oCsi = new OCSIImpl(lst, null, 2, false, false);
-        ArrayList<SSCode> ssEventList = new ArrayList<SSCode>();
+        ArrayList<SSCode> ssEventList = new ArrayList<>();
         ssEventList.add(new SSCodeImpl(SupplementaryCodeValue.allCommunityOfInterestSS.getCode()));
         ISDNAddressString gsmSCFAddressTwo = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22235");
         SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddressTwo, extensionContainer);
@@ -1834,22 +2706,22 @@ public class InsertSubscriberDataRequestTest {
 
         SSCSI ssCsi = new SSCSIImpl(ssCamelData, extensionContainer, notificationToCSE, csiActive);
 
-        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = new ArrayList<OBcsmCamelTdpCriteria>();
+        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = new ArrayList<>();
         OBcsmTriggerDetectionPoint oBcsmTriggerDetectionPoint = OBcsmTriggerDetectionPoint.collectedInfo;
         ISDNAddressStringImpl destinationNumberOne = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22234");
         ISDNAddressStringImpl destinationNumberTwo = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22235");
-        ArrayList<ISDNAddressString> destinationNumberList = new ArrayList<ISDNAddressString>();
+        ArrayList<ISDNAddressString> destinationNumberList = new ArrayList<>();
         destinationNumberList.add(destinationNumberOne);
         destinationNumberList.add(destinationNumberTwo);
-        ArrayList<Integer> destinationNumberLengthList = new ArrayList<Integer>();
-        destinationNumberLengthList.add(new Integer(2));
-        destinationNumberLengthList.add(new Integer(4));
-        destinationNumberLengthList.add(new Integer(1));
+        ArrayList<Integer> destinationNumberLengthList = new ArrayList<>();
+        destinationNumberLengthList.add(2);
+        destinationNumberLengthList.add(4);
+        destinationNumberLengthList.add(1);
         DestinationNumberCriteria destinationNumberCriteria = new DestinationNumberCriteriaImpl(MatchType.enabling, destinationNumberList,
                 destinationNumberLengthList);
 
         CallTypeCriteria callTypeCriteria = CallTypeCriteria.forwarded;
-        ArrayList<CauseValue> oCauseValueCriteria = new ArrayList<CauseValue>();
+        ArrayList<CauseValue> oCauseValueCriteria = new ArrayList<>();
         oCauseValueCriteria.add(new CauseValueImpl(7));
 
         OBcsmCamelTdpCriteriaImpl oBcsmCamelTdpCriteria = new OBcsmCamelTdpCriteriaImpl(oBcsmTriggerDetectionPoint, destinationNumberCriteria,
@@ -1858,35 +2730,34 @@ public class InsertSubscriberDataRequestTest {
 
         boolean tifCsi = false;
 
-        ArrayList<MMCode> mobilityTriggers = new ArrayList<MMCode>();
-        Long serviceKey = new Long(3);
-        ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22235");
-        ;
+        ArrayList<MMCode> mobilityTriggers = new ArrayList<>();
         mobilityTriggers.add(new MMCodeImpl(MMCodeValue.GPRSAttach));
         mobilityTriggers.add(new MMCodeImpl(MMCodeValue.IMSIAttach));
+        long serviceKey = 3;
+        ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22235");
 
         MCSI mCsi = new MCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, extensionContainer, notificationToCSE, csiActive);
 
         SMSTriggerDetectionPoint smsTriggerDetectionPoint = SMSTriggerDetectionPoint.smsCollectedInfo;
         DefaultSMSHandling defaultSMSHandling = DefaultSMSHandling.continueTransaction;
 
-        ArrayList<SMSCAMELTDPData> smsCamelTdpDataList = new ArrayList<SMSCAMELTDPData>();
+        ArrayList<SMSCAMELTDPData> smsCamelTdpDataList = new ArrayList<>();
         SMSCAMELTDPDataImpl smsCAMELTDPData = new SMSCAMELTDPDataImpl(smsTriggerDetectionPoint, serviceKey, gsmSCFAddress, defaultSMSHandling,
                 extensionContainer);
         smsCamelTdpDataList.add(smsCAMELTDPData);
 
-        Integer camelCapabilityHandling = new Integer(8);
+        Integer camelCapabilityHandling = 8;
 
         SMSCSI smsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extensionContainer, notificationToCSE, csiActive);
 
         TBcsmCamelTDPDataImpl tBcsmCamelTDPData = new TBcsmCamelTDPDataImpl(TBcsmTriggerDetectionPoint.termAttemptAuthorized, 3, gsmSCFAddress,
                 DefaultCallHandling.releaseCall, null);
-        ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDatalst = new ArrayList<TBcsmCamelTDPData>();
+        ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDatalst = new ArrayList<>();
         tBcsmCamelTDPDatalst.add(tBcsmCamelTDPData);
         TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDatalst, null, 2, false, false);
 
         TBcsmCamelTdpCriteriaImpl tBcsmCamelTdpCriteria = new TBcsmCamelTdpCriteriaImpl(tBcsmTriggerDetectionPoint, basicServiceCriteria, tCauseValueCriteria);
-        ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = new ArrayList<TBcsmCamelTdpCriteria>();
+        ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = new ArrayList<>();
         tBcsmCamelTdpCriteriaList.add(tBcsmCamelTdpCriteria);
 
         ISDNAddressStringImpl dialledNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22234");
@@ -1894,14 +2765,14 @@ public class InsertSubscriberDataRequestTest {
         DPAnalysedInfoCriteriumImpl dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, 7, gsmSCFAddress,
                 DefaultCallHandling.continueCall, extensionContainer);
 
-        ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = new ArrayList<DPAnalysedInfoCriterium>();
+        ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = new ArrayList<>();
         dpAnalysedInfoCriteriaList.add(dpAnalysedInfoCriterium);
 
         DCSI dCsi = new DCSIImpl(dpAnalysedInfoCriteriaList, 2, extensionContainer, true, true);
 
         SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extensionContainer, notificationToCSE, csiActive);
-        ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = new ArrayList<MTsmsCAMELTDPCriteria>();
-        ArrayList<MTSMSTPDUType> tPDUTypeCriterion = new ArrayList<MTSMSTPDUType>();
+        ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = new ArrayList<>();
+        ArrayList<MTSMSTPDUType> tPDUTypeCriterion = new ArrayList<>();
         tPDUTypeCriterion.add(MTSMSTPDUType.smsDELIVER);
         tPDUTypeCriterion.add(MTSMSTPDUType.smsSTATUSREPORT);
 
@@ -1931,14 +2802,13 @@ public class InsertSubscriberDataRequestTest {
         APNOIReplacement apnoiReplacement = new APNOIReplacementImpl(this.getAPNOIReplacementData());
         ExtPDPType extpdpType = new ExtPDPTypeImpl(this.getExtPDPTypeData());
         PDPAddress extpdpAddress = new PDPAddressImpl(this.getPDPAddressData2());
-        ;
         SIPTOPermission sipToPermission = SIPTOPermission.siptoAllowed;
         LIPAPermission lipaPermission = LIPAPermission.lipaConditional;
 
         PDPContext pdpContext = new PDPContextImpl(pdpContextId, pdpType, pdpAddress, qosSubscribed, vplmnAddressAllowed, apn, extensionContainer,
                 extQoSSubscribed, chargingCharacteristics, ext2QoSSubscribed, ext3QoSSubscribed, ext4QoSSubscribed, apnoiReplacement, extpdpType,
                 extpdpAddress, sipToPermission, lipaPermission);
-        ArrayList<PDPContext> gprsDataList = new ArrayList<PDPContext>();
+        ArrayList<PDPContext> gprsDataList = new ArrayList<>();
         gprsDataList.add(pdpContext);
 
         APNOIReplacement apnOiReplacement = new APNOIReplacementImpl(this.getAPNOIReplacementData());
@@ -1954,7 +2824,7 @@ public class InsertSubscriberDataRequestTest {
         // start lsaInformation
         boolean completeDataListIncluded = true;
         LSAOnlyAccessIndicator lsaOnlyAccessIndicator = LSAOnlyAccessIndicator.accessOutsideLSAsRestricted;
-        ArrayList<LSAData> lsaDataList = new ArrayList<LSAData>();
+        ArrayList<LSAData> lsaDataList = new ArrayList<>();
         LSAIdentity lsaIdentity = new LSAIdentityImpl(this.getDataLSAIdentity());
         LSAAttributes lsaAttributes = new LSAAttributesImpl(5);
         boolean lsaActiveModeIndicator = true;
@@ -1967,29 +2837,29 @@ public class InsertSubscriberDataRequestTest {
         boolean lmuIndicator = true;
 
         // start lcsInformation
-        ArrayList<ISDNAddressString> gmlcList = new ArrayList<ISDNAddressString>();
+        ArrayList<ISDNAddressString> gmlcList = new ArrayList<>();
         ISDNAddressString isdnAddressString = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22235");
         gmlcList.add(isdnAddressString);
 
-        ArrayList<LCSPrivacyClass> lcsPrivacyExceptionList = new ArrayList<LCSPrivacyClass>();
+        ArrayList<LCSPrivacyClass> lcsPrivacyExceptionList = new ArrayList<>();
         NotificationToMSUser notificationToMSUser = NotificationToMSUser.locationNotAllowed;
-        ArrayList<ExternalClient> externalClientList = new ArrayList<ExternalClient>();
+        ArrayList<ExternalClient> externalClientList = new ArrayList<>();
         ISDNAddressString externalAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22228");
         LCSClientExternalID clientIdentity = new LCSClientExternalIDImpl(externalAddress, extensionContainer);
         GMLCRestriction gmlcRestriction = GMLCRestriction.gmlcList;
         ExternalClient externalClient = new ExternalClientImpl(clientIdentity, gmlcRestriction, notificationToMSUser, extensionContainer);
         externalClientList.add(externalClient);
 
-        ArrayList<LCSClientInternalID> plmnClientList = new ArrayList<LCSClientInternalID>();
+        ArrayList<LCSClientInternalID> plmnClientList = new ArrayList<>();
         LCSClientInternalID lcsClientInternalIdOne = LCSClientInternalID.broadcastService;
         LCSClientInternalID lcsClientInternalIdTwo = LCSClientInternalID.oandMHPLMN;
         plmnClientList.add(lcsClientInternalIdOne);
         plmnClientList.add(lcsClientInternalIdTwo);
 
-        ArrayList<ExternalClient> extExternalClientList = new ArrayList<ExternalClient>();
+        ArrayList<ExternalClient> extExternalClientList = new ArrayList<>();
         extExternalClientList.add(externalClient);
 
-        ArrayList<ServiceType> serviceTypeList = new ArrayList<ServiceType>();
+        ArrayList<ServiceType> serviceTypeList = new ArrayList<>();
         int serviceTypeIdentity = 1;
         ServiceType serviceType = new ServiceTypeImpl(serviceTypeIdentity, gmlcRestriction, notificationToMSUser, extensionContainer);
         serviceTypeList.add(serviceType);
@@ -2011,25 +2881,24 @@ public class InsertSubscriberDataRequestTest {
         lcsPrivacyExceptionList.add(lcsPrivacyClassThree);
         lcsPrivacyExceptionList.add(lcsPrivacyClassFour);
 
-        ArrayList<MOLRClass> molrList = new ArrayList<MOLRClass>();
+        ArrayList<MOLRClass> molrList = new ArrayList<>();
         MOLRClass molrClass = new MOLRClassImpl(ssCode, ssStatus, extensionContainer);
         molrList.add(molrClass);
 
-        ArrayList<LCSPrivacyClass> addLcsPrivacyExceptionList = new ArrayList<LCSPrivacyClass>();
+        ArrayList<LCSPrivacyClass> addLcsPrivacyExceptionList = new ArrayList<>();
         addLcsPrivacyExceptionList.add(lcsPrivacyClassOne);
 
         LCSInformation lcsInformation = new LCSInformationImpl(gmlcList, lcsPrivacyExceptionList, molrList, addLcsPrivacyExceptionList);
         // end lcsInformation
 
         // start istAlertTimer
-        Integer istAlertTimer = new Integer(21);
+        Integer istAlertTimer = 21;
 
         // superChargerSupportedInHLR
         AgeIndicator superChargerSupportedInHLR = new AgeIndicatorImpl(this.getAgeIndicatorData());
 
         // start mcSsInfo
         MCSSInfo mcSsInfo = new MCSSInfoImpl(ssCode, ssStatus, 2, 4, extensionContainer);
-        // end mcSsInfo
 
         // start csAllocationRetentionPriority
         CSAllocationRetentionPriority csAllocationRetentionPriority = new CSAllocationRetentionPriorityImpl(4);
@@ -2039,7 +2908,7 @@ public class InsertSubscriberDataRequestTest {
         DefaultGPRSHandling defaultSessionHandling = DefaultGPRSHandling.releaseTransaction;
         GPRSCamelTDPDataImpl gprsCamelTDPData = new GPRSCamelTDPDataImpl(gprsTriggerDetectionPoint, serviceKey, gsmSCFAddress, defaultSessionHandling,
                 extensionContainer);
-        ArrayList<GPRSCamelTDPData> gprsCamelTDPDataList = new ArrayList<GPRSCamelTDPData>();
+        ArrayList<GPRSCamelTDPData> gprsCamelTDPDataList = new ArrayList<>();
         gprsCamelTDPDataList.add(gprsCamelTDPData);
         GPRSCSI gprsCsi = new GPRSCSIImpl(gprsCamelTDPDataList, camelCapabilityHandling, extensionContainer, notificationToCSE, csiActive);
         SMSCSI moSmsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extensionContainer, notificationToCSE, csiActive);
@@ -2056,10 +2925,10 @@ public class InsertSubscriberDataRequestTest {
         Boolean icsIndicator = Boolean.TRUE;
 
         // start epsSubscriptionData
-        Integer rfspId = new Integer(4);
+        Integer rfspId = 4;
         AMBR ambr = new AMBRImpl(2, 4, extensionContainer);
         int defaultContext = 2;
-        ArrayList<APNConfiguration> ePSDataList = new ArrayList<APNConfiguration>();
+        ArrayList<APNConfiguration> ePSDataList = new ArrayList<>();
         int contextId = 1;
         PDNType pDNType = new PDNTypeImpl(PDNTypeValue.IPv4);
         PDPAddress servedPartyIPIPv4Address = new PDPAddressImpl(this.getPDPAddressData());
@@ -2072,7 +2941,7 @@ public class InsertSubscriberDataRequestTest {
         PDNGWIdentity pdnGwIdentity = new PDNGWIdentityImpl(pdnGwIpv4Address, pdnGwIpv6Address, pdnGwName, extensionContainer);
         PDNGWAllocationType pdnGwAllocationType = PDNGWAllocationType._dynamic;
         SpecificAPNInfo specificAPNInfo = new SpecificAPNInfoImpl(apn, pdnGwIdentity, extensionContainer);
-        ArrayList<SpecificAPNInfo> specificAPNInfoList = new ArrayList<SpecificAPNInfo>();
+        ArrayList<SpecificAPNInfo> specificAPNInfoList = new ArrayList<>();
         specificAPNInfoList.add(specificAPNInfo);
         PDPAddress servedPartyIPIPv6Address = new PDPAddressImpl(this.getPDPAddressData());
         SIPTOPermission siptoPermission = SIPTOPermission.siptoAllowed;
@@ -2090,13 +2959,13 @@ public class InsertSubscriberDataRequestTest {
         // end epsSubscriptionData
 
         // start csgSubscriptionDataList
-        ArrayList<CSGSubscriptionData> csgSubscriptionDataList = new ArrayList<CSGSubscriptionData>();
+        ArrayList<CSGSubscriptionData> csgSubscriptionDataList = new ArrayList<>();
         BitSetStrictLength bs = new BitSetStrictLength(27);
         bs.set(0);
         bs.set(26);
         CSGId csgId = new CSGIdImpl(bs);
         Time expirationDate = new TimeImpl(this.getTimeData());
-        ArrayList<APN> lipaAllowedAPNList = new ArrayList<APN>();
+        ArrayList<APN> lipaAllowedAPNList = new ArrayList<>();
         lipaAllowedAPNList.add(apn);
         CSGSubscriptionDataImpl csgSubscriptionData = new CSGSubscriptionDataImpl(csgId, expirationDate, extensionContainer, lipaAllowedAPNList);
         csgSubscriptionDataList.add(csgSubscriptionData);
@@ -2112,7 +2981,7 @@ public class InsertSubscriberDataRequestTest {
         DiameterIdentity mmeName = new DiameterIdentityImpl(this.getDiameterIdentity());
 
         // subscribedPeriodicRAUTAUtimer
-        Long subscribedPeriodicRAUTAUtimer = new Long(2);
+        Long subscribedPeriodicRAUTAUtimer = 2L;
 
         // vplmnLIPAAllowed
         boolean vplmnLIPAAllowed = true;
@@ -2121,18 +2990,66 @@ public class InsertSubscriberDataRequestTest {
         Boolean mdtUserConsent = Boolean.TRUE;
 
         // subscribedPeriodicLAUtimer
-        Long subscribedPeriodicLAUtimer = new Long(2);
+        Long subscribedPeriodicLAUtimer = 2L;
 
-        InsertSubscriberDataRequestImpl prim = new InsertSubscriberDataRequestImpl(3, imsi, msisdn, category, subscriberStatus, bearerServiceList,
+        // vplmnCSGSubscriptionDataList
+        ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList = null;
+
+        // additionalMSISDN
+        ISDNAddressString additionalMSISDN = null;
+
+        // psAndSMSOnlyServiceProvision
+        boolean psAndSMSOnlyServiceProvision = false;
+
+        // smsInSGSNAllowed
+        boolean smsInSGSNAllowed = false;
+
+        // csToPsSRVCCAllowedIndicator
+        boolean csToPsSRVCCAllowedIndicator = false;
+
+        // pcscfRestorationRequest
+        boolean pcscfRestorationRequest = false;
+
+        // adjacentAccessRestrictionDataList
+        ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList = null;
+
+        // imsiGroupIdList
+        ArrayList<IMSIGroupId> imsiGroupIdList = null;
+
+        // ueUsageType
+        UEUsageType ueUsageType = null;
+
+        // userPlaneIntegrityProtectionIndicator
+        boolean userPlaneIntegrityProtectionIndicator = false;
+
+        // dlBufferingSuggestedPacketCount
+        Long dlBufferingSuggestedPacketCount = null;
+
+        // resetIdList
+        ArrayList<ResetId> resetIdList = null;
+
+        // eDRXCycleLengthList
+        ArrayList<EDRXCycleLength> eDRXCycleLengthList = null;
+
+        // extAccessRestrictionData
+        ExtAccessRestrictionData extAccessRestrictionData = null;
+
+        // iabOperationAllowedIndicator
+        boolean iabOperationAllowedIndicator = false;
+
+        InsertSubscriberDataRequestImpl isd = new InsertSubscriberDataRequestImpl(3, imsi, msisdn, category, subscriberStatus, bearerServiceList,
                 teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionData, vbsSubscriptionData,
                 vgcsSubscriptionData, vlrCamelSubscriptionInfo, extensionContainer, naeaPreferredCI, gprsSubscriptionData,
                 roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode, lsaInformation, lmuIndicator, lcsInformation, istAlertTimer,
                 superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority, sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData,
                 icsIndicator, epsSubscriptionData, csgSubscriptionDataList, ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer,
-                vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer);
+                vplmnLIPAAllowed, mdtUserConsent, subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
+                csToPsSRVCCAllowedIndicator, smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
+                eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
 
         AsnOutputStream asn = new AsnOutputStream();
-        prim.encodeAll(asn);
+        isd.encodeAll(asn);
         byte[] encodedData = asn.toByteArray();
 
         byte[] arr1 = new byte[1000];
@@ -2148,10 +3065,730 @@ public class InsertSubscriberDataRequestTest {
 
         assertTrue(Arrays.equals(encodedData, this.getData()));
 
-        prim = new InsertSubscriberDataRequestImpl(2, imsi, msisdn, category, subscriberStatus, bearerServiceList, teleserviceList, provisionedSS, odbData,
+        isd = new InsertSubscriberDataRequestImpl(2, imsi, msisdn, category, subscriberStatus, bearerServiceList, teleserviceList, provisionedSS, odbData,
                 roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo);
         asn = new AsnOutputStream();
-        prim.encodeAll(asn);
+        isd.encodeAll(asn);
         assertTrue(Arrays.equals(asn.toByteArray(), this.getData1()));
+
+        MAPExtensionContainer extCont = null;
+        // imsi
+        imsi = null;
+        // msisdn
+        msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
+        // category
+        category = new CategoryImpl(CategoryValue.ordinaryCallingSubscriber);
+        // subscriberStatus
+        subscriberStatus = SubscriberStatus.serviceGranted;
+        // bearerServiceList
+        bearerServiceList = null;
+        // teleserviceList
+        teleserviceList = new ArrayList<>();
+        ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
+        ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
+        teleserviceList.add(shortMessageMT_PP);
+        teleserviceList.add(shortMessageMO_PP);
+        // provisionedSS
+        provisionedSS = new ArrayList<>();
+        SSCode clip = new SSCodeImpl(SupplementaryCodeValue.clip);
+        ExtSSStatus clipExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
+        SSSubscriptionOption clipSubscriptionOption = new SSSubscriptionOptionImpl(OverrideCategory.overrideDisabled);
+        ArrayList<ExtBasicServiceCode> basicServiceGroupList = null;
+        ExtSSData extSSDataClip = new ExtSSDataImpl(clip, clipExtSSStatus, clipSubscriptionOption, basicServiceGroupList, extCont);
+        SSCode clir = new SSCodeImpl(SupplementaryCodeValue.clir);
+        ExtSSStatus clirExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
+        SSSubscriptionOption clirSubscriptionOption = new SSSubscriptionOptionImpl(CliRestrictionOption.temporaryDefaultAllowed);
+        ExtSSData extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, extCont);
+        ExtSSInfo ssInfoClip = new ExtSSInfoImpl(extSSDataClip);
+        ExtSSInfo ssInfoClir = new ExtSSInfoImpl(extSSDataClir);
+        provisionedSS.add(ssInfoClip);
+        provisionedSS.add(ssInfoClir);
+        // odbData
+        boolean allOGCallsBarred = false;
+        boolean internationalOGCallsBarred = false;
+        boolean internationalOGCallsNotToHPLMNCountryBarred = false;
+        boolean premiumRateInformationOGCallsBarred = true;
+        boolean premiumRateEntertainmentOGCallsBarred = true;
+        boolean ssAccessBarred = true;
+        boolean interzonalOGCallsBarred = false;
+        boolean interzonalOGCallsNotToHPLMNCountryBarred = false;
+        boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = false;
+        boolean allECTBarred = false;
+        boolean chargeableECTBarred = false;
+        boolean internationalECTBarred = false;
+        boolean interzonalECTBarred = false;
+        boolean doublyChargeableECTBarred = true;
+        boolean multipleECTBarred = true;
+        boolean allPacketOrientedServicesBarred = false;
+        boolean roamerAccessToHPLMNAPBarred = false;
+        boolean roamerAccessToVPLMNAPBarred = true;
+        boolean roamingOutsidePLMNOGCallsBarred = false;
+        boolean allICCallsBarred = false;
+        boolean roamingOutsidePLMNICCallsBarred = true;
+        boolean roamingOutsidePLMNICountryICCallsBarred = false;
+        boolean roamingOutsidePLMNBarred = false;
+        boolean roamingOutsidePLMNCountryBarred = false;
+        boolean registrationAllCFBarred = true;
+        boolean registrationCFNotToHPLMNBarred = true;
+        boolean registrationInterzonalCFBarred = true;
+        boolean registrationInterzonalCFNotToHPLMNBarred = true;
+        boolean registrationInternationalCFBarred = true;
+        oDBGeneralData = new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred, internationalOGCallsNotToHPLMNCountryBarred,
+                premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred, ssAccessBarred,
+                interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred, interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred,
+                allECTBarred, chargeableECTBarred, internationalECTBarred, interzonalECTBarred,
+                doublyChargeableECTBarred, multipleECTBarred, allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
+                roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
+                roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred, roamingOutsidePLMNCountryBarred,
+                registrationAllCFBarred, registrationCFNotToHPLMNBarred, registrationInterzonalCFBarred,
+                registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
+        boolean plmnSpecificBarringType1 = true;
+        boolean plmnSpecificBarringType2 = false;
+        boolean plmnSpecificBarringType3 = false;
+        boolean plmnSpecificBarringType4 = false;
+        odbHplmnData = new ODBHPLMNDataImpl(plmnSpecificBarringType1, plmnSpecificBarringType2, plmnSpecificBarringType3, plmnSpecificBarringType4);
+        odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, extCont);
+        // regionalSubscriptionData
+        regionalSubscriptionData = null;
+        // vbsSubscriptionData
+        vbsSubscriptionData = new ArrayList<>();
+        GroupId gId = new GroupIdImpl("1");
+        LongGroupId lGId = new LongGroupIdImpl("5");
+        voiceBroadcastData = new VoiceBroadcastDataImpl(gId, broadcastInitEntitlement, extCont, lGId);
+        vbsSubscriptionData.add(voiceBroadcastData);
+        // vgcsSubscriptionData
+        vgcsSubscriptionData = new ArrayList<>();
+        boolean privilegedUplinkRequest = true;
+        boolean emergencyUplinkRequest = true;
+        boolean emergencyReset = true;
+        AdditionalSubscriptions addSubscriptions = new AdditionalSubscriptionsImpl(privilegedUplinkRequest, emergencyUplinkRequest, emergencyReset);
+        BitSetStrictLength addInfoBitset = new BitSetStrictLength(136);
+        addInfoBitset.set(0);
+        addInfoBitset.set(1);
+        addInfoBitset.set(24);
+        AdditionalInfo addInfo = new AdditionalInfoImpl(addInfoBitset);
+        voiceGroupCallData = new VoiceGroupCallDataImpl(gId, extCont, addSubscriptions, addInfo, lGId);
+        vgcsSubscriptionData.add(voiceGroupCallData);
+        // vlrCamelSubscriptionInfo
+        OBcsmTriggerDetectionPoint oBcsmTDP = OBcsmTriggerDetectionPoint.routeSelectFailure;
+        serviceKey = 7L;
+        gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
+        DefaultCallHandling defaultCallHandling = DefaultCallHandling.continueCall;
+        OBcsmCamelTDPData oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(oBcsmTDP, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
+        ArrayList<OBcsmCamelTDPData> oBcsmCamelTDPDataList = new ArrayList<>();
+        oBcsmCamelTDPDataList.add(oBcsmCamelTDPData);
+        camelCapabilityHandling = 2;
+        OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, extCont, camelCapabilityHandling, notificationToCSE, csiActive);
+        ssEventList = new ArrayList<>();
+        ssEventList.add(clip);
+        ssEventList.add(clir);
+        ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddress, extCont);
+        ssCsi = new SSCSIImpl(ssCamelData, extCont, notificationToCSE, csiActive);
+        oBcsmCamelTDPCriteriaList = getoBcsmCamelTdpCriteria(oBcsmTDP, basicServiceGroupList, extCont);
+        tifCsi = true;
+        mobilityTriggers = new ArrayList<>();
+        MMCode mmCode1 = new MMCodeImpl(MMCodeValue.IMSIAttach);
+        MMCode mmCode2 = new MMCodeImpl(MMCodeValue.LocationUpdateInSameVLR);
+        mobilityTriggers.add(mmCode1);
+        mobilityTriggers.add(mmCode2);
+        MCSI mcsi = new MCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, extCont, notificationToCSE, csiActive);
+        smsCamelTdpDataList = new ArrayList<>();
+        SMSTriggerDetectionPoint smsTDP = SMSTriggerDetectionPoint.smsDeliveryRequest;
+        SMSCAMELTDPData smscameltdpData = new SMSCAMELTDPDataImpl(smsTDP, serviceKey, gsmSCFAddress, defaultSMSHandling, extCont);
+        smsCamelTdpDataList.add(smscameltdpData);
+        smsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+        ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDataList = new ArrayList<>();
+        TBcsmTriggerDetectionPoint tBcsmTDP1 = TBcsmTriggerDetectionPoint.tNoAnswer;
+        TBcsmTriggerDetectionPoint tBcsmTDP2 = TBcsmTriggerDetectionPoint.tBusy;
+        TBcsmCamelTDPData tBcsmCamelTDPData1 = new TBcsmCamelTDPDataImpl(tBcsmTDP1, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
+        TBcsmCamelTDPData tBcsmCamelTDPData2 = new TBcsmCamelTDPDataImpl(tBcsmTDP2, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
+        tBcsmCamelTDPDataList.add(tBcsmCamelTDPData1);
+        tBcsmCamelTDPDataList.add(tBcsmCamelTDPData2);
+        vtCsi = new TCSIImpl(tBcsmCamelTDPDataList, extCont, camelCapabilityHandling, notificationToCSE, csiActive);
+        tBcsmTriggerDetectionPoint = TBcsmTriggerDetectionPoint.tNoAnswer;
+        tCauseValueCriteria = new ArrayList<>();
+        CauseValue tcv1 = new CauseValueImpl(CauseValueCodeValue.CallRejected);
+        CauseValue tcv2 = new CauseValueImpl(CauseValueCodeValue.BearerCapabilityNotAuthorized);
+        tCauseValueCriteria.add(tcv1);
+        tCauseValueCriteria.add(tcv2);
+        tBcsmCamelTdpCriteria = new TBcsmCamelTdpCriteriaImpl(tBcsmTriggerDetectionPoint, basicServiceGroupList, tCauseValueCriteria);
+        tBcsmCamelTdpCriteriaList = new ArrayList<>();
+        tBcsmCamelTdpCriteriaList.add(tBcsmCamelTdpCriteria);
+        dpAnalysedInfoCriteriaList = new ArrayList<>();
+        dialledNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491714780432");
+        dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
+        dpAnalysedInfoCriteriaList.add(dpAnalysedInfoCriterium);
+        DCSI dCSI = new DCSIImpl(dpAnalysedInfoCriteriaList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+        mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+        mtSmsCamelTdpCriteriaList = new ArrayList<>();
+        ArrayList<MTSMSTPDUType> mtsmstpduTypeArrayList = new ArrayList<>();
+        MTSMSTPDUType mtsmstpduType1 = MTSMSTPDUType.smsDELIVER;
+        MTSMSTPDUType mtsmstpduType2 = MTSMSTPDUType.smsSUBMITREPORT;
+        MTSMSTPDUType mtsmstpduType3 = MTSMSTPDUType.smsSTATUSREPORT;
+        mtsmstpduTypeArrayList.add(mtsmstpduType1);
+        mtsmstpduTypeArrayList.add(mtsmstpduType2);
+        mtsmstpduTypeArrayList.add(mtsmstpduType3);
+        mTsmsCAMELTDPCriteria = new MTsmsCAMELTDPCriteriaImpl(smsTDP, mtsmstpduTypeArrayList);
+        mtSmsCamelTdpCriteriaList.add(mTsmsCAMELTDPCriteria);
+        vlrCamelSubscriptionInfo = new VlrCamelSubscriptionInfoImpl(oCSI, extCont,
+                ssCsi, oBcsmCamelTDPCriteriaList, tifCsi, mcsi, smsCsi, vtCsi, tBcsmCamelTdpCriteriaList, dCSI, mtSmsCSI,
+                mtSmsCamelTdpCriteriaList);
+        // naeaPreferredCI
+        String carrierCode = "458";
+        NetworkIdentificationPlanValue networkIdentificationPlanValue = NetworkIdentificationPlanValue.spare_1;
+        NetworkIdentificationTypeValue networkIdentificationTypeValue = NetworkIdentificationTypeValue.nationalNetworkIdentification;
+        naeaPreferredCIC = new NAEACICImpl(carrierCode, networkIdentificationPlanValue, networkIdentificationTypeValue);
+        naeaPreferredCI = new NAEAPreferredCIImpl(naeaPreferredCIC, extCont);
+        // gprsSubscriptionData
+        gprsSubscriptionData = null;
+        // roamingRestrictedInSgsnDueToUnsupportedFeature
+        roamingRestrictedInSgsnDueToUnsupportedFeature = false;
+       // lsaInformation
+        lsaInformation = null;
+        // lmuIndicator
+        lmuIndicator = false;
+        // lcsInformation
+        lcsInformation = null;
+        // istAlertTimer
+        istAlertTimer = 200;
+        // superChargerSupportedInHLR
+        superChargerSupportedInHLR = null;
+        // mcSsInfo
+        ssCode = new SSCodeImpl(SupplementaryCodeValue.cfu);
+        ssStatus = new ExtSSStatusImpl(true, false, true, false);
+        int nbrSB = 2;
+        int nbrUser = 4;
+        mcSsInfo = new MCSSInfoImpl(ssCode, ssStatus, nbrSB, nbrUser, extCont);
+        // csAllocationRetentionPriority
+        csAllocationRetentionPriority = new CSAllocationRetentionPriorityImpl(4);
+        // sgsnCamelSubscriptionInfo
+        sgsnCamelSubscriptionInfo = null;
+        // chargingCharacteristics
+        boolean isNormalCharging = false;
+        boolean isPrepaidCharging = false;
+        boolean isFlatRateCharging = true;
+        boolean isChargingByHotBillingCharging = false;
+        chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+        // accessRestrictionData
+        boolean utranNotAllowed = false;
+        boolean geranNotAllowed = false;
+        boolean ganNotAllowed = true;
+        boolean eUtranNotAllowed = false;
+        boolean iHspaEvolutionNotAllowed = false;
+        boolean hoToNon3GppAccessNotAllowed = true;
+        accessRestrictionData = new AccessRestrictionDataImpl(utranNotAllowed, geranNotAllowed, ganNotAllowed, iHspaEvolutionNotAllowed, eUtranNotAllowed, hoToNon3GppAccessNotAllowed);
+        // icsIndicator
+        icsIndicator = Boolean.TRUE;
+        // epsSubscriptionData
+        defaultContext = 1;
+        pDNType = new PDNTypeImpl(PDNTypeValue.IPv4v6);
+        servedPartyIPIPv4Address = null;
+        apn = new APNImpl("internet");
+        QoSClassIdentifier qci = QoSClassIdentifier.QCI_5;
+        int priorityLevel = 9;
+        Boolean preEmptionCapability = true;
+        Boolean preEmptionVulnerability = false;
+        AllocationRetentionPriority arp = new AllocationRetentionPriorityImpl(priorityLevel, preEmptionCapability, preEmptionVulnerability, extCont);
+        ePSQoSSubscribed = new EPSQoSSubscribedImpl(qci, arp, extCont);
+        pdnGwIdentity = null;
+        pdnGwAllocationType = null;
+        vplmnAddressAllowed = true;
+        int maxRequestedBandwidthUL = 2048;
+        int maxRequestedBandwidthDL = 4096;
+        ambr = new AMBRImpl(maxRequestedBandwidthUL, maxRequestedBandwidthDL, extCont);
+        specificAPNInfoList = null;
+        apnOiReplacement = new APNOIReplacementImpl(new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
+        servedPartyIPIPv6Address = new PDPAddressImpl(new byte[] { 21 });
+        APNConfiguration apnConfiguration = new APNConfigurationImpl(contextId, pDNType, servedPartyIPIPv4Address, apn,
+                ePSQoSSubscribed, pdnGwIdentity, pdnGwAllocationType, vplmnAddressAllowed, chargingCharacteristics, ambr,
+                specificAPNInfoList, extCont, servedPartyIPIPv6Address, apnOiReplacement, sipToPermission, lipaPermission);
+        ePSDataList = new ArrayList<>();
+        ePSDataList.add(apnConfiguration);
+        apnConfigurationProfile = new APNConfigurationProfileImpl(defaultContext, completeDataListIncluded, ePSDataList, extCont);
+        rfspId = 0;
+        stnSr = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+        epsSubscriptionData = new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile, stnSr, extCont, mpsCSPriority, mpsEPSPriority);
+        // csgSubscriptionDataList
+        BitSetStrictLength csgIdBitSet = new BitSetStrictLength(27);
+        csgIdBitSet.set(0);
+        csgIdBitSet.set(1);
+        csgIdBitSet.set(25);
+        csgIdBitSet.set(26);
+        csgId = new CSGIdImpl(csgIdBitSet);
+        int year = 2024;
+        int month = 7;
+        int day = 4;
+        int hour = 19;
+        int minute = 20;
+        int second = 10;
+        expirationDate = new TimeImpl(year, month, day, hour, minute, second);
+        lipaAllowedAPNList = new ArrayList<>();
+        lipaAllowedAPNList.add(apn);
+        csgSubscriptionData = new CSGSubscriptionDataImpl(csgId, expirationDate, extCont, lipaAllowedAPNList);
+        csgSubscriptionDataList = new ArrayList<>();
+        csgSubscriptionDataList.add(csgSubscriptionData);
+        // sgsnNumber
+        sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+        // mmeName
+        byte[] mmeNameArray = "mmec20.mmegi800.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
+        mmeName = new DiameterIdentityImpl(mmeNameArray);
+        // subscribedPeriodicRAUTAUtimer
+        subscribedPeriodicRAUTAUtimer = 300L;
+        // mdtUserConsent
+        mdtUserConsent = false;
+        // subscribedPeriodicLAUtimer
+        subscribedPeriodicLAUtimer = 360L;
+        // vplmnCSGSubscriptionDataList
+        vplmnCSGSubscriptionDataList = new ArrayList<>();
+        vplmnCSGSubscriptionDataList.add(csgSubscriptionData);
+        // additionalMSISDN
+        additionalMSISDN = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "4917105682451");
+        // psAndSMSOnlyServiceProvision
+        psAndSMSOnlyServiceProvision = true;
+        // smsInSGSNAllowed
+        smsInSGSNAllowed = true;
+        // csToPsSRVCCAllowedIndicator
+        csToPsSRVCCAllowedIndicator = true;
+        // pcscfRestorationRequest
+        pcscfRestorationRequest = true;
+        // adjacentAccessRestrictionDataList
+        int mcc = 262;
+        int mnc = 999;
+        PlmnId plmnId = new PlmnIdImpl(mcc, mnc);
+        boolean nrAsSecondaryRATNotAllowed = true;
+        boolean unlicensedSpectrumAsSecondaryRATNotAllowed = false;
+        extAccessRestrictionData = new ExtAccessRestrictionDataImpl(nrAsSecondaryRATNotAllowed, unlicensedSpectrumAsSecondaryRATNotAllowed);
+        AdjacentAccessRestrictionData adjacentAccessRestrictionData =
+                new AdjacentAccessRestrictionDataImpl(plmnId, accessRestrictionData, extAccessRestrictionData);
+        adjacentAccessRestrictionDataList = new ArrayList<>();
+        adjacentAccessRestrictionDataList.add(adjacentAccessRestrictionData);
+        // imsiGroupIdList
+        Long groupServiceId = 1L;
+        LocalGroupId localGroupId = new LocalGroupIdImpl("120".getBytes(StandardCharsets.UTF_8));
+        IMSIGroupId imsiGroupId = new IMSIGroupIdImpl(groupServiceId, plmnId, localGroupId);
+        imsiGroupIdList = new ArrayList<>();
+        imsiGroupIdList.add(imsiGroupId);
+        // ueUsageType
+        byte[] ueUsageTypeBytes = new byte[] {0, 0, 0, (byte) 0x87};
+        ueUsageType = new UEUsageTypeImpl(ueUsageTypeBytes);
+        // userPlaneIntegrityProtectionIndicator
+        userPlaneIntegrityProtectionIndicator = true;
+        // dlBufferingSuggestedPacketCount
+        dlBufferingSuggestedPacketCount = 0L;
+        // resetIdList
+        byte[] resetIdBytes = new byte[] {1, 2, 4, (byte) 0x80};
+        ResetId resetId = new ResetIdImpl(resetIdBytes);
+        resetIdList = new ArrayList<>();
+        resetIdList.add(resetId);
+        // eDRXCycleLengthList
+        UsedRATType usedRATType = UsedRATType.nbIoT;
+        byte[] edrCycleLengthVal = new byte[] { 0x02 };
+        EDRXCycleLengthValue eDRXCycleLengthValue = new EDRXCycleLengthValueImpl(edrCycleLengthVal);
+        EDRXCycleLength edrxCycleLength = new EDRXCycleLengthImpl(usedRATType, eDRXCycleLengthValue);
+        eDRXCycleLengthList = new ArrayList<>();
+        eDRXCycleLengthList.add(edrxCycleLength);
+        // iabOperationAllowedIndicator
+        iabOperationAllowedIndicator = true;
+
+        isd = new InsertSubscriberDataRequestImpl(3, imsi, msisdn, category, subscriberStatus,
+                bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
+                regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, extCont,
+                naeaPreferredCI, gprsSubscriptionData, roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode,
+                lsaInformation, lmuIndicator, lcsInformation, istAlertTimer, superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority,
+                sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,
+                ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent,
+                subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
+                csToPsSRVCCAllowedIndicator, smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
+                eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
+        asn = new AsnOutputStream();
+        isd.encodeAll(asn);
+        assertTrue(Arrays.equals(asn.toByteArray(), this.getDataCsTest()));
+
+        // msisdn
+        msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
+        // category
+        category = new CategoryImpl(CategoryValue.ordinaryCallingSubscriber);
+        // bearerServiceList
+        bearerServiceList = new ArrayList<>();
+        ExtBearerServiceCode extBearerServiceCode1 = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allDataCDAServices);
+        ExtBearerServiceCode extBearerServiceCode2 = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allDataCDS_Services);
+        bearerServiceList.add(extBearerServiceCode1);
+        bearerServiceList.add(extBearerServiceCode2);
+        // teleserviceList
+        teleserviceList = getExtTeleserviceCodes();
+        // provisionedSS
+        provisionedSS = new ArrayList<>();
+        clip = new SSCodeImpl(SupplementaryCodeValue.clip);
+        clipExtSSStatus = new ExtSSStatusImpl(true, true, false, true);
+        clipSubscriptionOption = new SSSubscriptionOptionImpl(OverrideCategory.overrideDisabled);
+        extSSDataClip = new ExtSSDataImpl(clip, clipExtSSStatus, clipSubscriptionOption, basicServiceGroupList, extCont);
+        clir = new SSCodeImpl(SupplementaryCodeValue.clir);
+        clirExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
+        clirSubscriptionOption = new SSSubscriptionOptionImpl(CliRestrictionOption.temporaryDefaultAllowed);
+        extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, extCont);
+        ssInfoClip = new ExtSSInfoImpl(extSSDataClip);
+        ssInfoClir = new ExtSSInfoImpl(extSSDataClir);
+        provisionedSS.add(ssInfoClip);
+        provisionedSS.add(ssInfoClir);
+        // odbData
+        odbData = null;
+        // regionalSubscriptionData
+        regionalSubscriptionData = new ArrayList<>();
+        ZoneCode zc1 = new ZoneCodeImpl(1);
+        ZoneCode zc2 = new ZoneCodeImpl(2);
+        ZoneCode zc3 = new ZoneCodeImpl(3);
+        regionalSubscriptionData.add(zc1);
+        regionalSubscriptionData.add(zc2);
+        regionalSubscriptionData.add(zc3);
+        // vbsSubscriptionData
+        vbsSubscriptionData = new ArrayList<>();
+        gId = new GroupIdImpl("1");
+        lGId = new LongGroupIdImpl("5");
+        voiceBroadcastData = new VoiceBroadcastDataImpl(gId, broadcastInitEntitlement, extCont, lGId);
+        vbsSubscriptionData.add(voiceBroadcastData);
+        // vgcsSubscriptionData
+        vgcsSubscriptionData = null;
+        // vlrCamelSubscriptionInfo
+        vlrCamelSubscriptionInfo = null;
+        // naeaPreferredCI
+        naeaPreferredCI = null;
+        // gprsSubscriptionData
+        gprsDataList = new ArrayList<>();
+        pdpType = new PDPTypeImpl(PDPTypeValue.IPv4);
+        pdpAddress = new PDPAddressImpl(new byte[] { 21 });
+        QoSSubscribed_ReliabilityClass reliabilityClass = QoSSubscribed_ReliabilityClass.reserved_7;
+        QoSSubscribed_DelayClass delayClass = QoSSubscribed_DelayClass.delay_Class_4_bestEffort;
+        QoSSubscribed_PrecedenceClass precedenceClass = QoSSubscribed_PrecedenceClass.normalPriority;
+        QoSSubscribed_PeakThroughput peakThroughput = QoSSubscribed_PeakThroughput.upTo_4000_octetS;
+        QoSSubscribed_MeanThroughput meanThroughput = QoSSubscribed_MeanThroughput._2000_octetH;
+        qosSubscribed = new QoSSubscribedImpl(reliabilityClass, delayClass, precedenceClass, peakThroughput, meanThroughput);
+        apn = new APNImpl("internet");
+        int extAllocationRetentionPriority = 9;
+        ExtQoSSubscribed_DeliveryOfErroneousSdus deliveryOfErroneousSdus = ExtQoSSubscribed_DeliveryOfErroneousSdus.erroneousSdusAreDelivered_Yes;
+        ExtQoSSubscribed_DeliveryOrder deliveryOrder = ExtQoSSubscribed_DeliveryOrder.withoutDeliveryOrderNo;
+        ExtQoSSubscribed_TrafficClass trafficClass = ExtQoSSubscribed_TrafficClass.interactiveClass;
+        int maximumSduSizeData = 151;
+        boolean isSourceData = true;
+        ExtQoSSubscribed_MaximumSduSize maximumSduSize = new ExtQoSSubscribed_MaximumSduSizeImpl(maximumSduSizeData, isSourceData);
+        int maximumBitRateForUL = 128;
+        ExtQoSSubscribed_BitRate maximumBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(maximumBitRateForUL, isSourceData);
+        int maximumBitRateForDL = 576;
+        ExtQoSSubscribed_BitRate maximumBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(maximumBitRateForDL, isSourceData);
+        ExtQoSSubscribed_ResidualBER residualBER = ExtQoSSubscribed_ResidualBER.subscribedResidualBER_Reserved;
+        ExtQoSSubscribed_SduErrorRatio sduErrorRatio = ExtQoSSubscribed_SduErrorRatio.subscribedSduErrorRatio_Reserved;
+        ExtQoSSubscribed_TrafficHandlingPriority trafficHandlingPriority = ExtQoSSubscribed_TrafficHandlingPriority.priorityLevel_3;
+        int transferDelayValue = 1000;
+        ExtQoSSubscribed_TransferDelay transferDelay = new ExtQoSSubscribed_TransferDelayImpl(transferDelayValue, isSourceData);
+        int gbrUL = 64;
+        ExtQoSSubscribed_BitRate guaranteedBitRateForUplink = new ExtQoSSubscribed_BitRateImpl(gbrUL, isSourceData);
+        int gbrDL = 256;
+        ExtQoSSubscribed_BitRate guaranteedBitRateForDownlink = new ExtQoSSubscribed_BitRateImpl(gbrDL, isSourceData);
+        extQoSSubscribed = new ExtQoSSubscribedImpl(extAllocationRetentionPriority, deliveryOfErroneousSdus,
+                deliveryOrder, trafficClass, maximumSduSize, maximumBitRateForUplink, maximumBitRateForDownlink, residualBER,
+                sduErrorRatio, trafficHandlingPriority, transferDelay, guaranteedBitRateForUplink, guaranteedBitRateForDownlink);
+        isNormalCharging = true;
+        isFlatRateCharging = false;
+        chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+        Ext2QoSSubscribed_SourceStatisticsDescriptor sourceStatisticsDescriptor = Ext2QoSSubscribed_SourceStatisticsDescriptor.unknown;
+        boolean optimisedForSignallingTraffic = true;
+        int maxBRDLExt = 256000;
+        ExtQoSSubscribed_BitRateExtended maxBitRateForDLExt = new ExtQoSSubscribed_BitRateExtendedImpl(maxBRDLExt, isSourceData);
+        int gbrExtDL = 128000;
+        ExtQoSSubscribed_BitRateExtended guaranteedBitRateForDLExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrExtDL, isSourceData);
+        ext2QoSSubscribed = new Ext2QoSSubscribedImpl(sourceStatisticsDescriptor, optimisedForSignallingTraffic,
+                maxBitRateForDLExt, guaranteedBitRateForDLExtended);
+        int mbrULExt = 256000;
+        ExtQoSSubscribed_BitRateExtended maximumBitRateForUplinkExtended = new ExtQoSSubscribed_BitRateExtendedImpl(mbrULExt, isSourceData);
+        int gbrULExt = 128000;
+        ExtQoSSubscribed_BitRateExtended guaranteedBitRateForUplinkExtended = new ExtQoSSubscribed_BitRateExtendedImpl(gbrULExt, isSourceData);
+        ext3QoSSubscribed = new Ext3QoSSubscribedImpl(maximumBitRateForUplinkExtended, guaranteedBitRateForUplinkExtended);
+        ext4QoSSubscribed = new Ext4QoSSubscribedImpl(91);
+        apnOiReplacement = new APNOIReplacementImpl(new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
+        extpdpType = new ExtPDPTypeImpl(new byte[] { 58, 59 });
+        extpdpAddress = new PDPAddressImpl(new byte[] { 60 });
+        pdpContext = new PDPContextImpl(pdpContextId, pdpType, pdpAddress, qosSubscribed, vplmnAddressAllowed, apn,
+                extCont, extQoSSubscribed, chargingCharacteristics, ext2QoSSubscribed, ext3QoSSubscribed, ext4QoSSubscribed,
+                apnOiReplacement, extpdpType, extpdpAddress, sipToPermission, lipaPermission);
+        gprsDataList.add(pdpContext);
+        gprsSubscriptionData = new GPRSSubscriptionDataImpl(completeDataListIncluded, gprsDataList, extCont, apnOiReplacement);
+        // roamingRestrictedInSgsnDueToUnsupportedFeature
+        roamingRestrictedInSgsnDueToUnsupportedFeature = true;
+        // networkAccessMode
+        networkAccessMode = NetworkAccessMode.onlyPacket;
+        // lsaInformation
+        lsaOnlyAccessIndicator = LSAOnlyAccessIndicator.accessOutsideLSAsAllowed;
+        lsaIdentity = new LSAIdentityImpl(new byte[] { 12, 10, 1 });
+        lsaDataList = new ArrayList<>();
+        LSAIdentificationPriorityValue lsaIdentificationPriorityValue = LSAIdentificationPriorityValue.Priority_2;
+        boolean preferentialAccessAvailable = true;
+        boolean activeModeSupportAvailable = true;
+        lsaAttributes = new LSAAttributesImpl(lsaIdentificationPriorityValue, preferentialAccessAvailable, activeModeSupportAvailable);
+        lsaData = new LSADataImpl(lsaIdentity, lsaAttributes, lsaActiveModeIndicator, extCont);
+        lsaDataList.add(lsaData);
+        lsaInformation = new LSAInformationImpl(completeDataListIncluded, lsaOnlyAccessIndicator, lsaDataList, extCont);
+        // lmuIndicator
+        lmuIndicator = true;
+        // lcsInformation (gmlcList)
+        gmlcList = new ArrayList<>();
+        ISDNAddressString gmlcAddress =
+                new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "4917104600321");
+        gmlcList.add(gmlcAddress);
+        // lcsInformation (lcsPrivacyExceptionList)
+        SSCode ssCode1 = new SSCodeImpl(SupplementaryCodeValue.allMOLR_SS);
+        SSCode ssCode2 = new SSCodeImpl(SupplementaryCodeValue.autonomousSelfLocation);
+        SSCode ssCode3 = new SSCodeImpl(SupplementaryCodeValue.allLCSPrivacyException);
+        SSCode ssCode4 = new SSCodeImpl(SupplementaryCodeValue.allPLMN_specificSS);
+        ExtSSStatus extSSStatus1 = new ExtSSStatusImpl(true, false, false, false);
+        ExtSSStatus extSSStatus2 = new ExtSSStatusImpl(false, true, false, false);
+        ExtSSStatus extSSStatus3 = new ExtSSStatusImpl(false, false, true, false);
+        ExtSSStatus extSSStatus4 = new ExtSSStatusImpl(false, false, false, true);
+        LCSClientInternalID lcsClientInternalID1 = LCSClientInternalID.broadcastService;
+        LCSClientInternalID lcsClientInternalID2 = LCSClientInternalID.oandMHPLMN;
+        LCSClientInternalID lcsClientInternalID3 = LCSClientInternalID.targetMSsubscribedService;
+        LCSClientInternalID lcsClientInternalID4 = LCSClientInternalID.anonymousLocation;
+        ArrayList<LCSClientInternalID> plmnClientList1 = new ArrayList<>();
+        plmnClientList1.add(lcsClientInternalID1);
+        plmnClientList1.add(lcsClientInternalID2);
+        ArrayList<LCSClientInternalID> plmnClientList2 = new ArrayList<>();
+        plmnClientList2.add(lcsClientInternalID2);
+        ArrayList<LCSClientInternalID> plmnClientList3 = new ArrayList<>();
+        plmnClientList3.add(lcsClientInternalID3);
+        ArrayList<LCSClientInternalID> plmnClientList4 = new ArrayList<>();
+        plmnClientList4.add(lcsClientInternalID4);
+        ArrayList<ExternalClient> externalClientList1 = new ArrayList<>();
+        ISDNAddressString externalAddress1 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "874927492");
+        LCSClientExternalID clientIdentity1 = new LCSClientExternalIDImpl(externalAddress1, extCont);
+        GMLCRestriction gmlcRestriction1 = GMLCRestriction.homeCountry;
+        NotificationToMSUser notificationToMSUser1 = NotificationToMSUser.notifyLocationAllowed;
+        ExternalClient externalClient1 = new ExternalClientImpl(clientIdentity1, gmlcRestriction1, notificationToMSUser1, extCont);
+        externalClientList1.add(externalClient1);
+        ArrayList<ExternalClient> externalClientList2 = new ArrayList<>();
+        ISDNAddressString externalAddress2 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "398279222");
+        LCSClientExternalID clientIdentity2 = new LCSClientExternalIDImpl(externalAddress2, extCont);
+        GMLCRestriction gmlcRestriction2 = GMLCRestriction.gmlcList;
+        NotificationToMSUser notificationToMSUser2 = NotificationToMSUser.notifyAndVerifyLocationAllowedIfNoResponse;
+        ExternalClient externalClient2 = new ExternalClientImpl(clientIdentity2, gmlcRestriction2, notificationToMSUser2, extCont);
+        externalClientList2.add(externalClient2);
+        ArrayList<ExternalClient> externalClientList3 = new ArrayList<>();
+        ISDNAddressString externalAddress3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "23543252234");
+        LCSClientExternalID clientIdentity3 = new LCSClientExternalIDImpl(externalAddress3, extCont);
+        GMLCRestriction gmlcRestriction3 = GMLCRestriction.homeCountry;
+        NotificationToMSUser notificationToMSUser3 = NotificationToMSUser.locationNotAllowed;
+        ExternalClient externalClient3 = new ExternalClientImpl(clientIdentity3, gmlcRestriction3, notificationToMSUser3, extCont);
+        externalClientList3.add(externalClient3);
+        ArrayList<ExternalClient> externalClientList4 = new ArrayList<>();
+        ISDNAddressString externalAddress4 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "598990298245");
+        LCSClientExternalID clientIdentity4 = new LCSClientExternalIDImpl(externalAddress4, extCont);
+        GMLCRestriction gmlcRestriction4 = GMLCRestriction.gmlcList;
+        NotificationToMSUser notificationToMSUser4 = NotificationToMSUser.notifyAndVerifyLocationNotAllowedIfNoResponse;
+        ExternalClient externalClient4 = new ExternalClientImpl(clientIdentity4, gmlcRestriction4, notificationToMSUser4, extCont);
+        externalClientList4.add(externalClient4);
+        ArrayList<ServiceType> serviceTypeList1 = new ArrayList<>();
+        int serviceTypeIdentity1 = 1;
+        ServiceType serviceType1 = new ServiceTypeImpl(serviceTypeIdentity1, gmlcRestriction1, notificationToMSUser1, extCont);
+        serviceTypeList1.add(serviceType1);
+        ArrayList<ServiceType> serviceTypeList2 = new ArrayList<>();
+        int serviceTypeIdentity2 = 2;
+        ServiceType serviceType2 = new ServiceTypeImpl(serviceTypeIdentity2, gmlcRestriction2, notificationToMSUser2, extCont);
+        serviceTypeList2.add(serviceType2);
+        ArrayList<ServiceType> serviceTypeList3 = new ArrayList<>();
+        int serviceTypeIdentity3 = 3;
+        ServiceType serviceType3 = new ServiceTypeImpl(serviceTypeIdentity3, gmlcRestriction3, notificationToMSUser3, extCont);
+        serviceTypeList3.add(serviceType3);
+        ArrayList<ServiceType> serviceTypeList4 = new ArrayList<>();
+        int serviceTypeIdentity4 = 4;
+        ServiceType serviceType4 = new ServiceTypeImpl(serviceTypeIdentity4, gmlcRestriction4, notificationToMSUser4, extCont);
+        serviceTypeList4.add(serviceType4);
+        LCSPrivacyClass lcsPrivacyClass1 = new LCSPrivacyClassImpl(ssCode1, extSSStatus1, notificationToMSUser1, externalClientList1,
+                plmnClientList1, extCont, externalClientList1, serviceTypeList1);
+        LCSPrivacyClass lcsPrivacyClass2 = new LCSPrivacyClassImpl(ssCode2, extSSStatus2, notificationToMSUser2, externalClientList2,
+                plmnClientList2, extCont, externalClientList2, serviceTypeList2);
+        LCSPrivacyClass lcsPrivacyClass3 = new LCSPrivacyClassImpl(ssCode3, extSSStatus3, notificationToMSUser3, externalClientList3,
+                plmnClientList3, extCont, externalClientList3, serviceTypeList3);
+        LCSPrivacyClass lcsPrivacyClass4 = new LCSPrivacyClassImpl(ssCode4, extSSStatus4, notificationToMSUser4, externalClientList4,
+                plmnClientList4, extCont, externalClientList4, serviceTypeList4);
+        lcsPrivacyExceptionList = new ArrayList<>();
+        lcsPrivacyExceptionList.add(lcsPrivacyClass1);
+        lcsPrivacyExceptionList.add(lcsPrivacyClass2);
+        lcsPrivacyExceptionList.add(lcsPrivacyClass3);
+        lcsPrivacyExceptionList.add(lcsPrivacyClass4);
+        // lcsInformation (molrList)
+        molrList = new ArrayList<>();
+        MOLRClass molrClass1 = new MOLRClassImpl(ssCode1, extSSStatus1, extCont);
+        MOLRClass molrClass2 = new MOLRClassImpl(ssCode2, extSSStatus2, extCont);
+        MOLRClass molrClass3 = new MOLRClassImpl(ssCode3, extSSStatus3, extCont);
+        molrList.add(molrClass1);
+        molrList.add(molrClass2);
+        molrList.add(molrClass3);
+        // lcsInformation (addLcsPrivacyExceptionList)
+        // add-lcs-PrivacyExceptionList may be sent only if lcs-PrivacyExceptionList is
+        // present and contains four instances of LCS-PrivacyClass. If the mentioned condition
+        // is not satisfied the receiving node shall discard add-lcs-PrivacyExceptionList.
+        // If an LCS-PrivacyClass is received both in lcs-PrivacyExceptionList and in
+        // add-lcs-PrivacyExceptionList with the same SS-Code, then the error unexpected
+        // data value shall be returned.
+        SSCode addSsCode = new SSCodeImpl(SupplementaryCodeValue.plmn_specificSS_1);
+        ExtSSStatus addExtSSStatus = new ExtSSStatusImpl(true, true, false, true);
+        ArrayList<LCSClientInternalID> addPlmnClientList = new ArrayList<>();
+        addPlmnClientList.add(lcsClientInternalID1);
+        addPlmnClientList.add(lcsClientInternalID2);
+        addPlmnClientList.add(lcsClientInternalID3);
+        addPlmnClientList.add(lcsClientInternalID4);
+        ArrayList<ExternalClient> addExternalClientList = new ArrayList<>();
+        ISDNAddressString addExternalAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "874927492");
+        LCSClientExternalID addClientIdentity = new LCSClientExternalIDImpl(addExternalAddress, extCont);
+        GMLCRestriction addGmlcRestriction = GMLCRestriction.homeCountry;
+        NotificationToMSUser addMNtificationToMSUser = NotificationToMSUser.notifyLocationAllowed;
+        ExternalClient addExternalClient = new ExternalClientImpl(addClientIdentity, addGmlcRestriction, addMNtificationToMSUser, extCont);
+        addExternalClientList.add(addExternalClient);
+        ArrayList<ServiceType> addServiceTypeList = new ArrayList<>();
+        int addServiceTypeIdentity = 5;
+        ServiceType addServiceType4 = new ServiceTypeImpl(addServiceTypeIdentity, addGmlcRestriction, addMNtificationToMSUser, extCont);
+        addServiceTypeList.add(addServiceType4);
+        LCSPrivacyClass addLcsPrivacyClass = new LCSPrivacyClassImpl(addSsCode, addExtSSStatus, addMNtificationToMSUser, addExternalClientList,
+                addPlmnClientList, extCont, addExternalClientList, addServiceTypeList);
+        addLcsPrivacyExceptionList = new ArrayList<>();
+        addLcsPrivacyExceptionList.add(addLcsPrivacyClass);
+        lcsInformation = new LCSInformationImpl(gmlcList, lcsPrivacyExceptionList, molrList, addLcsPrivacyExceptionList);
+        // istAlertTimer
+        istAlertTimer = 15;
+        // superChargerSupportedInHLR
+        superChargerSupportedInHLR = new AgeIndicatorImpl(new byte[] { 4, 1, 48 });
+        // mcSsInfo
+        mcSsInfo = null;
+        // csAllocationRetentionPriority
+        csAllocationRetentionPriority = null;
+        // sgsnCamelSubscriptionInfo
+        gprsTriggerDetectionPoint = GPRSTriggerDetectionPoint.attach;
+        long sk = 12;
+        gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
+        defaultSessionHandling = DefaultGPRSHandling.continueTransaction;
+        gprsCamelTDPData = new GPRSCamelTDPDataImpl(gprsTriggerDetectionPoint, sk, gsmSCFAddress, defaultSessionHandling, extCont);
+        gprsCamelTDPDataList = new ArrayList<>();
+        gprsCamelTDPDataList.add(gprsCamelTDPData);
+        camelCapabilityHandling = 3;
+        gprsCsi = new GPRSCSIImpl(gprsCamelTDPDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+        smsCamelTdpDataList = new ArrayList<>();
+        smscameltdpData = new SMSCAMELTDPDataImpl(smsTDP, serviceKey, gsmSCFAddress, defaultSMSHandling, extCont);
+        smsCamelTdpDataList.add(smscameltdpData);
+        moSmsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+        mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+        mtSmsCamelTdpCriteriaList = new ArrayList<>();
+        mtsmstpduTypeArrayList = new ArrayList<>();
+        mtsmstpduTypeArrayList.add(mtsmstpduType1);
+        mtsmstpduTypeArrayList.add(mtsmstpduType2);
+        mtsmstpduTypeArrayList.add(mtsmstpduType3);
+        mTsmsCAMELTDPCriteria = new MTsmsCAMELTDPCriteriaImpl(smsTDP, mtsmstpduTypeArrayList);
+        mtSmsCamelTdpCriteriaList.add(mTsmsCAMELTDPCriteria);
+        mobilityTriggers = new ArrayList<>();
+        MMCode mmCode = new MMCodeImpl(MMCodeValue.GPRSAttach);
+        mobilityTriggers.add(mmCode);
+        mgCsi = new MGCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, extCont, notificationToCSE, csiActive);
+        sgsnCamelSubscriptionInfo = new SGSNCAMELSubscriptionInfoImpl(gprsCsi, moSmsCsi, extCont, mtSmsCSI, mtSmsCamelTdpCriteriaList, mgCsi);
+        // accessRestrictionData
+        accessRestrictionData =
+                new AccessRestrictionDataImpl(utranNotAllowed, geranNotAllowed, ganNotAllowed, iHspaEvolutionNotAllowed, eUtranNotAllowed, hoToNon3GppAccessNotAllowed);
+        // icsIndicator
+        icsIndicator = Boolean.TRUE;
+        // epsSubscriptionData
+        epsSubscriptionData = null;
+        // csgSubscriptionDataList
+        csgSubscriptionDataList = null;
+        // ueReachabilityRequestIndicator
+        // sgsnNumber
+        sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+        // mmeName
+        mmeNameArray = "mmec20.mmegi800.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8);
+        mmeName = new DiameterIdentityImpl(mmeNameArray);
+        // subscribedPeriodicRAUTAUtimer
+        subscribedPeriodicRAUTAUtimer = 360L;
+        // vplmnLIPAAllowed
+        // mdtUserConsent
+        mdtUserConsent = true;
+        // subscribedPeriodicLAUtimer
+        subscribedPeriodicLAUtimer = 300L;
+        // vplmnCSGSubscriptionDataList
+        vplmnCSGSubscriptionDataList = null;
+        // additionalMSISDN
+        additionalMSISDN = null;
+        // adjacentAccessRestrictionDataList
+        adjacentAccessRestrictionDataList = null;
+        // imsiGroupIdList
+        imsiGroupIdList = null;
+        // ueUsageType
+        ueUsageType = null;
+        // dlBufferingSuggestedPacketCount
+        dlBufferingSuggestedPacketCount = 3L;
+        // resetIdList
+        resetIdList = null;
+        // eDRXCycleLengthList
+        eDRXCycleLengthList = null;
+        // extAccessRestrictionData
+        extAccessRestrictionData = null;
+        // iabOperationAllowedIndicator
+        iabOperationAllowedIndicator = false;
+
+        isd = new InsertSubscriberDataRequestImpl(3, imsi, msisdn, category, subscriberStatus,
+                bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
+                regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, extCont,
+                naeaPreferredCI, gprsSubscriptionData, roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode,
+                lsaInformation, lmuIndicator, lcsInformation, istAlertTimer, superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority,
+                sgsnCamelSubscriptionInfo, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,
+                ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent,
+                subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision,
+                csToPsSRVCCAllowedIndicator, smsInSGSNAllowed, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList,
+                ueUsageType, userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList,
+                eDRXCycleLengthList, extAccessRestrictionData, iabOperationAllowedIndicator);
+        asn = new AsnOutputStream();
+        isd.encodeAll(asn);
+        assertTrue(Arrays.equals(asn.toByteArray(), this.getDataPsTest()));
+    }
+
+    private static ArrayList<OBcsmCamelTdpCriteria> getoBcsmCamelTdpCriteria(OBcsmTriggerDetectionPoint oBcsmTDP, ArrayList<ExtBasicServiceCode> basicServiceGroupList, MAPExtensionContainer mapExtensionContainer) {
+        DestinationNumberCriteria destinationNumberCriteria = getDestinationNumberCriteria();
+        CallTypeCriteria callTypeCriteria = CallTypeCriteria.notForwarded;
+        ArrayList<CauseValue> oCauseValueCriteria = new ArrayList<>();
+        CauseValue causeValue1 = new CauseValueImpl(CauseValueCodeValue.InvalidCallReferenceValue);
+        CauseValue causeValue2 = new CauseValueImpl(CauseValueCodeValue.BearerCapabilityNotAuthorized);
+        oCauseValueCriteria.add(causeValue1);
+        oCauseValueCriteria.add(causeValue2);
+        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = new ArrayList<>();
+        OBcsmCamelTdpCriteria oBcsmCamelTdpCriteria = new OBcsmCamelTdpCriteriaImpl(oBcsmTDP, destinationNumberCriteria,
+                basicServiceGroupList, callTypeCriteria, oCauseValueCriteria, mapExtensionContainer);
+        Result result = new Result(oBcsmCamelTDPCriteriaList, oBcsmCamelTdpCriteria);
+        result.oBcsmCamelTDPCriteriaList.add(result.oBcsmCamelTdpCriteria);
+        return result.oBcsmCamelTDPCriteriaList;
+    }
+
+    private static DestinationNumberCriteria getDestinationNumberCriteria() {
+        MatchType matchType = MatchType.enabling;
+        ArrayList<ISDNAddressString> destinationNumberList = new ArrayList<>();
+        ISDNAddressString destinationNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491714780432");
+        destinationNumberList.add(destinationNumber);
+        ArrayList<Integer> destinationNumberLengthList = new ArrayList<>();
+        destinationNumberLengthList.add(1);
+        return new DestinationNumberCriteriaImpl(matchType, destinationNumberList, destinationNumberLengthList);
+    }
+
+    private static class Result {
+        public final ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList;
+        public final OBcsmCamelTdpCriteria oBcsmCamelTdpCriteria;
+
+        public Result(ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList, OBcsmCamelTdpCriteria oBcsmCamelTdpCriteria) {
+            this.oBcsmCamelTDPCriteriaList = oBcsmCamelTDPCriteriaList;
+            this.oBcsmCamelTdpCriteria = oBcsmCamelTdpCriteria;
+        }
+    }
+
+    private static ArrayList<ExtTeleserviceCode> getExtTeleserviceCodes() {
+        ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
+        ExtTeleserviceCode dataTeleservices = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allDataTeleservices);
+        ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
+        ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
+        teleserviceList.add(dataTeleservices);
+        teleserviceList.add(shortMessageMT_PP);
+        teleserviceList.add(shortMessageMO_PP);
+        return teleserviceList;
     }
 }

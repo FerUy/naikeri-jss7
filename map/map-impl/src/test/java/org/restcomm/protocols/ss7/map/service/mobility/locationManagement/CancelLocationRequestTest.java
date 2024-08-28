@@ -27,8 +27,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Ty
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.CancelLocationRequestImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.IMSIWithLMSIImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -95,22 +93,22 @@ public class CancelLocationRequestTest {
         long mapProtocolVersion = asc.getMapProtocolVersion();
         boolean reattachRequired = asc.isReattachRequired();
 
-        assertTrue(imsi.getData().equals("1111122222"));
+        assertEquals(imsi.getData(), "1111122222");
         assertNull(imsiWithLmsi);
         assertEquals(cancellationType.getCode(), 1);
         assertNotNull(extensionContainer);
         assertEquals(typeOfUpdate.getCode(), 0);
         assertFalse(mtrfSupportedAndAuthorized);
         assertFalse(mtrfSupportedAndNotAuthorized);
-        assertTrue(newMSCNumber.getAddress().equals("22228"));
+        assertEquals(newMSCNumber.getAddress(), "22228");
         assertEquals(newMSCNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(newMSCNumber.getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(newVLRNumber.getAddress().equals("22229"));
+        assertEquals(newVLRNumber.getAddress(), "22229");
         assertEquals(newVLRNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(newVLRNumber.getNumberingPlan(), NumberingPlan.ISDN);
         assertTrue(Arrays.equals(newLmsi.getData(), getDataLmsi()));
         assertEquals(mapProtocolVersion, 3);
-        assertEquals(reattachRequired, false);
+        assertFalse(reattachRequired);
 
         // encode data 1
         rawData = getEncodedData1();
@@ -139,7 +137,7 @@ public class CancelLocationRequestTest {
 
         assertNull(imsi);
         assertNotNull(imsiWithLmsi);
-        assertTrue(imsiWithLmsi.getImsi().getData().equals("1111122222"));
+        assertEquals(imsiWithLmsi.getImsi().getData(), "1111122222");
         LMSI lmsi = imsiWithLmsi.getLmsi();
         assertTrue(Arrays.equals(lmsi.getData(), getDataLmsi()));
 
@@ -148,15 +146,15 @@ public class CancelLocationRequestTest {
         assertEquals(typeOfUpdate.getCode(), 0);
         assertTrue(mtrfSupportedAndAuthorized);
         assertTrue(mtrfSupportedAndNotAuthorized);
-        assertTrue(newMSCNumber.getAddress().equals("22228"));
+        assertEquals(newMSCNumber.getAddress(), "22228");
         assertEquals(newMSCNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(newMSCNumber.getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(newVLRNumber.getAddress().equals("22229"));
+        assertEquals(newVLRNumber.getAddress(), "22229");
         assertEquals(newVLRNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(newVLRNumber.getNumberingPlan(), NumberingPlan.ISDN);
         assertTrue(Arrays.equals(newLmsi.getData(), getDataLmsi()));
         assertEquals(mapProtocolVersion, 3);
-        assertEquals(reattachRequired, false);
+        assertFalse(reattachRequired);
 
         // encode data 2
         rawData = getEncodedData2();
@@ -183,7 +181,7 @@ public class CancelLocationRequestTest {
         mapProtocolVersion = asc.getMapProtocolVersion();
         reattachRequired = asc.isReattachRequired();
 
-        assertTrue(imsi.getData().equals("1111122222"));
+        assertEquals(imsi.getData(), "1111122222");
         assertNull(imsiWithLmsi);
         assertNull(cancellationType);
         assertNull(extensionContainer);
@@ -194,7 +192,7 @@ public class CancelLocationRequestTest {
         assertNull(newVLRNumber);
         assertNull(newLmsi);
         assertEquals(mapProtocolVersion, 2);
-        assertEquals(reattachRequired, false);
+        assertFalse(reattachRequired);
 
         // encode data 3
         rawData = getEncodedData3();
@@ -223,7 +221,7 @@ public class CancelLocationRequestTest {
 
         assertNull(imsi);
         // assertNotNull(imsiWithLmsi);
-        assertTrue(imsiWithLmsi.getImsi().getData().equals("1111122222"));
+        assertEquals(imsiWithLmsi.getImsi().getData(), "1111122222");
         lmsi = imsiWithLmsi.getLmsi();
         assertTrue(Arrays.equals(lmsi.getData(), getDataLmsi()));
         assertNull(cancellationType);
@@ -235,7 +233,7 @@ public class CancelLocationRequestTest {
         assertNull(newVLRNumber);
         assertNull(newLmsi);
         assertEquals(mapProtocolVersion, 2);
-        assertEquals(reattachRequired, false);
+        assertFalse(reattachRequired);
 
         // encode data 4
         rawData = getEncodedData4();
@@ -262,7 +260,7 @@ public class CancelLocationRequestTest {
         mapProtocolVersion = asc.getMapProtocolVersion();
         reattachRequired = asc.isReattachRequired();
 
-        assertTrue(imsi.getData().equals("901405105682583"));
+        assertEquals(imsi.getData(), "901405105682583");
         assertNull(imsiWithLmsi);
         assertEquals(cancellationType.getCode(), 1);
         assertNull(extensionContainer);
@@ -273,7 +271,7 @@ public class CancelLocationRequestTest {
         assertNull(newVLRNumber);
         assertNull(newLmsi);
         assertEquals(mapProtocolVersion, 3);
-        assertEquals(reattachRequired, true);
+        assertTrue(reattachRequired);
     }
 
     public static MAPExtensionContainer GetTestExtensionContainer() {
@@ -284,9 +282,7 @@ public class CancelLocationRequestTest {
         al.add(mapServiceFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 6 }, null));
         al.add(mapServiceFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 5 }, new byte[] { 21, 22, 23, 24, 25, 26 }));
 
-        MAPExtensionContainer cnt = mapServiceFactory.createMAPExtensionContainer(al, new byte[] { 31, 32, 33 });
-
-        return cnt;
+        return mapServiceFactory.createMAPExtensionContainer(al, new byte[] { 31, 32, 33 });
     }
 
     @Test(groups = { "functional.encode", "locationManagement" })
@@ -321,7 +317,6 @@ public class CancelLocationRequestTest {
 
         mtrfSupportedAndAuthorized = true;
         mtrfSupportedAndNotAuthorized = true;
-        reattachRequired = false;
         asc = new CancelLocationRequestImpl(null, imsiWithLmsi, cancellationType, extensionContainer, typeOfUpdate,
                 mtrfSupportedAndAuthorized, mtrfSupportedAndNotAuthorized, newMSCNumber, newVLRNumber, newLmsi,
                 mapProtocolVersion, reattachRequired);

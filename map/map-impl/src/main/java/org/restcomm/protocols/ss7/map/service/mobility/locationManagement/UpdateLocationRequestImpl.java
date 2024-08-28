@@ -2,6 +2,7 @@
 package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -17,7 +18,9 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.PagingArea;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.UpdateLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.VLRCapability;
@@ -26,12 +29,13 @@ import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
+import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
 
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class UpdateLocationRequestImpl extends MobilityMessageImpl implements UpdateLocationRequest {
 
@@ -46,6 +50,8 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
     protected static final int _TAG_pagingArea = 14;
     protected static final int _TAG_skipSubscriberDataUpdate = 15;
     protected static final int _TAG_restorationIndicator = 16;
+    protected static final int _TAG_EPLMN_List = 3;
+    protected static final int _TAG_mmeDiameterAddress = 4;
 
     public static final String _PrimitiveName = "UpdateLocationRequest";
 
@@ -63,6 +69,8 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
     private PagingArea pagingArea;
     private boolean skipSubscriberDataUpdate;
     private boolean restorationIndicator;
+    private ArrayList<PlmnId> ePLMNList;
+    private NetworkNodeDiameterAddress mmeDiameterAddress;
     private long mapProtocolVersion;
 
     public UpdateLocationRequestImpl(long mapProtocolVersion) {
@@ -73,7 +81,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
             ISDNAddressString roamingNumber, ISDNAddressString vlrNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
             VLRCapability vlrCapability, boolean informPreviousNetworkEntity, boolean csLCSNotSupportedByUE,
             GSNAddress vGmlcAddress, ADDInfo addInfo, PagingArea pagingArea, boolean skipSubscriberDataUpdate,
-            boolean restorationIndicator) {
+            boolean restorationIndicator, ArrayList<PlmnId> equivalentPLMNList, NetworkNodeDiameterAddress mmeDiameterAddress) {
         this.mapProtocolVersion = mapProtocolVersion;
         this.imsi = imsi;
         this.mscNumber = mscNumber;
@@ -89,6 +97,8 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
         this.pagingArea = pagingArea;
         this.skipSubscriberDataUpdate = skipSubscriberDataUpdate;
         this.restorationIndicator = restorationIndicator;
+        this.ePLMNList = equivalentPLMNList;
+        this.mmeDiameterAddress = mmeDiameterAddress;
     }
 
     public MAPMessageType getMessageType() {
@@ -159,6 +169,14 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
         return mapProtocolVersion;
     }
 
+    public ArrayList<PlmnId> getEPLMNList() {
+        return ePLMNList;
+    }
+
+    public NetworkNodeDiameterAddress getMmeDiameterAddress() {
+        return mmeDiameterAddress;
+    }
+
     public int getTag() throws MAPException {
         return Tag.SEQUENCE;
     }
@@ -211,6 +229,8 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
         pagingArea = null;
         skipSubscriberDataUpdate = false;
         restorationIndicator = false;
+        ePLMNList = null;
+        mmeDiameterAddress = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -262,7 +282,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                 default:
                     if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
                         switch (tag) {
-                            case _TAG_lmsi: // lmsi
+                            case _TAG_lmsi:
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".lmsi: Parameter is not primitive",
@@ -270,7 +290,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 this.lmsi = new LMSIImpl();
                                 ((LMSIImpl) this.lmsi).decodeAll(ais);
                                 break;
-                            case _TAG_vlrCapability: // vlrCapability
+                            case _TAG_vlrCapability:
                                 if (ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".vlrCapability: Parameter is primitive",
@@ -279,7 +299,6 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 ((VLRCapabilityImpl) this.vlrCapability).decodeAll(ais);
                                 break;
                             case _TAG_informPreviousNetworkEntity:
-                                // informPreviousNetworkEntity
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".informPreviousNetworkEntity: Parameter is not primitive",
@@ -288,7 +307,6 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 this.informPreviousNetworkEntity = true;
                                 break;
                             case _TAG_csLCSNotSupportedByUE:
-                                // csLCSNotSupportedByUE
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".csLCSNotSupportedByUE: Parameter is not primitive",
@@ -296,7 +314,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 ais.readNull();
                                 this.csLCSNotSupportedByUE = true;
                                 break;
-                            case _TAG_vGmlcAddress: // vGmlcAddress
+                            case _TAG_vGmlcAddress:
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".vGmlcAddress: Parameter is not primitive",
@@ -304,7 +322,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 this.vGmlcAddress = new GSNAddressImpl();
                                 ((GSNAddressImpl) this.vGmlcAddress).decodeAll(ais);
                                 break;
-                            case _TAG_addInfo: // addInfo
+                            case _TAG_addInfo:
                                 if (ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".addInfo: Parameter is primitive",
@@ -312,7 +330,7 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 this.addInfo = new ADDInfoImpl();
                                 ((ADDInfoImpl) this.addInfo).decodeAll(ais);
                                 break;
-                            case _TAG_pagingArea: // pagingArea
+                            case _TAG_pagingArea:
                                 if (ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".pagingArea: Parameter is primitive",
@@ -321,7 +339,6 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 ((PagingAreaImpl) this.pagingArea).decodeAll(ais);
                                 break;
                             case _TAG_skipSubscriberDataUpdate:
-                                // skipSubscriberDataUpdate
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".skipSubscriberDataUpdate: Parameter is not primitive",
@@ -330,7 +347,6 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 this.skipSubscriberDataUpdate = true;
                                 break;
                             case _TAG_restorationIndicator:
-                                // restorationIndicator
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".restorationIndicator: Parameter is not primitive",
@@ -338,7 +354,36 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 ais.readNull();
                                 this.restorationIndicator = true;
                                 break;
+                            case _TAG_EPLMN_List:
+                                if (ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".ePLMNList: Parameter is primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                AsnInputStream ais2 = ais.readSequenceStream();
+                                PlmnIdImpl plmnId;
+                                this.ePLMNList = new ArrayList<>();
+                                while (true) {
+                                    if (ais2.available() == 0)
+                                        break;
 
+                                    int tag2 = ais2.readTag();
+                                    if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL || !ais2.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ": bad tag or tagClass or is not primitive when decoding trackingAreaIdList",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    plmnId = new PlmnIdImpl();
+                                    plmnId.decodeAll(ais2);
+                                    this.ePLMNList.add(plmnId);
+                                }
+                                break;
+                            case _TAG_mmeDiameterAddress:
+                                if (ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".mmeDiameterAddress: Parameter is primitive",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.mmeDiameterAddress = new NetworkNodeDiameterAddressImpl();
+                                ((NetworkNodeDiameterAddressImpl) this.mmeDiameterAddress).decodeAll(ais);
+                                break;
                             default:
                                 ais.advanceElement();
                                 break;
@@ -361,7 +406,6 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
                                 break;
                         }
                     } else {
-
                         ais.advanceElement();
                     }
                     break;
@@ -407,27 +451,49 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
 
             if (this.lmsi != null)
                 ((LMSIImpl) this.lmsi).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_lmsi);
+
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
+
             if (this.vlrCapability != null)
                 ((VLRCapabilityImpl) this.vlrCapability).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_vlrCapability);
+
             if (informPreviousNetworkEntity)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_informPreviousNetworkEntity);
+
             if (csLCSNotSupportedByUE)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_csLCSNotSupportedByUE);
+
             if (vGmlcAddress != null) {
                 ((GSNAddressImpl) this.vGmlcAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_vGmlcAddress);
             }
+
             if (addInfo != null) {
                 ((ADDInfoImpl) this.addInfo).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_addInfo);
             }
+
             if (pagingArea != null) {
                 ((PagingAreaImpl) this.pagingArea).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_pagingArea);
             }
+
             if (skipSubscriberDataUpdate)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_skipSubscriberDataUpdate);
+
             if (restorationIndicator)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_restorationIndicator);
+
+            if (this.ePLMNList != null) {
+                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_EPLMN_List);
+                int pos = asnOutputStream.StartContentDefiniteLength();
+                for (PlmnId plmnId : this.ePLMNList) {
+                    ((PlmnIdImpl) plmnId).encodeAll(asnOutputStream);
+                }
+                asnOutputStream.FinalizeContent(pos);
+            }
+
+            if (this.mmeDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.mmeDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_mmeDiameterAddress);
+
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (AsnException e) {
@@ -442,37 +508,37 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(imsi.toString());
+            sb.append(imsi);
             sb.append(", ");
         }
         if (this.mscNumber != null) {
             sb.append("mscNumber=");
-            sb.append(mscNumber.toString());
+            sb.append(mscNumber);
             sb.append(", ");
         }
         if (this.roamingNumber != null) {
             sb.append("roamingNumber=");
-            sb.append(roamingNumber.toString());
+            sb.append(roamingNumber);
             sb.append(", ");
         }
         if (this.vlrNumber != null) {
             sb.append("vlrNumber=");
-            sb.append(vlrNumber.toString());
+            sb.append(vlrNumber);
             sb.append(", ");
         }
         if (this.lmsi != null) {
             sb.append("lmsi=");
-            sb.append(lmsi.toString());
+            sb.append(lmsi);
             sb.append(", ");
         }
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
         if (this.vlrCapability != null) {
             sb.append("vlrCapability=");
-            sb.append(vlrCapability.toString());
+            sb.append(vlrCapability);
             sb.append(", ");
         }
         if (this.informPreviousNetworkEntity) {
@@ -483,17 +549,17 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
         }
         if (this.vGmlcAddress != null) {
             sb.append("vGmlcAddress=");
-            sb.append(vGmlcAddress.toString());
+            sb.append(vGmlcAddress);
             sb.append(", ");
         }
         if (this.addInfo != null) {
             sb.append("addInfo=");
-            sb.append(addInfo.toString());
+            sb.append(addInfo);
             sb.append(", ");
         }
         if (this.pagingArea != null) {
             sb.append("pagingArea=");
-            sb.append(pagingArea.toString());
+            sb.append(pagingArea);
             sb.append(", ");
         }
         if (this.skipSubscriberDataUpdate) {
@@ -501,6 +567,16 @@ public class UpdateLocationRequestImpl extends MobilityMessageImpl implements Up
         }
         if (this.restorationIndicator) {
             sb.append("restorationIndicator, ");
+        }
+        if (this.ePLMNList != null) {
+            sb.append("ePLMNList=");
+            sb.append(ePLMNList);
+            sb.append(", ");
+        }
+        if (this.mmeDiameterAddress != null) {
+            sb.append("mmeDiameterAddress=");
+            sb.append(mmeDiameterAddress);
+            sb.append(", ");
         }
         sb.append("mapProtocolVersion=");
         sb.append(mapProtocolVersion);

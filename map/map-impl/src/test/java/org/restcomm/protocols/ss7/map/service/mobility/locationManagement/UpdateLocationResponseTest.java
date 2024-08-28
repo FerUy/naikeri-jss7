@@ -16,7 +16,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.UpdateLocationResponseImpl;
 import org.testng.annotations.Test;
 
 public class UpdateLocationResponseTest {
@@ -49,7 +48,7 @@ public class UpdateLocationResponseTest {
         assertEquals(asc.getMapProtocolVersion(), 3);
 
         ISDNAddressString mscNumber = asc.getHlrNumber();
-        assertTrue(mscNumber.getAddress().equals("09876"));
+        assertEquals(mscNumber.getAddress(), "09876");
         assertEquals(mscNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(mscNumber.getNumberingPlan(), NumberingPlan.ISDN);
 
@@ -69,7 +68,7 @@ public class UpdateLocationResponseTest {
         assertEquals(asc.getMapProtocolVersion(), 3);
 
         mscNumber = asc.getHlrNumber();
-        assertTrue(mscNumber.getAddress().equals("09876"));
+        assertEquals(mscNumber.getAddress(), "09876");
         assertEquals(mscNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(mscNumber.getNumberingPlan(), NumberingPlan.ISDN);
 
@@ -89,7 +88,7 @@ public class UpdateLocationResponseTest {
         assertEquals(asc.getMapProtocolVersion(), 1);
 
         mscNumber = asc.getHlrNumber();
-        assertTrue(mscNumber.getAddress().equals("09876"));
+        assertEquals(mscNumber.getAddress(), "09876");
         assertEquals(mscNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(mscNumber.getNumberingPlan(), NumberingPlan.ISDN);
 

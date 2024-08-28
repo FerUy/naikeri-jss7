@@ -14,6 +14,7 @@ import org.restcomm.protocols.ss7.map.api.MAPOperationCode;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ExtSupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedFeatures;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
@@ -25,13 +26,14 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ExtSupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 
 /**
  * @author daniel bichara
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implements InsertSubscriberDataResponse {
 
@@ -51,6 +53,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
     protected static final int _TAG_extContainer = 7;
     protected static final int _TAG_offeredCamel4CSIs = 8;
     protected static final int _TAG_supportedFeatures = 9;
+    protected static final int _TAG_extSupportedFeatures = 10;
 
     private ArrayList<ExtTeleserviceCode> teleserviceList = null;
     private ArrayList<ExtBearerServiceCode> bearerServiceList = null;
@@ -61,6 +64,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
     private MAPExtensionContainer extensionContainer = null;
     private OfferedCamel4CSIs offeredCamel4CSIs = null;
     private SupportedFeatures supportedFeatures = null;
+    private ExtSupportedFeatures extSupportedFeatures = null;
 
     private long mapProtocolVersion;
 
@@ -71,8 +75,8 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
 
     // For outgoing messages - MAP V2
     public InsertSubscriberDataResponseImpl(long mapProtocolVersion, ArrayList<ExtTeleserviceCode> teleserviceList,
-            ArrayList<ExtBearerServiceCode> bearerServiceList, ArrayList<SSCode> ssList, ODBGeneralData odbGeneralData,
-            RegionalSubscriptionResponse regionalSubscriptionResponse) {
+                                            ArrayList<ExtBearerServiceCode> bearerServiceList, ArrayList<SSCode> ssList, ODBGeneralData odbGeneralData,
+                                            RegionalSubscriptionResponse regionalSubscriptionResponse) {
         this.mapProtocolVersion = mapProtocolVersion;
         this.teleserviceList = teleserviceList;
         this.bearerServiceList = bearerServiceList;
@@ -83,9 +87,10 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
 
     // For outgoing messages - MAP V3
     public InsertSubscriberDataResponseImpl(long mapProtocolVersion, ArrayList<ExtTeleserviceCode> teleserviceList,
-            ArrayList<ExtBearerServiceCode> bearerServiceList, ArrayList<SSCode> ssList, ODBGeneralData odbGeneralData,
-            RegionalSubscriptionResponse regionalSubscriptionResponse, SupportedCamelPhases supportedCamelPhases,
-            MAPExtensionContainer extensionContainer, OfferedCamel4CSIs offeredCamel4CSIs, SupportedFeatures supportedFeatures) {
+                                            ArrayList<ExtBearerServiceCode> bearerServiceList, ArrayList<SSCode> ssList, ODBGeneralData odbGeneralData,
+                                            RegionalSubscriptionResponse regionalSubscriptionResponse, SupportedCamelPhases supportedCamelPhases,
+                                            MAPExtensionContainer extensionContainer, OfferedCamel4CSIs offeredCamel4CSIs, SupportedFeatures supportedFeatures,
+                                            ExtSupportedFeatures extSupportedFeatures) {
 
         this.mapProtocolVersion = mapProtocolVersion;
         this.teleserviceList = teleserviceList;
@@ -99,6 +104,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
             this.extensionContainer = extensionContainer;
             this.offeredCamel4CSIs = offeredCamel4CSIs;
             this.supportedFeatures = supportedFeatures;
+            this.extSupportedFeatures = extSupportedFeatures;
         }
     }
 
@@ -157,6 +163,11 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
         return this.supportedFeatures;
     }
 
+    @Override
+    public ExtSupportedFeatures getExtSupportedFeatures() {
+        return this.extSupportedFeatures;
+    }
+
     public long getMapProtocolVersion() {
         return this.mapProtocolVersion;
     }
@@ -213,6 +224,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
         this.supportedCamelPhases = null;
         this.offeredCamel4CSIs = null;
         this.supportedFeatures = null;
+        this.extSupportedFeatures = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -368,6 +380,15 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             ((SupportedFeaturesImpl) this.supportedFeatures).decodeAll(ais);
                             break;
 
+                        case _TAG_extSupportedFeatures:
+                            if (!ais.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".extSupportedFeatures: Parameter extSupportedFeatures is not primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            this.extSupportedFeatures = new ExtSupportedFeaturesImpl();
+                            ((ExtSupportedFeaturesImpl) this.extSupportedFeatures).decodeAll(ais);
+                            break;
+
                         default:
                             ais.advanceElement();
                             break;
@@ -489,6 +510,10 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                 ((SupportedFeaturesImpl) this.supportedFeatures).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                         _TAG_supportedFeatures);
             }
+            if (this.extSupportedFeatures != null) {
+                ((ExtSupportedFeaturesImpl) this.extSupportedFeatures).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
+                        _TAG_extSupportedFeatures);
+            }
         }
     }
 
@@ -570,6 +595,12 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
         if (this.supportedFeatures != null) {
             sb.append("supportedFeatures=");
             sb.append(supportedFeatures.toString());
+            sb.append(", ");
+        }
+
+        if (this.extSupportedFeatures != null) {
+            sb.append("extSupportedFeatures=");
+            sb.append(extSupportedFeatures.toString());
             sb.append(", ");
         }
 

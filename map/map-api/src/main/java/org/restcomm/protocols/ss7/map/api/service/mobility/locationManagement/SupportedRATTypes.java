@@ -24,4 +24,5 @@ public interface SupportedRATTypes extends Serializable {
 
     boolean getEUtran();
 
+    boolean getNbIot();
 }

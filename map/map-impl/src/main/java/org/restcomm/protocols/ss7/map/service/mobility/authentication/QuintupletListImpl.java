@@ -127,7 +127,7 @@ public class QuintupletListImpl implements QuintupletList, MAPAsnPrimitive {
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
         if (this.quintupletList == null || this.quintupletList.size() < 1 || this.quintupletList.size() > 5) {
-            throw new MAPException("QuintupletList list must contains from 1 to 5 elements");
+            throw new MAPException("QuintupletList list must contain from 1 to 5 elements");
         }
 
         for (AuthenticationQuintuplet at : this.quintupletList) {
@@ -143,7 +143,7 @@ public class QuintupletListImpl implements QuintupletList, MAPAsnPrimitive {
         if (this.quintupletList != null) {
             for (AuthenticationQuintuplet at : this.quintupletList) {
                 if (at != null) {
-                    sb.append(at.toString());
+                    sb.append(at);
                     sb.append(", ");
                 }
             }

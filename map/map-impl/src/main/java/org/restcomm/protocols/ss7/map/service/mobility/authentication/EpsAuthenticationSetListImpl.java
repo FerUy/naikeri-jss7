@@ -75,7 +75,7 @@ public class EpsAuthenticationSetListImpl implements EpsAuthenticationSetList, M
     }
 
     private void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
-        this.epcAvs = new ArrayList<EpcAv>();
+        this.epcAvs = new ArrayList<>();
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         while (true) {
@@ -87,7 +87,6 @@ public class EpsAuthenticationSetListImpl implements EpsAuthenticationSetList, M
 
                 switch (tag) {
                     case Tag.SEQUENCE:
-                        // epcAvs
                         if (ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter epcAvs is primitive", MAPParsingComponentExceptionReason.MistypedParameter);
@@ -97,7 +96,6 @@ public class EpsAuthenticationSetListImpl implements EpsAuthenticationSetList, M
                         break;
                 }
             } else {
-
                 ais.advanceElement();
             }
         }
@@ -126,7 +124,7 @@ public class EpsAuthenticationSetListImpl implements EpsAuthenticationSetList, M
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
         if (this.epcAvs == null || this.epcAvs.size() < 1 || this.epcAvs.size() > 5) {
-            throw new MAPException("EpcAvs list must contains from 1 to 5 elemets");
+            throw new MAPException("EpcAvs list must contain from 1 to 5 elements");
         }
 
         for (EpcAv at : this.epcAvs) {

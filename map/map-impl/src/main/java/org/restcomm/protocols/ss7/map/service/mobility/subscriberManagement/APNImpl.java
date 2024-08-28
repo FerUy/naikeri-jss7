@@ -2,6 +2,7 @@
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javolution.xml.XMLFormat;
@@ -22,7 +23,7 @@ public class APNImpl extends OctetStringBase implements APN {
 
     private static final String DEFAULT_VALUE = null;
 
-    private static Charset ascii = Charset.forName("US-ASCII");
+    private static Charset ascii = StandardCharsets.US_ASCII;
 
     public APNImpl() {
         super(2, 63, "APN");
@@ -36,9 +37,9 @@ public class APNImpl extends OctetStringBase implements APN {
         super(2, 63, "APN");
 
         if (apn == null)
-            throw new MAPException("apn paramater must not be null");
-        if (apn.length() == 0)
-            throw new MAPException("apn paramater must not have zero length");
+            throw new MAPException("apn parameter must not be null");
+        if (apn.isEmpty())
+            throw new MAPException("apn parameter must not be empty");
 
         setApnString(apn);
     }
@@ -51,7 +52,7 @@ public class APNImpl extends OctetStringBase implements APN {
         }
         this.data = new byte[tLen];
         if (this.data.length > 63)
-            throw new MAPException("apn paramater encoded length is greater than max value (63): " + this.data.length);
+            throw new MAPException("apn parameter encoded length is greater than max value (63): " + this.data.length);
 
         int i1 = 0;
         for (String s : ss) {
@@ -128,10 +129,11 @@ public class APNImpl extends OctetStringBase implements APN {
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, APNImpl apn) throws XMLStreamException {
             String s = xml.getAttribute(DATA, DEFAULT_VALUE);
-            if (s != null && s.length() > 0) {
+            if (s != null && !s.isEmpty()) {
                 try {
                     apn.setApnString(s);
                 } catch (MAPException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -142,6 +144,7 @@ public class APNImpl extends OctetStringBase implements APN {
                 try {
                     xml.setAttribute(DATA, apn.getApn());
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }

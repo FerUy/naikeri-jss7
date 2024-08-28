@@ -57,17 +57,17 @@ public interface ODBGeneralData extends Serializable {
 
     boolean getInternationalOGCallsNotToHPLMNCountryBarred();
 
+    boolean getPremiumRateInformationOGCallsBarred();
+
+    boolean getPremiumRateEntertainmentOGCallsBarred();
+
+    boolean getSsAccessBarred();
+
     boolean getInterzonalOGCallsBarred();
 
     boolean getInterzonalOGCallsNotToHPLMNCountryBarred();
 
     boolean getInterzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred();
-
-    boolean getPremiumRateInformationOGCallsBarred();
-
-    boolean getPremiumRateEntertainementOGCallsBarred();
-
-    boolean getSsAccessBarred();
 
     boolean getAllECTBarred();
 

@@ -16,7 +16,6 @@ import org.restcomm.protocols.ss7.sccp.SccpConnection;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.SccpProvider;
 import org.restcomm.protocols.ss7.sccp.SccpResource;
-import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.LocalReferenceImpl;
 import org.restcomm.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.restcomm.protocols.ss7.scheduler.Clock;
@@ -25,6 +24,7 @@ import org.restcomm.protocols.ss7.scheduler.Scheduler;
 import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterface;
 
 import static org.testng.Assert.assertEquals;
+import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
 /**
  * @author amit bhayani
@@ -96,6 +96,7 @@ public abstract class SccpHarness {
         sccpProvider1 = sccpStack1.getSccpProvider();
 
         router1 = sccpStack1.getRouter();
+        router1.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         resource1 = sccpStack1.getSccpResource();
 
@@ -117,10 +118,11 @@ public abstract class SccpHarness {
         sccpProvider2 = sccpStack2.getSccpProvider();
 
         router2 = sccpStack2.getRouter();
+        router2.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         resource2 = sccpStack2.getSccpResource();
 
-        resource2.addRemoteSpc(02, getStack1PC(), 0, 0);
+        resource2.addRemoteSpc(2, getStack1PC(), 0, 0);
         resource2.addRemoteSsn(1, getStack1PC(), getSSN(), 0, false);
 
     }

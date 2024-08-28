@@ -2,6 +2,7 @@
 package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -50,8 +51,9 @@ public class UpdateGprsLocationResponseTest {
         assertEquals(prim.getHlrNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(prim.getHlrNumber().getNumberingPlan(), NumberingPlan.ISDN);
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(prim.getExtensionContainer()));
-        assertTrue(prim.getAddCapability());
-        assertTrue(prim.getSgsnMmeSeparationSupported());
+        assertTrue(prim.isAddCapability());
+        assertTrue(prim.isSgsnMmeSeparationSupported());
+        assertFalse(prim.isMmeRegisteredForSMS());
 
     }
 
@@ -60,7 +62,7 @@ public class UpdateGprsLocationResponseTest {
         ISDNAddressString hlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22228");
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
 
-        UpdateGprsLocationResponseImpl prim = new UpdateGprsLocationResponseImpl(hlrNumber, extensionContainer, true, true);
+        UpdateGprsLocationResponseImpl prim = new UpdateGprsLocationResponseImpl(hlrNumber, extensionContainer, true, true, false);
 
         AsnOutputStream asn = new AsnOutputStream();
         prim.encodeAll(asn);

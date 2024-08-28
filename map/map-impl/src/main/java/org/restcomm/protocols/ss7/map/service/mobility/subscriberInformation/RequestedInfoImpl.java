@@ -12,7 +12,7 @@ import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DomainType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedServingNode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedNodes;
 import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 
@@ -48,7 +48,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
     private boolean msClassmark;
     private boolean mnpRequestedInfo;
     private boolean tadsData;
-    private RequestedServingNode requestedNodes;
+    private RequestedNodes requestedNodes;
     private boolean servingNodeIndication;
     private boolean locationInformationEPSSupported;
     private boolean localTimeZoneRequest;
@@ -62,18 +62,19 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
     }
 
     /**
-     * @param locationInformation
-     * @param subscriberState
-     * @param extensionContainer
-     * @param currentLocation
-     * @param requestedDomain
-     * @param imei
-     * @param msClassmark
-     * @param mnpRequestedInfo
-     * @param locationInformationEPSSupported
+     * @param locationInformation location information of the served subscriber as defined in 3GPP TS 23.018 is requested
+     * @param subscriberState subscriber state of the served subscriber as defined in 3GPP TS 23.018 is requested
+     * @param extensionContainer extension container is included
+     * @param currentLocation active location retrieval is requested
+     * @param requestedDomain indicates the domain (CS, i.e. from MSC/VLR, or PS, i.e. from SGSN) from which the requested information should be retrieved
+     * @param imei IMEI is requested
+     * @param msClassmark MS Classmark as defined in 3GPP TS 24.008 is requested
+     * @param mnpRequestedInfo Mobile Number Portability (MNP) information result (3GPP TS 23.078 and 3GPP TS 23.066) is requested
+     * @param locationInformationEPSSupported LTE location information of the served subscriber is requested
      */
     public RequestedInfoImpl(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer, boolean currentLocation,
-                             DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo, boolean locationInformationEPSSupported) {
+                             DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo,
+                             boolean locationInformationEPSSupported) {
         super();
         this.locationInformation = locationInformation;
         this.subscriberState = subscriberState;
@@ -86,23 +87,24 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         this.locationInformationEPSSupported = locationInformationEPSSupported;
     }
 
+
     /**
-     * @param locationInformation
-     * @param subscriberState
-     * @param extensionContainer
-     * @param currentLocation
-     * @param requestedDomain
-     * @param imei
-     * @param msClassmark
-     * @param mnpRequestedInfo
-     * @param tadsData
-     * @param requestedNodes
-     * @param servingNodeIndication
-     * @param locationInformationEPSSupported
-     * @param localTimeZoneRequest
+     * @param locationInformation location information of the served subscriber as defined in 3GPP TS 23.018 is requested
+     * @param subscriberState subscriber state of the served subscriber as defined in 3GPP TS 23.018 is requested
+     * @param extensionContainer extension container is included
+     * @param currentLocation active location retrieval is requested
+     * @param requestedDomain indicates the domain (CS, i.e. from MSC/VLR, or PS, i.e. from SGSN) from which the requested information should be retrieved
+     * @param imei IMEI is requested
+     * @param msClassmark MS Classmark as defined in 3GPP TS 24.008 is requested
+     * @param mnpRequestedInfo Mobile Number Portability (MNP) information result (3GPP TS 23.078 and 3GPP TS 23.066) is requested
+     * @param tadsData Terminating Access Domain Selection data is requested
+     * @param requestedNodes Nodes requested out of the CS domain (MME/SGSN)
+     * @param servingNodeIndication indicates that only MME-Name or SGSN-Number or VLR-Number is requested
+     * @param locationInformationEPSSupported LTE location information of the served subscriber is requested
+     * @param localTimeZoneRequest local time zone of the served subscriber is requested
      */
     public RequestedInfoImpl(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer, boolean currentLocation,
-                             DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo, boolean tadsData, RequestedServingNode requestedNodes,
+                             DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo, boolean tadsData, RequestedNodes requestedNodes,
                              boolean servingNodeIndication, boolean locationInformationEPSSupported, boolean localTimeZoneRequest) {
         this.locationInformation = locationInformation;
         this.subscriberState = subscriberState;
@@ -117,6 +119,123 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         this.servingNodeIndication = servingNodeIndication;
         this.locationInformationEPSSupported = locationInformationEPSSupported;
         this.localTimeZoneRequest = localTimeZoneRequest;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getLocationInformation()
+     */
+    public boolean getLocationInformation() {
+        return this.locationInformation;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getSubscriberState()
+     */
+    public boolean getSubscriberState() {
+        return this.subscriberState;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getExtensionContainer()
+     */
+    public MAPExtensionContainer getExtensionContainer() {
+        return this.extensionContainer;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getCurrentLocation()
+     */
+    public boolean getCurrentLocation() {
+        return this.currentLocation;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getRequestedDomain()
+     */
+    public DomainType getRequestedDomain() {
+        return this.requestedDomain;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getImei()
+     */
+    public boolean getImei() {
+        return this.imei;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getMsClassmark()
+     */
+    public boolean getMsClassmark() {
+        return this.msClassmark;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getMnpRequestedInfo()
+     */
+    public boolean getMnpRequestedInfo() {
+        return this.mnpRequestedInfo;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getTadsData()
+     */
+    public boolean getTadsData() {
+        return tadsData;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getRequestedNodes()
+     */
+    public RequestedNodes getRequestedNodes() {
+        return requestedNodes;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getServingNodeIndication()
+     */
+    public boolean getServingNodeIndication() {
+        return servingNodeIndication;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getLocationInformationEPSSupported()
+     */
+    public boolean getLocationInformationEPSSupported() {
+        return locationInformationEPSSupported;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo#getLocalTimeZoneRequest()
+     */
+    public boolean getLocalTimeZoneRequest() {
+        return localTimeZoneRequest;
     }
 
     /*
@@ -193,7 +312,11 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         imei = false;
         msClassmark = false;
         mnpRequestedInfo = false;
-        this.locationInformationEPSSupported = false;
+        tadsData = false;
+        requestedNodes = null;
+        servingNodeIndication = false;
+        locationInformationEPSSupported = false;
+        localTimeZoneRequest = false;
 
         while (true) {
             if (ais.available() == 0)
@@ -209,7 +332,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.locationInformation = Boolean.TRUE;
+                        this.locationInformation = true;
                         break;
                     case _ID_subscriberState:
                         if (!ais.isTagPrimitive())
@@ -217,7 +340,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.subscriberState = Boolean.TRUE;
+                        this.subscriberState = true;
                         break;
                     case _ID_extensionContainer:
                         if (ais.isTagPrimitive())
@@ -233,7 +356,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.currentLocation = Boolean.TRUE;
+                        this.currentLocation = true;
                         break;
                     case _ID_requestedDomain:
                         if (!ais.isTagPrimitive())
@@ -249,7 +372,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.msClassmark = Boolean.TRUE;
+                        this.msClassmark = true;
                         break;
                     case _ID_imei:
                         if (!ais.isTagPrimitive())
@@ -257,7 +380,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.imei = Boolean.TRUE;
+                        this.imei = true;
                         break;
                     case _ID_mnpRequestedInfo:
                         if (!ais.isTagPrimitive())
@@ -265,7 +388,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.mnpRequestedInfo = Boolean.TRUE;
+                        this.mnpRequestedInfo = true;
                         break;
                     case _ID_tadsData:
                         if (!ais.isTagPrimitive())
@@ -273,19 +396,15 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.tadsData = Boolean.TRUE;
+                        this.tadsData = true;
                         break;
                     case _ID_requestedNodes:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException(
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
-                        ais.readNull();
-                        this.requestedNodes = new RequestedServingNode() {
-                            public boolean getMmeAndSgsn() {
-                                return true;
-                            }
-                        };
+                        this.requestedNodes = new RequestedNodesImpl();
+                        ((RequestedNodesImpl) requestedNodes).decodeAll(ais);
                         break;
                     case _ID_servingNodeIndication:
                         if (!ais.isTagPrimitive())
@@ -293,7 +412,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.servingNodeIndication = Boolean.TRUE;
+                        this.servingNodeIndication = true;
                         break;
                     case _ID_locationInformationEPSSupported:
                         if (!ais.isTagPrimitive())
@@ -301,7 +420,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.locationInformationEPSSupported = Boolean.TRUE;
+                        this.locationInformationEPSSupported = true;
                         break;
                     case _ID_localTimeZoneRequest:
                         if (!ais.isTagPrimitive())
@@ -309,7 +428,7 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
                                 "Error while decoding RequestedInfo: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
-                        this.localTimeZoneRequest = Boolean.TRUE;
+                        this.localTimeZoneRequest = true;
                         break;
                     default:
                         ais.advanceElement();
@@ -354,9 +473,8 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
      */
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
         try {
-            if (this.locationInformation) {
+            if (this.locationInformation)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_locationInformation);
-            }
         } catch (IOException e) {
             throw new MAPException("IOException when encoding parameter locationInformation: ", e);
         } catch (AsnException e) {
@@ -364,9 +482,8 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         }
 
         try {
-            if (this.subscriberState) {
+            if (this.subscriberState)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_subscriberState);
-            }
         } catch (IOException e) {
             throw new MAPException("IOException when encoding parameter subscriberState: ", e);
         } catch (AsnException e) {
@@ -374,13 +491,11 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         }
 
         if (this.extensionContainer != null)
-            ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                _ID_extensionContainer);
+            ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _ID_extensionContainer);
 
         try {
-            if (this.currentLocation) {
+            if (this.currentLocation)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_currentLocation);
-            }
         } catch (IOException e) {
             throw new MAPException("IOException when encoding parameter currentLocation: ", e);
         } catch (AsnException e) {
@@ -388,9 +503,8 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         }
 
         try {
-            if (this.requestedDomain != null) {
+            if (this.requestedDomain != null)
                 asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _ID_requestedDomain, this.requestedDomain.getType());
-            }
         } catch (IOException e) {
             throw new MAPException("IOException when encoding parameter requestedDomain: ", e);
         } catch (AsnException e) {
@@ -398,9 +512,8 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         }
 
         try {
-            if (this.imei) {
+            if (this.imei)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_imei);
-            }
         } catch (IOException e) {
             throw new MAPException("IOException when encoding parameter imei: ", e);
         } catch (AsnException e) {
@@ -408,9 +521,8 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         }
 
         try {
-            if (this.msClassmark) {
+            if (this.msClassmark)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_msclassmark);
-            }
         } catch (IOException e) {
             throw new MAPException("IOException when encoding parameter msClassmark: ", e);
         } catch (AsnException e) {
@@ -418,9 +530,8 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         }
 
         try {
-            if (this.mnpRequestedInfo) {
+            if (this.mnpRequestedInfo)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_mnpRequestedInfo);
-            }
         } catch (IOException e) {
             throw new MAPException("IOException when encoding parameter mnpRequestedInfo: ", e);
         } catch (AsnException e) {
@@ -428,132 +539,43 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         }
 
         try {
-            if (this.locationInformationEPSSupported) {
-                asnOutputStream.writeNull(2, 11);
-            }
-
-        } catch (IOException liesIoe) {
-            throw new MAPException("IOException when encoding parameter locationInformationEPSSupported: ", liesIoe);
-        } catch (AsnException liesAsne) {
-            throw new MAPException("AsnException when encoding parameter locationInformationEPSSupported: ", liesAsne);
+            if (this.locationInformationEPSSupported)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_locationInformationEPSSupported);
+        } catch (IOException e) {
+            throw new MAPException("IOException when encoding parameter locationInformationEPSSupported: ", e);
+        } catch (AsnException e) {
+            throw new MAPException("AsnException when encoding parameter locationInformationEPSSupported: ", e);
         }
-    }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getLocationInformation()
-     */
-    public boolean getLocationInformation() {
-        return this.locationInformation;
-    }
+        try {
+            if (this.tadsData)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_tadsData);
+        } catch (IOException e) {
+            throw new MAPException("IOException when encoding parameter tadsData: ", e);
+        } catch (AsnException e) {
+            throw new MAPException("AsnException when encoding parameter tadsData: ", e);
+        }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getSubscriberState()
-     */
-    public boolean getSubscriberState() {
-        return this.subscriberState;
-    }
+        if (this.requestedNodes != null)
+            ((RequestedNodesImpl) this.requestedNodes).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _ID_requestedNodes);
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getExtensionContainer()
-     */
-    public MAPExtensionContainer getExtensionContainer() {
-        return this.extensionContainer;
-    }
+        try {
+            if (this.servingNodeIndication)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_servingNodeIndication);
+        } catch (IOException e) {
+            throw new MAPException("IOException when encoding parameter servingNodeIndication: ", e);
+        } catch (AsnException e) {
+            throw new MAPException("AsnException when encoding parameter servingNodeIndication: ", e);
+        }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getCurrentLocation()
-     */
-    public boolean getCurrentLocation() {
-        return this.currentLocation;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getRequestedDomain()
-     */
-    public DomainType getRequestedDomain() {
-        return this.requestedDomain;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getImei()
-     */
-    public boolean getImei() {
-        return this.imei;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getMsClassmark()
-     */
-    public boolean getMsClassmark() {
-        return this.msClassmark;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getMnpRequestedInfo()
-     */
-    public boolean getMnpRequestedInfo() {
-        return this.mnpRequestedInfo;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getTadsData()
-     */
-    public boolean getTadsData() {
-        return tadsData;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getRequestedNodes()
-     */
-    public RequestedServingNode getRequestedNodes() {
-        return requestedNodes;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getServingNodeIndication()
-     */
-    public boolean getServingNodeIndication() {
-        return servingNodeIndication;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getLocationInformationEPSSupported()
-     */
-    public boolean getLocationInformationEPSSupported() {
-        return locationInformationEPSSupported;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.mobicents.protocols.ss7.map.api.service.subscriberInformation.RequestedInfo#getLocalTimeZoneRequest()
-     */
-    public boolean getLocalTimeZoneRequest() {
-        return localTimeZoneRequest;
+        try {
+            if (this.localTimeZoneRequest)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_localTimeZoneRequest);
+        } catch (IOException e) {
+            throw new MAPException("IOException when encoding parameter localTimeZoneRequest: ", e);
+        } catch (AsnException e) {
+            throw new MAPException("AsnException when encoding parameter localTimeZoneRequest: ", e);
+        }
     }
 
     public String toString() {

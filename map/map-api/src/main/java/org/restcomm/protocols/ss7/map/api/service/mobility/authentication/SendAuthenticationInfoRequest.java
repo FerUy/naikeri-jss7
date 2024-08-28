@@ -26,7 +26,8 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;
  * segmentationProhibited NULL OPTIONAL, immediateResponsePreferred [1] NULL OPTIONAL, re-synchronisationInfo
  * Re-synchronisationInfo OPTIONAL, extensionContainer [2] ExtensionContainer OPTIONAL, ..., requestingNodeType [3]
  * RequestingNodeType OPTIONAL, requestingPLMN-Id [4] PLMN-Id OPTIONAL, numberOfRequestedAdditional-Vectors [5]
- * NumberOfRequestedVectors OPTIONAL, additionalVectorsAreForEPS [6] NULL OPTIONAL }
+ * NumberOfRequestedVectors OPTIONAL, additionalVectorsAreForEPS [6] NULL OPTIONAL,
+ * ueUsageTypeRequestIndication [7] NULL OPTIONAL }
  *
  * MAP V2: SendAuthenticationInfoArg ::= IMSI
  *
@@ -57,6 +58,8 @@ public interface SendAuthenticationInfoRequest extends MobilityMessage {
     Integer getNumberOfRequestedAdditionalVectors();
 
     boolean getAdditionalVectorsAreForEPS();
+
+    boolean getUeUsageTypeRequestIndication();
 
     long getMapProtocolVersion();
 

@@ -32,7 +32,7 @@ import org.restcomm.protocols.ss7.isup.message.parameter.Number;
  *
  * Where Header has 1+ bytes, body 1+ byte, and digits part contains pairs of digits encoded from right to left from most
  * significant digits in number. Examples parameters are(from Q763): 3.16 Connected Number,3.9 Called party number, 3.10 Calling
- * party number, 3.26 Generic number, 3.30 Location number. Also (3.39,) Implemetnation class must fill tag variable with proper
+ * party number, 3.26 Generic number, 3.30 Location number. Also (3.39,) Implementation class must fill tag variable with proper
  * information. Length part of information component is computed from length of this element. See section (B1, B2 and B3 of
  * Q.763)
  *
@@ -52,14 +52,14 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
 
     /**
      * indicates odd flag value (0x80) as integer (1). This is achieved when odd flag in parameter is moved to the right by
-     * seven possitions ( >> 7)
+     * seven positions ( >> 7)
      */
     public static final int _FLAG_ODD = 1;
 
     /**
      * Holds digits(in specs: "signal"). digits[0] holds most siginificant digit. Also length of this table contains information
-     * about Odd/even flag. However there is distinct flag used in process of decoding from byte[]. This is becuse in case of
-     * decoding we dont know if last digit is filler or digit.
+     * about Odd/even flag. However, there is distinct flag used in process of decoding from byte[]. This is becuse in case of
+     * decoding we don't know if last digit is filler or digit.
      */
     protected String address;
 
@@ -200,7 +200,7 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
 
     /**
      * This method is used in constructor that takes byte[] or ByteArrayInputStream as parameter. Decodes body part (its 1 byte
-     * usually.) However in different "numbers" it has different meaning. Each subclass should provide implementation
+     * usually.) However, in different "numbers" it has different meaning. Each subclass should provide implementation
      *
      * @param bis
      * @return - number of bytes reads throws IllegalArgumentException - thrown if read error is encountered.
@@ -303,7 +303,7 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
     /**
      * This method is used in encode method. It encodes header part (1 or 2 bytes usually.)
      *
-     * @param bis
+     * @param bos
      * @return - number of bytes encoded.
      */
     public int encodeHeader(ByteArrayOutputStream bos) {
@@ -320,7 +320,7 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
     /**
      * This methods is used in encode method. It encodes body. Each subclass shoudl provide implementetaion.
      *
-     * @param bis
+     * @param bos
      * @return - number of bytes reads
      *
      */

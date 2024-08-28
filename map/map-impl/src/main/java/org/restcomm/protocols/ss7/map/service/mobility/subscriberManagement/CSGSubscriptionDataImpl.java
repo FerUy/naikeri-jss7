@@ -172,7 +172,7 @@ public class CSGSubscriptionDataImpl extends SequenceBase implements CSGSubscrip
 
         if (this.csgId == null) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Parament csgId is mandatory but does not found", MAPParsingComponentExceptionReason.MistypedParameter);
+                    + ": Parameter csgId is mandatory but is not found", MAPParsingComponentExceptionReason.MistypedParameter);
         }
 
     }
@@ -216,7 +216,7 @@ public class CSGSubscriptionDataImpl extends SequenceBase implements CSGSubscrip
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.csgId != null) {
             sb.append("csgId=");

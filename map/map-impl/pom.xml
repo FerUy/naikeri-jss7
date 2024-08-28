@@ -86,7 +86,11 @@
 			<version>3.0.0</version>
 			<scope>runtime</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>sun-jaxb</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>

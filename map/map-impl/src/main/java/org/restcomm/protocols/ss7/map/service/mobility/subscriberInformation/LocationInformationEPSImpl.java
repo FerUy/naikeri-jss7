@@ -31,14 +31,15 @@ import org.restcomm.protocols.ss7.map.primitives.SequenceBase;
  */
 public class LocationInformationEPSImpl extends SequenceBase implements LocationInformationEPS {
 
-    public static final int _ID_eUtranCellGlobalIdentity = 0;
-    public static final int _ID_trackingAreaIdentity = 1;
-    public static final int _ID_extensionContainer = 2;
-    public static final int _ID_geographicalInformation = 3;
-    public static final int _ID_geodeticInformation = 4;
-    public static final int _ID_currentLocationRetrieved = 5;
-    public static final int _ID_ageOfLocationInformation = 6;
-    public static final int _ID_mme_Name = 7;
+    public static final String _PrimitiveName = "LocationInformationEPS";
+    public static final int _TAG_eUtranCellGlobalIdentity = 0;
+    public static final int _TAG_trackingAreaIdentity = 1;
+    public static final int _TAG_extensionContainer = 2;
+    public static final int _TAG_geographicalInformation = 3;
+    public static final int _TAG_geodeticInformation = 4;
+    public static final int _TAG_currentLocationRetrieved = 5;
+    public static final int _TAG_ageOfLocationInformation = 6;
+    public static final int _TAG_mme_Name = 7;
 
     private static final String E_UTRAN_CELL_GLOBAL_IDENTITY = "eUtranCellGlobalIdentity";
     private static final String TRACKING_AREA_IDENTITY = "trackingAreaIdentity";
@@ -62,24 +63,24 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
      *
      */
     public LocationInformationEPSImpl() {
-        super("LocationInformationEPS");
+        super(_PrimitiveName);
     }
 
     /**
-     * @param eUtranCellGlobalIdentity
-     * @param trackingAreaIdentity
-     * @param extensionContainer
-     * @param geographicalInformation
-     * @param geodeticInformation
-     * @param currentLocationRetrieved
-     * @param ageOfLocationInformation
-     * @param mmeName
+     * @param eUtranCellGlobalIdentity LTE Cell Global Identity of the target subscriber as described in 3GPP TS 29.118
+     * @param trackingAreaIdentity Tracking Area Identity of the target subscriber as described in 3GPP TS 29.118
+     * @param extensionContainer MAP extension container
+     * @param geographicalInformation geographical information of the target subscriber as defined in 3GPP TS 23.032
+     * @param geodeticInformation geodetic information of the target subscriber as defined in 3GPP TS 23.032
+     * @param currentLocationRetrieved indication if the location has been retrieved after paging the of the target subscriber's user equipment
+     * @param ageOfLocationInformation age of the retrieved location information in minutes
+     * @param mmeName MME Diameter identity at which the target subscriber is attached to
      */
     public LocationInformationEPSImpl(EUtranCgi eUtranCellGlobalIdentity, TAId trackingAreaIdentity,
             MAPExtensionContainer extensionContainer, GeographicalInformation geographicalInformation,
             GeodeticInformation geodeticInformation, boolean currentLocationRetrieved, Integer ageOfLocationInformation,
             DiameterIdentity mmeName) {
-        super("LocationInformationEPS");
+        super(_PrimitiveName);
 
         this.eUtranCellGlobalIdentity = eUtranCellGlobalIdentity;
         this.trackingAreaIdentity = trackingAreaIdentity;
@@ -187,7 +188,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
             if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
 
                 switch (tag) {
-                    case _ID_eUtranCellGlobalIdentity:
+                    case _TAG_eUtranCellGlobalIdentity:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " eUtranCellGlobalIdentity: Parameter is not primitive",
@@ -195,7 +196,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
                         this.eUtranCellGlobalIdentity = new EUtranCgiImpl();
                         ((EUtranCgiImpl) this.eUtranCellGlobalIdentity).decodeAll(ais);
                         break;
-                    case _ID_trackingAreaIdentity:
+                    case _TAG_trackingAreaIdentity:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " trackingAreaIdentity: Parameter is not primitive",
@@ -203,7 +204,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
                         this.trackingAreaIdentity = new TAIdImpl();
                         ((TAIdImpl) this.trackingAreaIdentity).decodeAll(ais);
                         break;
-                    case _ID_extensionContainer:
+                    case _TAG_extensionContainer:
                         if (ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " extensionContainer: Parameter is primitive",
@@ -211,7 +212,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
                         this.extensionContainer = new MAPExtensionContainerImpl();
                         ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
                         break;
-                    case _ID_geographicalInformation:
+                    case _TAG_geographicalInformation:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " geographicalInformation: Parameter is not primitive",
@@ -219,8 +220,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
                         this.geographicalInformation = new GeographicalInformationImpl();
                         ((GeographicalInformationImpl) this.geographicalInformation).decodeAll(ais);
                         break;
-
-                    case _ID_geodeticInformation:
+                    case _TAG_geodeticInformation:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " geodeticInformation: Parameter is not primitive",
@@ -228,7 +228,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
                         this.geodeticInformation = new GeodeticInformationImpl();
                         ((GeodeticInformationImpl) this.geodeticInformation).decodeAll(ais);
                         break;
-                    case _ID_currentLocationRetrieved:
+                    case _TAG_currentLocationRetrieved:
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException(
                                     "Error while decoding LocationInformation: Parameter [currentLocationRetrieved    [8] NULL ] not primitive",
@@ -237,14 +237,14 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
                         ais.readNull();
                         this.currentLocationRetrieved = true;
                         break;
-                    case _ID_ageOfLocationInformation:
+                    case _TAG_ageOfLocationInformation:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " ageOfLocationInformation: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.ageOfLocationInformation = (int) ais.readInteger();
                         break;
-                    case _ID_mme_Name:
+                    case _TAG_mme_Name:
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + " mmeName: Parameter is not primitive",
@@ -272,43 +272,39 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
 
             if (this.eUtranCellGlobalIdentity != null)
                 ((EUtranCgiImpl) this.eUtranCellGlobalIdentity).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                        _ID_eUtranCellGlobalIdentity);
+                        _TAG_eUtranCellGlobalIdentity);
 
             if (this.trackingAreaIdentity != null) {
-                ((TAIdImpl) this.trackingAreaIdentity).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _ID_trackingAreaIdentity);
+                ((TAIdImpl) this.trackingAreaIdentity).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_trackingAreaIdentity);
             }
 
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                        _ID_extensionContainer);
+                        _TAG_extensionContainer);
 
             if (this.geographicalInformation != null)
                 ((GeographicalInformationImpl) this.geographicalInformation).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                        _ID_geographicalInformation);
+                        _TAG_geographicalInformation);
 
             if (this.geodeticInformation != null)
                 ((GeodeticInformationImpl) this.geodeticInformation).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                        _ID_geodeticInformation);
+                        _TAG_geodeticInformation);
 
             if (this.currentLocationRetrieved) {
                 try {
-                    asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_currentLocationRetrieved);
+                    asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_currentLocationRetrieved);
                 } catch (IOException e) {
-                    throw new MAPException(
-                            "Error while encoding LocationInformation the optional parameter currentLocationRetrieved encoding failed ",
-                            e);
+                    throw new MAPException("IOException when encoding " + _PrimitiveName + "currentLocationRetrieved: ", e);
                 } catch (AsnException e) {
-                    throw new MAPException(
-                            "Error while encoding LocationInformation the optional parameter currentLocationRetrieved encoding failed ",
-                            e);
+                    throw new MAPException("ASNException when encoding " + _PrimitiveName + "currentLocationRetrieved: ", e);
                 }
             }
 
             if (ageOfLocationInformation != null)
-                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _ID_ageOfLocationInformation, (int) ageOfLocationInformation);
+                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_ageOfLocationInformation, ageOfLocationInformation);
 
             if (this.mmeName != null) {
-                ((DiameterIdentityImpl) this.mmeName).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _ID_mme_Name);
+                ((DiameterIdentityImpl) this.mmeName).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_mme_Name);
             }
 
         } catch (IOException e) {
@@ -369,7 +365,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<LocationInformationEPSImpl> LOCATION_INFORMATION_EPS_XML = new XMLFormat<LocationInformationEPSImpl>(
+    protected static final XMLFormat<LocationInformationEPSImpl> LOCATION_INFORMATION_EPS_XML = new XMLFormat<>(
             LocationInformationEPSImpl.class) {
 
         @Override
@@ -378,9 +374,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
             locationInformationEPS.eUtranCellGlobalIdentity = xml.get(E_UTRAN_CELL_GLOBAL_IDENTITY, EUtranCgiImpl.class);
             locationInformationEPS.trackingAreaIdentity = xml.get(TRACKING_AREA_IDENTITY, TAIdImpl.class);
             locationInformationEPS.extensionContainer = xml.get(EXTENSION_CONTAINER, MAPExtensionContainerImpl.class);
-            locationInformationEPS.geographicalInformation = xml.get(GEOGRAPHICAL_INFORMATION,
-                    GeographicalInformationImpl.class);
-
+            locationInformationEPS.geographicalInformation = xml.get(GEOGRAPHICAL_INFORMATION, GeographicalInformationImpl.class);
             locationInformationEPS.geodeticInformation = xml.get(GEODETIC_INFORMATION, GeodeticInformationImpl.class);
             Boolean bval = xml.get(CURRENT_LOCATION_RETRIEVED, Boolean.class);
             if (bval != null)
@@ -413,10 +407,10 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
                         GeodeticInformationImpl.class);
             }
             if (locationInformationEPS.currentLocationRetrieved) {
-                xml.add((Boolean) locationInformationEPS.currentLocationRetrieved, CURRENT_LOCATION_RETRIEVED, Boolean.class);
+                xml.add(locationInformationEPS.currentLocationRetrieved, CURRENT_LOCATION_RETRIEVED, Boolean.class);
             }
             if (locationInformationEPS.ageOfLocationInformation != null) {
-                xml.add((Integer) locationInformationEPS.ageOfLocationInformation, AGE_OF_LOCATION_INFORMATION, Integer.class);
+                xml.add(locationInformationEPS.ageOfLocationInformation, AGE_OF_LOCATION_INFORMATION, Integer.class);
             }
             if (locationInformationEPS.mmeName != null) {
                 xml.add((DiameterIdentityImpl) locationInformationEPS.mmeName, MME_NAME, DiameterIdentityImpl.class);

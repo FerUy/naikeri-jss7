@@ -96,7 +96,7 @@ public class PDPContextInfoImpl implements PDPContextInfo, MAPAsnPrimitive {
     private static final String CHARGING_ID = "chargingId";
     private static final String CHARGING_CHARACTERISTICS = "chargingCharacteristics";
     private static final String RNC_ADDRESS = "rncAddress";
-    private static final String EXTENTSION_CONTAINER = "extensionContainer";
+    private static final String EXTENSION_CONTAINER = "extensionContainer";
     private static final String QOS2_SUBSCRIBED = "qos2Subscribed";
     private static final String QOS2_REQUESTED = "qos2Requested";
     private static final String QOS2_NEGOTIATED = "qos2Negotiated";
@@ -655,7 +655,7 @@ public class PDPContextInfoImpl implements PDPContextInfo, MAPAsnPrimitive {
 
         if (!pdpContextIdentifierIsRead) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": pdpContextIdentifier paramater is mandatory but not found",
+                    + ": pdpContextIdentifier parameter is mandatory but not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
     }
@@ -930,7 +930,7 @@ public class PDPContextInfoImpl implements PDPContextInfo, MAPAsnPrimitive {
             pdpContextInfo.chargingId = xml.get(CHARGING_ID, GPRSChargingIDImpl.class);
             pdpContextInfo.chargingCharacteristics = xml.get(CHARGING_CHARACTERISTICS, ChargingCharacteristicsImpl.class);
             pdpContextInfo.rncAddress = xml.get(RNC_ADDRESS, GSNAddressImpl.class);
-            pdpContextInfo.extensionContainer = xml.get(EXTENTSION_CONTAINER, MAPExtensionContainerImpl.class);
+            pdpContextInfo.extensionContainer = xml.get(EXTENSION_CONTAINER, MAPExtensionContainerImpl.class);
             pdpContextInfo.qos2Subscribed = xml.get(QOS2_SUBSCRIBED, Ext2QoSSubscribedImpl.class);
             pdpContextInfo.qos2Requested = xml.get(QOS2_REQUESTED, Ext2QoSSubscribedImpl.class);
             pdpContextInfo.qos2Negotiated = xml.get(QOS2_NEGOTIATED, Ext2QoSSubscribedImpl.class);
@@ -981,7 +981,7 @@ public class PDPContextInfoImpl implements PDPContextInfo, MAPAsnPrimitive {
             if (pdpContextInfo.getRncAddress() != null)
                 xml.add((GSNAddressImpl) pdpContextInfo.getRncAddress(), RNC_ADDRESS, GSNAddressImpl.class);
             if (pdpContextInfo.getExtensionContainer() != null)
-                xml.add((MAPExtensionContainerImpl) pdpContextInfo.getExtensionContainer(), EXTENTSION_CONTAINER,
+                xml.add((MAPExtensionContainerImpl) pdpContextInfo.getExtensionContainer(), EXTENSION_CONTAINER,
                         MAPExtensionContainerImpl.class);
             if (pdpContextInfo.getQos2Subscribed() != null)
                 xml.add((Ext2QoSSubscribedImpl) pdpContextInfo.getQos2Subscribed(), QOS2_SUBSCRIBED,

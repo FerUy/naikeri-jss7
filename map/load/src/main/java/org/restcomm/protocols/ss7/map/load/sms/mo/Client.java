@@ -364,8 +364,6 @@ public class Client extends TestHarnessSmsMo {
         IpChannelType ipChannelType = IpChannelType.SCTP;
         if (args.length >= 3 && args[2].toLowerCase().equals("tcp")) {
             ipChannelType = IpChannelType.TCP;
-        } else {
-            ipChannelType = IpChannelType.SCTP;
         }
 
         System.out.println("IpChannelType=" + ipChannelType);
