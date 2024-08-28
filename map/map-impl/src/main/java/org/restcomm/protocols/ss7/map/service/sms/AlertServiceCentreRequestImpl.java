@@ -213,38 +213,37 @@ public class AlertServiceCentreRequestImpl extends SmsMessageImpl implements Ale
             switch (num) {
                 case 0:
                     if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive() || tag != Tag.STRING_OCTET)
-                        throw new MAPParsingComponentException("Error while decoding AlertServiceCentreRequest.msisdn: bad tag or tag class or is not primitive: TagClass="
-                                        + ais.getTagClass() + ", tag=" + tag,
+                        throw new MAPParsingComponentException("Error while decoding" + _PrimitiveName + ".msisdn: " +
+                                "bad tag or tag class or is not primitive: TagClass=" + ais.getTagClass() + ", tag=" + tag,
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                     this.msisdn = new ISDNAddressStringImpl();
                     ((ISDNAddressStringImpl) this.msisdn).decodeAll(ais);
                     break;
                 case 1:
                     if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive() || tag != Tag.STRING_OCTET)
-                        throw new MAPParsingComponentException("Error while decoding AlertServiceCentreRequest.serviceCentreAddress: bad tag or tag class or is not primitive: TagClass="
-                                        + ais.getTagClass() + ", tag=" + tag,
+                        throw new MAPParsingComponentException("Error while decoding AlertServiceCentreRequest.serviceCentreAddress: " +
+                                "bad tag or tag class or is not primitive: TagClass=" + ais.getTagClass() + ", tag=" + tag,
                                 MAPParsingComponentExceptionReason.MistypedParameter);
                     this.serviceCentreAddress = new ISDNAddressStringImpl();
                     ((AddressStringImpl) this.serviceCentreAddress).decodeAll(ais);
                     break;
-                case 2:
-                    if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive() || tag != Tag.STRING_OCTET)
-                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                + ".imsi: Parameter 0 bad tag or tag class or not primitive",
-                                MAPParsingComponentExceptionReason.MistypedParameter);
-                    this.imsi = new IMSIImpl();
-                    ((IMSIImpl) this.imsi).decodeAll(ais);
-                    break;
-                case 3:
-                    if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || ais.isTagPrimitive() || tag != Tag.SEQUENCE)
-                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                + ".correlationID: Parameter 0 bad tag or tag class or not primitive",
-                                MAPParsingComponentExceptionReason.MistypedParameter);
-                    this.correlationID = new CorrelationIDImpl();
-                    ((CorrelationIDImpl) this.correlationID).decodeAll(ais);
-                    break;
                 default:
-                    if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
+                    if (ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
+                        switch (tag) {
+                            case Tag.STRING_OCTET:
+                                if (ais.isTagPrimitive()) {
+                                    this.imsi = new IMSIImpl();
+                                    ((IMSIImpl) this.imsi).decodeAll(ais);
+                                }
+                                break;
+                            case Tag.SEQUENCE:
+                                if (!ais.isTagPrimitive()) {
+                                    this.correlationID = new CorrelationIDImpl();
+                                    ((CorrelationIDImpl) this.correlationID).decodeAll(ais);
+                                }
+                                break;
+                        }
+                    } else if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
                         switch (tag) {
                             case _TAG_maximumUeAvailabilityTime:
                                 if (!ais.isTagPrimitive())
@@ -269,21 +268,17 @@ public class AlertServiceCentreRequestImpl extends SmsMessageImpl implements Ale
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".smsf3gppDiameterAddress: Parameter is primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
-                                AsnInputStream ais1 = ais.readSequenceStream();
-                                ais1.readTag();
                                 this.smsGmscDiameterAddress = new NetworkNodeDiameterAddressImpl();
-                                ((NetworkNodeDiameterAddressImpl) this.smsGmscDiameterAddress).decodeAll(ais1);
+                                ((NetworkNodeDiameterAddressImpl) this.smsGmscDiameterAddress).decodeAll(ais);
                                 break;
 
                             case _TAG_newSGSNNumber:
-                                if (ais.isTagPrimitive())
+                                if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".newSGSNNumber: Parameter not primitive",
+                                            + ".newSGSNNumber: Parameter is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
-                                AsnInputStream ais2 = ais.readSequenceStream();
-                                ais2.readTag();
                                 this.newSGSNNumber = new ISDNAddressStringImpl();
-                                ((ISDNAddressStringImpl) this.newSGSNNumber).decodeAll(ais2);
+                                ((ISDNAddressStringImpl) this.newSGSNNumber).decodeAll(ais);
                                 break;
 
                             case _TAG_newSGSNDiameterAddress:
@@ -291,21 +286,17 @@ public class AlertServiceCentreRequestImpl extends SmsMessageImpl implements Ale
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".newSGSNDiameterAddress: Parameter is primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
-                                AsnInputStream ais3 = ais.readSequenceStream();
-                                ais3.readTag();
                                 this.newSGSNDiameterAddress = new NetworkNodeDiameterAddressImpl();
-                                ((NetworkNodeDiameterAddressImpl) this.newSGSNDiameterAddress).decodeAll(ais3);
+                                ((NetworkNodeDiameterAddressImpl) this.newSGSNDiameterAddress).decodeAll(ais);
                                 break;
 
                             case _TAG_newMMENumber:
-                                if (ais.isTagPrimitive())
+                                if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".newMMENumber: Parameter not primitive",
+                                            + ".newMMENumber: Parameter is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
-                                AsnInputStream ais4 = ais.readSequenceStream();
-                                ais4.readTag();
                                 this.newMMENumber = new ISDNAddressStringImpl();
-                                ((ISDNAddressStringImpl) this.newMMENumber).decodeAll(ais4);
+                                ((ISDNAddressStringImpl) this.newMMENumber).decodeAll(ais);
                                 break;
 
                             case _TAG_newMMEDiameterAddress:
@@ -313,21 +304,17 @@ public class AlertServiceCentreRequestImpl extends SmsMessageImpl implements Ale
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".newMMEDiameterAddress: Parameter is primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
-                                AsnInputStream ais5 = ais.readSequenceStream();
-                                ais5.readTag();
                                 this.newMMEDiameterAddress = new NetworkNodeDiameterAddressImpl();
-                                ((NetworkNodeDiameterAddressImpl) this.newMMEDiameterAddress).decodeAll(ais5);
+                                ((NetworkNodeDiameterAddressImpl) this.newMMEDiameterAddress).decodeAll(ais);
                                 break;
 
                             case _TAG_newMSCNumber:
-                                if (ais.isTagPrimitive())
+                                if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".newMSCNumber: Parameter not primitive",
+                                            + ".newMSCNumber: Parameter is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
-                                AsnInputStream ais6 = ais.readSequenceStream();
-                                ais6.readTag();
                                 this.newMSCNumber = new ISDNAddressStringImpl();
-                                ((ISDNAddressStringImpl) this.newMSCNumber).decodeAll(ais6);
+                                ((ISDNAddressStringImpl) this.newMSCNumber).decodeAll(ais);
                                 break;
 
                             default:
@@ -370,8 +357,7 @@ public class AlertServiceCentreRequestImpl extends SmsMessageImpl implements Ale
         try {
 
             if (this.msisdn == null || this.serviceCentreAddress == null)
-                throw new MAPException(
-                        "Error when encoding AlertServiceCentreRequest: msisdn or serviceCentreAddress must not be empty");
+                throw new MAPException("Error when encoding AlertServiceCentreRequest: msisdn or serviceCentreAddress must not be empty");
 
             ((ISDNAddressStringImpl) this.msisdn).encodeAll(asnOutputStream);
 
@@ -389,32 +375,20 @@ public class AlertServiceCentreRequestImpl extends SmsMessageImpl implements Ale
             if (smsGmscAlertEvent != null)
                 asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smsGmscAlertEvent, this.smsGmscAlertEvent.getCode());
 
-            if (smsGmscDiameterAddress != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_smsGmscDiameterAddress);
-                int pos = asnOutputStream.StartContentDefiniteLength();
-                ((NetworkNodeDiameterAddressImpl) this.smsGmscDiameterAddress).encodeAll(asnOutputStream);
-                asnOutputStream.FinalizeContent(pos);
-            }
+            if (smsGmscDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.smsGmscDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smsGmscDiameterAddress);
 
             if (newSGSNNumber != null)
                 ((ISDNAddressStringImpl) this.newSGSNNumber).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_newSGSNNumber);
 
-            if (newSGSNDiameterAddress != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_newSGSNDiameterAddress);
-                int pos = asnOutputStream.StartContentDefiniteLength();
-                ((NetworkNodeDiameterAddressImpl) this.newSGSNDiameterAddress).encodeAll(asnOutputStream);
-                asnOutputStream.FinalizeContent(pos);
-            }
+            if (newSGSNDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.newSGSNDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_newSGSNDiameterAddress);
 
             if (newMMENumber != null)
                 ((ISDNAddressStringImpl) this.newMMENumber).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_newMMENumber);
 
-            if (newMMEDiameterAddress != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_newMMEDiameterAddress);
-                int pos = asnOutputStream.StartContentDefiniteLength();
-                ((NetworkNodeDiameterAddressImpl) this.newMMEDiameterAddress).encodeAll(asnOutputStream);
-                asnOutputStream.FinalizeContent(pos);
-            }
+            if (newMMEDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.newMMEDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_newMMEDiameterAddress);
 
             if (newMSCNumber != null)
                 ((ISDNAddressStringImpl) this.newMSCNumber).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_newMSCNumber);

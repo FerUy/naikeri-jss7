@@ -27,7 +27,7 @@ import java.io.IOException;
 public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements SendRoutingInfoForSMResponse {
 
     protected static final int _TAG_LocationInfoWithLMSI = 0;
-    protected static final int _TAG_mwdSet = 2;
+    protected static final int _TAG_mwdSet = 2; // MAP V1 Only
     protected static final int _TAG_ExtensionContainer = 4;
     protected static final int _TAG_IpSmGwGuidance = 5;
 
@@ -155,6 +155,7 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
                 default:
                     if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
                         switch (tag) {
+
                             case _TAG_ExtensionContainer:
                                 if (ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -163,7 +164,9 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
                                 this.extensionContainer = new MAPExtensionContainerImpl();
                                 ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
                                 break;
+
                             case _TAG_mwdSet:
+                                // MAP V1 Only
                                 if (!ais.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ".mwdSet: Parameter mwdSet is not primitive",
@@ -228,6 +231,7 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
                     _TAG_ExtensionContainer);
 
         if (this.mwdSet != null) {
+            // MAP V1 Only
             try {
                 asnOutputStream.writeBoolean(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_mwdSet, this.mwdSet);
             } catch (IOException e) {

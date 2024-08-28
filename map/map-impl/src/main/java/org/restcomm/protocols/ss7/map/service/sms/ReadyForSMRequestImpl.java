@@ -156,7 +156,7 @@ public class ReadyForSMRequestImpl extends SmsMessageImpl implements ReadyForSMR
                     if (!ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".alertReason: Parameter is not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
-                    int i1 = (int)ais.readInteger();
+                    int i1 = (int) ais.readInteger();
                     this.alertReason = AlertReason.getInstance(i1);
                     break;
                 case Tag.NULL:
