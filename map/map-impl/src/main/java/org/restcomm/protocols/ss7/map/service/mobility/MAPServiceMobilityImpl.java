@@ -134,7 +134,7 @@ public class MAPServiceMobilityImpl extends MAPServiceBaseImpl implements MAPSer
                 return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect);
             }
         case authenticationFailureReportContext:
-            if (mapDialogApplicationContextVersion >= 3 && mapDialogApplicationContextVersion <= 3) {
+            if (mapDialogApplicationContextVersion == 3) {
                 return new ServingCheckDataImpl(ServingCheckResult.AC_Serving);
             } else if (mapDialogApplicationContextVersion > 3) {
                 long[] altOid = mapDialogApplicationContext.getOID();
@@ -145,7 +145,7 @@ public class MAPServiceMobilityImpl extends MAPServiceBaseImpl implements MAPSer
                 return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect);
             }
 
-            // -- Location management services
+        // -- Location management services
         case networkLocUpContext:
             if (mapDialogApplicationContextVersion >= 1 && mapDialogApplicationContextVersion <= 3) {
                 return new ServingCheckDataImpl(ServingCheckResult.AC_Serving);
@@ -169,7 +169,8 @@ public class MAPServiceMobilityImpl extends MAPServiceBaseImpl implements MAPSer
                 return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect);
             }
         case interVlrInfoRetrievalContext:
-            if (mapDialogApplicationContextVersion >= 2 && mapDialogApplicationContextVersion <= 3) {
+        case msPurgingContext:
+                if (mapDialogApplicationContextVersion >= 2 && mapDialogApplicationContextVersion <= 3) {
                 return new ServingCheckDataImpl(ServingCheckResult.AC_Serving);
             } else if (mapDialogApplicationContextVersion > 3) {
                 long[] altOid = mapDialogApplicationContext.getOID();
@@ -190,19 +191,8 @@ public class MAPServiceMobilityImpl extends MAPServiceBaseImpl implements MAPSer
             } else {
                 return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect);
             }
-        case msPurgingContext:
-            if (mapDialogApplicationContextVersion >= 2 && mapDialogApplicationContextVersion <= 3) {
-                return new ServingCheckDataImpl(ServingCheckResult.AC_Serving);
-            } else if (mapDialogApplicationContextVersion > 3) {
-                long[] altOid = mapDialogApplicationContext.getOID();
-                altOid[7] = 3;
-                ApplicationContextName alt = TcapFactory.createApplicationContextName(altOid);
-                return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect, alt);
-            } else {
-                return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect);
-            }
 
-            // -- Fault recovery
+        // -- Fault recovery
         case resetContext:
             if (mapDialogApplicationContextVersion >= 1 && mapDialogApplicationContextVersion <= 2) {
                 return new ServingCheckDataImpl(ServingCheckResult.AC_Serving);
@@ -215,7 +205,7 @@ public class MAPServiceMobilityImpl extends MAPServiceBaseImpl implements MAPSer
                 return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect);
             }
 
-            // -- International mobile equipment identities management services
+        // -- International mobile equipment identities management services
         case equipmentMngtContext:
             if (mapDialogApplicationContextVersion >= 1 && mapDialogApplicationContextVersion <= 3) {
                 return new ServingCheckDataImpl(ServingCheckResult.AC_Serving);
@@ -228,11 +218,11 @@ public class MAPServiceMobilityImpl extends MAPServiceBaseImpl implements MAPSer
                 return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect);
             }
 
-            // -- Subscriber Information services
+        // -- Subscriber Information services
         case anyTimeEnquiryContext:
         case anyTimeInfoHandlingContext:
         case subscriberInfoEnquiryContext:
-            if (mapDialogApplicationContextVersion >= 3 && mapDialogApplicationContextVersion <= 3) {
+            if (mapDialogApplicationContextVersion == 3) {
                 return new ServingCheckDataImpl(ServingCheckResult.AC_Serving);
             } else if (mapDialogApplicationContextVersion > 3) {
                 long[] altOid = mapDialogApplicationContext.getOID();
@@ -243,7 +233,7 @@ public class MAPServiceMobilityImpl extends MAPServiceBaseImpl implements MAPSer
                 return new ServingCheckDataImpl(ServingCheckResult.AC_VersionIncorrect);
             }
 
-            // -- Subscriber Management services
+        // -- Subscriber Management services
         case subscriberDataMngtContext:
             if (mapDialogApplicationContextVersion >= 1 && mapDialogApplicationContextVersion <= 3) {
                 return new ServingCheckDataImpl(ServingCheckResult.AC_Serving);
@@ -272,19 +262,19 @@ public class MAPServiceMobilityImpl extends MAPServiceBaseImpl implements MAPSer
         case MAPOperationCode.cancelLocation:
             return MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version1);
 
-            // -- Authentication management services
+        // -- Authentication management services
         case MAPOperationCode.sendParameters:
             return MAPApplicationContext.getInstance(MAPApplicationContextName.infoRetrievalContext, MAPApplicationContextVersion.version1);
 
-            // -- Fault recovery services
+        // -- Fault recovery services
         case MAPOperationCode.reset:
             return MAPApplicationContext.getInstance(MAPApplicationContextName.resetContext, MAPApplicationContextVersion.version1);
 
-            // -- IMEI services
+        // -- IMEI services
         case MAPOperationCode.checkIMEI:
             return MAPApplicationContext.getInstance(MAPApplicationContextName.equipmentMngtContext, MAPApplicationContextVersion.version1);
 
-            // -- Subscriber Management services
+        // -- Subscriber Management services
         case MAPOperationCode.insertSubscriberData:
         case MAPOperationCode.deleteSubscriberData:
             return MAPApplicationContext.getInstance(MAPApplicationContextName.subscriberDataMngtContext, MAPApplicationContextVersion.version1);

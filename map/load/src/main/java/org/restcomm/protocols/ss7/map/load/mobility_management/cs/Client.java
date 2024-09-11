@@ -60,6 +60,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.Restore
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.RestoreDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.ADDInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
@@ -140,6 +141,7 @@ import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.imei.RequestedEquipmentInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ExtSupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperChargerInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedFeaturesImpl;
@@ -208,7 +210,7 @@ public class Client extends TestHarnessMobilityManagement {
     private static final Logger logger = Logger.getLogger(Client.class);
 
     // TCAP
-    private TCAPStack tcapStack;
+    private static TCAPStack tcapStack;
 
     // MAP
     private MAPStackImpl mapStack;
@@ -241,6 +243,7 @@ public class Client extends TestHarnessMobilityManagement {
     private CsvWriter csvWriter;
 
     static Long imsiForPurge = 901405105680000L;
+    static Long imsiForCheckImei_Huawei = 901405105680000L;
 
     protected void initializeStack(IpChannelType ipChannelType) throws Exception {
 
@@ -1149,6 +1152,7 @@ public class Client extends TestHarnessMobilityManagement {
             }
 
             new Thread(new PurgeMSSender(this)).start();
+            new Thread(new CHISender(this)).start();
 
         } catch (MAPException e) {
             logger.error("Error while processing CancelLocationRequest ", e);
@@ -1590,8 +1594,6 @@ public class Client extends TestHarnessMobilityManagement {
                                 currentLocationRetrieved = ageOfLocationInformation == 0;
                                 // target subscriber is under 5G NR SA
                                 nrCellGlobalIdentity.setData(748, 1, 42949672954L);
-                                logger.warn("NR-CGI MCC="+nrCellGlobalIdentity.getMCC()+
-                                        ", MNC="+nrCellGlobalIdentity.getMNC()+", NCI="+nrCellGlobalIdentity.getNCI());
                                 amfAddress = new FQDNImpl("amf1.cluster1.net2.amf.5gc.mnc01.mcc748.3gppnetwork.org".getBytes());
                                 vplmnId = new PlmnIdImpl(748, 1);
                                 localTimeZone = new TimeZoneImpl(new byte[] {0,9});
@@ -1611,8 +1613,6 @@ public class Client extends TestHarnessMobilityManagement {
                             case 5:
                                 // target subscriber is under 5G NSA (E-UTRAN and NR)
                                 nrCellGlobalIdentity.setData(748, 2, 34359738376L);
-                                logger.warn("NR-CGI MCC="+nrCellGlobalIdentity.getMCC()+
-                                        ", MNC="+nrCellGlobalIdentity.getMNC()+", NCI="+nrCellGlobalIdentity.getNCI());
                                 amfAddress = new FQDNImpl("amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
                                 vplmnId = new PlmnIdImpl(748, 2);
                                 localTimeZone = new TimeZoneImpl(new byte[] {0, 8});
@@ -2021,6 +2021,96 @@ public class Client extends TestHarnessMobilityManagement {
             }
         }
     }
+
+    protected static class CHISender implements Runnable {
+
+        private final Client client4ChiSender;
+
+        public CHISender(Client client) {
+            client4ChiSender = client;
+        }
+
+        public Client getClient() {
+            return client4ChiSender;
+        }
+
+        @Override
+        public void run() {
+            ++imsiForCheckImei_Huawei;
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ie) {
+                logger.error(ie.getMessage());
+            }
+            try {
+                // Create Dialog
+                AddressString originAddressString = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                AddressString destAddressString = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
+
+                SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+                SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
+
+                MAPApplicationContextVersion mapAcnVersion = MAPApplicationContextVersion.version3;
+                MAPApplicationContextName mapAcn = MAPApplicationContextName.equipmentMngtContext;
+                MAPApplicationContext mapAppContext = MAPApplicationContext.getInstance(mapAcn, mapAcnVersion);
+                MAPDialogMobility mapDialogMobility = mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
+                        originAddressString, serverSccpAddress, destAddressString);
+
+                IMEI imei = mapProvider.getMAPParameterFactory().createIMEI("011714004661050");
+                boolean equipmentStatus = true;
+                boolean bmuef = false;
+                RequestedEquipmentInfo reqEquipmentInfo;
+                IMSI imsi;
+
+                try {
+                    Random rand = new Random();
+                    int randChi = rand.nextInt(4) + 1;
+                    switch (randChi) {
+                        case 1:
+                            mapAcnVersion = MAPApplicationContextVersion.version2;
+                            mapAppContext = MAPApplicationContext.getInstance(mapAcn, mapAcnVersion);
+                            mapDialogMobility = mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
+                                    originAddressString, serverSccpAddress, destAddressString);
+                            mapDialogMobility.addCheckImeiRequest_Huawei(30, imei, null, null, null);
+                            break;
+                        case 2:
+                            mapAcnVersion = MAPApplicationContextVersion.version2;
+                            mapAppContext = MAPApplicationContext.getInstance(mapAcn, mapAcnVersion);
+                            mapDialogMobility = mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
+                                    originAddressString, serverSccpAddress, destAddressString);
+                            imsi = new IMSIImpl(String.valueOf(imsiForCheckImei_Huawei));
+                            mapDialogMobility.addCheckImeiRequest_Huawei(30, imei, null, null, imsi);
+                            break;
+                        case 3:
+                            reqEquipmentInfo = new RequestedEquipmentInfoImpl(equipmentStatus, bmuef);
+                            mapDialogMobility.addCheckImeiRequest(30, imei, reqEquipmentInfo, null);
+                            break;
+                        case 4:
+                            bmuef = true;
+                            reqEquipmentInfo = new RequestedEquipmentInfoImpl(equipmentStatus, bmuef);
+                            mapDialogMobility.addCheckImeiRequest(30, imei, reqEquipmentInfo, null);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    mapDialogMobility.send();
+
+                } catch (MAPException e) {
+                    logger.error("MAPException while adding MAP CHI to MAP dialog", e);
+                } catch (Exception e) {
+                    logger.error("Exception while adding MAP CHI to MAP dialog", e);
+                }
+
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+        }
+    }
+
 
     /*
      * HLR SCCP Address creation
