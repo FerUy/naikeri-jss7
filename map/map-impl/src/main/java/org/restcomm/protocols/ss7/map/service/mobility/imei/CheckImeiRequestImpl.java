@@ -177,12 +177,15 @@ public class CheckImeiRequestImpl extends MobilityMessageImpl implements CheckIm
                         + ": Needs at least 2 mandatory parameters, found " + num,
                         MAPParsingComponentExceptionReason.MistypedParameter);
         } else {
-            this.imei = new IMEIImpl();
-            ((IMEIImpl) this.imei).decodeData(asnInputStream, length);
+            int tag = asnInputStream.readTag();
+            if (tag == Tag.STRING_OCTET) {
+                this.imei = new IMEIImpl();
+                ((IMEIImpl) this.imei).decodeAll(asnInputStream);
+                //((IMEIImpl) this.imei).decodeData(asnInputStream, length);
+            }
 
             // To decode IMSI in Huawei package
             if (asnInputStream.available() != 0) {
-                int tag = asnInputStream.readTag();
                 length = asnInputStream.readLength();
                 if (tag != 0 && asnInputStream.getTagClass() != Tag.CLASS_UNIVERSAL && !asnInputStream.isTagPrimitive()) {
                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -191,7 +194,7 @@ public class CheckImeiRequestImpl extends MobilityMessageImpl implements CheckIm
                 }
 
                 this.imsi = new IMSIImpl();
-                ((IMSIImpl) this.imsi).decodeData(asnInputStream, length);
+                ((IMSIImpl) this.imsi).decodeAll(asnInputStream);
             }
         }
     }
@@ -237,8 +240,7 @@ public class CheckImeiRequestImpl extends MobilityMessageImpl implements CheckIm
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
         } else {
-            ((IMEIImpl) this.imei).encodeData(asnOutputStream);
-            encodedLength = asnOutputStream.size();
+            ((IMEIImpl) this.imei).encodeAll(asnOutputStream, Tag.CLASS_UNIVERSAL, Tag.STRING_OCTET);
 
             if (imsi != null) {
                 ((IMSIImpl) this.imsi).encodeAll(asnOutputStream, Tag.CLASS_UNIVERSAL, 0);
@@ -279,25 +281,25 @@ public class CheckImeiRequestImpl extends MobilityMessageImpl implements CheckIm
 
         if (this.imei != null) {
             sb.append("imei=");
-            sb.append(imei.toString());
+            sb.append(imei);
             sb.append(", ");
         }
 
         if (this.requestedEquipmentInfo != null) {
             sb.append("requestedEquipmentInfo=");
-            sb.append(requestedEquipmentInfo.toString());
+            sb.append(requestedEquipmentInfo);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(imsi.toString());
+            sb.append(imsi);
             sb.append(", ");
         }
 

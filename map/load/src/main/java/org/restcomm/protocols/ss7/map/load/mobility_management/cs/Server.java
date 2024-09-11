@@ -65,6 +65,10 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.Restore
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.RestoreDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.CheckImeiResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.imei.EquipmentStatus;
+import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIu;
+import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIuA;
+import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIuB;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.AgeIndicator;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.CancelLocationResponse;
@@ -197,6 +201,9 @@ import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpsAuthent
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.QuintupletListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.UEUsageTypeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.ResetIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.imei.UESBIIuAImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.imei.UESBIIuBImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.imei.UESBIIuImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RequestedInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AMBRImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationImpl;
@@ -1432,7 +1439,27 @@ public class Server extends TestHarnessMobilityManagement {
 
     @Override
     public void onCheckImeiRequest(CheckImeiRequest checkImeiRequest) {
-
+        if (logger.isDebugEnabled()) {
+            logger.debug("onCheckImeiRequest for DialogId=%d" +checkImeiRequest
+                    .getMAPDialog().getLocalDialogId()+"; MAP CHI=" +checkImeiRequest);
+        }
+        long invokeId = checkImeiRequest.getInvokeId();
+        MAPDialogMobility mapDialogMobility = checkImeiRequest.getMAPDialog();
+        BitSetStrictLength bsA = new BitSetStrictLength(128);
+        bsA.set(0);
+        bsA.set(120);
+        UESBIIuA uesbiIuA = new UESBIIuAImpl(bsA);
+        BitSetStrictLength bsB = new BitSetStrictLength(128);
+        bsA.set(1);
+        bsA.set(127);
+        UESBIIuB uesbiIuB = new UESBIIuBImpl(bsB);
+        UESBIIu uesbiIu = new UESBIIuImpl(uesbiIuA, uesbiIuB);
+        try {
+            mapDialogMobility.addCheckImeiResponse(invokeId, EquipmentStatus.blackListed, uesbiIu, null);
+            mapDialogMobility.close(false);
+        } catch (MAPException e) {
+            logger.error("MAP Exception while processing onCheckImeiRequest ", e);
+        }
     }
 
     @Override
