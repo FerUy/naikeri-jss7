@@ -189,7 +189,7 @@ public class ProvideSubscriberInfoResponseImpl extends MobilityMessageImpl imple
 
         if (this.subscriberInfo != null) {
             sb.append("subscriberInfo=");
-            sb.append(subscriberInfo.toString());
+            sb.append(subscriberInfo);
             sb.append(", ");
         }
         if (this.extensionContainer != null) {

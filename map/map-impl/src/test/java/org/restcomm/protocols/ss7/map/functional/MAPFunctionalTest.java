@@ -5337,7 +5337,7 @@ public class MAPFunctionalTest extends SccpHarness {
                         AddressNature.international_number, NumberingPlan.ISDN, "11114444");
                 ;
                 LCSLocationInfo lcsLocationInfo = this.mapParameterFactory.createLCSLocationInfo(networkNodeNumber, null, null,
-                        false, null, null, null, null, null);
+                        false, null, null, null, null, null, null, null);
 
                 try {
                     d.addSendRoutingInfoForLCSResponse(ind.getInvokeId(), targetMS, lcsLocationInfo, null, null, null, null,

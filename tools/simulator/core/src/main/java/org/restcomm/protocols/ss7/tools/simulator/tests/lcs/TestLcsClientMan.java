@@ -311,9 +311,12 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
         DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
         byte[] aaa = new BigInteger("8720c00a30a1743401101112", 16).toByteArray();
         DiameterIdentity aaaServerName = new DiameterIdentityImpl(aaa);
+        DiameterIdentity sgsnName = null;
+        DiameterIdentity sgsnRealm = null;
 
         LCSLocationInfo lcsLocationInfo = mapParameterFactory.createLCSLocationInfo(networkNodeNumber, lmsi, extensionContainer,
-                gprsNodeIndicator, additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName);
+                gprsNodeIndicator, additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName,
+                sgsnName, sgsnRealm);
 
         try {
 
@@ -972,9 +975,11 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
             byte[] aaa = new BigInteger("8720c00a30a1743401101112", 16).toByteArray();
             DiameterIdentity aaaServerName = new DiameterIdentityImpl(aaa);
+            DiameterIdentity sgsnName = null;
+            DiameterIdentity sgsnRealm = null;
 
             LCSLocationInfo lcsLocationInfo = mapParameterFactory.createLCSLocationInfo(networkNodeNumber, lmsi, extensionContainer, gprsNodeIndicator,
-                    additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName);
+                    additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
             boolean msAvailable = false;
             boolean enteringIntoArea = false;

@@ -14,6 +14,7 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.MAPParameterFactoryImpl;
 import org.restcomm.protocols.ss7.map.api.MAPParameterFactory;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
+import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedLCSCapabilitySets;
@@ -87,13 +88,13 @@ public class LCSLocationInfoTest {
         ISDNAddressString networkNodeNumber = imp.getNetworkNodeNumber();
         assertEquals(networkNodeNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(networkNodeNumber.getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(networkNodeNumber.getAddress().equals("55619007"));
+        assertEquals(networkNodeNumber.getAddress(), "55619007");
 
         assertTrue(Arrays.equals(imp.getLMSI().getData(), getDataLmsi()));
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(imp.getExtensionContainer()));
         assertTrue(imp.getGprsNodeIndicator());
 
-        assertTrue(imp.getAdditionalNumber().getMSCNumber().getAddress().equals("2222112222"));
+        assertEquals(imp.getAdditionalNumber().getMSCNumber().getAddress(), "2222112222");
         assertNull(imp.getAdditionalNumber().getSGSNNumber());
 
         SupportedLCSCapabilitySets supportedLCSCapabilitySets = imp.getSupportedLCSCapabilitySets();
@@ -110,6 +111,9 @@ public class LCSLocationInfoTest {
 
         assertTrue(Arrays.equals(imp.getMmeName().getData(), getDataMmeName()));
         assertTrue(Arrays.equals(imp.getAaaServerName().getData(), getDataAaaServerName()));
+
+        assertNull(imp.getSgsnName());
+        assertNull(imp.getSgsnName());
     }
 
     @Test(groups = { "functional.encode", "service.lsm" })
@@ -128,14 +132,12 @@ public class LCSLocationInfoTest {
                 false, false);
         DiameterIdentityImpl mmeName = new DiameterIdentityImpl(getDataMmeName());
         DiameterIdentityImpl aaaServerName = new DiameterIdentityImpl(getDataAaaServerName());
+        DiameterIdentity sgsnName = null;
+        DiameterIdentity sgsnRealm = null;
 
         LCSLocationInfoImpl imp = new LCSLocationInfoImpl(networkNodeNumber, lmsi,
                 MAPExtensionContainerTest.GetTestExtensionContainer(), true, additionalNumber, supportedLCSCapabilitySets,
-                additionalLCSCapabilitySets, mmeName, aaaServerName);
-        // ISDNAddressString networkNodeNumber, LMSI lmsi, MAPExtensionContainer extensionContainer, boolean gprsNodeIndicator,
-        // AdditionalNumber additionalNumber, SupportedLCSCapabilitySets supportedLCSCapabilitySets, SupportedLCSCapabilitySets
-        // additionalLCSCapabilitySets,
-        // DiameterIdentity mmeName, DiameterIdentity aaaServerName
+                additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
         AsnOutputStream asnOS = new AsnOutputStream();
         imp.encodeAll(asnOS);
 

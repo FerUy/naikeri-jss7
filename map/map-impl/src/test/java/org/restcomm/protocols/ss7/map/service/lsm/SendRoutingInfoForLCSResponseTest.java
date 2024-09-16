@@ -174,7 +174,7 @@ public class SendRoutingInfoForLCSResponseTest {
         ISDNAddressString networkNodeNumber = this.MAPParameterFactory.createISDNAddressString(
                 AddressNature.international_number, NumberingPlan.ISDN, "55619000");
 
-        LCSLocationInfo lcsLocInfo = new LCSLocationInfoImpl(networkNodeNumber, null, null, false, null, null, null, null, null);
+        LCSLocationInfo lcsLocInfo = new LCSLocationInfoImpl(networkNodeNumber, null, null, false, null, null, null, null, null, null, null);
 
         SendRoutingInfoForLCSResponseImpl impl = new SendRoutingInfoForLCSResponseImpl(subsIdent, lcsLocInfo, null, null, null,
                 null, null);
@@ -195,8 +195,6 @@ public class SendRoutingInfoForLCSResponseTest {
         impl = new SendRoutingInfoForLCSResponseImpl(subsIdent, lcsLocInfo,
                 MAPExtensionContainerTest.GetTestExtensionContainer(), vgmlcAddress, hGmlcAddress, pprAddress,
                 additionalVGmlcAddress);
-        // SubscriberIdentity targetMS, LCSLocationInfo lcsLocationInfo, MAPExtensionContainer extensionContainer,
-        // GSNAddress vgmlcAddress, GSNAddress hGmlcAddress, GSNAddress pprAddress, GSNAddress additionalVGmlcAddress
 
         asnOS = new AsnOutputStream();
         impl.encodeAll(asnOS);

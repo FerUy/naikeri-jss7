@@ -401,9 +401,11 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             GSNAddress pprAddress = new GSNAddressImpl(gsnAddressAddressType, pivacyProfileRegisterAddressData);
             byte[] addVGmlcAddressData = {(byte) 181, 53, (byte) 105, 74};
             GSNAddress additionalVGmlcAddress = new GSNAddressImpl(gsnAddressAddressType, addVGmlcAddressData);
+            DiameterIdentity sgsnName = null;
+            DiameterIdentity sgsnRealm = null;
 
             LCSLocationInfo lcsLocationInfo = mapFactory.createLCSLocationInfo(mscNumber, lmsi, mapExtensionContainer, gprsNodeIndicator,
-                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName);
+                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
             int sriLcsResponseDelay = rand.nextInt(150);
             try {
@@ -1443,9 +1445,11 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             byte[] aaa = aaaServerNameStr.getBytes();
             //byte[] aaa = {65, 65, 65, 55, 52, 56, 48, 48, 48, 49, 53, 48};
             DiameterIdentity aaaServerName = new DiameterIdentityImpl(aaa);
+            DiameterIdentity sgsnName = null;
+            DiameterIdentity sgsnRealm = null;
 
             LCSLocationInfo lcsLocationInfo = mapParameterFactory.createLCSLocationInfo(networkNodeNumber, lmsi, extensionContainer, gprsNodeIndicator,
-                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName);
+                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
             boolean msAvailable = false;
             boolean enteringIntoArea = false;
@@ -1777,9 +1781,11 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             byte[] aaa = aaaServerNameStr.getBytes();
             //byte[] aaa = {65, 65, 65, 55, 52, 56, 48, 48, 48, 49, 53, 48};
             DiameterIdentity aaaServerName = new DiameterIdentityImpl(aaa);
+            DiameterIdentity sgsnName = null;
+            DiameterIdentity sgsnRealm = null;
 
             LCSLocationInfo lcsLocationInfo = mapParameterFactory.createLCSLocationInfo(networkNodeNumber, lmsi, extensionContainer, gprsNodeIndicator,
-                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName);
+                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
             boolean msAvailable = false;
             boolean enteringIntoArea = false;

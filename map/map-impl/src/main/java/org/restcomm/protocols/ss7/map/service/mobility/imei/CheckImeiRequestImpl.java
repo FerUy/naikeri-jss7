@@ -24,7 +24,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
 
 /**
  * @author normandes
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class CheckImeiRequestImpl extends MobilityMessageImpl implements CheckImeiRequest {
 

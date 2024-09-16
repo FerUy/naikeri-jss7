@@ -172,7 +172,7 @@ public class SubscriberLocationReportRequestTest {
         ISDNAddressStringImpl networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number,
                 NumberingPlan.ISDN, "4444455555");
         LCSLocationInfoImpl lcsLocationInfo = new LCSLocationInfoImpl(networkNodeNumber, null, null, false, null, null, null,
-                null, null);
+                null, null, null, null);
         ISDNAddressStringImpl msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                 "6666677777");
         ;
