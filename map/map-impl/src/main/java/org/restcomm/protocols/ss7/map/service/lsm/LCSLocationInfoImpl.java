@@ -34,8 +34,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
     private static final int _TAG_EXTENSION_CONTAINER = 1;
     private static final int _TAG_GPRS_NODE_IND = 2;
     private static final int _TAG_ADDITIONAL_NUMBER = 3;
-    private static final int _TAG_SUPPORTED_LCS_CAPBILITY_SET = 4;
-    private static final int _TAG_ADDITIONAL_LCS_CAPBILITY_SET = 5;
+    private static final int _TAG_SUPPORTED_LCS_CAPABILITY_SETS = 4;
+    private static final int __TAG_ADDITIONAL_LCS_CAPABILITY_SETS = 5;
     private static final int _TAG_MME_NAME = 6;
     private static final int _TAG_AAA_SERVER_NAME = 8;
     private static final int _TAG_SGSN_NAME = 9;
@@ -264,7 +264,7 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                         ais2.readTag();
                         ((AdditionalNumberImpl) this.additionalNumber).decodeAll(ais2);
                         break;
-                    case _TAG_SUPPORTED_LCS_CAPBILITY_SET:
+                    case _TAG_SUPPORTED_LCS_CAPABILITY_SETS:
                         // supportedLCS-CapabilitySets   [4] SupportedLCS-CapabilitySets OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException(
@@ -276,7 +276,7 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                         this.supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl();
                         ((SupportedLCSCapabilitySetsImpl) this.supportedLCSCapabilitySets).decodeAll(ais);
                         break;
-                    case _TAG_ADDITIONAL_LCS_CAPBILITY_SET:
+                    case __TAG_ADDITIONAL_LCS_CAPABILITY_SETS:
                         // additional-LCS-CapabilitySets [5] SupportedLCS-CapabilitySets OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException(
@@ -393,13 +393,13 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
         if (this.supportedLCSCapabilitySets != null) {
             // supportedLCS-CapabilitySets [4] SupportedLCS-CapabilitySets OPTIONAL
             ((SupportedLCSCapabilitySetsImpl) this.supportedLCSCapabilitySets).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_SUPPORTED_LCS_CAPBILITY_SET);
+                    _TAG_SUPPORTED_LCS_CAPABILITY_SETS);
         }
 
         if (this.additionalLCSCapabilitySets != null) {
             // additional-LCS-CapabilitySets [5] SupportedLCS-CapabilitySets OPTIONAL
             ((SupportedLCSCapabilitySetsImpl) this.additionalLCSCapabilitySets).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_ADDITIONAL_LCS_CAPBILITY_SET);
+                    __TAG_ADDITIONAL_LCS_CAPABILITY_SETS);
         }
 
         if (this.mmeName != null) {
