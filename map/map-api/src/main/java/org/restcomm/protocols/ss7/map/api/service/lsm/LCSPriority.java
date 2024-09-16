@@ -3,7 +3,12 @@ package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 /**
  *
- LCS-Priority ::= OCTET STRING (SIZE (1)) -- 0 = highest priority -- 1 = normal priority -- all other values treated as 1
+ <code>
+  LCS-Priority ::= OCTET STRING (SIZE (1))
+   -- 0 = highest priority
+   -- 1 = normal priority
+   -- all other values treated as 1
+ </code>
  *
  *
  * @author sergey vetyutnev
@@ -15,7 +20,7 @@ public enum LCSPriority {
 
     private int code;
 
-    private LCSPriority(int code) {
+    LCSPriority(int code) {
         this.code = code;
     }
 

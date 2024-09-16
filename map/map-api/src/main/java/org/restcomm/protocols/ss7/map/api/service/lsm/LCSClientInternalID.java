@@ -4,10 +4,10 @@ package org.restcomm.protocols.ss7.map.api.service.lsm;
 /**
 <code>
 LCSClientInternalID ::= ENUMERATED {
-  broadcastService (0),
-  o-andM-HPLMN (1),
-  o-andM-VPLMN (2),
-  anonymousLocation (3),
+  broadcastService          (0),
+  o-andM-HPLMN              (1),
+  o-andM-VPLMN              (2),
+  anonymousLocation         (3),
   targetMSsubscribedService (4),
   ...
 }

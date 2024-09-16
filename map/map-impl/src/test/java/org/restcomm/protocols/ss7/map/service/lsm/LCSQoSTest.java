@@ -97,13 +97,15 @@ public class LCSQoSTest {
         assertTrue(lcsQos.getVerticalCoordinateRequest());
         assertEquals((int) lcsQos.getVerticalAccuracy(), 20);
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(lcsQos.getExtensionContainer()));
+        assertFalse(lcsQos.getVelocityRequest());
+        assertNull(lcsQos.getLCSQoSClass());
     }
 
     @Test(groups = { "functional.encode", "service.lsm" })
     public void testEncode() throws Exception {
         byte[] data = getData();
 
-        LCSQoSImpl lcsQos = new LCSQoSImpl(null, null, false, new ResponseTimeImpl(ResponseTimeCategory.lowdelay), null);
+        LCSQoSImpl lcsQos = new LCSQoSImpl(null, null, false, new ResponseTimeImpl(ResponseTimeCategory.lowdelay), null, false, null);
         AsnOutputStream asnOS = new AsnOutputStream();
         lcsQos.encodeAll(asnOS);
 
@@ -114,9 +116,7 @@ public class LCSQoSTest {
         data = getDataFull();
 
         lcsQos = new LCSQoSImpl(10, 20, true, new ResponseTimeImpl(ResponseTimeCategory.lowdelay),
-                MAPExtensionContainerTest.GetTestExtensionContainer());
-        // Integer horizontalAccuracy, Integer verticalAccuracy, boolean verticalCoordinateRequest, ResponseTime responseTime,
-        // MAPExtensionContainer extensionContainer
+                MAPExtensionContainerTest.GetTestExtensionContainer(), false, null);
         asnOS = new AsnOutputStream();
         lcsQos.encodeAll(asnOS);
 
@@ -127,7 +127,7 @@ public class LCSQoSTest {
 
     @Test(groups = { "functional.serialize", "service.lsm" })
     public void testSerialization() throws Exception {
-        LCSQoSImpl original = new LCSQoSImpl(null, null, false, new ResponseTimeImpl(ResponseTimeCategory.lowdelay), null);
+        LCSQoSImpl original = new LCSQoSImpl(null, null, false, new ResponseTimeImpl(ResponseTimeCategory.lowdelay), null, false, null);
 
         // serialize
         ByteArrayOutputStream out = new ByteArrayOutputStream();

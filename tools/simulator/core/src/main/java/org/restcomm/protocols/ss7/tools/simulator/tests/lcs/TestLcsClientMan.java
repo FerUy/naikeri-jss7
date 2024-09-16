@@ -37,6 +37,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.USSDString;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoSClass;
 import org.restcomm.protocols.ss7.map.api.service.lsm.MAPServiceLsm;
 import org.restcomm.protocols.ss7.map.api.service.lsm.MAPServiceLsmListener;
 import org.restcomm.protocols.ss7.map.api.service.lsm.MAPDialogLsm;
@@ -511,11 +512,13 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             ResponseTimeCategory responseTimeCategory = ResponseTimeCategory.delaytolerant;
             ResponseTime responseTime = new ResponseTimeImpl(responseTimeCategory);
             MAPExtensionContainer extensionContainer = null;
-            LCSQoS lcsQoS = new LCSQoSImpl(horizontalAccuracy, verticalAccuracy, verticalCoordinateRequest, responseTime, extensionContainer);
+            boolean velocityRequested = false;
+            LCSQoSClass lcsQoSClass = null;
+            LCSQoS lcsQoS = new LCSQoSImpl(horizontalAccuracy, verticalAccuracy, verticalCoordinateRequest, responseTime, extensionContainer, velocityRequested, lcsQoSClass);
             PrivacyCheckRelatedAction callSessionUnrelated = PrivacyCheckRelatedAction.allowedWithNotification;
             PrivacyCheckRelatedAction callSessionRelated = PrivacyCheckRelatedAction.allowedIfNoResponse;
             LCSPrivacyCheck lcsPrivacyCheck = new LCSPrivacyCheckImpl(callSessionUnrelated, callSessionRelated);
-            ArrayList<Area> areaList = new ArrayList<Area>();
+            ArrayList<Area> areaList = new ArrayList<>();
             AreaType areaType = AreaType.locationAreaId;
             String aId = "102132";
             byte[] areaId = aId.getBytes();
@@ -533,7 +536,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             int reportingInterval = 60;
             PeriodicLDRInfo periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval);
             boolean plmnListPrioritized = false;
-            ArrayList<ReportingPLMN> plmnList = new ArrayList<ReportingPLMN>();
+            ArrayList<ReportingPLMN> plmnList = new ArrayList<>();
             String plmnIdstr = "321";
             byte[] plmnID = plmnIdstr.getBytes();
             PlmnId plmnId = new PlmnIdImpl(plmnID);

@@ -6,9 +6,19 @@ import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
 
 /**
- * LCS-ClientID ::= SEQUENCE { lcsClientType [0] LCSClientType, lcsClientExternalID [1] LCSClientExternalID OPTIONAL,
- * lcsClientDialedByMS [2] AddressString OPTIONAL, lcsClientInternalID [3] LCSClientInternalID OPTIONAL, lcsClientName [4]
- * LCSClientName OPTIONAL, ..., lcsAPN [5] APN OPTIONAL, lcsRequestorID [6] LCSRequestorID OPTIONAL }
+ *
+ <code>
+  LCS-ClientID ::= SEQUENCE {
+   lcsClientType        [0] LCSClientType,
+   lcsClientExternalID  [1] LCSClientExternalID OPTIONAL,
+   lcsClientDialedByMS  [2] AddressString       OPTIONAL,
+   lcsClientInternalID  [3] LCSClientInternalID OPTIONAL,
+   lcsClientName        [4] LCSClientName       OPTIONAL,
+   ...,
+   lcsAPN               [5] APN                 OPTIONAL,
+   lcsRequestorID       [6] LCSRequestorID      OPTIONAL
+ }
+ </code>
  *
  * @author amit bhayani
  *

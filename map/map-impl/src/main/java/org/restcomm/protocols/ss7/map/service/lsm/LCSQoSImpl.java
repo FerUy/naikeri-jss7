@@ -11,6 +11,7 @@ import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoS;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoSClass;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ResponseTime;
 import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
@@ -19,6 +20,7 @@ import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
  *
  *
  * @author amit bhayani
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
@@ -28,6 +30,8 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
     private static final int _TAG_VERTICAL_ACCURACY = 2;
     private static final int _TAG_RESPONSE_TIME = 3;
     private static final int _TAG_EXTENSION_CONTAINER = 4;
+    private static final int _TAG_VELOCITY_REQUEST = 5;
+    private static final int _TAG_LCS_QoS_CLASS = 6;
 
     public static final String _PrimitiveName = "LCSQoS";
 
@@ -36,6 +40,8 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
     private boolean verticalCoordinateRequest;
     private ResponseTime responseTime;
     private MAPExtensionContainer extensionContainer;
+    private boolean velocityRequest;
+    private LCSQoSClass lcsQoSClass;
 
     /**
      *
@@ -45,20 +51,24 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
     }
 
     /**
-     * @param horizontalAccuracy
-     * @param verticalAccuracy
-     * @param verticalCoordinateRequest
-     * @param responseTime
-     * @param extensionContainer
+     * @param horizontalAccuracy optional
+     * @param verticalAccuracy optional
+     * @param verticalCoordinateRequest optional
+     * @param responseTime optional
+     * @param extensionContainer optional
+     * @param velocityRequest optional
+     * @param lcsQosClass optional
      */
     public LCSQoSImpl(Integer horizontalAccuracy, Integer verticalAccuracy, boolean verticalCoordinateRequest,
-            ResponseTime responseTime, MAPExtensionContainer extensionContainer) {
+            ResponseTime responseTime, MAPExtensionContainer extensionContainer, boolean velocityRequest, LCSQoSClass lcsQosClass) {
         super();
         this.horizontalAccuracy = horizontalAccuracy;
         this.verticalAccuracy = verticalAccuracy;
         this.verticalCoordinateRequest = verticalCoordinateRequest;
         this.responseTime = responseTime;
         this.extensionContainer = extensionContainer;
+        this.velocityRequest = velocityRequest;
+        this.lcsQoSClass = lcsQosClass;
     }
 
     /*
@@ -104,6 +114,24 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
      */
     public MAPExtensionContainer getExtensionContainer() {
         return this.extensionContainer;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoS#getVelocityRequest()
+     */
+    public boolean getVelocityRequest() {
+        return this.velocityRequest;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoS#getLCSQoSClass()
+     */
+    public LCSQoSClass getLCSQoSClass() {
+        return this.lcsQoSClass;
     }
 
     /*
@@ -178,6 +206,8 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
         this.verticalCoordinateRequest = false;
         this.responseTime = null;
         this.extensionContainer = null;
+        this.velocityRequest = false;
+        this.lcsQoSClass = null;
 
         while (true) {
             if (ais.available() == 0)
@@ -204,7 +234,7 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
                                             + _PrimitiveName
                                             + " failed. Error while decoding horizontal-accuracy [0] Horizontal-Accuracy: the field length must be equal 1, found: "
                                             + buf.length, MAPParsingComponentExceptionReason.MistypedParameter);
-                        this.horizontalAccuracy = new Integer(buf[0]);
+                        this.horizontalAccuracy = (int) buf[0];
                         break;
                     case _TAG_VERTICAL_COORDINATE_REQUEST:
                         // verticalCoordinateRequest [1] NULL OPTIONAL,
@@ -230,7 +260,7 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
                                             + _PrimitiveName
                                             + " failed. Error while decoding verticalAccuracy: the field length must be equal 1, found: "
                                             + buf.length, MAPParsingComponentExceptionReason.MistypedParameter);
-                        this.verticalAccuracy = new Integer(buf[0]);
+                        this.verticalAccuracy = (int) buf[0];
                         break;
                     case _TAG_RESPONSE_TIME:
                         // responseTime [3] ResponseTime OPTIONAL,
@@ -251,6 +281,24 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
                         }
                         this.extensionContainer = new MAPExtensionContainerImpl();
                         ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
+                        break;
+                    case _TAG_VELOCITY_REQUEST:
+                        // velocityRequest [5] NULL OPTIONAL,
+                        if (!ais.isTagPrimitive()) {
+                            throw new MAPParsingComponentException("Decoding " + _PrimitiveName
+                                    + " failed. Error while decoding velocityRequest: is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        ais.readNull();
+                        this.velocityRequest = true;
+                        break;
+                    case _TAG_LCS_QoS_CLASS:
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".lcsQoSClass: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        int qosClass = (int) ais.readInteger();
+                        this.lcsQoSClass = LCSQoSClass.getInstance(qosClass);
                         break;
                     default:
                         ais.advanceElement();
@@ -313,7 +361,7 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
             } catch (IOException e) {
                 throw new MAPException("IOException when encoding parameter verticalCoordinateRequest: ", e);
             } catch (AsnException e) {
-                throw new MAPException("IOException when encoding parameter verticalCoordinateRequest: ", e);
+                throw new MAPException("AsnException when encoding parameter verticalCoordinateRequest: ", e);
             }
         }
 
@@ -336,6 +384,26 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
             ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
                     _TAG_EXTENSION_CONTAINER);
         }
+
+        if (this.velocityRequest) {
+            try {
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_VELOCITY_REQUEST);
+            } catch (IOException e) {
+                throw new MAPException("IOException when encoding parameter velocityRequest: ", e);
+            } catch (AsnException e) {
+                throw new MAPException("AsnException when encoding parameter velocityRequest: ", e);
+            }
+        }
+
+        if (this.lcsQoSClass != null) {
+            try {
+                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_LCS_QoS_CLASS, this.lcsQoSClass.getCode());
+            } catch (IOException e) {
+                throw new MAPException("IOException when encoding parameter lcsQoSClass: ", e);
+            } catch (AsnException e) {
+                throw new MAPException("AsnException when encoding parameter lcsQoSClass: ", e);
+            }
+        }
     }
 
     @Override
@@ -347,6 +415,8 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
         result = prime * result + ((responseTime == null) ? 0 : responseTime.hashCode());
         result = prime * result + ((verticalAccuracy == null) ? 0 : verticalAccuracy.hashCode());
         result = prime * result + ((verticalCoordinateRequest) ? 0 : 1);
+        result = prime * result + ((velocityRequest) ? 0 : 1);
+        result = prime * result + ((lcsQoSClass == null) ? 0 : lcsQoSClass.hashCode());
         return result;
     }
 
@@ -382,6 +452,14 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
         if (verticalCoordinateRequest != other.verticalCoordinateRequest) {
             return false;
         }
+        if (velocityRequest != other.velocityRequest) {
+            return false;
+        }
+        if (lcsQoSClass == null) {
+            if (other.lcsQoSClass != null)
+                return false;
+        } else if (!lcsQoSClass.equals(other.lcsQoSClass))
+            return false;
         return true;
     }
 
@@ -397,18 +475,25 @@ public class LCSQoSImpl implements LCSQoS, MAPAsnPrimitive {
         }
         if (this.verticalAccuracy != null) {
             sb.append(", verticalAccuracy=");
-            sb.append(this.verticalAccuracy.toString());
+            sb.append(this.verticalAccuracy);
         }
         if (this.verticalCoordinateRequest) {
             sb.append(", verticalCoordinateRequest");
         }
         if (this.responseTime != null) {
             sb.append(", responseTime=");
-            sb.append(this.responseTime.toString());
+            sb.append(this.responseTime);
         }
         if (this.extensionContainer != null) {
             sb.append(", extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
+        }
+        if (this.velocityRequest) {
+            sb.append(", velocityRequest");
+        }
+        if (this.lcsQoSClass != null) {
+            sb.append(", lcsQoSClass=");
+            sb.append(this.lcsQoSClass);
         }
 
         sb.append("]");

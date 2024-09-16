@@ -71,6 +71,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.LCSFormatIndicator;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSPrivacyCheck;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoS;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoSClass;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSRequestorID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LocationEstimateType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LocationType;
@@ -1443,8 +1444,9 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
     }
 
     public LCSQoS createLCSQoS(Integer horizontalAccuracy, Integer verticalAccuracy, boolean verticalCoordinateRequest,
-            ResponseTime responseTime, MAPExtensionContainer extensionContainer) {
-        return new LCSQoSImpl(horizontalAccuracy, verticalAccuracy, verticalCoordinateRequest, responseTime, extensionContainer);
+            ResponseTime responseTime, MAPExtensionContainer extensionContainer, boolean velocityRequest, LCSQoSClass lcsQosClass) {
+        return new LCSQoSImpl(horizontalAccuracy, verticalAccuracy, verticalCoordinateRequest, responseTime, extensionContainer,
+                velocityRequest, lcsQosClass);
     }
 
     public LCSRequestorID createLCSRequestorID(CBSDataCodingScheme dataCodingScheme, USSDString requestorIDString,
