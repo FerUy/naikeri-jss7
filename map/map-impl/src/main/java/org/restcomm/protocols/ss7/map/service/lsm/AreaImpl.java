@@ -35,8 +35,8 @@ public class AreaImpl extends SequenceBase implements Area {
     }
 
     /**
-     * @param areaType
-     * @param areaIdentification
+     * @param areaType mandatory
+     * @param areaIdentification mandatory
      */
     public AreaImpl(AreaType areaType, AreaIdentification areaIdentification) {
         super("Area");
@@ -167,7 +167,7 @@ public class AreaImpl extends SequenceBase implements Area {
         }
         if (this.areaIdentification != null) {
             sb.append(", areaIdentification=");
-            sb.append(this.areaIdentification.toString());
+            sb.append(this.areaIdentification);
         }
 
         sb.append("]");

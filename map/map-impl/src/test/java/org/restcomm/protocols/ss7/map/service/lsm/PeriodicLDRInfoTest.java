@@ -43,7 +43,7 @@ public class PeriodicLDRInfoTest {
     @Test(groups = { "functional.encode", "service.lsm" })
     public void testEncode() throws Exception {
 
-        PeriodicLDRInfoImpl imp = new PeriodicLDRInfoImpl(11111, 55555);
+        PeriodicLDRInfoImpl imp = new PeriodicLDRInfoImpl(11111, 55555, null);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         imp.encodeAll(asnOS);

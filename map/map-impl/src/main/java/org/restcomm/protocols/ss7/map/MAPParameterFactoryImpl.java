@@ -80,6 +80,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.PeriodicLDRInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PrivacyCheckRelatedAction;
 import org.restcomm.protocols.ss7.map.api.service.lsm.RANTechnology;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMN;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ResponseTime;
@@ -1459,8 +1460,8 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
         return new LocationTypeImpl(locationEstimateType, deferredLocationEventType);
     }
 
-    public PeriodicLDRInfo createPeriodicLDRInfo(int reportingAmount, int reportingInterval) {
-        return new PeriodicLDRInfoImpl(reportingAmount, reportingInterval);
+    public PeriodicLDRInfo createPeriodicLDRInfo(int reportingAmount, int reportingInterval, ReportingOptionMilliseconds reportingOptionMilliseconds) {
+        return new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
     }
 
     public PositioningDataInformation createPositioningDataInformation(byte[] data) {

@@ -1,10 +1,17 @@
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 /**
- * PrivacyCheckRelatedAction ::= ENUMERATED { allowedWithoutNotification (0), allowedWithNotification (1), allowedIfNoResponse
- * (2), restrictedIfNoResponse (3), notAllowed (4), ...} -- exception handling: -- a ProvideSubscriberLocation-Arg containing an
- * unrecognized PrivacyCheckRelatedAction -- shall be rejected by the receiver with a return error cause of unexpected data
- * value
+ *
+ <code>
+  PrivacyCheckRelatedAction ::= ENUMERATED {
+   allowedWithoutNotification (0),
+   allowedWithNotification (1),
+   allowedIfNoResponse (2),
+   restrictedIfNoResponse (3),
+   notAllowed (4), ...}
+    -- exception handling: -- a ProvideSubscriberLocation-Arg containing an unrecognized PrivacyCheckRelatedAction
+       shall be rejected by the receiver with a return error cause of unexpected data value
+ </code>
  *
  * @author amit bhayani
  *

@@ -48,6 +48,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.ExtGeographicalInformation
 import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredmtlrData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AccuracyFulfilmentIndicator;
 import org.restcomm.protocols.ss7.map.api.service.lsm.Polygon;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
@@ -1420,7 +1421,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             Integer sequenceNumber = 0;
             int reportingAmount = 10;
             int reportingInterval = 60;
-            PeriodicLDRInfo periodicLDRInfo = mapParameterFactory.createPeriodicLDRInfo(reportingAmount, reportingInterval);
+            ReportingOptionMilliseconds reportingOptionMilliseconds = null;
+            PeriodicLDRInfo periodicLDRInfo = mapParameterFactory.createPeriodicLDRInfo(reportingAmount, reportingInterval, reportingOptionMilliseconds);
             Boolean moLrShortCircuitIndicator = false;
             byte[] gGanss = {57, 50, 48, 49, 51, 52};
             GeranGANSSpositioningData geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(gGanss);

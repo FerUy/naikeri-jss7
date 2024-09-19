@@ -298,7 +298,7 @@ public class ProvideSubscriberLocationRequestTest {
         AreaDefinition areaDefinition = new AreaDefinitionImpl(areaList);
         AreaEventInfoImpl areaEventInfo = new AreaEventInfoImpl(areaDefinition, null, null);
         GSNAddress hgmlcAddress = new GSNAddressImpl(getDataHgmlcAddress());
-        PeriodicLDRInfo periodicLDRInfo = new PeriodicLDRInfoImpl(200, 100);
+        PeriodicLDRInfo periodicLDRInfo = new PeriodicLDRInfoImpl(200, 100, null);
         ArrayList<ReportingPLMN> lstRplmn = new ArrayList<>();
         PlmnId plmnId = new PlmnIdImpl(getPlmnId());
         ReportingPLMN rplmn = new ReportingPLMNImpl(plmnId, null, false);

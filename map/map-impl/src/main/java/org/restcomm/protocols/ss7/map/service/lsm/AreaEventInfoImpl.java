@@ -37,9 +37,9 @@ public class AreaEventInfoImpl extends SequenceBase implements AreaEventInfo {
     }
 
     /**
-     * @param areaDefinition
-     * @param occurrenceInfo
-     * @param intervalTime
+     * @param areaDefinition mandatory
+     * @param occurrenceInfo optional
+     * @param intervalTime optional
      */
     public AreaEventInfoImpl(AreaDefinition areaDefinition, OccurrenceInfo occurrenceInfo, Integer intervalTime) {
         super("AreaEventInfo");

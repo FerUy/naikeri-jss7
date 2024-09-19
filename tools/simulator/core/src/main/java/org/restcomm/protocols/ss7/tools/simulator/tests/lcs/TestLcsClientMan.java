@@ -54,6 +54,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ExtGeographicalInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredmtlrData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AccuracyFulfilmentIndicator;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
@@ -534,7 +535,8 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             boolean moLrShortCircuitIndicator = false;
             int reportingAmount = 3;
             int reportingInterval = 60;
-            PeriodicLDRInfo periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval);
+            ReportingOptionMilliseconds reportingOptionMilliseconds = null;
+            PeriodicLDRInfo periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
             boolean plmnListPrioritized = false;
             ArrayList<ReportingPLMN> plmnList = new ArrayList<>();
             String plmnIdstr = "321";
@@ -958,8 +960,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             byte[] velEstimate = velStr.getBytes();
             VelocityEstimate velocityEstimate = new VelocityEstimateImpl(velEstimate);
             Integer sequenceNumber = 0;
-            //PeriodicLDRInfo periodicLDRInfo = mapParameterFactory.createPeriodicLDRInfo(getReportingAmount(), getReportingInterval());
-            PeriodicLDRInfo periodicLDRInfo = mapParameterFactory.createPeriodicLDRInfo(10, 60);
+            PeriodicLDRInfo periodicLDRInfo = mapParameterFactory.createPeriodicLDRInfo(10, 60, null);
             Boolean moLrShortCircuitIndicator = false;
             GeranGANSSpositioningData geranGANSSpositioningData = null;
             UtranGANSSpositioningData utranGANSSpositioningData = null;

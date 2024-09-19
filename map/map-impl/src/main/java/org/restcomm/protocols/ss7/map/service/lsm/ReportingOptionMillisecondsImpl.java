@@ -1,7 +1,4 @@
-
 package org.restcomm.protocols.ss7.map.service.lsm;
-
-import java.io.IOException;
 
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -10,43 +7,36 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
-import org.restcomm.protocols.ss7.map.api.service.lsm.PeriodicLDRInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
-import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
+
+import java.io.IOException;
 
 /**
- * @author sergey vetyutnev
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
-public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
+public class ReportingOptionMillisecondsImpl implements ReportingOptionMilliseconds {
 
-    private static final int _TAG_Reporting_Option_Milliseconds = 0;
     public static final String _PrimitiveName = "PeriodicLDRInfo";
 
-    private int reportingAmount;
-    private int reportingInterval;
-    private ReportingOptionMilliseconds reportingOptionMilliseconds;
+    private int reportingAmountMilliseconds;
+    private int reportingIntervalMilliseconds;
 
-    public PeriodicLDRInfoImpl() {
+    public ReportingOptionMillisecondsImpl() {
     }
 
-    public PeriodicLDRInfoImpl(int reportingAmount, int reportingInterval, ReportingOptionMilliseconds reportingOptionMilliseconds) {
-        this.reportingAmount = reportingAmount;
-        this.reportingInterval = reportingInterval;
-        this.reportingOptionMilliseconds = reportingOptionMilliseconds;
-    }
-
-    public int getReportingAmount() {
-        return reportingAmount;
-    }
-
-    public int getReportingInterval() {
-        return reportingInterval;
+    public ReportingOptionMillisecondsImpl(int reportingAmountMilliseconds, int reportingIntervalMilliseconds) {
+        this.reportingAmountMilliseconds = reportingAmountMilliseconds;
+        this.reportingIntervalMilliseconds = reportingIntervalMilliseconds;
     }
 
     @Override
-    public ReportingOptionMilliseconds getReportingOptionMilliseconds() {
-        return reportingOptionMilliseconds;
+    public int getReportingAmountMilliseconds() {
+        return reportingAmountMilliseconds;
+    }
+
+    @Override
+    public int getReportingIntervalMilliseconds() {
+        return reportingIntervalMilliseconds;
     }
 
     public int getTag() throws MAPException {
@@ -66,10 +56,10 @@ public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
             int length = asnInputStream.readLength();
             this._decode(asnInputStream, length);
         } catch (IOException e) {
-            throw new MAPParsingComponentException("IOException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
+            throw new MAPParsingComponentException("IOException when decoding " + _PrimitiveName + ": ", e,
                     MAPParsingComponentExceptionReason.MistypedParameter);
         } catch (AsnException e) {
-            throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
+            throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": ", e,
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
     }
@@ -87,9 +77,8 @@ public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
     }
 
     private void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
-        this.reportingAmount = 0;
-        this.reportingInterval = 0;
-        this.reportingOptionMilliseconds = null;
+        this.reportingAmountMilliseconds = 0;
+        this.reportingIntervalMilliseconds = 0;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -101,43 +90,25 @@ public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
 
             switch (num) {
                 case 0:
-                    // reportingAmount
+                    // reportingAmountMilliseconds
                     if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive() || tag != Tag.INTEGER)
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                + ".reportingAmount: Parameter bad tag or tag class or not primitive",
+                                + ".reportingAmountMilliseconds: Parameter bad tag or tag class or not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
-                    this.reportingAmount = (int) ais.readInteger();
+                    this.reportingAmountMilliseconds = (int) ais.readInteger();
                     break;
 
                 case 1:
-                    // reportingInterval
+                    // reportingIntervalMilliseconds
                     if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive() || tag != Tag.INTEGER)
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                + ".reportingInterval: Parameter bad tag or tag class or not primitive",
+                                + ".reportingIntervalMilliseconds: Parameter bad tag or tag class or not primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
-                    this.reportingInterval = (int) ais.readInteger();
+                    this.reportingIntervalMilliseconds = (int) ais.readInteger();
                     break;
 
                 default:
-                    if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
-                        switch (tag) {
-                            case _TAG_Reporting_Option_Milliseconds:
-                                // reportingOptionMilliseconds
-                                if (ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".reportingOptionMilliseconds: Parameter is primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                this.reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl();
-                                ((ReportingOptionMillisecondsImpl) reportingOptionMilliseconds).decodeAll(ais);
-                                break;
-
-                            default:
-                                ais.advanceElement();
-                                break;
-                        }
-                    } else {
-                        ais.advanceElement();
-                    }
+                    ais.advanceElement();
                     break;
             }
 
@@ -169,12 +140,14 @@ public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
 
-        try {
-            asnOutputStream.writeInteger(reportingAmount);
-            asnOutputStream.writeInteger(reportingInterval);
+        if (((long) reportingAmountMilliseconds * reportingIntervalMilliseconds) >= 8639999000L)
+            throw new MAPException("Error while encoding " + _PrimitiveName + ", " +
+                    "reportingAmountMilliseconds x reportingIntervalMilliseconds shall not exceed 8639999000 ms" +
+                    "(99 days, 23 hours, 59 minutes and 59 seconds) for compatibility with OMA MLP and RLP.");
 
-            if (reportingOptionMilliseconds != null)
-                ((ReportingOptionMillisecondsImpl) reportingOptionMilliseconds).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_Reporting_Option_Milliseconds);
+        try {
+            asnOutputStream.writeInteger(reportingAmountMilliseconds);
+            asnOutputStream.writeInteger(reportingIntervalMilliseconds);
 
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
@@ -189,16 +162,11 @@ public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
         sb.append(_PrimitiveName);
         sb.append("_PrimitiveName [");
 
-        sb.append("reportingAmount=");
-        sb.append(this.reportingAmount);
+        sb.append("reportingAmountMilliseconds=");
+        sb.append(this.reportingAmountMilliseconds);
 
-        sb.append(", reportingInterval=");
-        sb.append(this.reportingInterval);
-
-        if (this.reportingOptionMilliseconds != null) {
-            sb.append(", reportingOptionMilliseconds=");
-            sb.append(reportingOptionMilliseconds);
-        }
+        sb.append(", reportingIntervalMilliseconds=");
+        sb.append(this.reportingIntervalMilliseconds);
 
         sb.append("]");
 

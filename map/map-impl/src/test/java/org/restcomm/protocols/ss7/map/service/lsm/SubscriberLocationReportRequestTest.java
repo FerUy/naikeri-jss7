@@ -198,7 +198,7 @@ public class SubscriberLocationReportRequestTest {
         CellGlobalIdOrServiceAreaIdOrLAIImpl cellIdOrSai = new CellGlobalIdOrServiceAreaIdOrLAIImpl(laiFixedLength);
         GSNAddressImpl hgmlcAddress = new GSNAddressImpl(getGSNAddress());
         VelocityEstimateImpl velocityEstimate = new VelocityEstimateImpl(getVelocityEstimate());
-        PeriodicLDRInfoImpl periodicLDRInfo = new PeriodicLDRInfoImpl(10, 11);
+        PeriodicLDRInfoImpl periodicLDRInfo = new PeriodicLDRInfoImpl(10, 11, null);
         GeranGANSSpositioningDataImpl geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(
                 getGeranGANSSpositioningData());
         UtranGANSSpositioningDataImpl utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(
