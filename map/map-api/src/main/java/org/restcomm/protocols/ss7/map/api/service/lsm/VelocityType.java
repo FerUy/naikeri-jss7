@@ -3,9 +3,16 @@ package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 /**
  *
- 0 0 0 0 Horizontal Velocity 0 0 0 1 Horizontal with Vertical Velocity 0 0 1 0 Horizontal Velocity with Uncertainty 0 0 1 1
- * Horizontal with Vertical Velocity and Uncertainty
- *
+ <code>
+ Velocity Type
+   Bits
+  4 3 2 1
+  0 0 0 0 Horizontal Velocity
+  0 0 0 1 Horizontal with Vertical Velocity
+  0 0 1 0 Horizontal Velocity with Uncertainty
+  0 0 1 1 Horizontal with Vertical Velocity and Uncertainty
+  other values reserved for future use
+ </code>
  *
  * @author sergey vetyutnev
  *

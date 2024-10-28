@@ -55,7 +55,7 @@ import org.testng.annotations.Test;
 /**
  * @author amit bhayani
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class ProvideSubscriberLocationRequestTest {
 

@@ -1345,7 +1345,7 @@ public class Client extends EventTestHarness {
 
         clientDialogLsm.addSubscriberLocationReportRequest(LCSEvent.emergencyCallOrigination, lcsClientID, lcsLocationInfo,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, false,
-                null, null, null, null, false, null, null, null);
+                null, null, null, null, false, null, null, null, null, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.SubscriberLocationReport, null, sequence++));
         clientDialogLsm.send();

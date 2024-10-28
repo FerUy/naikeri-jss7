@@ -21,6 +21,8 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ServingNodeAddress;
+import org.restcomm.protocols.ss7.map.api.service.lsm.UtranAdditionalPositioningData;
+import org.restcomm.protocols.ss7.map.api.service.lsm.UtranCivicAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranPositioningDataInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityEstimate;
@@ -30,14 +32,14 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.Loc
 
 /**
  *
- *
  * @author amit bhayani
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implements ProvideSubscriberLocationResponse {
 
     private static final int _TAG_AGE_OF_LOCATION_ESTIMATE = 0;
-    private static final int _TAG_EXTENSIONCONTAINER = 1;
+    private static final int _TAG_EXTENSION_CONTAINER = 1;
     private static final int _TAG_ADD_LOCATION_ESTIMATE = 2;
     private static final int _TAG_DEFERRED_MT_LR_RESPONSE_IND = 3;
     private static final int _TAG_GERAN_POSITIONING_DATA = 4;
@@ -45,11 +47,14 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     private static final int _TAG_CELL_ID_OR_SAI = 6;
     private static final int _TAG_SAI_PRESENT = 7;
     private static final int _TAG_ACCURACY_FULFILMENT_INDICATOR = 8;
-    private static final int _TAG_velocityEstimate = 9;
-    private static final int _TAG_mo_lrShortCircuitIndicator = 10;
-    private static final int _TAG_geranGANSSpositioningData = 11;
-    private static final int _TAG_utranGANSSpositioningData = 12;
-    private static final int _TAG_targetServingNodeForHandover = 13;
+    private static final int _TAG_VELOCITY_ESTIMATE = 9;
+    private static final int _TAG_MO_LR_SHORT_CIRCUIT_IND = 10;
+    private static final int _TAG_GERAN_GANSS_POSITIONING_DATA = 11;
+    private static final int _TAG_UTRAN_GANSS_POSITIONING_DATA = 12;
+    private static final int _TAG_TARGET_SERVING_NODE_HANDOVER = 13;
+    private static final int _TAG_UTRAN_ADD_POSITIONING_DATA = 14;
+    private static final int _TAG_UTRAN_BARO_PREASSURE_MEAS = 15;
+    private static final int _TAG_UTRAN_CIVIC_ADDRESS = 16;
 
     public static final String _PrimitiveName = "ProvideSubscriberLocationResponse";
 
@@ -68,6 +73,9 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     private GeranGANSSpositioningData geranGANSSpositioningData;
     private UtranGANSSpositioningData utranGANSSpositioningData;
     private ServingNodeAddress targetServingNodeForHandover;
+    private UtranAdditionalPositioningData utranAdditionalPositioningData;
+    private Integer utranBaroPressureMeas;
+    private UtranCivicAddress utranCivicAddress;
 
     /**
      *
@@ -83,7 +91,9 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
             CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI, boolean saiPresent,
             AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate,
             boolean moLrShortCircuitIndicator, GeranGANSSpositioningData geranGANSSpositioningData,
-            UtranGANSSpositioningData utranGANSSpositioningData, ServingNodeAddress targetServingNodeForHandover) {
+            UtranGANSSpositioningData utranGANSSpositioningData, ServingNodeAddress targetServingNodeForHandover,
+            UtranAdditionalPositioningData utranAdditionalPositioningData, Integer utranBaroPressureMeas,
+            UtranCivicAddress utranCivicAddress) {
         super();
 
         this.locationEstimate = locationEstimate;
@@ -101,6 +111,9 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
         this.geranGANSSpositioningData = geranGANSSpositioningData;
         this.utranGANSSpositioningData = utranGANSSpositioningData;
         this.targetServingNodeForHandover = targetServingNodeForHandover;
+        this.utranAdditionalPositioningData = utranAdditionalPositioningData;
+        this.utranBaroPressureMeas = utranBaroPressureMeas;
+        this.utranCivicAddress = utranCivicAddress;
     }
 
     public MAPMessageType getMessageType() {
@@ -114,7 +127,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponseIndication#getLocationEstimate()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getLocationEstimate()
      */
     public ExtGeographicalInformation getLocationEstimate() {
         return this.locationEstimate;
@@ -123,8 +136,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.
-     * ProvideSubscriberLocationResponseIndication#getGeranPositioningData()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getGeranPositioningData()
      */
     public PositioningDataInformation getGeranPositioningData() {
         return this.geranPositioningData;
@@ -133,8 +145,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.
-     * ProvideSubscriberLocationResponseIndication#getUtranPositioningData()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getUtranPositioningData()
      */
     public UtranPositioningDataInfo getUtranPositioningData() {
         return this.utranPositioningData;
@@ -143,8 +154,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.
-     * ProvideSubscriberLocationResponseIndication#getAgeOfLocationEstimate()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getAgeOfLocationEstimate()
      */
     public Integer getAgeOfLocationEstimate() {
         return this.ageOfLocationEstimate;
@@ -153,8 +163,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponseIndication
-     * #getAdditionalLocationEstimate()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getAdditionalLocationEstimate()
      */
     public AddGeographicalInformation getAdditionalLocationEstimate() {
         return this.additionalLocationEstimate;
@@ -163,7 +172,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponseIndication#getExtensionContainer()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getExtensionContainer()
      */
     public MAPExtensionContainer getExtensionContainer() {
         return this.extensionContainer;
@@ -172,8 +181,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponseIndication
-     * #getDeferredMTLRResponseIndicator()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getDeferredMTLRResponseIndicator()
      */
     public boolean getDeferredMTLRResponseIndicator() {
         return this.deferredMTLRResponseIndicator;
@@ -182,8 +190,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponseIndication
-     * #getCellGlobalIdOrServiceAreaIdOrLAI()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getCellGlobalIdOrServiceAreaIdOrLAI()
      */
     public CellGlobalIdOrServiceAreaIdOrLAI getCellIdOrSai() {
         return this.cellGlobalIdOrServiceAreaIdOrLAI;
@@ -192,7 +199,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponseIndication#getSaiPresent()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getSaiPresent()
      */
     public boolean getSaiPresent() {
         return this.saiPresent;
@@ -201,31 +208,82 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponseIndication
-     * #getAccuracyFulfilmentIndicator()
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getAccuracyFulfilmentIndicator()
      */
     public AccuracyFulfilmentIndicator getAccuracyFulfilmentIndicator() {
         return this.accuracyFulfilmentIndicator;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getVelocityEstimate()
+     */
     public VelocityEstimate getVelocityEstimate() {
         return velocityEstimate;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getMoLrShortCircuitIndicator()
+     */
     public boolean getMoLrShortCircuitIndicator() {
         return moLrShortCircuitIndicator;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getGeranGANSSpositioningData()
+     */
     public GeranGANSSpositioningData getGeranGANSSpositioningData() {
         return geranGANSSpositioningData;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getUtranGANSSpositioningData()
+     */
     public UtranGANSSpositioningData getUtranGANSSpositioningData() {
         return utranGANSSpositioningData;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getTargetServingNodeForHandover()
+     */
     public ServingNodeAddress getTargetServingNodeForHandover() {
         return targetServingNodeForHandover;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getUtranAdditionalPositioningData()
+     */
+    public UtranAdditionalPositioningData getUtranAdditionalPositioningData() {
+        return utranAdditionalPositioningData;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getUtranBaroPressureMeas()
+     */
+    public Integer getUtranBaroPressureMeas() {
+        return utranBaroPressureMeas;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse#getUtranCivicAddress()
+     */
+    public UtranCivicAddress getUtranCivicAddress() {
+        return utranCivicAddress;
     }
 
     /*
@@ -240,7 +298,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#getTagClass ()
+     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#getTagClass()
      */
     public int getTagClass() {
         return Tag.CLASS_UNIVERSAL;
@@ -249,7 +307,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#getIsPrimitive ()
+     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#getIsPrimitive()
      */
     public boolean getIsPrimitive() {
         return false;
@@ -258,8 +316,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#decodeAll
-     * (org.mobicents.protocols.asn.AsnInputStream)
+     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#decodeAll(org.mobicents.protocols.asn.AsnInputStream)
      */
     public void decodeAll(AsnInputStream asnInputStream) throws MAPParsingComponentException {
         try {
@@ -277,8 +334,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
     /*
      * (non-Javadoc)
      *
-     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#decodeData
-     * (org.mobicents.protocols.asn.AsnInputStream, int)
+     * @see org.restcomm.protocols.ss7.map.api.primitives.MAPAsnPrimitive#decodeData(org.mobicents.protocols.asn.AsnInputStream, int)
      */
     public void decodeData(AsnInputStream ansIS, int length) throws MAPParsingComponentException {
         try {
@@ -307,10 +363,14 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
         this.moLrShortCircuitIndicator = false;
         this.geranGANSSpositioningData = null;
         this.utranGANSSpositioningData = null;
+        this.utranAdditionalPositioningData = null;
+        this.utranBaroPressureMeas = null;
+        this.utranCivicAddress = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
 
         int tag = ais.readTag();
+        // locationEstimate  Ext-GeographicalInformation
         if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive() || tag != Tag.STRING_OCTET) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                     + ": Parameter [locationEstimate Ext-GeographicalInformation] bad tag, tag class or not primitive",
@@ -328,8 +388,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
             if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
                 switch (tag) {
                     case _TAG_AGE_OF_LOCATION_ESTIMATE:
-                        // // ageOfLocationEstimate [0] AgeOfLocationInformation
-                        // OPTIONAL,
+                        //  ageOfLocationEstimate [0] AgeOfLocationInformation OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [ageOfLocationEstimate [0] AgeOfLocationInformation] is not Sequence",
@@ -337,8 +396,8 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                         }
                         this.ageOfLocationEstimate = (int) ais.readInteger();
                         break;
-                    case _TAG_EXTENSIONCONTAINER:
-                        // extensionContainer [1] ExtensionContainer OPTIONAL,
+                    case _TAG_EXTENSION_CONTAINER:
+                        // extensionContainer [1] ExtensionContainer OPTIONAL
                         if (ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [extensionContainer [1] ExtensionContainer] is not constructed",
@@ -348,7 +407,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                         ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
                         break;
                     case _TAG_ADD_LOCATION_ESTIMATE:
-                        // add-LocationEstimate [2] Add-GeographicalInformation
+                        // add-LocationEstimate [2] Add-GeographicalInformation OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [add-LocationEstimate [2] Add-GeographicalInformation] is not primitive",
@@ -358,7 +417,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                         ((AddGeographicalInformationImpl) this.additionalLocationEstimate).decodeAll(ais);
                         break;
                     case _TAG_DEFERRED_MT_LR_RESPONSE_IND:
-                        // deferredmt-lrResponseIndicator [3] NULL OPTIONAL,
+                        // deferredmt-lrResponseIndicator [3] NULL OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [deferredmt-lrResponseIndicator [3] NULL] is not primitive",
@@ -368,8 +427,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                         this.deferredMTLRResponseIndicator = true;
                         break;
                     case _TAG_GERAN_POSITIONING_DATA:
-                        // geranPositioningData [4] PositioningDataInformation
-                        // OPTIONAL,
+                        // geranPositioningData [4] PositioningDataInformation OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [geranPositioningData [4] PositioningDataInformation] is not primitive",
@@ -379,8 +437,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                         ((PositioningDataInformationImpl) this.geranPositioningData).decodeAll(ais);
                         break;
                     case _TAG_UTRAN_POSITIONING_DATA:
-                        // utranPositioningData [5] UtranPositioningDataInfo
-                        // OPTIONAL,
+                        // utranPositioningData [5] UtranPositioningDataInfo OPTIONAL,
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [utranPositioningData [5] UtranPositioningDataInfo] is not primitive",
@@ -390,7 +447,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                         ((UtranPositioningDataInfoImpl) this.utranPositioningData).decodeAll(ais);
                         break;
                     case _TAG_CELL_ID_OR_SAI:
-                        // cellIdOrSai [6] CellGlobalIdOrServiceAreaIdOrLAI
+                        // cellIdOrSai [6] CellGlobalIdOrServiceAreaIdOrLAI OPTIONAL,
                         if (ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [cellIdOrSai [6] CellGlobalIdOrServiceAreaIdOrLAI] is not constructed",
@@ -404,7 +461,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                         // ((CellGlobalIdOrServiceAreaIdOrLAIImpl) this.cellGlobalIdOrServiceAreaIdOrLAI).decodeAll(ais2);
                         break;
                     case _TAG_SAI_PRESENT:
-                        // sai-Present [7] NULL OPTIONAL,
+                        // sai-Present [7] NULL OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [sai-Present [7] NULL] is not primitive",
@@ -414,8 +471,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                         this.saiPresent = true;
                         break;
                     case _TAG_ACCURACY_FULFILMENT_INDICATOR:
-                        // accuracyFulfilmentIndicator [8]
-                        // AccuracyFulfilmentIndicator
+                        // accuracyFulfilmentIndicator [8] AccuracyFulfilmentIndicator OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException(
                                     "Error while decoding "
@@ -424,57 +480,87 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         }
                         int indicator = (int) ais.readInteger();
-                        this.accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator
-                                .getAccuracyFulfilmentIndicator(indicator);
+                        this.accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.getAccuracyFulfilmentIndicator(indicator);
                         break;
-
-                    case _TAG_velocityEstimate:
+                    case _TAG_VELOCITY_ESTIMATE:
+                        //  velocityEstimate [9] VelocityEstimate OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter velocityEstimate is not primitive",
+                                    + ": Parameter [velocityEstimate [9] VelocityEstimate] is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         }
                         this.velocityEstimate = new VelocityEstimateImpl();
                         ((VelocityEstimateImpl) this.velocityEstimate).decodeAll(ais);
                         break;
-                    case _TAG_mo_lrShortCircuitIndicator:
+                    case _TAG_MO_LR_SHORT_CIRCUIT_IND:
+                        //  mo-lrShortCircuitIndicator [10] NULL OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter moLrShortCircuitIndicator is not primitive",
+                                    + ": Parameter [mo-lrShortCircuitIndicator [10] NULL] is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         }
                         ais.readNull();
                         this.moLrShortCircuitIndicator = true;
                         break;
-                    case _TAG_geranGANSSpositioningData:
+                    case _TAG_GERAN_GANSS_POSITIONING_DATA:
+                        //  geranGANSSpositioningData [11] GeranGANSSpositioningData OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter geranGANSSpositioningData is not primitive",
+                                    + ": Parameter [geranGANSSpositioningData [11] GeranGANSSpositioningData] is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         }
                         this.geranGANSSpositioningData = new GeranGANSSpositioningDataImpl();
                         ((GeranGANSSpositioningDataImpl) this.geranGANSSpositioningData).decodeAll(ais);
                         break;
-                    case _TAG_utranGANSSpositioningData:
+                    case _TAG_UTRAN_GANSS_POSITIONING_DATA:
+                        //  utranGANSSpositioningData [12] UtranGANSSpositioningData OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter utranGANSSpositioningData is not primitive",
+                                    + ": Parameter [utranGANSSpositioningData [12] UtranGANSSpositioningData] is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         }
                         this.utranGANSSpositioningData = new UtranGANSSpositioningDataImpl();
                         ((UtranGANSSpositioningDataImpl) this.utranGANSSpositioningData).decodeAll(ais);
                         break;
-                    case _TAG_targetServingNodeForHandover:
-                        // targetServingNodeForHandover
+                    case _TAG_TARGET_SERVING_NODE_HANDOVER:
+                        //  targetServingNodeForHandover [13] ServingNodeAddress OPTIONAL
                         if (ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter targetServingNodeForHandover is not constructed",
+                                    + ": Parameter [targetServingNodeForHandover [13] ServingNodeAddress] is not constructed",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         }
                         this.targetServingNodeForHandover = new ServingNodeAddressImpl();
                         AsnInputStream ais2 = ais.readSequenceStream();
                         ais2.readTag();
                         ((ServingNodeAddressImpl) this.targetServingNodeForHandover).decodeAll(ais2);
+                        break;
+                    case _TAG_UTRAN_ADD_POSITIONING_DATA:
+                        // utranAdditionalPositioningData [14] UtranAdditionalPositioningData OPTIONAL
+                        if (!ais.isTagPrimitive()) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ": Parameter [utranAdditionalPositioningData [14] UtranAdditionalPositioningData] is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        this.utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl();
+                        ((UtranAdditionalPositioningDataImpl) this.utranAdditionalPositioningData).decodeAll(ais);
+                        break;
+                    case _TAG_UTRAN_BARO_PREASSURE_MEAS:
+                        // utranBaroPressureMeas [15] UtranBaroPressureMeas OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                + ": Parameter [utranBaroPressureMeas [15] UtranBaroPressureMeas] is not primitive",
+                                MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.utranBaroPressureMeas = (int) ais.readInteger();
+                        break;
+                    case _TAG_UTRAN_CIVIC_ADDRESS:
+                        // utranCivicAddress [16] UtranCivicAddress OPTIONAL
+                        if (!ais.isTagPrimitive()) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ": Parameter [utranCivicAddress [16] UtranCivicAddress] is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        this.utranCivicAddress = new UtranCivicAddressImpl();
+                        ((UtranCivicAddressImpl) this.utranCivicAddress).decodeAll(ais);
                         break;
 
                     default:
@@ -541,7 +627,7 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
 
         if (this.extensionContainer != null) {
             ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_EXTENSIONCONTAINER);
+                    _TAG_EXTENSION_CONTAINER);
         }
 
         if (this.additionalLocationEstimate != null) {
@@ -607,12 +693,12 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
         }
 
         if (this.velocityEstimate != null) {
-            ((VelocityEstimateImpl) this.velocityEstimate).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_velocityEstimate);
+            ((VelocityEstimateImpl) this.velocityEstimate).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_VELOCITY_ESTIMATE);
         }
 
         if (this.moLrShortCircuitIndicator) {
             try {
-                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_mo_lrShortCircuitIndicator);
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_MO_LR_SHORT_CIRCUIT_IND);
             } catch (IOException e) {
                 throw new MAPException(
                         "IOException while encoding parameter " + _PrimitiveName + " .moLrShortCircuitIndicator", e);
@@ -624,17 +710,17 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
 
         if (this.geranGANSSpositioningData != null) {
             ((GeranGANSSpositioningDataImpl) this.geranGANSSpositioningData).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_geranGANSSpositioningData);
+                    _TAG_GERAN_GANSS_POSITIONING_DATA);
         }
 
         if (this.utranGANSSpositioningData != null) {
             ((UtranGANSSpositioningDataImpl) this.utranGANSSpositioningData).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_utranGANSSpositioningData);
+                    _TAG_UTRAN_GANSS_POSITIONING_DATA);
         }
 
         if (this.targetServingNodeForHandover != null) {
             try {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_targetServingNodeForHandover);
+                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_TARGET_SERVING_NODE_HANDOVER);
                 int pos = asnOutputStream.StartContentDefiniteLength();
                 ((ServingNodeAddressImpl) this.targetServingNodeForHandover).encodeAll(asnOutputStream);
                 asnOutputStream.FinalizeContent(pos);
@@ -642,6 +728,27 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
                 throw new MAPException("AsnException while encoding parameter " + _PrimitiveName
                         + " .targetServingNodeForHandover", e);
             }
+        }
+
+        if (this.utranAdditionalPositioningData != null) {
+            ((UtranAdditionalPositioningDataImpl) this.utranAdditionalPositioningData).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
+                    _TAG_UTRAN_ADD_POSITIONING_DATA);
+        }
+
+        if (utranBaroPressureMeas != null) {
+            if (utranBaroPressureMeas < 30000 || utranBaroPressureMeas > 115000)
+                throw new MAPException("Exception while encoding parameter " + _PrimitiveName
+                        + " .utranBaroPressureMeas: value must be an integer between 30000 and 115000 (units of Pascal)");
+            try {
+                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_UTRAN_BARO_PREASSURE_MEAS, utranBaroPressureMeas);
+            } catch (AsnException | IOException e) {
+                throw new MAPException("Exception while encoding parameter " + _PrimitiveName
+                        + " .utranBaroPressureMeas", e);
+            }
+        }
+
+        if (this.utranCivicAddress != null) {
+            ((UtranCivicAddressImpl) this.utranCivicAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_UTRAN_CIVIC_ADDRESS);
         }
     }
 
@@ -707,6 +814,18 @@ public class ProvideSubscriberLocationResponseImpl extends LsmMessageImpl implem
         if (this.targetServingNodeForHandover != null) {
             sb.append(", targetServingNodeForHandover=");
             sb.append(this.targetServingNodeForHandover);
+        }
+        if (this.utranAdditionalPositioningData != null) {
+            sb.append(", utranAdditionalPositioningData=");
+            sb.append(this.utranAdditionalPositioningData);
+        }
+        if (this.utranBaroPressureMeas != null) {
+            sb.append(", utranBaroPressureMeas=");
+            sb.append(this.utranBaroPressureMeas);
+        }
+        if (this.utranCivicAddress != null) {
+            sb.append(", utranCivicAddress=");
+            sb.append(this.utranCivicAddress);
         }
 
         sb.append("]");

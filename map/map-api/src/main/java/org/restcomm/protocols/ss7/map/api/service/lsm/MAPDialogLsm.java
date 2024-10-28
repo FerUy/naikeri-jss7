@@ -40,7 +40,9 @@ public interface MAPDialogLsm extends MAPDialog {
             CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI, boolean saiPresent,
             AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate,
             boolean moLrShortCircuitIndicator, GeranGANSSpositioningData geranGANSSpositioningData,
-            UtranGANSSpositioningData utranGANSSpositioningData, ServingNodeAddress targetServingNodeForHandover)
+            UtranGANSSpositioningData utranGANSSpositioningData, ServingNodeAddress targetServingNodeForHandover,
+            UtranAdditionalPositioningData utranAdditionalPositioningData, Integer utranBaroPressureMeas,
+            UtranCivicAddress utranCivicAddress)
             throws MAPException;
 
     Long addSubscriberLocationReportRequest(LCSEvent lcsEvent, LCSClientID lcsClientID, LCSLocationInfo lcsLocationInfo,
@@ -53,7 +55,8 @@ public interface MAPDialogLsm extends MAPDialog {
             AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate, Integer sequenceNumber,
             PeriodicLDRInfo periodicLDRInfo, boolean moLrShortCircuitIndicator,
             GeranGANSSpositioningData geranGANSSpositioningData, UtranGANSSpositioningData utranGANSSpositioningData,
-            ServingNodeAddress targetServingNodeForHandover) throws MAPException;
+            ServingNodeAddress targetServingNodeForHandover, UtranAdditionalPositioningData utranAdditionalPositioningData,
+            Integer utranBaroPressureMeas, UtranCivicAddress utranCivicAddress) throws MAPException;
 
     Long addSubscriberLocationReportRequest(int customInvokeTimeout, LCSEvent lcsEvent, LCSClientID lcsClientID,
             LCSLocationInfo lcsLocationInfo, ISDNAddressString msisdn, IMSI imsi, IMEI imei, ISDNAddressString naEsrd,
@@ -65,7 +68,8 @@ public interface MAPDialogLsm extends MAPDialog {
             AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate, Integer sequenceNumber,
             PeriodicLDRInfo periodicLDRInfo, boolean moLrShortCircuitIndicator,
             GeranGANSSpositioningData geranGANSSpositioningData, UtranGANSSpositioningData utranGANSSpositioningData,
-            ServingNodeAddress targetServingNodeForHandover) throws MAPException;
+            ServingNodeAddress targetServingNodeForHandover, UtranAdditionalPositioningData utranAdditionalPositioningData,
+            Integer utranBaroPressureMeas, UtranCivicAddress utranCivicAddress) throws MAPException;
 
     void addSubscriberLocationReportResponse(long invokeId, ISDNAddressString naEsrd, ISDNAddressString naEsrk,
             MAPExtensionContainer extensionContainer) throws MAPException;

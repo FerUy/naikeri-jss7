@@ -1,7 +1,13 @@
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 /**
- * AccuracyFulfilmentIndicator ::= ENUMERATED { requestedAccuracyFulfilled (0), requestedAccuracyNotFulfilled (1), ... }
+ <code>
+ AccuracyFulfilmentIndicator ::= ENUMERATED {
+  requestedAccuracyFulfilled        (0),
+  requestedAccuracyNotFulfilled     (1),
+ ...
+ }
+ </code>
  *
  * @author amit bhayani
  *

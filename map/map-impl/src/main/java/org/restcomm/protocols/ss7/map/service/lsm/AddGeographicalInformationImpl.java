@@ -28,7 +28,7 @@ public class AddGeographicalInformationImpl extends ExtGeographicalInformationIm
 
         initData(typeOfShape, latitude, longitude, uncertainty, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis,
                 angleOfMajorAxis, confidence, altitude, uncertaintyAltitude, innerRadius, uncertaintyRadius, offsetAngle,
-                includedAngle);
+                includedAngle, 0, 0);
     }
 
     // TODO: add processing missed: TypeOfShape.EllipsoidPointWithAltitude

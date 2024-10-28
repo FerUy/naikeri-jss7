@@ -39,6 +39,8 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SLRArgExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ServingNodeAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SupportedGADShapes;
+import org.restcomm.protocols.ss7.map.api.service.lsm.UtranAdditionalPositioningData;
+import org.restcomm.protocols.ss7.map.api.service.lsm.UtranCivicAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranPositioningDataInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityEstimate;
@@ -168,8 +170,9 @@ public class MAPDialogLsmImpl extends MAPDialogImpl implements MAPDialogLsm {
             CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI, boolean saiPresent,
             AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate,
             boolean moLrShortCircuitIndicator, GeranGANSSpositioningData geranGANSSpositioningData,
-            UtranGANSSpositioningData utranGANSSpositioningData, ServingNodeAddress targetServingNodeForHandover)
-            throws MAPException {
+            UtranGANSSpositioningData utranGANSSpositioningData, ServingNodeAddress targetServingNodeForHandover,
+            UtranAdditionalPositioningData utranAdditionalPositioningData, Integer utranBaroPressureMeas,
+            UtranCivicAddress utranCivicAddress) throws MAPException {
 
         if (locationEstimate == null) {
             throw new MAPException("addProvideSubscriberLocationResponse: Mandatory parameters locationEstimate cannot be null");
@@ -193,7 +196,8 @@ public class MAPDialogLsmImpl extends MAPDialogImpl implements MAPDialogLsm {
                 geranPositioningData, utranPositioningData, ageOfLocationEstimate, additionalLocationEstimate,
                 extensionContainer, deferredMTLRResponseIndicator, cellGlobalIdOrServiceAreaIdOrLAI, saiPresent,
                 accuracyFulfilmentIndicator, velocityEstimate, moLrShortCircuitIndicator, geranGANSSpositioningData,
-                utranGANSSpositioningData, targetServingNodeForHandover);
+                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas,
+                utranCivicAddress);
 
         AsnOutputStream asnOs = new AsnOutputStream();
         provideSubscriberLocationResponseIndication.encodeData(asnOs);
@@ -231,13 +235,15 @@ public class MAPDialogLsmImpl extends MAPDialogImpl implements MAPDialogLsm {
             AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate, Integer sequenceNumber,
             PeriodicLDRInfo periodicLDRInfo, boolean moLrShortCircuitIndicator,
             GeranGANSSpositioningData geranGANSSpositioningData, UtranGANSSpositioningData utranGANSSpositioningData,
-            ServingNodeAddress targetServingNodeForHandover) throws MAPException {
+            ServingNodeAddress targetServingNodeForHandover, UtranAdditionalPositioningData utranAdditionalPositioningData,
+            Integer utranBaroPressureMeas, UtranCivicAddress utranCivicAddress) throws MAPException {
         return this.addSubscriberLocationReportRequest(_Timer_Default, lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi,
                 imei, naEsrd, naEsrk, locationEstimate, ageOfLocationEstimate, slrArgExtensionContainer, addLocationEstimate,
                 deferredmtlrData, lcsReferenceNumber, geranPositioningData, utranPositioningData, cellIdOrSai, hgmlcAddress,
                 lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator, velocityEstimate,
                 sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGANSSpositioningData,
-                utranGANSSpositioningData, targetServingNodeForHandover);
+                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas,
+                utranCivicAddress);
     }
 
     public Long addSubscriberLocationReportRequest(int customInvokeTimeout, LCSEvent lcsEvent, LCSClientID lcsClientID,
@@ -250,7 +256,8 @@ public class MAPDialogLsmImpl extends MAPDialogImpl implements MAPDialogLsm {
             AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate, Integer sequenceNumber,
             PeriodicLDRInfo periodicLDRInfo, boolean moLrShortCircuitIndicator,
             GeranGANSSpositioningData geranGANSSpositioningData, UtranGANSSpositioningData utranGANSSpositioningData,
-            ServingNodeAddress targetServingNodeForHandover) throws MAPException {
+            ServingNodeAddress targetServingNodeForHandover, UtranAdditionalPositioningData utranAdditionalPositioningData,
+            Integer utranBaroPressureMeas, UtranCivicAddress utranCivicAddress) throws MAPException {
 
         if (lcsEvent == null || lcsClientID == null || lcsLocationInfo == null) {
             throw new MAPException("Mandatory parameters lCSEvent, lCSClientID or lCSLocationInfo cannot be null");
@@ -277,7 +284,8 @@ public class MAPDialogLsmImpl extends MAPDialogImpl implements MAPDialogLsm {
                     slrArgExtensionContainer, addLocationEstimate, deferredmtlrData, lcsReferenceNumber, geranPositioningData,
                     utranPositioningData, cellIdOrSai, hgmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator,
                     accuracyFulfilmentIndicator, velocityEstimate, sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator,
-                    geranGANSSpositioningData, utranGANSSpositioningData, targetServingNodeForHandover);
+                    geranGANSSpositioningData, utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData,
+                    utranBaroPressureMeas, utranCivicAddress);
 
             AsnOutputStream asnOs = new AsnOutputStream();
             subscriberLocationReportRequest.encodeData(asnOs);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -8,11 +7,11 @@ import java.util.HashMap;
 
 /**
  <code>
- UtranGANSSpositioningData ::= OCTET STRING (SIZE (1..maxUtranGANSSpositioningData))
+ UtranAdditionalPositioningData ::= OCTET STRING (SIZE (1..maxUtranAdditionalPositioningData))
  -- Refers to the Position Data defined in 3GPP TS 25.413.
- -- This is composed of the GANSS-PositioningDataSet only, included in PositionData as defined in 3GPP TS 25.413.
+ -- This is composed of the Additional-PositioningDataSet only, included in PositionData as defined in 3GPP TS 25.413.
 
- maxUtranGANSSpositioningData INTEGER ::= 9
+ maxUtranAdditionalPositioningData INTEGER ::= 8
 
  PositionData ::= SEQUENCE {
  positioningDataDiscriminator       PositioningDataDiscriminator,
@@ -37,16 +36,13 @@ import java.util.HashMap;
  GANSS-PositioningDataSet ::= SEQUENCE(SIZE(1..maxGANSSSet)) OF GANSS-PositioningMethodAndUsage
  maxGANSSSet INTEGER ::= 9
  GANSS-PositioningMethodAndUsage ::= OCTET STRING (SIZE(1))
-
  </code>
  *
- * @author sergey vetyutnev
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
- *
  */
-public interface UtranGANSSpositioningData extends Serializable {
+public interface UtranAdditionalPositioningData extends Serializable {
 
     byte[] getData();
 
-    HashMap<String, String> getLocationGeneratedMethodsAndGANSSId() throws MAPException;
+    HashMap<String, String> getUtranAdditionalPositioningDataSet() throws MAPException;
 }

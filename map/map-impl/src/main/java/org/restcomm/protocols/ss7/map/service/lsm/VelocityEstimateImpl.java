@@ -79,8 +79,7 @@ public class VelocityEstimateImpl extends OctetStringBase implements VelocityEst
         if (this.data == null || this.data.length < 4)
             return 0;
 
-        int res = ((data[2] & 0xFF) << 8) + (data[3] & 0xFF);
-        return res;
+        return ((data[2] & 0xFF) << 8) + (data[3] & 0xFF);
     }
 
     @Override
@@ -88,8 +87,7 @@ public class VelocityEstimateImpl extends OctetStringBase implements VelocityEst
         if (this.data == null || this.data.length < 4)
             return 0;
 
-        int res = ((data[0] & 0x01) << 8) + (data[1] & 0xFF);
-        return res;
+        return ((data[0] & 0x01) << 8) + (data[1] & 0xFF);
     }
 
     @Override
@@ -101,8 +99,7 @@ public class VelocityEstimateImpl extends OctetStringBase implements VelocityEst
         switch (velocityType) {
             case HorizontalWithVerticalVelocity:
             case HorizontalWithVerticalVelocityAndUncertainty:
-                int res = (data[4] & 0xFF);
-                return res;
+                return (data[4] & 0xFF);
         }
 
         return 0;
@@ -116,11 +113,9 @@ public class VelocityEstimateImpl extends OctetStringBase implements VelocityEst
 
         switch (velocityType) {
             case HorizontalVelocityWithUncertainty:
-                int res = (data[4] & 0xFF);
-                return res;
+                return (data[4] & 0xFF);
             case HorizontalWithVerticalVelocityAndUncertainty:
-                res = (data[5] & 0xFF);
-                return res;
+                return (data[5] & 0xFF);
         }
 
         return 0;
@@ -132,10 +127,8 @@ public class VelocityEstimateImpl extends OctetStringBase implements VelocityEst
         if (velocityType == null)
             return 0;
 
-        switch (velocityType) {
-            case HorizontalWithVerticalVelocityAndUncertainty:
-                int res = (data[6] & 0xFF);
-                return res;
+        if (velocityType == VelocityType.HorizontalWithVerticalVelocityAndUncertainty) {
+            return (data[6] & 0xFF);
         }
 
         return 0;

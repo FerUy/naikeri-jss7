@@ -49,7 +49,6 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredmtlrData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AccuracyFulfilmentIndicator;
 import org.restcomm.protocols.ss7.map.api.service.lsm.Polygon;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
-import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientInternalID;
@@ -66,6 +65,8 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ServingNodeAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
+import org.restcomm.protocols.ss7.map.api.service.lsm.UtranAdditionalPositioningData;
+import org.restcomm.protocols.ss7.map.api.service.lsm.UtranCivicAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranPositioningDataInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityEstimate;
@@ -924,6 +925,10 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
             }
 
+            UtranAdditionalPositioningData utranAdditionalPositioningData = null;
+            Integer utranBaroPressureMeas = null;
+            UtranCivicAddress utranCivicAddress = null;
+
             curDialog.addProvideSubscriberLocationResponse(
                 provideSubscriberLocationRequest.getInvokeId(),
                 locationEstimate,
@@ -940,7 +945,10 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 moLrShortCircuitIndicator,
                 geranGANSSpositioningData,
                 utranGANSSpositioningData,
-                targetServingNodeForHandover);
+                targetServingNodeForHandover,
+                utranAdditionalPositioningData,
+                utranBaroPressureMeas,
+                utranCivicAddress);
 
             logger.debug("\nset addProvideSubscriberLocationResponse");
             curDialog.close(false);
@@ -1461,14 +1469,15 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             DeferredLocationEventType deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
             TerminationCause terminationCause = TerminationCause.congestion;
             DeferredmtlrData deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
-
-            ReportingPLMNList reportingPLMNList = null;
+            UtranAdditionalPositioningData utranAdditionalPositioningData = null;
+            Integer utranBaroPressureMeas = null;
+            UtranCivicAddress utranCivicAddress = null;
 
             mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo,
                 msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate, getAgeOfLocationEstimate(), slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData,
                 getLCSReferenceNumber(), geranPositioningData, utranPositioningDataInfo, cellIdOrSai, hgmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator,
                 accuracyFulfilmentIndicator, velocityEstimate, sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGANSSpositioningData,
-                utranGANSSpositioningData, targetNodeForHandover);
+                utranGANSSpositioningData, targetNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
             logger.debug("Added SubscriberLocationReportRequest");
 
             mapDialogLsm.send();
@@ -1476,8 +1485,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             this.countMapLcsReq++;
 
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: SubscriberLocationReportRequest", createSLRReqData(mapDialogLsm.getLocalDialogId(), lcsEvent,
-                this.getNetworkNodeNumber(), lcsClientID, msisdn, imsi, imei, locationEstimate, getAgeOfLocationEstimate(), lmsi, getLCSReferenceNumber(),
-                deferredmtlrData, cellIdOrSai, hgmlcAddress, accuracyFulfilmentIndicator, reportingPLMNList), Level.INFO);
+                this.getNetworkNodeNumber(), lcsClientID, msisdn, imsi, imei, locationEstimate, getAgeOfLocationEstimate(), getLCSReferenceNumber(),
+                deferredmtlrData, cellIdOrSai, hgmlcAddress, accuracyFulfilmentIndicator), Level.INFO);
 
             currentRequestDef += "Sent SLR Request;";
 
@@ -1797,14 +1806,15 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             DeferredLocationEventType deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
             TerminationCause terminationCause = TerminationCause.congestion;
             DeferredmtlrData deferredmtlrData = null; //new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
-
-            ReportingPLMNList reportingPLMNList = null;
+            UtranAdditionalPositioningData utranAdditionalPositioningData = null;
+            Integer utranBaroPressureMeas = null;
+            UtranCivicAddress utranCivicAddress = null;
 
             mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate,
                 getAgeOfLocationEstimate(), slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData, null, geranPositioningData,
                 utranPositioningDataInfo, cellIdOrSai, hgmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator,
                 velocityEstimate, sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGANSSpositioningData, utranGANSSpositioningData,
-                targetNodeForHandover);
+                targetNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
             logger.debug("Added SubscriberLocationReportRequest");
 
             mapDialogLsm.send();
@@ -1812,8 +1822,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             this.countMapLcsReq++;
 
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: SubscriberLocationReportRequest", createSLRReqData(mapDialogLsm.getLocalDialogId(), lcsEvent,
-                this.getNetworkNodeNumber(), lcsClientID, msisdn, imsi, imei, locationEstimate, getAgeOfLocationEstimate(), lmsi, null,
-                deferredmtlrData, cellIdOrSai, hgmlcAddress, accuracyFulfilmentIndicator, reportingPLMNList), Level.INFO);
+                this.getNetworkNodeNumber(), lcsClientID, msisdn, imsi, imei, locationEstimate, getAgeOfLocationEstimate(), null,
+                deferredmtlrData, cellIdOrSai, hgmlcAddress, accuracyFulfilmentIndicator), Level.INFO);
 
             currentRequestDef += "Sent SLR Request;";
 
@@ -1825,9 +1835,9 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
     }
 
     private String createSLRReqData(long dialogId, LCSEvent lcsEvent, String networkNodeNumber, LCSClientID lcsClientID, ISDNAddressString msisdn, IMSI imsi,
-                                    IMEI imei, ExtGeographicalInformation locationEstimate, Integer ageOfLocationEstimate, LMSI lmsi, Integer lcsReferenceNumber,
+                                    IMEI imei, ExtGeographicalInformation locationEstimate, Integer ageOfLocationEstimate, Integer lcsReferenceNumber,
                                     DeferredmtlrData deferredmtlrData, CellGlobalIdOrServiceAreaIdOrLAI cellIdOrSai, GSNAddress hgmlcAddress,
-                                    AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, ReportingPLMNList reportingPLMNList) {
+                                    AccuracyFulfilmentIndicator accuracyFulfilmentIndicator) {
         StringBuilder sb = new StringBuilder();
         sb.append("dialogId=");
         sb.append(dialogId);
@@ -1904,9 +1914,6 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         }
         sb.append("\", ageOfLocationEstimate=\"");
         sb.append(ageOfLocationEstimate);
-        sb.append("\", LMSI=\"");
-        if (lmsi != null)
-            sb.append(lmsi.toString()).append(", ");
         sb.append("\", lcsReferenceNumber=\"");
         sb.append(lcsReferenceNumber).append("\", ");
         sb.append("\", deferredmtlrData=\"");
@@ -1940,14 +1947,14 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         sb.append("\", accuracyFulfilmentIndicator=\"");
         sb.append(accuracyFulfilmentIndicator);
         sb.append("\", reportingPLMNList=\"");
-        if (reportingPLMNList != null) {
+        /*if (reportingPLMNList != null) {
             for (int i = 0; i < reportingPLMNList.getPlmnList().size(); i++) {
                 if (i < reportingPLMNList.getPlmnList().size())
                     sb.append(reportingPLMNList.getPlmnList().get(i)).append(", ");
                 else
                     sb.append(reportingPLMNList.getPlmnList().get(i));
             }
-        }
+        }*/
 
         return sb.toString();
     }
@@ -1980,13 +1987,11 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 subscriberLocationReportRequestIndication.getIMEI(),
                 subscriberLocationReportRequestIndication.getLocationEstimate(),
                 subscriberLocationReportRequestIndication.getAgeOfLocationEstimate(),
-                subscriberLocationReportRequestIndication.getLMSI(),
                 subscriberLocationReportRequestIndication.getLCSReferenceNumber(),
                 subscriberLocationReportRequestIndication.getDeferredmtlrData(),
                 subscriberLocationReportRequestIndication.getCellGlobalIdOrServiceAreaIdOrLAI(),
                 subscriberLocationReportRequestIndication.getHGMLCAddress(),
-                subscriberLocationReportRequestIndication.getAccuracyFulfilmentIndicator(),
-                subscriberLocationReportRequestIndication.getReportingPLMNList()), Level.INFO);
+                subscriberLocationReportRequestIndication.getAccuracyFulfilmentIndicator()), Level.INFO);
 
         MAPParameterFactory mapParameterFactory = this.mapProvider.getMAPParameterFactory();
         ISDNAddressString naEsrd = mapParameterFactory.createISDNAddressString(

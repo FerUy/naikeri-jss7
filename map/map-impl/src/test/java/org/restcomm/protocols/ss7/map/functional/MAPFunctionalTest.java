@@ -5132,12 +5132,13 @@ public class MAPFunctionalTest extends SccpHarness {
 
                 Assert.assertEquals(ind.getLocationType().getLocationEstimateType(),
                         LocationEstimateType.cancelDeferredLocation);
-                Assert.assertTrue(ind.getMlcNumber().getAddress().equals("11112222"));
+                assertEquals(ind.getMlcNumber().getAddress(), "11112222");
 
                 try {
                     ExtGeographicalInformation locationEstimate = this.mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(-31, -53);
                     d.addProvideSubscriberLocationResponse(ind.getInvokeId(), locationEstimate, null, null, 6, null, null,
-                            false, null, false, null, null, false, null, null, null);
+                            false, null, false, null, null, false, null, null, null,
+                            null, null, null);
                 } catch (MAPException e) {
                     this.error("Error while adding ProvideSubscriberLocationResponse", e);
                     fail("Error while adding ProvideSubscriberLocationResponse");
