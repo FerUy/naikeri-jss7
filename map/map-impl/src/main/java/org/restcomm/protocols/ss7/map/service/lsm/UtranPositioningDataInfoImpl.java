@@ -238,7 +238,7 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
         for (HashMap.Entry<String, Integer> entry : methodsAndGanssIds.entrySet()) {
             String key = entry.getKey();
             Integer value = entry.getValue();
-            System.out.println("Key=" + key + ", Value=" + value + ": " + utranPositioningData.getUsage(value));
+            System.out.println("Method=" + key + ", Usage=" + value + ": " + utranPositioningData.getUsage(value));
         }
 
         ArrayList<String> methods = utranPositioningData.getUtranLocationGeneratedPositioningMethods();

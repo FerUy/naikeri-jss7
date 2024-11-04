@@ -153,7 +153,7 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
         for (HashMap.Entry<String, String> entry : methodsAndGanssIds.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            System.out.println("Key=" + key + ", Value=" + value);
+            System.out.println("Method=" + key + ", GANSSId=" + value);
         }
     }*/
 }

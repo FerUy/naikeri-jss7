@@ -64,11 +64,9 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.AddGeographicalInformation
 import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ServingNodeAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
-import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranAdditionalPositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranCivicAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranPositioningDataInfo;
-import org.restcomm.protocols.ss7.map.api.service.lsm.UtranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityEstimate;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.TerminationCause;
@@ -133,6 +131,7 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import org.apache.log4j.Level;import org.apache.log4j.Logger;
@@ -386,25 +385,14 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             SupportedLCSCapabilitySets additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
                 lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
             MAPExtensionContainer mapExtensionContainer = null;
-            String mmeNameStr = "mmec03.mmeer3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
-            byte[] mme = mmeNameStr.getBytes();
-            //byte[] mme = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
-            DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
-            String aaaServerNameStr = "aaa04.aaa3000.aaa.epc.mnc002.mcc748.3gppnetwork.org";
-            byte[] aaa = aaaServerNameStr.getBytes();
-            //byte[] aaa = {65, 65, 65, 55, 52, 56, 48, 48, 48, 49, 53, 48};
-            DiameterIdentity aaaServerName = new DiameterIdentityImpl(aaa);
-            GSNAddressAddressType gsnAddressAddressType = GSNAddressAddressType.IPv4;
-            byte[] visitedGmlcAddressData = {(byte) 180, 53, (byte) 105, 48};
-            GSNAddress vGmlcAddress = new GSNAddressImpl(gsnAddressAddressType, visitedGmlcAddressData);
-            byte[] homeGmlcAddressData = {(byte) 181, (byte) 104, (byte) 201, 3};
-            GSNAddress hGmlcAddress = new GSNAddressImpl(gsnAddressAddressType, homeGmlcAddressData);
-            byte[] pivacyProfileRegisterAddressData = {(byte) 181, (byte) 104, 97, 21};
-            GSNAddress pprAddress = new GSNAddressImpl(gsnAddressAddressType, pivacyProfileRegisterAddressData);
-            byte[] addVGmlcAddressData = {(byte) 181, 53, (byte) 105, 74};
-            GSNAddress additionalVGmlcAddress = new GSNAddressImpl(gsnAddressAddressType, addVGmlcAddressData);
-            DiameterIdentity sgsnName = null;
-            DiameterIdentity sgsnRealm = null;
+            DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity sgsnName = new DiameterIdentityImpl("mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity sgsnRealm = new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            GSNAddress vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
+            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
+            GSNAddress pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x12 });
+            GSNAddress additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
 
             LCSLocationInfo lcsLocationInfo = mapFactory.createLCSLocationInfo(mscNumber, lmsi, mapExtensionContainer, gprsNodeIndicator,
                 additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
@@ -428,7 +416,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 createSRIforLCSResData(curDialog.getLocalDialogId(), mscNumber, targetMS, additionalNumber), Level.INFO);
 
         } catch (MAPException me) {
-            logger.debug("Failed building SendRoutingInfoForLCS response " + me.toString());
+            logger.debug("Failed building SendRoutingInfoForLCS response " + me);
         }
 
     }
@@ -711,19 +699,26 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             e.printStackTrace();
         }
         boolean moLrShortCircuitIndicator = true;
-        byte[] gGanss = {56, 50, 48, 49, 51, 53};
-        GeranGANSSpositioningData geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(gGanss);
-        byte[] uGanss = {57, 51, 51, 54, 48, 48};
-        UtranGANSSpositioningData utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(uGanss);
+        // Method=MS-Based, GANSSId=Galileo
+        // Method=MS-Assisted, GANSSId=GLONASS
+        // Method=Conventional, GANSSId=SBAS
+        byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
+        GeranGANSSpositioningDataImpl geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
+        // Method=MS-Based, GANSSId=Galileo
+        // Method=MS-Assisted, GANSSId=GLONASS
+        // Method=Conventional, GANSSId=SBAS
+        byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
+        UtranGANSSpositioningDataImpl utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
         ServingNodeAddress targetServingNodeForHandover = mapFactory.createServingNodeAddressMscNumber(mscNumber);
 
         ExtGeographicalInformation locationEstimate = null;
-        TypeOfShape typeOfShape = null, additionalTypeOfShape = null;
+        TypeOfShape typeOfShape = null;
         double latitude, longitude, uncertainty, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, uncertaintyAltitude, uncertaintyRadius,
             offsetAngle, includedAngle;
         int confidence, altitude, innerRadius;
-        EllipsoidPoint ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6, ellipsoidPoint7,
-            ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10, ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13, ellipsoidPoint14, ellipsoidPoint15;
+        EllipsoidPoint ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6;
+        // ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10, ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13,
+        // ellipsoidPoint14, ellipsoidPoint15;
         // 3 <= numberOfPoints <= 15
         int typeOfShapeRandomOption = rand.nextInt(6) + 1;
         switch (typeOfShapeRandomOption) {
@@ -810,7 +805,6 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
         int additionalLocationEstimateRandomOption = rand.nextInt(6) + 1;
         if (typeOfShape == TypeOfShape.Polygon) {
-            additionalTypeOfShape = TypeOfShape.Polygon;
             ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
             ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
             ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
@@ -851,7 +845,12 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                                     37, (byte) 230, (byte) 131, 52, 67, 121,
                                     37, (byte) 230, (byte) 132, 52, 67, 125};
 
-            Polygon polygon1, polygon2, polygon3, polygon4, polygon5, polygon6 = new PolygonImpl();
+            Polygon polygon1;
+            Polygon polygon2;
+            Polygon polygon3;
+            Polygon polygon4;
+            Polygon polygon5;
+            PolygonImpl polygon6 = new PolygonImpl();
 
             try {
                 switch (additionalLocationEstimateRandomOption) {
@@ -876,7 +875,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                         additionalLocationEstimate = new AddGeographicalInformationImpl(polygon5.getData());
                         break;
                     case 6:
-                        ((PolygonImpl) polygon6).setData(ellipsoidPoints);
+                        polygon6.setData(ellipsoidPoints);
                         additionalLocationEstimate = new AddGeographicalInformationImpl(polygon6.getData());
                         break;
                 }
@@ -959,7 +958,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 locationEstimate, lcsReferenceNumber), Level.INFO);
 
         } catch (MAPException me) {
-            logger.debug("Exception on addProvideSubscriberLocationResponse " + me.toString());
+            logger.debug("Exception on addProvideSubscriberLocationResponse " + me);
         }
     }
 
@@ -1431,11 +1430,17 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             int reportingInterval = 60;
             ReportingOptionMilliseconds reportingOptionMilliseconds = null;
             PeriodicLDRInfo periodicLDRInfo = mapParameterFactory.createPeriodicLDRInfo(reportingAmount, reportingInterval, reportingOptionMilliseconds);
-            Boolean moLrShortCircuitIndicator = false;
-            byte[] gGanss = {57, 50, 48, 49, 51, 52};
-            GeranGANSSpositioningData geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(gGanss);
-            byte[] uGanss = {57, 51, 51, 54, 49, 48};
-            UtranGANSSpositioningData utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(uGanss);
+            boolean moLrShortCircuitIndicator = false;
+            // Method=MS-Based, GANSSId=Galileo
+            // Method=MS-Assisted, GANSSId=GLONASS
+            // Method=Conventional, GANSSId=SBAS
+            byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
+            GeranGANSSpositioningDataImpl geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
+            // Method=MS-Based, GANSSId=Galileo
+            // Method=MS-Assisted, GANSSId=GLONASS
+            // Method=Conventional, GANSSId=SBAS
+            byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
+            UtranGANSSpositioningDataImpl utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
             ServingNodeAddress targetNodeForHandover = null;
             AdditionalNumber additionalNumber = null;
             boolean lcsCapabilitySetRelease98_99 = true;
@@ -1770,11 +1775,17 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             int reportingAmount = 10;
             int reportingInterval = 60;
             PeriodicLDRInfo periodicLDRInfo = null; //mapParameterFactory.createPeriodicLDRInfo(reportingAmount, reportingInterval);
-            Boolean moLrShortCircuitIndicator = false;
-            byte[] gGanss = {57, 50, 48, 49, 51, 52};
-            GeranGANSSpositioningData geranGANSSpositioningData = null; //new GeranGANSSpositioningDataImpl(gGanss);
-            byte[] uGanss = {57, 51, 51, 54, 49, 48};
-            UtranGANSSpositioningData utranGANSSpositioningData = null; //new UtranGANSSpositioningDataImpl(uGanss);
+            boolean moLrShortCircuitIndicator = false;
+            // Method=MS-Based, GANSSId=Galileo
+            // Method=MS-Assisted, GANSSId=GLONASS
+            // Method=Conventional, GANSSId=SBAS
+            byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
+            GeranGANSSpositioningDataImpl geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
+            // Method=MS-Based, GANSSId=Galileo
+            // Method=MS-Assisted, GANSSId=GLONASS
+            // Method=Conventional, GANSSId=SBAS
+            byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
+            UtranGANSSpositioningDataImpl utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
             ServingNodeAddress targetNodeForHandover = null;
             AdditionalNumber additionalNumber = null;
             boolean lcsCapabilitySetRelease98_99 = true;

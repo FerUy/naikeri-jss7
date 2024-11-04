@@ -970,7 +970,7 @@ public class Client extends TestHarnessMobilityManagement {
             boolean tAdsDataRetrieval = true;
             Boolean homogeneousSupportOfIMSVoiceOverPSSessions = true;
             boolean cancellationTypeInitialAttach = true;
-            boolean misdnlessOperationSupported = true;
+            boolean msisdnlessOperationSupported = true;
             boolean updateOfHomogeneousSupportOfIMSVoiceOverPSSessions = true;
             boolean resetIdsSupported = true;
             boolean unlicensedSpectrumAsSecondaryRAT = true;
@@ -980,7 +980,7 @@ public class Client extends TestHarnessMobilityManagement {
                     superChargerSupportedInServingNetworkEntity, gprsEnhancementsSupportIndicator, supportedCamelPhases,
                     supportedLCSCapabilitySets, offeredCamel4CSIs, smsCallBarringSupportIndicator, supportedRATTypesIndicator,
                     supportedFeatures, tAdsDataRetrieval, homogeneousSupportOfIMSVoiceOverPSSessions, cancellationTypeInitialAttach,
-                    misdnlessOperationSupported, updateOfHomogeneousSupportOfIMSVoiceOverPSSessions, resetIdsSupported,
+                    msisdnlessOperationSupported, updateOfHomogeneousSupportOfIMSVoiceOverPSSessions, resetIdsSupported,
                     extSupportedFeatures);
             boolean informPreviousNetworkEntity = true;
             boolean psLCSNotSupportedByUE = false;

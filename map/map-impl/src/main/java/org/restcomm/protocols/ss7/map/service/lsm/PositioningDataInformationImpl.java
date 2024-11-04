@@ -219,7 +219,7 @@ public class PositioningDataInformationImpl extends OctetStringBase implements P
         for (HashMap.Entry<String, Integer> entry : methodsAndUsage.entrySet()) {
             String key = entry.getKey();
             Integer value = entry.getValue();
-            System.out.println("Key=" + key + ", Value=" + value + ": " + geranPositioningData.getUsage(value));
+            System.out.println("Method=" + key + ", Usage=" + value + ": " + geranPositioningData.getUsage(value));
         }
 
         ArrayList<String> methods = geranPositioningData.getLocationGeneratedPositioningMethods();

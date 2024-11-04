@@ -1337,7 +1337,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
           curDialog.sendErrorComponent(invokeId, mapErrorMessage);
           this.countErrSent++;
           psiReqData = this.createErrorData(curDialog.getLocalDialogId(), (int) invokeId, mapErrorMessage);
-          this.testerHost.sendNotif(SOURCE_NAME, "Sent: errUnknSubs", psiReqData, Level.DEBUG);
+          this.testerHost.sendNotif(SOURCE_NAME, "Sent: errUnkownSubs", psiReqData, Level.DEBUG);
           break;
       }
 
