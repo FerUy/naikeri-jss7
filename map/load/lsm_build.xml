@@ -7,7 +7,7 @@
     </condition>
 
 
-    <property name="packageprefix" value="org.restcomm.protocols.ss7.map.load.mobility_management.cs" />
+    <property name="packageprefix" value="org.restcomm.protocols.ss7.map.load.lsm" />
     <!-- <property name="packageprefix" value="org.restcomm.protocols.ss7.map.loadDialogic" /> -->
 
     <property name="javac.source" value="11" />
@@ -20,11 +20,11 @@
     <property name="test.server.clientPort" value="8011" />
     <property name="test.server.serverIp" value="127.0.0.1" />
     <property name="test.server.serverPort" value="8012" />
-    <property name="test.server.clientPc" value="1" />
-    <property name="test.server.serverPc" value="2" />
+    <property name="test.server.clientPc" value="1001" />
+    <property name="test.server.serverPc" value="2002" />
     <property name="test.server.ni" value="2" />
     <property name="test.server.si" value="3" />
-    <property name="test.server.ssn" value="6" />
+    <property name="test.server.ssn" value="12" />
     <property name="test.server.rc" value="100" />
 
     <property name="test.client.numOfDialogs" value="1440000" />
@@ -34,8 +34,8 @@
     <property name="test.client.clientPort" value="8011" />
     <property name="test.client.serverIp" value="127.0.0.1" />
     <property name="test.client.serverPort" value="8012" />
-    <property name="test.client.clientPc" value="1" />
-    <property name="test.client.serverPc" value="2" />
+    <property name="test.client.clientPc" value="1001" />
+    <property name="test.client.serverPc" value="2002" />
     <property name="test.client.ni" value="2" />
     <property name="test.client.si" value="3" />
     <property name="test.client.ssn" value="145" />
@@ -82,6 +82,7 @@
         <pathelement location="${assemble.dir}/concurrent.jar" />
         <pathelement location="${assemble.dir}/guava.jar" />
         <pathelement location="${assemble.dir}/netty-all.jar" />
+        <pathelement location="${assemble.dir}/commons-lang3.jar" />
         <pathelement location="src/main/resources" />
 
     </path>

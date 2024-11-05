@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class ReportingOptionMillisecondsImpl implements ReportingOptionMilliseconds {
 
-    public static final String _PrimitiveName = "PeriodicLDRInfo";
+    public static final String _PrimitiveName = "ReportingOptionMilliseconds";
 
     private int reportingAmountMilliseconds;
     private int reportingIntervalMilliseconds;
@@ -140,7 +140,7 @@ public class ReportingOptionMillisecondsImpl implements ReportingOptionMilliseco
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
 
-        if (((long) reportingAmountMilliseconds * reportingIntervalMilliseconds) >= 8639999000L)
+        if (((long) reportingAmountMilliseconds * reportingIntervalMilliseconds) > 8639999000L)
             throw new MAPException("Error while encoding " + _PrimitiveName + ", " +
                     "reportingAmountMilliseconds x reportingIntervalMilliseconds shall not exceed 8639999000 ms" +
                     "(99 days, 23 hours, 59 minutes and 59 seconds) for compatibility with OMA MLP and RLP.");

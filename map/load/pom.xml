@@ -647,30 +647,43 @@
 										</artifactItem>
 
 										<!-- license dependencies -->
-                                                                                <artifactItem>
-                                                                                        <groupId>com.license4j</groupId>
-                                                                                        <artifactId>license4j-runtime-library</artifactId>
-                                                                                        <type>jar</type>
-                                                                                        <overWrite>true</overWrite>
-                                                                                        <outputDirectory>
-                                                                                                ${assemble.dir}
-                                                                                        </outputDirectory>
-                                                                                        <destFileName>
-																								license4j-runtime-library-4.7.3.jar
-                                                                                        </destFileName>
-                                                                                </artifactItem>
-                                                                                <artifactItem>
-                                                                                        <groupId>com.naikeri.licensor</groupId>
-                                                                                        <artifactId>NaikeriLicensor</artifactId>
-                                                                                        <type>jar</type>
-                                                                                        <overWrite>true</overWrite>
-                                                                                        <outputDirectory>
-                                                                                                ${assemble.dir}
-                                                                                        </outputDirectory>
-                                                                                        <destFileName>
-																								NaikeriLicensor-1.0.0-SNAPSHOT.jar
-                                                                                        </destFileName>
-                                                                                </artifactItem>
+										<artifactItem>
+											<groupId>com.license4j</groupId>
+											<artifactId>license4j-runtime-library</artifactId>
+											<type>jar</type>
+											<overWrite>true</overWrite>
+											<outputDirectory>
+												${assemble.dir}
+											</outputDirectory>
+											<destFileName>
+												license4j-runtime-library-4.7.3.jar
+											</destFileName>
+										</artifactItem>
+										<artifactItem>
+											<groupId>com.naikeri.licensor</groupId>
+											<artifactId>NaikeriLicensor</artifactId>
+											<type>jar</type>
+											<overWrite>true</overWrite>
+											<outputDirectory>
+												${assemble.dir}
+											</outputDirectory>
+											<destFileName>
+												NaikeriLicensor-1.0.0-SNAPSHOT.jar
+											</destFileName>
+										</artifactItem>
+
+										<artifactItem>
+											<groupId>org.apache.commons</groupId>
+											<artifactId>commons-lang3</artifactId>
+											<type>jar</type>
+											<overWrite>true</overWrite>
+											<outputDirectory>
+												${assemble.dir}
+											</outputDirectory>
+											<destFileName>
+												commons-lang3.jar
+											</destFileName>
+										</artifactItem>
 
 										<!-- lic dep 2 -->
 																				

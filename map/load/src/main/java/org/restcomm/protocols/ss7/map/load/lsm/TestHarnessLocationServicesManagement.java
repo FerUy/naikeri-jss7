@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public abstract class TestHarnessLocationServicesManagement implements MAPDialogListener, MAPServiceLsmListener {
 
@@ -34,13 +34,12 @@ public abstract class TestHarnessLocationServicesManagement implements MAPDialog
 
     // MTP Details
     protected static int CLIENT_SPC = 1001; // Client Signaling Point Code
-    protected static int SERVER_SPC = 2000; // Server Signaling Point Code
+    protected static int SERVER_SPC = 2002; // Server Signaling Point Code
     protected static int NETWORK_INDICATOR = 2; // National Network
     protected static int SERVICE_INDICATOR = 3; // Upper layer is SCCP
-    protected static int HLR_SSN = 6;
-    protected static int MSC_SSN = 8;
-    protected static int GMLC_SSN = 145;
-    protected static int SGSN_SSN = 149;
+    protected static int SSN = 8;
+    protected static int CLIENT_SSN = 145;
+    protected static int SERVER_SSN = 12;
 
     // M3UA details
     protected static String CLIENT_IP = "127.0.0.1";
@@ -67,14 +66,14 @@ public abstract class TestHarnessLocationServicesManagement implements MAPDialog
     protected static String SCCP_HLR_ADDRESS = "491710460000";
     protected static String SCCP_MSC_ADDRESS = "491710460015";
     protected static String SCCP_SGSN_ADDRESS = "491710460025";
-
-
+    protected static String SCCP_CLIENT_ADDRESS = "491710470201";
+    protected static String SCCP_SERVER_ADDRESS = "491710460000";
 
     protected static RoutingIndicator ROUTING_INDICATOR = RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN;
 
     protected final ParameterFactoryImpl factory = new ParameterFactoryImpl();
 
-    protected static int TEST_START_DELAY = 20000;
+    protected static int TEST_START_DELAY = 10000;
     protected static int TEST_END_DELAY = 3000;
     protected static int PRINT_WRITER_PERIOD = 2000;
 

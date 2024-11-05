@@ -44,7 +44,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
-import org.restcomm.protocols.ss7.map.api.primitives.MAPPrivateExtension;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.SubscriberIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.USSDString;
@@ -55,7 +54,6 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredLocationEventType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredmtlrData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.EllipsoidPoint;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ExtGeographicalInformation;
-import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientInternalID;
@@ -68,11 +66,9 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.LocationEstimateType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.MAPDialogLsm;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PeriodicLDRInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.Polygon;
-import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
-import org.restcomm.protocols.ss7.map.api.service.lsm.SLRArgExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SLRArgPCSExtensions;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SendRoutingInfoForLCSRequest;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SendRoutingInfoForLCSResponse;
@@ -82,8 +78,6 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.SubscriberLocationReportRe
 import org.restcomm.protocols.ss7.map.api.service.lsm.TerminationCause;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranAdditionalPositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranCivicAddress;
-import org.restcomm.protocols.ss7.map.api.service.lsm.UtranGANSSpositioningData;
-import org.restcomm.protocols.ss7.map.api.service.lsm.UtranPositioningDataInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityEstimate;
 import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.SupportedLCSCapabilitySets;
@@ -91,22 +85,18 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
 import org.restcomm.protocols.ss7.map.datacoding.CBSDataCodingSchemeImpl;
 import org.restcomm.protocols.ss7.map.primitives.AddressStringImpl;
-import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
-import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdOrLAIImpl;
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.GSNAddressImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
-import org.restcomm.protocols.ss7.map.primitives.MAPPrivateExtensionImpl;
 import org.restcomm.protocols.ss7.map.primitives.SubscriberIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.USSDStringImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.AddGeographicalInformationImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.AdditionalNumberImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.DeferredLocationEventTypeImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.DeferredmtlrDataImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.ExtGeographicalInformationImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.GeranGANSSpositioningDataImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.LCSClientExternalIDImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.LCSClientIDImpl;
@@ -116,8 +106,6 @@ import org.restcomm.protocols.ss7.map.service.lsm.PeriodicLDRInfoImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.PolygonImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.PositioningDataInformationImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.ReportingOptionMillisecondsImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.SLRArgExtensionContainerImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.SLRArgPCSExtensionsImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.ServingNodeAddressImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.UtranAdditionalPositioningDataImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.UtranCivicAddressImpl;
@@ -125,8 +113,6 @@ import org.restcomm.protocols.ss7.map.service.lsm.UtranGANSSpositioningDataImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.UtranPositioningDataInfoImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.VelocityEstimateImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeodeticInformationImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeographicalInformationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
@@ -149,11 +135,8 @@ import org.restcomm.protocols.ss7.tcap.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 
-import java.io.File;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Random;
 
 import static org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent.emergencyCallOrigination;
@@ -264,7 +247,7 @@ public class Server extends TestHarnessLocationServicesManagement {
         this.sccpResource = this.sccpStack.getSccpResource();
 
         this.sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, CLIENT_SPC, GMLC_SSN, 0, false);
+        this.sccpResource.addRemoteSsn(0, CLIENT_SPC, CLIENT_SSN, 0, false);
 
         this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
         this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
@@ -291,7 +274,7 @@ public class Server extends TestHarnessLocationServicesManagement {
     }
 
     private void initTCAP() throws Exception {
-        this.tcapStack = new TCAPStackImpl("TestServer", this.sccpStack.getSccpProvider(), HLR_SSN);
+        this.tcapStack = new TCAPStackImpl("TestServer", this.sccpStack.getSccpProvider(), SERVER_SSN);
         this.tcapStack.start();
         this.tcapStack.setDialogIdleTimeout(60000);
         this.tcapStack.setInvokeTimeout(30000);
@@ -314,7 +297,7 @@ public class Server extends TestHarnessLocationServicesManagement {
         GlobalTitle gt = fact.createGlobalTitle(address, 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
                 BCDEvenEncodingScheme.INSTANCE, NatureOfAddress.INTERNATIONAL);
         if (ssn < 0) {
-            ssn = GMLC_SSN;
+            ssn = SERVER_SSN;
         }
         return fact.createSccpAddress(ri, gt, dpc, ssn);
     }
@@ -367,16 +350,16 @@ public class Server extends TestHarnessLocationServicesManagement {
         System.out.println("SERVICE_INDICATOR="+ TestHarnessLocationServicesManagement.SERVICE_INDICATOR);
 
         if (args.length >= 10) {
-            TestHarnessLocationServicesManagement.HLR_SSN = Integer.parseInt(args[9]);
+            TestHarnessLocationServicesManagement.SSN = Integer.parseInt(args[9]);
         }
-        System.out.println("SSN="+ TestHarnessLocationServicesManagement.HLR_SSN);
+        System.out.println("SSN="+ TestHarnessLocationServicesManagement.SSN);
 
         if (args.length >= 11) {
             TestHarnessLocationServicesManagement.ROUTING_CONTEXT = Integer.parseInt(args[10]);
         }
         System.out.println("ROUTING_CONTEXT="+ TestHarnessLocationServicesManagement.ROUTING_CONTEXT);
 
-        if(args.length >= 12){
+        if(args.length >= 12) {
             TestHarnessLocationServicesManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[11]);
         }
         System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT=" + TestHarnessLocationServicesManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
@@ -384,12 +367,107 @@ public class Server extends TestHarnessLocationServicesManagement {
         final Server server = new Server();
         try {
             server.initializeStack(ipChannelType);
-
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }
 
+    @Override
+    public void onSendRoutingInfoForLCSRequest(SendRoutingInfoForLCSRequest sendRoutingInfoForLCSRequestIndication) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("sendRoutingInfoForLCSRequestIndication for DialogId=%d", sendRoutingInfoForLCSRequestIndication
+                    .getMAPDialog().getLocalDialogId()));
+        }
+        try {
+            long invokeId = sendRoutingInfoForLCSRequestIndication.getInvokeId();
+            MAPDialogLsm sriLcsDialog = sendRoutingInfoForLCSRequestIndication.getMAPDialog();
+
+            // Create Routing Information parameters for concerning MAP operation
+            MAPParameterFactoryImpl mapFactory = new MAPParameterFactoryImpl();
+            Random rand = new Random();
+            SubscriberIdentity subscriberIdentity;
+            if (sendRoutingInfoForLCSRequestIndication.getTargetMS().getIMSI() != null) {
+                long msisdnDigits = RandomUtils.nextLong(59898000000L, 59899000000L);
+                ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                        String.valueOf(msisdnDigits));
+                subscriberIdentity = new SubscriberIdentityImpl(msisdn);
+            } else {
+                long imsiDigits = RandomUtils.nextLong(748020000000000L, 748030000000000L);
+                subscriberIdentity = new SubscriberIdentityImpl(new IMSIImpl(String.valueOf(imsiDigits)));
+            }
+            ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
+            ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, SCCP_SGSN_ADDRESS);
+            AdditionalNumber additionalNumber = new AdditionalNumberImpl(null, sgsnNumber);
+            LMSI lmsi;
+            int lmsiRandom = rand.nextInt(10) + 1;
+            switch (lmsiRandom) {
+                case 1:
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 233, (byte) 140});
+                    break;
+                case 2:
+                    lmsi = new LMSIImpl(new byte[] {113, (byte) 255, (byte) 172, (byte) 206});
+                    break;
+                case 3:
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 235, 55});
+                    break;
+                case 4:
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 231, (byte) 213});
+                    break;
+                default:
+                    lmsi = null;
+                    break;
+            }
+            boolean gprsNodeIndicator = false;
+            boolean lcsCapabilitySetRelease98_99 = true;
+            boolean lcsCapabilitySetRelease4 = true;
+            boolean lcsCapabilitySetRelease5 = true;
+            boolean lcsCapabilitySetRelease6 = true;
+            boolean lcsCapabilitySetRelease7 = false;
+            SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
+                    lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
+            lcsCapabilitySetRelease7 = true;
+            SupportedLCSCapabilitySets additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
+                    lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
+            DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity sgsnName = new DiameterIdentityImpl("mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity sgsnRealm = new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            LCSLocationInfo lcsLocationInfo = mapFactory.createLCSLocationInfo(mscNumber, lmsi, null, gprsNodeIndicator,
+                    additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
+
+            GSNAddress vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
+            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
+            GSNAddress pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x12 });
+            GSNAddress additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
+
+            sriLcsDialog.addSendRoutingInfoForLCSResponse(invokeId, subscriberIdentity, lcsLocationInfo, null, vGmlcAddress, hGmlcAddress,
+                    pprAddress, additionalVGmlcAddress);
+            // This will initiate the TC-BEGIN with INVOKE component
+            sriLcsDialog.close(false);
+
+            // Create Dialog for sending SLR to the GMLC
+            AddressString origRef = mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
+            AddressString destRef = mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_GMLC_ADDRESS);
+            SccpAddress origSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, SERVER_SSN, SCCP_MSC_ADDRESS);
+            SccpAddress destSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, CLIENT_SSN, SCCP_GMLC_ADDRESS);
+            MAPDialogLsm mapDialogLsm = mapProvider.getMAPServiceLsm()
+                    .createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationSvcEnquiryContext,
+                            MAPApplicationContextVersion.version3), origSccpAddress, origRef, destSccpAddress, destRef);
+
+            // SLR is not deferred MT LT
+            sendMapSLR(mapDialogLsm, false);
+
+
+        } catch (MAPException mapException) {
+            logger.error("MAP Exception while processing onSendRoutingInfoForLCSRequest ", mapException);
+        } catch (Exception e) {
+            logger.error("Exception while processing onSendRoutingInfoForLCSRequest ", e);
+        }
+    }
 
     private void sendMapSLR(MAPDialogLsm mapDialogLsm, boolean isDeferred) {
     /*
@@ -441,6 +519,7 @@ public class Server extends TestHarnessLocationServicesManagement {
             User error                                                                              C           C(=)
             Provider error                                                                                      O
    */
+
         // Then, create parameters for concerning MAP operation
         try {
             MAPParameterFactoryImpl mapParameterFactory = new MAPParameterFactoryImpl();
@@ -451,8 +530,7 @@ public class Server extends TestHarnessLocationServicesManagement {
             // -- one of msisdn or imsi is mandatory
             if (msisdnOrImsi == 1) {
                 long msisdnDigits = RandomUtils.nextLong(59898000000L, 59899000000L);
-                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                        String.valueOf(msisdnDigits));
+                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, String.valueOf(msisdnDigits));
             } else {
                 long imsiDigits = RandomUtils.nextLong(748020000000000L, 748030000000000L);
                 imsi = new IMSIImpl(String.valueOf(imsiDigits));
@@ -496,25 +574,20 @@ public class Server extends TestHarnessLocationServicesManagement {
             ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number,
                     NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
 
-            byte[] lmsiByte;
             LMSI lmsi;
             int lmsiRandom = rand.nextInt(10) + 1;
             switch (lmsiRandom) {
                 case 1:
-                    lmsiByte = new byte[] {114, 2, (byte) 233, (byte) 140};
-                    lmsi = new LMSIImpl(lmsiByte);
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 233, (byte) 140});
                     break;
                 case 2:
-                    lmsiByte = new byte[] {113, (byte) 255, (byte) 172, (byte) 206};
-                    lmsi = new LMSIImpl(lmsiByte);
+                    lmsi = new LMSIImpl(new byte[] {113, (byte) 255, (byte) 172, (byte) 206});
                     break;
                 case 3:
-                    lmsiByte = new byte[] {114, 2, (byte) 235, 55};
-                    lmsi = new LMSIImpl(lmsiByte);
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 235, 55});
                     break;
                 case 4:
-                    lmsiByte = new byte[] {114, 2, (byte) 231, (byte) 213};
-                    lmsi = new LMSIImpl(lmsiByte);
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 231, (byte) 213});
                     break;
                 default:
                     lmsi = null;
@@ -558,7 +631,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 2:
@@ -569,7 +642,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 3:
@@ -584,7 +657,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyEllipse(latitude, longitude,
                                 uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 4:
@@ -601,7 +674,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(latitude,
                                 longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 5:
@@ -617,7 +690,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidArc(latitude, longitude, innerRadius,
                                 uncertaintyRadius, offsetAngle, includedAngle, confidence);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 6:
@@ -627,7 +700,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
             }
@@ -709,17 +782,18 @@ public class Server extends TestHarnessLocationServicesManagement {
                             break;
                     }
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
 
-            long[] oid = {0, 0, 17, 773, 1, 1, 1};
+            SLRArgPCSExtensions slrArgPcsExtensions = null;
+            /*long[] oid = {0, 0, 17, 773, 1, 1, 1};
             byte[] privateExtData = hexStringToByteArray("1144");
             MAPPrivateExtension mapPrivateExtension = new MAPPrivateExtensionImpl(oid, privateExtData);
             ArrayList<MAPPrivateExtension> privateExtensionList = new ArrayList<>();
             privateExtensionList.add(mapPrivateExtension);
             SLRArgPCSExtensions slrArgPcsExtensions = new SLRArgPCSExtensionsImpl(true);
-            SLRArgExtensionContainer slrArgExtensionContainer = new SLRArgExtensionContainerImpl(privateExtensionList, slrArgPcsExtensions);
+            SLRArgExtensionContainer slrArgExtensionContainer = new SLRArgExtensionContainerImpl(privateExtensionList, slrArgPcsExtensions);*/
 
             DeferredLocationEventType deferredLocationEventType;
             TerminationCause terminationCause;
@@ -768,14 +842,14 @@ public class Server extends TestHarnessLocationServicesManagement {
             try {
                 velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
 
             Integer sequenceNumber = rand.nextInt(8639999) - 1; // SequenceNumber ::= INTEGER (1..8639999)
 
             int reportingAmount = 3;
             int reportingInterval = 600;
-            int reportingAmountMilliseconds = (int) 8639999000L; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
+            int reportingAmountMilliseconds = 8639999; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
             int reportingIntervalMilliseconds = 999; // ReportingIntervalMilliseconds ::= INTEGER (1..999)
             ReportingOptionMilliseconds reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl(reportingAmountMilliseconds, reportingIntervalMilliseconds);
             PeriodicLDRInfo periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
@@ -873,12 +947,22 @@ public class Server extends TestHarnessLocationServicesManagement {
             byte[] data = new byte[] {0x57, (byte) 0x8F};
             UtranAdditionalPositioningData utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(data);
             Integer utranBaroPressureMeas = 110000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
-            File civicAddressFile = new File("map/load/src/main/java/org/restcomm/protocols/ss7/map/load/lsm/civicAddress.xml");
-            byte[] civicAddressByteArray = new byte[(int) civicAddressFile.length()];
+            //File civicAddressFile = new File("map/load/src/main/java/org/restcomm/protocols/ss7/map/load/lsm/civicAddress.xml");
+            //byte[] civicAddressByteArray = new byte[(int) civicAddressFile.length()];
+            String civicAddressString = "<cl:civicAddress>\n" +
+                    "                        <cl:country>US</cl:country>\n" +
+                    "                        <cl:A1>New York</cl:A1>\n" +
+                    "                        <cl:A3>New York</cl:A3>\n" +
+                    "                        <cl:A6>Broadway</cl:A6>\n" +
+                    "                        <cl:HNO>123</cl:HNO>\n" +
+                    "                        <cl:LOC>Suite 75</cl:LOC>\n" +
+                    "                        <cl:PC>10027-0401</cl:PC>\n" +
+                    "                    </cl:civicAddress>";
+            byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
             UtranCivicAddress utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
 
             mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate,
-                    ageOfLocationEstimate, slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData,
+                    ageOfLocationEstimate, null, additionalLocationEstimate, deferredmtlrData,
                     lcsReferenceNumber, geranPositioningDataInfo, utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI, hGmlcAddress,
                     lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator, velocityEstimate,
                     sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData, servingNodeAddress,
@@ -890,83 +974,8 @@ public class Server extends TestHarnessLocationServicesManagement {
         } catch (MAPException e) {
             logger.error(String.format("Error while sending MAP SLR:" + e));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
-    }
-
-    @Override
-    public void onSendRoutingInfoForLCSRequest(SendRoutingInfoForLCSRequest sendRoutingInfoForLCSRequestIndication) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("sendRoutingInfoForLCSRequestIndication for DialogId=%d", sendRoutingInfoForLCSRequestIndication
-                    .getMAPDialog().getLocalDialogId()));
-        }
-        try {
-            long invokeId = sendRoutingInfoForLCSRequestIndication.getInvokeId();
-            MAPDialogLsm sriLcsDialog = sendRoutingInfoForLCSRequestIndication.getMAPDialog();
-
-            // Create Routing Information parameters for concerning MAP operation
-            MAPParameterFactoryImpl mapFactory = new MAPParameterFactoryImpl();
-            String mscAddress = "5982123007";
-            String sgsnAddress = "5982123009";
-            ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
-                    NumberingPlan.ISDN, mscAddress);
-            ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
-                    NumberingPlan.ISDN, sgsnAddress);
-            AdditionalNumber additionalNumber = new AdditionalNumberImpl(null, sgsnNumber);
-            String lmsiStr = "12345678";
-            byte[] Lmsi = lmsiStr.getBytes();
-            LMSI lmsi = mapFactory.createLMSI(Lmsi);
-            boolean gprsNodeIndicator = false;
-            boolean lcsCapabilitySetRelease98_99 = true;
-            boolean lcsCapabilitySetRelease4 = true;
-            boolean lcsCapabilitySetRelease5 = true;
-            boolean lcsCapabilitySetRelease6 = true;
-            boolean lcsCapabilitySetRelease7 = false;
-            SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
-                    lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-            lcsCapabilitySetRelease7 = true;
-            SupportedLCSCapabilitySets additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
-                    lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-            DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity sgsnName = new DiameterIdentityImpl("mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity sgsnRealm = new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            LCSLocationInfo lcsLocationInfo = mapFactory.createLCSLocationInfo(mscNumber, lmsi, null, gprsNodeIndicator,
-                    additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
-            ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number,
-                    NumberingPlan.ISDN, "59899077937");
-            SubscriberIdentity subscriberIdentity = new SubscriberIdentityImpl(msisdn);
-            GSNAddress vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
-            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
-            GSNAddress pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x12 });
-            GSNAddress additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
-
-            sriLcsDialog.addSendRoutingInfoForLCSResponse(invokeId, subscriberIdentity, lcsLocationInfo, null, vGmlcAddress, hGmlcAddress,
-                    pprAddress, additionalVGmlcAddress);
-            // This will initiate the TC-BEGIN with INVOKE component
-            sriLcsDialog.close(false);
-
-            // Create Dialog for sending SLR to the GMLC
-            AddressString origRef = mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
-            AddressString destRef = mapProvider.getMAPParameterFactory()
-                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_GMLC_ADDRESS);
-            SccpAddress origSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, MSC_SSN, SCCP_MSC_ADDRESS);
-            SccpAddress destSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, GMLC_SSN, SCCP_GMLC_ADDRESS);
-            MAPDialogLsm mapDialogLsm = mapProvider.getMAPServiceLsm()
-                    .createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationSvcGatewayContext,
-                            MAPApplicationContextVersion.version3), origSccpAddress, origRef, destSccpAddress, destRef);
-
-            // SLR is not deferred MT LT
-            sendMapSLR(mapDialogLsm, false);
-
-
-        } catch (MAPException mapException) {
-            logger.error("MAP Exception while processing onSendRoutingInfoForLCSRequest ", mapException);
-        } catch (Exception e) {
-            logger.error("Exception while processing onSendRoutingInfoForLCSRequest ", e);
-        }
-
     }
 
     @Override
