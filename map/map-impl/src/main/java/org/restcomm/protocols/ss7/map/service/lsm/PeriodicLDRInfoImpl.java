@@ -174,7 +174,8 @@ public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
             asnOutputStream.writeInteger(reportingInterval);
 
             if (reportingOptionMilliseconds != null)
-                ((ReportingOptionMillisecondsImpl) reportingOptionMilliseconds).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_Reporting_Option_Milliseconds);
+                ((ReportingOptionMillisecondsImpl) reportingOptionMilliseconds).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
+                        _TAG_Reporting_Option_Milliseconds);
 
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);

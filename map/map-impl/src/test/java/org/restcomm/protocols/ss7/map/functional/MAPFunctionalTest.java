@@ -5238,7 +5238,8 @@ public class MAPFunctionalTest extends SccpHarness {
                         NumberingPlan.ISDN, "11114444");
 
                 try {
-                    d.addSubscriberLocationReportResponse(ind.getInvokeId(), naEsrd, null, null);
+                    d.addSubscriberLocationReportResponse(ind.getInvokeId(), naEsrd, null, null,
+                            null, false, null, null);
                 } catch (MAPException e) {
                     this.error("Error while adding SubscriberLocationReportResponse", e);
                     fail("Error while adding SubscriberLocationReportResponse");

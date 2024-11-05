@@ -3,6 +3,8 @@ package org.restcomm.protocols.ss7.map.service.lsm;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertNull;
 
 import java.util.Arrays;
 
@@ -12,7 +14,9 @@ import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.MAPParameterFactoryImpl;
 import org.restcomm.protocols.ss7.map.api.MAPParameterFactory;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
+import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
 import org.restcomm.protocols.ss7.map.service.lsm.SubscriberLocationReportResponseImpl;
@@ -63,10 +67,13 @@ public class SubscriberLocationReportResponseTest {
         SubscriberLocationReportResponseImpl imp = new SubscriberLocationReportResponseImpl();
         imp.decodeAll(asn);
 
-        assertTrue(imp.getNaESRD().getAddress().equals("1111"));
-        assertTrue(imp.getNaESRK().getAddress().equals("2222"));
+        assertEquals(imp.getNaESRD().getAddress(), "1111");
+        assertEquals(imp.getNaESRK().getAddress(), "2222");
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(imp.getExtensionContainer()));
-
+        assertNull(imp.getHGMLCAddress());
+        assertFalse(imp.getMolrShortCircuitIndicator());
+        assertNull(imp.getReportingPLMNList());
+        assertNull(imp.getLcsReferenceNumber());
     }
 
     @Test(groups = { "functional.encode", "service.lsm" })
@@ -76,10 +83,13 @@ public class SubscriberLocationReportResponseTest {
 
         ISDNAddressStringImpl naEsrd = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "1111");
         ISDNAddressStringImpl naEsrk = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "2222");
+        GSNAddress hGmlcAddress = null;
+        boolean molrShortCircuitIndicator = false;
+        ReportingPLMNList reportingPLMNList = null;
+        Integer lcsReferenceNumber = null;
 
         SubscriberLocationReportResponseImpl imp = new SubscriberLocationReportResponseImpl(naEsrd, naEsrk,
-                MAPExtensionContainerTest.GetTestExtensionContainer());
-        // ISDNAddressString naEsrd, ISDNAddressString naEsrk, MAPExtensionContainer extensionContainer
+                MAPExtensionContainerTest.GetTestExtensionContainer(), hGmlcAddress, molrShortCircuitIndicator, reportingPLMNList, lcsReferenceNumber);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         imp.encodeAll(asnOS);

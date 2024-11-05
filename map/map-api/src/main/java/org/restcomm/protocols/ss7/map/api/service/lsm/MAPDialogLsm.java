@@ -72,7 +72,8 @@ public interface MAPDialogLsm extends MAPDialog {
             Integer utranBaroPressureMeas, UtranCivicAddress utranCivicAddress) throws MAPException;
 
     void addSubscriberLocationReportResponse(long invokeId, ISDNAddressString naEsrd, ISDNAddressString naEsrk,
-            MAPExtensionContainer extensionContainer) throws MAPException;
+            MAPExtensionContainer extensionContainer, GSNAddress hGmlcAddress, boolean molrShortCircuitIndicator,
+            ReportingPLMNList reportingPLMNList, Integer lcsReferenceNumber) throws MAPException;
 
     Long addSendRoutingInfoForLCSRequest(ISDNAddressString mlcNumber, SubscriberIdentity targetMS,
             MAPExtensionContainer extensionContainer) throws MAPException;

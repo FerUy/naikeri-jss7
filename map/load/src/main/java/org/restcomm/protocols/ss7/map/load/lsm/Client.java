@@ -30,6 +30,7 @@ import org.restcomm.protocols.ss7.map.api.dialog.MAPUserAbortChoice;
 import org.restcomm.protocols.ss7.map.api.errors.MAPErrorMessage;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
@@ -37,6 +38,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.SubscriberIdentity;
 import org.restcomm.protocols.ss7.map.api.service.lsm.MAPDialogLsm;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SendRoutingInfoForLCSRequest;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SendRoutingInfoForLCSResponse;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SubscriberLocationReportRequest;
@@ -492,20 +494,27 @@ public class Client extends TestHarnessLocationServicesManagement {
         }
         try {
             long invokeId = subscriberLocationReportRequestIndication.getInvokeId();
-            MAPDialogLsm lrrDialog = subscriberLocationReportRequestIndication.getMAPDialog();
+            MAPDialogLsm slrDialog = subscriberLocationReportRequestIndication.getMAPDialog();
 
             // Create Routing Information parameters for concerning MAP operation
             ISDNAddressString naEsrd = null;
             ISDNAddressString naEsrk = null;
-            if (subscriberLocationReportRequestIndication.getNaESRD() != null)
+            if (subscriberLocationReportRequestIndication.getNaESRD() != null) {
                 naEsrd = new ISDNAddressStringImpl(AddressNature.international_number,
                         NumberingPlan.ISDN, subscriberLocationReportRequestIndication.getNaESRD().getAddress());
-            if (subscriberLocationReportRequestIndication.getNaESRK() != null)
+            } else if (subscriberLocationReportRequestIndication.getNaESRK() != null) {
                 naEsrk = new ISDNAddressStringImpl(AddressNature.international_number,
                         NumberingPlan.ISDN, subscriberLocationReportRequestIndication.getNaESRK().getAddress());
+            }
 
-            lrrDialog.addSubscriberLocationReportResponse(invokeId, naEsrd, naEsrk, null);
-            lrrDialog.close(false);
+            GSNAddress hGmlcAddress = subscriberLocationReportRequestIndication.getHGMLCAddress();
+            boolean molrShortCircuitIndicator = subscriberLocationReportRequestIndication.getMoLrShortCircuitIndicator();
+            ReportingPLMNList reportingPLMNList = null;
+            Integer lcsReferenceNumber = subscriberLocationReportRequestIndication.getLCSReferenceNumber();
+
+            slrDialog.addSubscriberLocationReportResponse(invokeId, naEsrd, naEsrk, null, hGmlcAddress,
+                    molrShortCircuitIndicator, reportingPLMNList, lcsReferenceNumber);
+            slrDialog.close(false);
 
         } catch (MAPException e) {
             logger.error(e.getMessage());

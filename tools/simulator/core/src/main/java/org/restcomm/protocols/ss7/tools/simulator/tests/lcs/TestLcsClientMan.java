@@ -296,7 +296,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
 
         MAPExtensionContainer extensionContainer = null;
 
-        Boolean gprsNodeIndicator = false;
+        boolean gprsNodeIndicator = false;
 
         AdditionalNumber additionalNumber = null;
 
@@ -488,7 +488,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             byte[] apn = new BigInteger("8877665544", 16).toByteArray();
             APN lcsAPN = new APNImpl(apn);
             LCSClientID lcsClientID = new LCSClientIDImpl(LCSClientType.valueAddedServices, lcsClientExternalID, lcsClientInternalID, lcsClientName, lcsClientDialedByMS, lcsAPN, null);
-            Boolean privacyOverride = false;
+            boolean privacyOverride = false;
             IMSI imsi = new IMSIImpl("124356871012345");
             String lmsiId = "4321";
             byte[] lmsid = lmsiId.getBytes();
@@ -832,15 +832,18 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             TestLcsServerConfigurationData configData = this.testerHost.getConfigurationData().getTestLcsServerConfigurationData();
 
             // Create Routing Information parameters for concerning MAP operation
-            MAPParameterFactoryImpl mapFactory = new MAPParameterFactoryImpl();
             ISDNAddressString naEsrd = new ISDNAddressStringImpl(AddressNature.international_number,
                     NumberingPlan.ISDN, "5982123007");
-            ISDNAddressString naEsrk = new ISDNAddressStringImpl(AddressNature.international_number,
-                    NumberingPlan.ISDN, "5982123009");
+            ISDNAddressString naEsrk = null; //new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5982123009");
 
             MAPExtensionContainer mapExtensionContainer = null;
+            GSNAddress hGmlcAddress = null;
+            boolean molrShortCircuitIndicator = false;
+            ReportingPLMNList reportingPLMNList = null;
+            Integer lcsReferenceNumber = null;
 
-            clientDialogLsm.addSubscriberLocationReportResponse(clientDialogLsm.getLocalDialogId(), naEsrd, naEsrk, mapExtensionContainer);
+            clientDialogLsm.addSubscriberLocationReportResponse(clientDialogLsm.getLocalDialogId(), naEsrd, naEsrk, mapExtensionContainer, hGmlcAddress,
+                    molrShortCircuitIndicator, reportingPLMNList, lcsReferenceNumber);
 
             logger.debug("Added SubscriberLocationReportResponse");
 
@@ -927,23 +930,23 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
                     getMSISDN());
 
             TypeOfShape typeOfShape = TypeOfShape.EllipsoidArc;
-            Double latitude = 34.790000;
-            Double longitude = -124.910000;
-            Double uncertainty = 100.0;
-            Double uncertaintySemiMajorAxis = 50.0;
-            Double uncertaintySemiMinorAxis = 30.0;
-            Double angleOfMajorAxis = 10.0;
+            double latitude = 34.790000;
+            double longitude = -124.910000;
+            double uncertainty = 100.0;
+            double uncertaintySemiMajorAxis = 50.0;
+            double uncertaintySemiMinorAxis = 30.0;
+            double angleOfMajorAxis = 10.0;
             int confidence = 5;
             int altitude = 1000;
-            Double uncertaintyAltitude = 200.0;
+            double uncertaintyAltitude = 200.0;
             int innerRadius = 40;
-            Double uncertaintyRadius = 5.00;
-            Double offsetAngle = 10.0;
-            Double includedAngle = 30.0;
+            double uncertaintyRadius = 5.00;
+            double offsetAngle = 10.0;
+            double includedAngle = 30.0;
             ExtGeographicalInformation locationEstimate = new ExtGeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty, uncertaintySemiMajorAxis,
                     uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude, innerRadius, uncertaintyRadius, offsetAngle, includedAngle);
 
-            Boolean gprsNodeIndicator = false;
+            boolean gprsNodeIndicator = false;
 
             GSNAddress hgmlcAddress = createGSNAddress(getHGMLCAddress());
 
@@ -962,14 +965,14 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             PositioningDataInformation geranPositioningData = null;
             UtranPositioningDataInfo utranPositioningDataInfo = null;
             Integer lcsServiceTypeID = 1;
-            Boolean saiPresent = false;
-            Boolean pseudonymIndicator = false;
+            boolean saiPresent = false;
+            boolean pseudonymIndicator = false;
             String velStr = "00001";
             byte[] velEstimate = velStr.getBytes();
             VelocityEstimate velocityEstimate = new VelocityEstimateImpl(velEstimate);
             Integer sequenceNumber = 0;
             PeriodicLDRInfo periodicLDRInfo = mapParameterFactory.createPeriodicLDRInfo(10, 60, null);
-            Boolean moLrShortCircuitIndicator = false;
+            boolean moLrShortCircuitIndicator = false;
             GeranGANSSpositioningData geranGANSSpositioningData = null;
             UtranGANSSpositioningData utranGANSSpositioningData = null;
             ServingNodeAddress targetNodeForHandover = null;
@@ -1140,14 +1143,23 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
                         subscriberLocationReportRequestIndication.getHGMLCAddress(),
                         subscriberLocationReportRequestIndication.getAccuracyFulfilmentIndicator()), Level.INFO);
 
-        MAPParameterFactory mapParameterFactory = this.mapProvider.getMAPParameterFactory();
-        ISDNAddressString naEsrd = mapParameterFactory.createISDNAddressString(
-                AddressNature.getInstance(getAddressNature().intValue()),
-                NumberingPlan.getInstance(getNumberingPlanType().intValue()),
-                getNaESRDAddress());
+        ISDNAddressString naEsrd = null;
+        ISDNAddressString naEsrk = null;
+        if (subscriberLocationReportRequestIndication.getNaESRD() != null) {
+            naEsrd = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, subscriberLocationReportRequestIndication.getNaESRD().getAddress());
+        } else if (subscriberLocationReportRequestIndication.getNaESRK() != null) {
+            naEsrk = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, subscriberLocationReportRequestIndication.getNaESRK().getAddress());
+        }
+        GSNAddress hGmlcAddress = subscriberLocationReportRequestIndication.getHGMLCAddress();
+        boolean molrShortCircuitIndicator = true;
+        ReportingPLMNList reportingPLMNList = null;
+        Integer lcsReferenceNumber = subscriberLocationReportRequestIndication.getLCSReferenceNumber();
 
         try {
-            curDialog.addSubscriberLocationReportResponse(subscriberLocationReportRequestIndication.getInvokeId(), naEsrd, null, null);
+            curDialog.addSubscriberLocationReportResponse(subscriberLocationReportRequestIndication.getInvokeId(), naEsrd, naEsrk, null,
+                    hGmlcAddress, molrShortCircuitIndicator, reportingPLMNList, lcsReferenceNumber);
             logger.debug("\nset addSubscriberLocationReportResponse");
             curDialog.send();
             logger.debug("\naddSubscriberLocationReportResponse sent");

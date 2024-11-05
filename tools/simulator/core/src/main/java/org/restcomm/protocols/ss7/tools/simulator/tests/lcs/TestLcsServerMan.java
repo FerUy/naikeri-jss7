@@ -59,6 +59,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.AreaEventInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AreaType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.OccurrenceInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PrivacyCheckRelatedAction;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SLRArgExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AddGeographicalInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
@@ -260,33 +261,35 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             subId = sendRoutingInforForLCSRequest.getTargetMS().getMSISDN().getAddress();
         else if (sendRoutingInforForLCSRequest.getTargetMS().getIMSI() != null)
             subId = sendRoutingInforForLCSRequest.getTargetMS().getIMSI().getData();
-        if (subId.equalsIgnoreCase("99998888")) {
-            InvokeProblemType invokeProblemType = InvokeProblemType.UnrecognizedOperation;
-            Problem problem = new ProblemImpl();
-            problem.setInvokeProblemType(invokeProblemType);
-            try {
-                curDialog.sendRejectComponent(invokeId, problem);
-                curDialog.close(false);
-            } catch (MAPException e) {
-                e.printStackTrace();
+        if (subId != null) {
+            if (subId != null && subId.equalsIgnoreCase("99998888")) {
+                InvokeProblemType invokeProblemType = InvokeProblemType.UnrecognizedOperation;
+                Problem problem = new ProblemImpl();
+                problem.setInvokeProblemType(invokeProblemType);
+                try {
+                    curDialog.sendRejectComponent(invokeId, problem);
+                    curDialog.close(false);
+                } catch (MAPException e) {
+                    e.printStackTrace();
+                }
+                logger.debug("\nRejectComponent sent");
+                this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent", createSRIforLCSResData(curDialog.getLocalDialogId(),
+                        null, null, null), Level.INFO);
+                return;
             }
-            logger.debug("\nRejectComponent sent");
-            this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent", createSRIforLCSResData(curDialog.getLocalDialogId(),
-                null, null, null), Level.INFO);
-            return;
-        }
-        if (subId.equalsIgnoreCase("99990000")) {
-            MAPErrorMessage mapErrorMessageUnauthorizedLCSClient = new MAPErrorMessageUnauthorizedLCSClientImpl();
-            try {
-                curDialog.sendErrorComponent(invokeId, mapErrorMessageUnauthorizedLCSClient);
-                curDialog.close(false);
-            } catch (MAPException e) {
-                e.printStackTrace();
+            if (subId.equalsIgnoreCase("99990000")) {
+                MAPErrorMessage mapErrorMessageUnauthorizedLCSClient = new MAPErrorMessageUnauthorizedLCSClientImpl();
+                try {
+                    curDialog.sendErrorComponent(invokeId, mapErrorMessageUnauthorizedLCSClient);
+                    curDialog.close(false);
+                } catch (MAPException e) {
+                    e.printStackTrace();
+                }
+                logger.debug("\nErrorComponent sent");
+                this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent", createSRIforLCSResData(curDialog.getLocalDialogId(),
+                        null, null, null), Level.INFO);
+                return;
             }
-            logger.debug("\nErrorComponent sent");
-            this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent", createSRIforLCSResData(curDialog.getLocalDialogId(),
-                null, null, null), Level.INFO);
-            return;
         }
 
         try {
@@ -320,7 +323,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             ISDNAddressString additionalMcsNumber = null;
             ISDNAddressString sgsnNumber = null;
             AdditionalNumber additionalNumber = null;
-            Boolean gprsNodeIndicator = false;
+            boolean gprsNodeIndicator = false;
             int addNumRandom = rand.nextInt(5) + 1;
             switch (addNumRandom) {
                 case 1:
@@ -519,7 +522,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         LCSClientExternalID lcsClientExternalID = new LCSClientExternalIDImpl(externalAddress, mapExtensionContainer);
         LCSClientInternalID lcsClientInternalID = LCSClientInternalID.oandMHPLMN;
         USSDString ussdString = null;
-        Boolean saiPresent;
+        boolean saiPresent;
         try {
             ussdString = new USSDStringImpl(ussdLcsString, cbsDataCodingScheme, gsm8Charset);
         } catch (MAPException e) {
@@ -675,10 +678,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         byte[] cidOrSaiFixedLength = new BigInteger("34970120704321", 16).toByteArray();
         CellGlobalIdOrServiceAreaIdFixedLength cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(cidOrSaiFixedLength);
         CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
-        if (this.countMapLcsReq % 2 == 0)
-            saiPresent = false; // set saiPresent to false if this ATI request is even since test started
-        else
-            saiPresent = true; // set saiPresent to true if this ATI request is odd since test started
+        // set saiPresent to true if this ATI request is odd since test started
+        saiPresent = this.countMapLcsReq % 2 != 0; // set saiPresent to false if this ATI request is even since test started
         ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
             NumberingPlan.ISDN, "598991800024");
         ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
@@ -2004,14 +2005,23 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 subscriberLocationReportRequestIndication.getHGMLCAddress(),
                 subscriberLocationReportRequestIndication.getAccuracyFulfilmentIndicator()), Level.INFO);
 
-        MAPParameterFactory mapParameterFactory = this.mapProvider.getMAPParameterFactory();
-        ISDNAddressString naEsrd = mapParameterFactory.createISDNAddressString(
-            AddressNature.getInstance(getAddressNature().intValue()),
-            NumberingPlan.getInstance(getNumberingPlanType().intValue()),
-            getNaESRDAddress());
+        ISDNAddressString naEsrd = null;
+        ISDNAddressString naEsrk = null;
+        if (subscriberLocationReportRequestIndication.getNaESRD() != null) {
+            naEsrd = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, subscriberLocationReportRequestIndication.getNaESRD().getAddress());
+        } else if (subscriberLocationReportRequestIndication.getNaESRK() != null) {
+            naEsrk = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, subscriberLocationReportRequestIndication.getNaESRK().getAddress());
+        }
+        GSNAddress hGmlcAddress = subscriberLocationReportRequestIndication.getHGMLCAddress();
+        boolean molrShortCircuitIndicator = true;
+        ReportingPLMNList reportingPLMNList = null;
+        Integer lcsReferenceNumber = subscriberLocationReportRequestIndication.getLCSReferenceNumber();
 
         try {
-            curDialog.addSubscriberLocationReportResponse(subscriberLocationReportRequestIndication.getInvokeId(), naEsrd, null, null);
+            curDialog.addSubscriberLocationReportResponse(subscriberLocationReportRequestIndication.getInvokeId(), naEsrd, naEsrk, null,
+                    hGmlcAddress, molrShortCircuitIndicator, reportingPLMNList, lcsReferenceNumber);
             logger.debug("\nset addSubscriberLocationReportResponse");
             curDialog.send();
             logger.debug("\naddSubscriberLocationReportResponse sent");

@@ -317,7 +317,8 @@ public class MAPDialogLsmImpl extends MAPDialogImpl implements MAPDialogLsm {
      * org.restcomm.protocols.ss7.map.api.dialog.AddressString, org.restcomm.protocols.ss7.map.api.dialog.AddressString)
      */
     public void addSubscriberLocationReportResponse(long invokeId, ISDNAddressString naEsrd, ISDNAddressString naEsrk,
-            MAPExtensionContainer extensionContainer) throws MAPException {
+            MAPExtensionContainer extensionContainer, GSNAddress hGmlcAddress, boolean molrShortCircuitIndicator,
+            ReportingPLMNList reportingPLMNList, Integer lcsReferenceNumber) throws MAPException {
 
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.locationSvcEnquiryContext)
                 || this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3)
@@ -334,7 +335,7 @@ public class MAPDialogLsmImpl extends MAPDialogImpl implements MAPDialogLsm {
         resultLast.setOperationCode(operationCode);
 
         SubscriberLocationReportResponseImpl subscriberLocationReportResponseIndication = new SubscriberLocationReportResponseImpl(naEsrd, naEsrk,
-                extensionContainer);
+                extensionContainer, hGmlcAddress, molrShortCircuitIndicator, reportingPLMNList, lcsReferenceNumber);
 
         AsnOutputStream asnOs = new AsnOutputStream();
         subscriberLocationReportResponseIndication.encodeData(asnOs);

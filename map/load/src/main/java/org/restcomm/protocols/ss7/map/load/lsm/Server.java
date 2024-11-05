@@ -454,12 +454,12 @@ public class Server extends TestHarnessLocationServicesManagement {
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_GMLC_ADDRESS);
             SccpAddress origSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, SERVER_SSN, SCCP_MSC_ADDRESS);
             SccpAddress destSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, CLIENT_SSN, SCCP_GMLC_ADDRESS);
-            MAPDialogLsm mapDialogLsm = mapProvider.getMAPServiceLsm()
+            MAPDialogLsm slrDialog = mapProvider.getMAPServiceLsm()
                     .createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationSvcEnquiryContext,
                             MAPApplicationContextVersion.version3), origSccpAddress, origRef, destSccpAddress, destRef);
 
             // SLR is not deferred MT LT
-            sendMapSLR(mapDialogLsm, false);
+            sendMapSLR(slrDialog, false);
 
 
         } catch (MAPException mapException) {
