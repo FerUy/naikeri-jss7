@@ -34,10 +34,13 @@ import org.restcomm.protocols.ss7.map.api.primitives.GSNAddress;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.SubscriberIdentity;
 import org.restcomm.protocols.ss7.map.api.service.lsm.MAPDialogLsm;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse;
+import org.restcomm.protocols.ss7.map.api.service.lsm.RANTechnology;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMN;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SendRoutingInfoForLCSRequest;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SendRoutingInfoForLCSResponse;
@@ -45,7 +48,10 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.SubscriberLocationReportRe
 import org.restcomm.protocols.ss7.map.api.service.lsm.SubscriberLocationReportResponse;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
+import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.primitives.SubscriberIdentityImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.ReportingPLMNImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.ReportingPLMNListImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
@@ -69,6 +75,8 @@ import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 
 import org.apache.commons.lang3.RandomUtils;
+
+import java.util.ArrayList;
 
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
@@ -496,7 +504,7 @@ public class Client extends TestHarnessLocationServicesManagement {
             long invokeId = subscriberLocationReportRequestIndication.getInvokeId();
             MAPDialogLsm slrDialog = subscriberLocationReportRequestIndication.getMAPDialog();
 
-            // Create Routing Information parameters for concerning MAP operation
+            // Create SLR response parameters for concerning MAP operation
             ISDNAddressString naEsrd = null;
             ISDNAddressString naEsrk = null;
             if (subscriberLocationReportRequestIndication.getNaESRD() != null) {
@@ -509,7 +517,19 @@ public class Client extends TestHarnessLocationServicesManagement {
 
             GSNAddress hGmlcAddress = subscriberLocationReportRequestIndication.getHGMLCAddress();
             boolean molrShortCircuitIndicator = subscriberLocationReportRequestIndication.getMoLrShortCircuitIndicator();
-            ReportingPLMNList reportingPLMNList = null;
+            ArrayList<ReportingPLMN> reportingPLMNs = new ArrayList<>();
+            PlmnId plmnId1 = new PlmnIdImpl(748, 1);
+            RANTechnology rat1 = RANTechnology.umts;
+            boolean ranPeriodicLocationSupport1 = true;
+            PlmnId plmnId2 = new PlmnIdImpl(748, 7);
+            RANTechnology rat2 = RANTechnology.gsm;
+            boolean ranPeriodicLocationSupport2 = false;
+            ReportingPLMN rPlmn1 = new ReportingPLMNImpl(plmnId1, rat1, ranPeriodicLocationSupport1);
+            ReportingPLMN rPlmn2 = new ReportingPLMNImpl(plmnId2, rat2, ranPeriodicLocationSupport2);
+            reportingPLMNs.add(rPlmn1);
+            reportingPLMNs.add(rPlmn2);
+            boolean plmnListPrioritized = true;
+            ReportingPLMNList reportingPLMNList = new ReportingPLMNListImpl(plmnListPrioritized, reportingPLMNs);
             Integer lcsReferenceNumber = subscriberLocationReportRequestIndication.getLCSReferenceNumber();
 
             slrDialog.addSubscriberLocationReportResponse(invokeId, naEsrd, naEsrk, null, hGmlcAddress,

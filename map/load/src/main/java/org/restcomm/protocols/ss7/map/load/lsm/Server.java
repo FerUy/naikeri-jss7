@@ -471,54 +471,69 @@ public class Server extends TestHarnessLocationServicesManagement {
 
     private void sendMapSLR(MAPDialogLsm mapDialogLsm, boolean isDeferred) {
     /*
-        3GPP TS 29.002 MAP Specification v18.0.0
-
-        13A.3   MAP-SUBSCRIBER-LOCATION-REPORT Service
-
-        13A.3.1 Definition
-            This service is used by a VMSC or SGSN to provide the location of a target MS to a GMLC when a request for
-            location is either implicitly administered or made at some earlier time.
-            This is a confirmed service using the primitives from table 13A.3/1
-
-        Table 13A.3/1: Subscriber_Location_Report
-            Parameter name                                      Request         Indication       Response     Confirm
-            Invoke id                                               M               M(=)            M(=)        M(=)
-            LCS Event                                               M               M(=)
-            LCS Client ID                                           M               M(=)
-            Network Node Number                                     M               M(=)
-            IMSI                                                    C               C(=)
-            MSISDN                                                  C               C(=)
-            NA-ESRD                                                 C               C(=)            C           C(=)
-            NA-ESRK                                                 C               C(=)            C           C(=)
-            IMEI                                                    U               C(=)
-            Location Estimate                                       C               C(=)
-            GERAN Positioning Data                                  C               C(=)
-            UTRAN Positioning Data                                  C               C(=)
-            GERAN GANSS Positioning Data                            C               C(=)
-            UTRAN GANSS Positioning Data                            C               C(=)
-            UTRAN Additional Positioning Data                       C               C(=)
-            UTRAN Barometric Pressure Measurement                   C               C(=)
-            UTRAN Civic Address                                     C               C(=)
-            Age of Location Estimate                                C               C(=)
-            LMSI                                                    U               C(=)
-            GPRS Node Indicator                                     C               C(=)
-            Additional Location Estimate                            C               C(=)
-            Deferred MT-LR Data                                     C               C(=)
-            LCS-Reference Number                                    C               C(=)            C           C(=)
-            NA-ESRK Request                                         C               C(=)
-            Cell Id Or SAI                                          C               C(=)
-            H-GMLC Address                                          C               C(=)            C           C(=)
-            LCS Service Type Id                                     C               C(=)
-            Pseudonym Indicator                                     C               C(=)
-            Accuracy Fulfilment Indicator                           C               C(=)
-            Sequence Number                                         C               C(=)
-            Periodic LDR Info                                       C               C(=)
-            MO-LR Short Circuit Indicator                           C               C(=)            C           C(=)
-            Target Serving Node for Handover                        C               C(=)
-            Reporting PLMN List                                                                     C           C(=)
-            User error                                                                              C           C(=)
-            Provider error                                                                                      O
-   */
+     * subscriberLocationReport OPERATION ::= { --Timer m ARGUMENT
+     *   SubscriberLocationReport-Arg RESULT SubscriberLocationReport-Res
+     *   ERRORS { systemFailure | dataMissing | resourceLimitation | unexpectedDataValue | unknownSubscriber |
+     *   unauthorizedRequestingNetwork | unknownOrUnreachableLCSClient} CODE local:86 }
+     *
+     *  SubscriberLocationReport-Arg ::= SEQUENCE {
+     *  lcs-Event                              LCS-Event,
+     *  lcs-ClientID                           LCS-ClientID,
+     *  lcsLocationInfo                        LCSLocationInfo,
+     *  msisdn                                 [0] ISDN-AddressString OPTIONAL,
+     *  imsi                                   [1] IMSI  OPTIONAL,
+     *  imei                                   [2] IMEI  OPTIONAL,
+     *  na-ESRD                                [3] ISDN-AddressString OPTIONAL,
+     *  na-ESRK                                [4] ISDN-AddressString OPTIONAL,
+     *  locationEstimate                       [5] Ext-GeographicalInformation OPTIONAL,
+     *  ageOfLocationEstimate                  [6] AgeOfLocationInformation OPTIONAL,
+     *  slr-ArgExtensionContainer              [7] SLR-ArgExtensionContainer OPTIONAL,
+     *  ...,
+     *  add-LocationEstimate                   [8] Add-GeographicalInformation OPTIONAL,
+     *  deferredmt-lrData                      [9] Deferredmt-lrData OPTIONAL,
+     *  lcs-ReferenceNumber                    [10] LCS-ReferenceNumber OPTIONAL,
+     *  geranPositioningData                   [11] PositioningDataInformation OPTIONAL,
+     *  utranPositioningData                   [12] UtranPositioningDataInfo OPTIONAL,
+     *  cellIdOrSai                            [13] CellGlobalIdOrServiceAreaIdOrLAI OPTIONAL,
+     *  h-gmlc-Address                         [14] GSN-Address OPTIONAL,
+     *  lcsServiceTypeID                       [15] LCSServiceTypeID OPTIONAL,
+     *  sai-Present                            [17] NULL OPTIONAL,
+     *  pseudonymIndicator                     [18] NULL  OPTIONAL,
+     *  accuracyFulfilmentIndicator            [19] AccuracyFulfilmentIndicator OPTIONAL,
+     *  velocityEstimate                       [20] VelocityEstimate OPTIONAL,
+     *  sequenceNumber                         [21] SequenceNumber OPTIONAL,
+     *  periodicLDRInfo                        [22] PeriodicLDRInfo OPTIONAL,
+     *  mo-lrShortCircuitIndicator             [23] NULL  OPTIONAL,
+     *  geranGANSSpositioningData              [24] GeranGANSSpositioningData OPTIONAL,
+     *  utranGANSSpositioningData              [25] UtranGANSSpositioningData OPTIONAL,
+     *  targetServingNodeForHandover           [26] ServingNodeAddress OPTIONAL,
+     *  utranAdditionalPositioningData         [27] UtranAdditionalPositioningData OPTIONAL,
+     *  utranBaroPressureMeas                  [28] UtranBaroPressureMeas OPTIONAL,
+     *  utranCivicAddress                      [29] UtranCivicAddress OPTIONAL }
+     *
+     *  -- one of msisdn or imsi is mandatory
+     *
+     *  -- a location estimate that is valid for the locationEstimate parameter should
+     *  -- be transferred in this parameter in preference to the add-LocationEstimate.
+     *
+     *  -- the deferredmt-lrData parameter shall be included if and only if the lcs-Event
+     *  -- indicates a deferredmt-lrResponse.
+     *
+     *  -- if the lcs-Event indicates a deferredmt-lrResponse then the locationEstimate
+     *  -- and the add-locationEstimate parameters shall not be sent if the
+     *  -- supportedGADShapes parameter had been received in ProvideSubscriberLocation-Arg
+     *  -- and the shape encoded in locationEstimate or add-LocationEstimate was not marked
+     *  -- as supported in supportedGADShapes. In such a case terminationCause
+     *  -- in deferredmt-lrData shall be present with value
+     *  -- shapeOfLocationEstimateNotSupported.
+     *
+     *  -- If a lcs event indicates deferred mt-lr response, the lcs-Reference number shall be
+     *  -- included.
+     *
+     *  -- sai-Present indicates that the cellIdOrSai parameter contains a Service Area Identity
+     *
+     *  SequenceNumber ::= INTEGER (1..8639999)
+     */
 
         // Then, create parameters for concerning MAP operation
         try {
@@ -542,10 +557,14 @@ public class Server extends TestHarnessLocationServicesManagement {
                     SCCP_MSC_ADDRESS);
             ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
                     SCCP_SGSN_ADDRESS);
-            ISDNAddressString naEsrd = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                    "1110101");
-            ISDNAddressString naEsrk = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                    "9889277");
+
+            ISDNAddressString naEsrd = null;
+            ISDNAddressString naEsrk = null;
+            int naEsr = rand.nextInt(3) + 1;
+            if (naEsr == 1)
+                naEsrd = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "1210101075");
+            else
+                naEsrk = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "9289277009");
 
             // LCS-Event ::= ENUMERATED { emergencyCallOrigination (0), emergencyCallRelease (1), mo-lr (2), ..., deferredmt-lrResponse (3) }
             LCSEvent lcsEvent = emergencyCallOrigination;
@@ -961,14 +980,13 @@ public class Server extends TestHarnessLocationServicesManagement {
             byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
             UtranCivicAddress utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
 
-            mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate,
-                    ageOfLocationEstimate, null, additionalLocationEstimate, deferredmtlrData,
-                    lcsReferenceNumber, geranPositioningDataInfo, utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI, hGmlcAddress,
-                    lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator, velocityEstimate,
-                    sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData, servingNodeAddress,
-                    utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
+            mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk,
+                    locationEstimate, ageOfLocationEstimate, null, additionalLocationEstimate, deferredmtlrData,
+                    lcsReferenceNumber, geranPositioningDataInfo, utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI,
+                    hGmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator, velocityEstimate,
+                    sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData,
+                    servingNodeAddress, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
 
-            logger.info("MAP SLR: msisdn:" + msisdn + ", LCSEvent:" + lcsEvent);
             // This will initiate the TC-BEGIN with INVOKE component
             mapDialogLsm.send();
         } catch (MAPException e) {
