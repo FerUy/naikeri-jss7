@@ -21,10 +21,8 @@ import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 
 /**
- *
- *
  * @author amit bhayani
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class SubscriberLocationReportResponseImpl extends LsmMessageImpl implements SubscriberLocationReportResponse {
 
@@ -362,9 +360,9 @@ public class SubscriberLocationReportResponseImpl extends LsmMessageImpl impleme
             ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
         }
 
-        /*if (this.naEsrd != null && this.naEsrk != null)
+        if (this.naEsrd != null && this.naEsrk != null)
             throw new MAPException("IOException while encoding " + _PrimitiveName + ": parameters naEsrd and naEsrd are mutually exclusive, " +
-                    "naEsrd and naEsrd but NOT BOTH may be included in SLR response to the MSC");*/
+                    "naEsrd and naEsrd but NOT BOTH may be included in SLR response to the MSC");
 
         if (this.naEsrk != null) {
             // na-ESRK [0] ISDN-AddressString OPTIONAL
