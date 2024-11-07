@@ -170,6 +170,32 @@ public class SubscriberLocationReportResponseTest {
         // test 2
         data = getEncodedData1();
 
+        // Wireshark sample
+        // Component: returnResultLast (2)
+        //    returnResultLast
+        //        invokeID: 0
+        //        resultretres
+        //            opCode: localValue (0)
+        //                localValue: subscriberLocationReport (86)
+        //            na-ESRK: 912998720790
+        //                1... .... = Extension: No Extension
+        //                .001 .... = Nature of number: International Number (0x1)
+        //                .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+        //                E.164 number (MSISDN): 9289277009
+        //                    Country Code: Pakistan (Islamic Republic of) (92)
+        //            h-gmlc-Address: 040a00000e
+        //                GSN-Address IPv4: 10.0.0.14
+        //            mo-lrShortCircuitIndicator
+        //            reportingPLMNList
+        //                plmn-ListPrioritized
+        //                plmn-List: 2 items
+        //                    ReportingPLMN
+        //                        plmn-Id: 47f810
+        //                        ran-Technology: umts (1)
+        //                        ran-PeriodicLocationSupport
+        //                    ReportingPLMN
+        //                        plmn-Id: 47f870
+        //                        ran-Technology: gsm (0)
         ISDNAddressString naEsrk = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "9289277009");
         hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
         molrShortCircuitIndicator = true;
