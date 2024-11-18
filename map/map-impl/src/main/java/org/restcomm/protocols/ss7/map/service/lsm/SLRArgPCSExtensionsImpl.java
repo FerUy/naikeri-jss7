@@ -82,7 +82,7 @@ public class SLRArgPCSExtensionsImpl extends SequenceBase implements SLRArgPCSEx
                 throw new MAPException("Error while encoding " + _PrimitiveName
                         + " the optional parameter naEsrkRequest encoding failed ", e);
             } catch (AsnException e) {
-                throw new MAPException("Error while encoding " + _PrimitiveName
+                throw new MAPException("ASN error while encoding " + _PrimitiveName
                         + " the optional parameter naEsrkRequest encoding failed ", e);
             }
         }

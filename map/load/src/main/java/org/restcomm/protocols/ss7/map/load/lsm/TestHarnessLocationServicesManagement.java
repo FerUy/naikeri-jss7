@@ -39,7 +39,13 @@ public abstract class TestHarnessLocationServicesManagement implements MAPDialog
     protected static int SERVICE_INDICATOR = 3; // Upper layer is SCCP
     protected static int SSN = 8;
     protected static int CLIENT_SSN = 145;
+    protected static int GMLC_SSN = 145;
     protected static int SERVER_SSN = 12;
+    protected static int HLR_SSN = 6;
+    protected static int MSC_SSN = 8;
+    protected static int SGSN_SSN = 149;
+
+
 
     // M3UA details
     protected static String CLIENT_IP = "127.0.0.1";
@@ -70,6 +76,7 @@ public abstract class TestHarnessLocationServicesManagement implements MAPDialog
     protected static String SCCP_SERVER_ADDRESS = "491710460000";
 
     protected static RoutingIndicator ROUTING_INDICATOR = RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN;
+    protected static RoutingIndicator ROUTING_INDICATOR_GT = RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE;
 
     protected final ParameterFactoryImpl factory = new ParameterFactoryImpl();
 

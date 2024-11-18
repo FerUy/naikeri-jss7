@@ -68,8 +68,8 @@ public class SubscriberLocationReportRequestImpl extends LsmMessageImpl implemen
     private static final int _TAG_PSEUDONYM_INDICATOR = 18;
     private static final int _TAG_ACCURACY_FULFILMENT_INDICATOR = 19;
     private static final int _TAG_VELOCITY_ESTIMATE = 20;
-    private static final int __TAG_SEQUENCE_NUMBER = 21;
-    private static final int __TAG_PERIODIC_LDR_INFO = 22;
+    private static final int _TAG_SEQUENCE_NUMBER = 21;
+    private static final int _TAG_PERIODIC_LDR_INFO = 22;
     private static final int _TAG_MO_LR_SHORT_CIRCUIT_INDICATOR = 23;
     private static final int _TAG_GERAN_GANSS_POSITIONING_DATA = 24;
     private static final int _TAG_UTRAN_GANSS_POSITIONING_DATA = 25;
@@ -837,7 +837,7 @@ public class SubscriberLocationReportRequestImpl extends LsmMessageImpl implemen
                         this.velocityEstimate = new VelocityEstimateImpl();
                         ((VelocityEstimateImpl) this.velocityEstimate).decodeAll(ais);
                         break;
-                    case __TAG_SEQUENCE_NUMBER:
+                    case _TAG_SEQUENCE_NUMBER:
                         // sequenceNumber [21] SequenceNumber OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -846,7 +846,7 @@ public class SubscriberLocationReportRequestImpl extends LsmMessageImpl implemen
                         }
                         this.sequenceNumber = (int) ais.readInteger();
                         break;
-                    case __TAG_PERIODIC_LDR_INFO:
+                    case _TAG_PERIODIC_LDR_INFO:
                         // eriodicLDRInfo [22] PeriodicLDRInfo OPTIONAL
                         if (ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -1153,7 +1153,7 @@ public class SubscriberLocationReportRequestImpl extends LsmMessageImpl implemen
         if (this.sequenceNumber != null) {
             // sequenceNumber [21] SequenceNumber OPTIONAL
             try {
-                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, __TAG_SEQUENCE_NUMBER, this.sequenceNumber);
+                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SEQUENCE_NUMBER, this.sequenceNumber);
             } catch (IOException e) {
                 throw new MAPException("IOException while encoding parameter sequenceNumber", e);
             } catch (AsnException e) {
@@ -1163,7 +1163,7 @@ public class SubscriberLocationReportRequestImpl extends LsmMessageImpl implemen
 
         if (this.periodicLDRInfo != null) {
             // periodicLDRInfo [22] PeriodicLDRInfo OPTIONAL
-            ((PeriodicLDRInfoImpl) this.periodicLDRInfo).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, __TAG_PERIODIC_LDR_INFO);
+            ((PeriodicLDRInfoImpl) this.periodicLDRInfo).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_PERIODIC_LDR_INFO);
         }
 
         if (this.moLrShortCircuitIndicator) {

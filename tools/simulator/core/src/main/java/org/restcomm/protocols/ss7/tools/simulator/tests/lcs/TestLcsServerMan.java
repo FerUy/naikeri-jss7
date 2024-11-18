@@ -270,7 +270,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     curDialog.sendRejectComponent(invokeId, problem);
                     curDialog.close(false);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 logger.debug("\nRejectComponent sent");
                 this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent", createSRIforLCSResData(curDialog.getLocalDialogId(),
@@ -283,7 +283,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     curDialog.sendErrorComponent(invokeId, mapErrorMessageUnauthorizedLCSClient);
                     curDialog.close(false);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 logger.debug("\nErrorComponent sent");
                 this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent", createSRIforLCSResData(curDialog.getLocalDialogId(),
@@ -404,7 +404,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             try {
                 Thread.sleep(sriLcsResponseDelay);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
 
             curDialog.addSendRoutingInfoForLCSResponse(sendRoutingInforForLCSRequest.getInvokeId(),
@@ -526,7 +526,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         try {
             ussdString = new USSDStringImpl(ussdLcsString, cbsDataCodingScheme, gsm8Charset);
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         LCSFormatIndicator lcsFormatIndicator = LCSFormatIndicator.url;
         PrivacyCheckRelatedAction callSessionUnrelated = PrivacyCheckRelatedAction.allowedWithNotification;
@@ -544,7 +544,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 Thread.sleep(15000);
                 return;
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         } else if (provideSubscriberLocationRequest.getIMSI().getData().equals("502153100826899")) {
             InvokeProblemType invokeProblemType = InvokeProblemType.ResourceLimitation;
@@ -554,7 +554,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 curDialog.sendRejectComponent(invokeId, problem);
                 curDialog.close(false);
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             logger.debug("\nRejectComponent sent");
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
@@ -566,7 +566,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 curDialog.sendErrorComponent(invokeId, mapErrorMessage1);
                 curDialog.close(false);
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             logger.debug("\nErrorComponent sent");
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
@@ -585,7 +585,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             try {
                 lcsAPN = new APNImpl(apnStr);
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             lcsClientID = new LCSClientIDImpl(LCSClientType.valueAddedServices, lcsClientExternalID, lcsClientInternalID, lcsClientName, lcsClientDialedByMS, lcsAPN, null);
         } else {
@@ -697,7 +697,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         try {
             velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         boolean moLrShortCircuitIndicator = true;
         // Method=MS-Based, GANSSId=Galileo
@@ -730,7 +730,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 try {
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 break;
             case 2:
@@ -741,7 +741,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 try {
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 break;
             case 3:
@@ -756,7 +756,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyEllipse(latitude, longitude,
                         uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 break;
             case 4:
@@ -773,7 +773,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(latitude,
                         longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 break;
             case 5:
@@ -789,7 +789,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidArc(latitude, longitude, innerRadius,
                         uncertaintyRadius, offsetAngle, includedAngle, confidence);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 break;
             case 6:
@@ -799,7 +799,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 try {
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 break;
         }
@@ -814,32 +814,26 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
             EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
 
-            /*  char packet_bytes[] = { 0x53, 0x29, 0xea, 0x8a, 0x37, 0x43, 0x11, 0x29, 0xea, 0x88, 0x37, 0x43, 0x03, 0x29, 0xea, 0x00, 0x37, 0x43, 0x18};   */
             byte[] polygonData1 = { 83,
                                     41, (byte) 234, (byte) 138, 55, 67, 17,
                                     41, (byte) 234, (byte) 136, 55, 67, 3,
                                     41, (byte) 234, 0, 55, 67, 24};
 
-            /*  char packet_bytes[] = { 0x53, 0x29, 0xea, 0x8a, 0x37, 0x43, 0x11, 0x29, 0xea, 0x88, 0x37, 0x43, 0x03, 0x29, 0xea, 0x00, 0x37, 0x43, 0x18};  */
             byte[] polygonData2 = { 83,
                                     44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
                                     44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
                                     44, 29, (byte) 190, 53, (byte) 227, 123};
 
-            /* char packet_bytes[] =  { 0x53, 0x24, 0xa7, 0x3c, 0x34, 0x25, 0x00, 0x24, 0xa7, 0x31, 0x34, 0x24, 0xff, 0x24, 0xa7, 0x32,0x34, 0x25, 0x00}; */
             byte[] polygonData3 = { 83,
                                     36, (byte) 167, 60, 52, 37, 0,
                                     36, (byte) 167, 49, 52, 36, (byte) 255,
                                     36, (byte) 167, 50, 52, 37, 0};
 
-            /* char packet_bytes[] =  { 0x53, 0x24, 0x7c, 0xa3, 0x3b, 0x31, 0x70, 0x24, 0x7e, 0x07, 0x3b, 0x31, 0x8a, 0x24, 0x7f, 0xe0, 0x3b, 0x31, 0x48}; */
             byte[] polygonData4 = { 83,
                                     36, 124, (byte) 163, 59, 49, 112,
                                     36, 126, 7, 59, 49, (byte) 138,
                                     36, 127, (byte) 224, 59, 49, 72};
 
-            /* char packet_bytes[] =  { 0x53, 0x25, 0xe5, 0xb3, 0x34, 0x42, 0xd3, 0x25, 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25, 0xe6, 0x83, 0x34, 0x43, 0x79
-                                        0x25, 0xe6, 0x84, 0x34, 0x43, 0x7d};  */
             byte[] polygonData5 = { 84,
                                     37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
                                     37, (byte) 230, 64, 52, 67, 124,
@@ -881,7 +875,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                         break;
                 }
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 
@@ -967,7 +961,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -1180,7 +1174,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             try {
                 lcsAPN = new APNImpl(apnStr);
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             LCSRequestorID lcsRequestorID = null;
             LCSClientID lcsClientID = mapParameterFactory.createLCSClientID(configData.getLcsClientType(), lcsClientExternalID, lcsClientInternalID,
@@ -1242,7 +1236,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 2:
@@ -1253,7 +1247,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 3:
@@ -1268,7 +1262,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyEllipse(latitude, longitude,
                             uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 4:
@@ -1285,7 +1279,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(latitude,
                             longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 5:
@@ -1301,7 +1295,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidArc(latitude, longitude, innerRadius,
                             uncertaintyRadius, offsetAngle, includedAngle, confidence);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 6:
@@ -1311,7 +1305,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
             }
@@ -1388,7 +1382,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                             break;
                     }
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
 
@@ -1424,7 +1418,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             try {
                 velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             Integer sequenceNumber = 0;
             int reportingAmount = 10;
@@ -1541,7 +1535,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             /*try {
                 lcsAPN = new APNImpl(apnStr);
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }*/
             LCSRequestorID lcsRequestorID = null;
             LCSClientID lcsClientID = mapParameterFactory.createLCSClientID(LCSClientType.emergencyServices, lcsClientExternalID, lcsClientInternalID,
@@ -1586,7 +1580,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 2:
@@ -1597,7 +1591,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 3:
@@ -1612,7 +1606,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyEllipse(latitude, longitude,
                             uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 4:
@@ -1629,7 +1623,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(latitude,
                             longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 5:
@@ -1645,7 +1639,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidArc(latitude, longitude, innerRadius,
                             uncertaintyRadius, offsetAngle, includedAngle, confidence);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
                 case 6:
@@ -1655,7 +1649,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     break;
             }
@@ -1732,7 +1726,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                             break;
                     }
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
 
@@ -1769,7 +1763,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             try {
                 velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
             } catch (MAPException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             velocityEstimate = null;
             Integer sequenceNumber = null;
@@ -1934,25 +1928,25 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         try {
             sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC())).append(", ");
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         sb.append("\", MNC=\"");
         try {
             sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC())).append(", ");
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         sb.append("\", LAC=\"");
         try {
             sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac())).append(", ");
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         sb.append("\", LAC=\"");
         try {
             sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode())).append(", ");
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         sb.append("\", H-GMLCAddress=\"");
         sb.append(hgmlcAddress);

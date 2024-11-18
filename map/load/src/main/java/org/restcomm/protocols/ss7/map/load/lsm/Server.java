@@ -62,13 +62,14 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSFormatIndicator;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo;
-import org.restcomm.protocols.ss7.map.api.service.lsm.LocationEstimateType;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LocationType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.MAPDialogLsm;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PeriodicLDRInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.Polygon;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationRequest;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
+import org.restcomm.protocols.ss7.map.api.service.lsm.SLRArgExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SLRArgPCSExtensions;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SendRoutingInfoForLCSRequest;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SendRoutingInfoForLCSResponse;
@@ -106,6 +107,8 @@ import org.restcomm.protocols.ss7.map.service.lsm.PeriodicLDRInfoImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.PolygonImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.PositioningDataInformationImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.ReportingOptionMillisecondsImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.SLRArgExtensionContainerImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.SLRArgPCSExtensionsImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.ServingNodeAddressImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.UtranAdditionalPositioningDataImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.UtranCivicAddressImpl;
@@ -140,7 +143,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import static org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent.emergencyCallOrigination;
-import static org.restcomm.protocols.ss7.map.api.service.lsm.LocationEstimateType.currentLocation;
+import static org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent.emergencyCallRelease;
+import static org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent.molr;
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
 public class Server extends TestHarnessLocationServicesManagement {
@@ -248,6 +252,9 @@ public class Server extends TestHarnessLocationServicesManagement {
 
         this.sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
         this.sccpResource.addRemoteSsn(0, CLIENT_SPC, CLIENT_SSN, 0, false);
+        this.sccpResource.addRemoteSsn(1, CLIENT_SPC, HLR_SSN, 0, false);
+        this.sccpResource.addRemoteSsn(2, CLIENT_SPC, MSC_SSN, 0, false);
+        this.sccpResource.addRemoteSsn(3, CLIENT_SPC, SGSN_SSN, 0, false);
 
         this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
         this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
@@ -447,7 +454,9 @@ public class Server extends TestHarnessLocationServicesManagement {
             // This will initiate the TC-BEGIN with INVOKE component
             sriLcsDialog.close(false);
 
-            // Create Dialog for sending SLR to the GMLC
+            /*
+             * Create Dialog for sending not deferred MAP SLR to the GMLC
+             */
             AddressString origRef = mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
             AddressString destRef = mapProvider.getMAPParameterFactory()
@@ -458,9 +467,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                     .createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationSvcEnquiryContext,
                             MAPApplicationContextVersion.version3), origSccpAddress, origRef, destSccpAddress, destRef);
 
-            // SLR is not deferred MT LT
-            sendMapSLR(slrDialog, false);
-
+            sendMapSLR(slrDialog, false, null);
 
         } catch (MAPException mapException) {
             logger.error("MAP Exception while processing onSendRoutingInfoForLCSRequest ", mapException);
@@ -469,7 +476,7 @@ public class Server extends TestHarnessLocationServicesManagement {
         }
     }
 
-    private void sendMapSLR(MAPDialogLsm mapDialogLsm, boolean isDeferred) {
+    private void sendMapSLR(MAPDialogLsm mapDialogSLR, boolean isDeferred, Integer pslReferenceNumber) {
     /*
      * subscriberLocationReport OPERATION ::= { --Timer m ARGUMENT
      *   SubscriberLocationReport-Arg RESULT SubscriberLocationReport-Res
@@ -553,26 +560,41 @@ public class Server extends TestHarnessLocationServicesManagement {
 
             long imeiDigits = RandomUtils.nextLong(100710000000000L, 100720000000000L);
             IMEI imei = new IMEIImpl(String.valueOf(imeiDigits));
-            ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                    SCCP_MSC_ADDRESS);
-            ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                    SCCP_SGSN_ADDRESS);
+            //ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
+            ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SGSN_ADDRESS);
 
             ISDNAddressString naEsrd = null;
             ISDNAddressString naEsrk = null;
-            int naEsr = rand.nextInt(3) + 1;
-            if (naEsr == 1)
-                naEsrd = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "1210101075");
-            else
-                naEsrk = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "9289277009");
+            boolean naEsrkRequest = false;
+            switch (rand.nextInt(3) + 1) {
+                case 1:
+                    naEsrd = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "1210101075");
+                    break;
+                case 2:
+                    naEsrk = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "9289277009");
+                    break;
+                default:
+                    naEsrkRequest = true;
+                    break;
+            }
 
             // LCS-Event ::= ENUMERATED { emergencyCallOrigination (0), emergencyCallRelease (1), mo-lr (2), ..., deferredmt-lrResponse (3) }
-            LCSEvent lcsEvent = emergencyCallOrigination;
-            if (isDeferred)
+            LCSEvent lcsEvent = null;
+            if (isDeferred) {
                 lcsEvent = LCSEvent.deferredmtlrResponse;
-
-            LocationEstimateType locationEstimateType = currentLocation;
-            // public enum LocationEstimateType {currentLocation(0), currentOrLastKnownLocation(1), initialLocation(2), activateDeferredLocation(3), cancelDeferredLocation(4)..
+            } else {
+                switch (rand.nextInt(3) + 1) {
+                    case 1:
+                        lcsEvent = emergencyCallOrigination;
+                        break;
+                    case 2:
+                        lcsEvent = emergencyCallRelease;
+                        break;
+                    case 3:
+                        lcsEvent = molr;
+                        break;
+                }
+            }
 
             ISDNAddressString externalAddress = new ISDNAddressStringImpl(AddressNature.international_number,
                     NumberingPlan.ISDN, "444567");
@@ -805,7 +827,6 @@ public class Server extends TestHarnessLocationServicesManagement {
                 }
             }
 
-            SLRArgPCSExtensions slrArgPcsExtensions = null;
             /*long[] oid = {0, 0, 17, 773, 1, 1, 1};
             byte[] privateExtData = hexStringToByteArray("1144");
             MAPPrivateExtension mapPrivateExtension = new MAPPrivateExtensionImpl(oid, privateExtData);
@@ -813,39 +834,60 @@ public class Server extends TestHarnessLocationServicesManagement {
             privateExtensionList.add(mapPrivateExtension);
             SLRArgPCSExtensions slrArgPcsExtensions = new SLRArgPCSExtensionsImpl(true);
             SLRArgExtensionContainer slrArgExtensionContainer = new SLRArgExtensionContainerImpl(privateExtensionList, slrArgPcsExtensions);*/
+            SLRArgExtensionContainer slrArgExtensionContainer = null;
+            if (naEsrkRequest) {
+                SLRArgPCSExtensions slrArgPcsExtensions = new SLRArgPCSExtensionsImpl(naEsrkRequest);
+                slrArgExtensionContainer = new SLRArgExtensionContainerImpl(null, slrArgPcsExtensions);
+            }
 
             DeferredLocationEventType deferredLocationEventType;
             TerminationCause terminationCause;
             DeferredmtlrData deferredmtlrData = null;
             // the deferredmt-lrData parameter shall be included if and only if the lcs-Event indicates a deferredmt-lrResponse.
+            PeriodicLDRInfo periodicLDRInfo = null; // This parameter refers to the periodic reporting interval and reporting amount of the deferred periodic location.
+            Integer sequenceNumber = null; // SequenceNumber ::= INTEGER (1..8639999)
+            // sequenceNumber parameter refers to the number of the periodic location reports completed.
+            // The sequence number would be set to 1 in the first location report and increment by 1 for each new report.
+            // When the number reaches the reporting amount value,
+            // the H-GMLC (for a periodic MT-LR or a periodic MO-LR transfer to third party) will know the procedure is complete
             if (lcsEvent == LCSEvent.deferredmtlrResponse) {
                 boolean msAvailable = false;
-                boolean enteringIntoArea = true;
+                boolean enteringIntoArea = false;
                 boolean leavingFromArea = false;
                 boolean beingInsideArea = false;
                 boolean periodicLDR = false;
+                switch (rand.nextInt(5) + 1) {
+                    case 1:
+                        msAvailable = true;
+                        break;
+                    case 2:
+                        enteringIntoArea = true;
+                        break;
+                    case 3:
+                        leavingFromArea = true;
+                        break;
+                    case 4:
+                        beingInsideArea = true;
+                        break;
+                    case 5:
+                        periodicLDR = true;
+                        int reportingAmount = 3;
+                        int reportingInterval = 600;
+                        int reportingAmountMilliseconds = 863999; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
+                        int reportingIntervalMilliseconds = 100; // ReportingIntervalMilliseconds ::= INTEGER (1..999)
+                        ReportingOptionMilliseconds reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl(reportingAmountMilliseconds, reportingIntervalMilliseconds);
+                        int randReporting = rand.nextInt(2) + 1;
+                        if (randReporting == 1)
+                            periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
+                        else
+                            periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, null);
+                        sequenceNumber = 1;
+                        break;
+                }
                 deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
                 terminationCause = TerminationCause.congestion;
                 deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
             }
-
-            // Method=Mobile Based E-OTD, Usage=1: Attempted successfully: results not used to generate location
-            // Method=Mobile Assisted E-OTD, Usage=3: Attempted successfully: results used to generate location
-            // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
-            // Method=Cell ID, Usage=0: Attempted unsuccessfully due to failure or interruption
-            // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
-            // Method=Timing Advance, Usage=3: Attempted successfully: results used to generate location
-            // Method=Conventional GPS, Usage=2: Attempted successfully: results used to verify but not generate location
-            byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
-            PositioningDataInformationImpl geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
-
-            // Method=OTDOA, Usage=3: Attempted successfully: results used to generate location
-            // Method=Reserved (GERAN use only), Usage=0: Attempted unsuccessfully due to failure or interruption - not used
-            // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
-            // Method=Cell ID, Usage=2: Attempted successfully: results used to verify but not generate location - not used
-            // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
-            byte[] utranPosData = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
-            UtranPositioningDataInfoImpl utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
 
             Integer lcsServiceTypeID = 1;
             boolean pseudonymIndicator = false;
@@ -863,15 +905,6 @@ public class Server extends TestHarnessLocationServicesManagement {
             } catch (MAPException e) {
                 logger.error(e.getMessage());
             }
-
-            Integer sequenceNumber = rand.nextInt(8639999) - 1; // SequenceNumber ::= INTEGER (1..8639999)
-
-            int reportingAmount = 3;
-            int reportingInterval = 600;
-            int reportingAmountMilliseconds = 8639999; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
-            int reportingIntervalMilliseconds = 999; // ReportingIntervalMilliseconds ::= INTEGER (1..999)
-            ReportingOptionMilliseconds reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl(reportingAmountMilliseconds, reportingIntervalMilliseconds);
-            PeriodicLDRInfo periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
 
             boolean moLrShortCircuitIndicator = true;
 
@@ -941,30 +974,69 @@ public class Server extends TestHarnessLocationServicesManagement {
             }
             cellGlobalIdOrServiceAreaIdOrLAI = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdOrLAI(cgiOrSai);
 
+            PositioningDataInformationImpl geranPositioningDataInfo =  null;
+            UtranPositioningDataInfoImpl utranPositioningDataInfo = null;
+            GeranGANSSpositioningDataImpl geranGanssPositioningData = null;
+            UtranGANSSpositioningDataImpl utranGanssPositioningData = null;
+            UtranAdditionalPositioningData utranAdditionalPositioningData = null;
+            // Method=Mobile Based E-OTD, Usage=1: Attempted successfully: results not used to generate location
+            // Method=Mobile Assisted E-OTD, Usage=3: Attempted successfully: results used to generate location
+            // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
+            // Method=Cell ID, Usage=0: Attempted unsuccessfully due to failure or interruption
+            // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
+            // Method=Timing Advance, Usage=3: Attempted successfully: results used to generate location
+            // Method=Conventional GPS, Usage=2: Attempted successfully: results used to verify but not generate location
+            byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
+
+            // Method=OTDOA, Usage=3: Attempted successfully: results used to generate location
+            // Method=Reserved (GERAN use only), Usage=0: Attempted unsuccessfully due to failure or interruption - not used
+            // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
+            // Method=Cell ID, Usage=2: Attempted successfully: results used to verify but not generate location - not used
+            // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
+            byte[] utranPosData = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
+
             // Method=MS-Based, GANSSId=Galileo
             // Method=MS-Assisted, GANSSId=GLONASS
             // Method=Conventional, GANSSId=SBAS
             byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
-            GeranGANSSpositioningDataImpl geranGanssPositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
+
             // Method=MS-Based, GANSSId=Galileo
             // Method=MS-Assisted, GANSSId=GLONASS
             // Method=Conventional, GANSSId=SBAS
             byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
-            UtranGANSSpositioningDataImpl utranGanssPositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
+
+            // Method=Standalone, AddPosId=WLAN
+            // Method=MS-Assisted, AddPosId=Bluetooth
+            byte[] data = new byte[] {0x57, (byte) 0x8F};
+
+            int randPos = rand.nextInt(4) + 1;
+            switch (randPos) {
+                case 1:
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
+                    break;
+                case 2:
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
+                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
+                    break;
+                case 3:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
+                    break;
+                case 4:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
+                    utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(data);
+                    break;
+            }
 
             boolean isMsc = true;
             ServingNodeAddress servingNodeAddress = new ServingNodeAddressImpl(networkNodeNumber, isMsc);
 
             Integer lcsReferenceNumber = null;
             if (isDeferred) // If a lcs event indicates deferred mt-lr response, the lcs-Reference number shall be included.
-             lcsReferenceNumber = rand.nextInt(Integer.MAX_VALUE) - 1;
+             lcsReferenceNumber = pslReferenceNumber;
 
             GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
 
-            // Method=Standalone, AddPosId=WLAN
-            // Method=MS-Assisted, AddPosId=Bluetooth
-            byte[] data = new byte[] {0x57, (byte) 0x8F};
-            UtranAdditionalPositioningData utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(data);
             Integer utranBaroPressureMeas = 110000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
             //File civicAddressFile = new File("map/load/src/main/java/org/restcomm/protocols/ss7/map/load/lsm/civicAddress.xml");
             //byte[] civicAddressByteArray = new byte[(int) civicAddressFile.length()];
@@ -980,17 +1052,398 @@ public class Server extends TestHarnessLocationServicesManagement {
             byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
             UtranCivicAddress utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
 
-            mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk,
-                    locationEstimate, ageOfLocationEstimate, null, additionalLocationEstimate, deferredmtlrData,
+            mapDialogSLR.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk,
+                    locationEstimate, ageOfLocationEstimate, slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData,
                     lcsReferenceNumber, geranPositioningDataInfo, utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI,
                     hGmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator, velocityEstimate,
                     sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData,
                     servingNodeAddress, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
 
             // This will initiate the TC-BEGIN with INVOKE component
-            mapDialogLsm.send();
+            mapDialogSLR.send();
+
         } catch (MAPException e) {
             logger.error(String.format("Error while sending MAP SLR:" + e));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void onProvideSubscriberLocationRequest(ProvideSubscriberLocationRequest provideSubscriberLocationRequestIndication) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onProvideSubscriberLocationRequest for DialogId=%d", provideSubscriberLocationRequestIndication
+                    .getMAPDialog().getLocalDialogId()));
+        }
+        try {
+            long invokeId = provideSubscriberLocationRequestIndication.getInvokeId();
+            MAPDialogLsm mapDialogPslResponse = provideSubscriberLocationRequestIndication.getMAPDialog();
+
+            // Create Routing Information parameters for concerning MAP operation
+            MAPParameterFactoryImpl mapParameterFactory = new MAPParameterFactoryImpl();
+            Random rand = new Random();
+
+            ExtGeographicalInformation locationEstimate = null;
+            TypeOfShape typeOfShape = null;
+            double latitude, longitude, uncertainty, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, uncertaintyAltitude, uncertaintyRadius,
+                    offsetAngle, includedAngle;
+            int confidence, altitude, innerRadius;
+            EllipsoidPoint ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6;
+            // ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10, ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13,
+            // ellipsoidPoint14, ellipsoidPoint15;
+            // 3 <= numberOfPoints <= 15
+            Integer ageOfLocationEstimate = null;
+            AddGeographicalInformation additionalLocationEstimate = null;
+            AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyFulfilled;
+            switch (rand.nextInt(6) + 1) {
+                case 1:
+                    typeOfShape = TypeOfShape.EllipsoidPoint;
+                    latitude = 34.909744;
+                    longitude = -56.146317;
+                    try {
+                        locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
+                    } catch (MAPException e) {
+                        logger.error(e.getMessage());
+                    }
+                    ageOfLocationEstimate = 0;
+                    break;
+                case 2:
+                    typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
+                    latitude = -34.910349;
+                    longitude = -56.149832;
+                    uncertainty = 5.1;
+                    accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyNotFulfilled;
+                    try {
+                        locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
+                    } catch (MAPException e) {
+                        logger.error(e.getMessage());
+                    }
+                    ageOfLocationEstimate = 1;
+                    break;
+                case 3:
+                    typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyEllipse;
+                    latitude = -34.905624;
+                    longitude = -55.042191;
+                    uncertaintySemiMajorAxis = 21.2;
+                    uncertaintySemiMinorAxis = 10.4;
+                    angleOfMajorAxis = 30.0; // orientation of major axis
+                    confidence = 1;
+                    try {
+                        locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyEllipse(latitude, longitude,
+                                uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
+                    } catch (MAPException e) {
+                        logger.error(e.getMessage());
+                    }
+                    ageOfLocationEstimate = 0;
+                    break;
+                case 4:
+                    typeOfShape = TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid;
+                    latitude = -34.956436;
+                    longitude = -54.937820;
+                    altitude = 570;
+                    uncertaintySemiMajorAxis = 25.4;
+                    uncertaintySemiMinorAxis = 12.1;
+                    angleOfMajorAxis = 30.2; // orientation of major axis
+                    uncertaintyAltitude = 80.1;
+                    confidence = 5;
+                    try {
+                        locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(latitude,
+                                longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
+                    } catch (MAPException e) {
+                        logger.error(e.getMessage());
+                    }
+                    ageOfLocationEstimate = 5;
+                    accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyNotFulfilled;
+                    break;
+                case 5:
+                    typeOfShape = TypeOfShape.EllipsoidArc;
+                    latitude = -34.939956;
+                    longitude = -54.914474;
+                    innerRadius = 5;
+                    uncertaintyRadius = 1.50;
+                    offsetAngle = 20.0;
+                    includedAngle = 20.0;
+                    confidence = 2;
+                    try {
+                        locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidArc(latitude, longitude, innerRadius,
+                                uncertaintyRadius, offsetAngle, includedAngle, confidence);
+                    } catch (MAPException e) {
+                        logger.error(e.getMessage());
+                    }
+                    ageOfLocationEstimate = 10;
+                    break;
+                case 6:
+                    typeOfShape = TypeOfShape.Polygon;
+                    latitude = 0.0;
+                    longitude = 0.0;
+                    try {
+                        locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
+                    } catch (MAPException e) {
+                        logger.error(e.getMessage());
+                    }
+                    ageOfLocationEstimate = 0;
+                    break;
+            }
+
+            if (typeOfShape == TypeOfShape.Polygon) {
+                ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
+                ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
+                ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
+                ellipsoidPoint4 = new EllipsoidPoint(-3.040019, 70.681903);
+                ellipsoidPoint5 = new EllipsoidPoint(-3.045001, 70.700109);
+                ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
+                EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
+
+                byte[] polygonData1 = { 83,
+                        41, (byte) 234, (byte) 138, 55, 67, 17,
+                        41, (byte) 234, (byte) 136, 55, 67, 3,
+                        41, (byte) 234, 0, 55, 67, 24};
+
+                byte[] polygonData2 = { 83,
+                        44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                        44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                        44, 29, (byte) 190, 53, (byte) 227, 123};
+
+                byte[] polygonData3 = { 83,
+                        36, (byte) 167, 60, 52, 37, 0,
+                        36, (byte) 167, 49, 52, 36, (byte) 255,
+                        36, (byte) 167, 50, 52, 37, 0};
+
+                byte[] polygonData4 = { 83,
+                        36, 124, (byte) 163, 59, 49, 112,
+                        36, 126, 7, 59, 49, (byte) 138,
+                        36, 127, (byte) 224, 59, 49, 72};
+
+                byte[] polygonData5 = { 84,
+                        37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                        37, (byte) 230, 64, 52, 67, 124,
+                        37, (byte) 230, (byte) 131, 52, 67, 121,
+                        37, (byte) 230, (byte) 132, 52, 67, 125};
+
+                Polygon polygon1;
+                Polygon polygon2;
+                Polygon polygon3;
+                Polygon polygon4;
+                Polygon polygon5;
+                PolygonImpl polygon6 = new PolygonImpl();
+
+                try {
+                    switch (rand.nextInt(6) + 1) {
+                        case 1:
+                            polygon1 = new PolygonImpl(polygonData1);
+                            additionalLocationEstimate = new AddGeographicalInformationImpl(polygon1.getData());
+                            break;
+                        case 2:
+                            polygon2 = new PolygonImpl(polygonData2);
+                            additionalLocationEstimate = new AddGeographicalInformationImpl(polygon2.getData());
+                            break;
+                        case 3:
+                            polygon3 = new PolygonImpl(polygonData3);
+                            additionalLocationEstimate = new AddGeographicalInformationImpl(polygon3.getData());
+                            break;
+                        case 4:
+                            polygon4 = new PolygonImpl(polygonData4);
+                            additionalLocationEstimate = new AddGeographicalInformationImpl(polygon4.getData());
+                            break;
+                        case 5:
+                            polygon5 = new PolygonImpl(polygonData5);
+                            additionalLocationEstimate = new AddGeographicalInformationImpl(polygon5.getData());
+                            break;
+                        case 6:
+                            polygon6.setData(ellipsoidPoints);
+                            additionalLocationEstimate = new AddGeographicalInformationImpl(polygon6.getData());
+                            break;
+                    }
+                } catch (MAPException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+
+            PositioningDataInformationImpl geranPositioningDataInfo =  null;
+            UtranPositioningDataInfoImpl utranPositioningDataInfo = null;
+            GeranGANSSpositioningDataImpl geranGanssPositioningData = null;
+            UtranGANSSpositioningDataImpl utranGanssPositioningData = null;
+            // Method=Mobile Based E-OTD, Usage=1: Attempted successfully: results not used to generate location
+            // Method=Mobile Assisted E-OTD, Usage=3: Attempted successfully: results used to generate location
+            // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
+            // Method=Cell ID, Usage=0: Attempted unsuccessfully due to failure or interruption
+            // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
+            // Method=Timing Advance, Usage=3: Attempted successfully: results used to generate location
+            // Method=Conventional GPS, Usage=2: Attempted successfully: results used to verify but not generate location
+            byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
+
+            // Method=OTDOA, Usage=3: Attempted successfully: results used to generate location
+            // Method=Reserved (GERAN use only), Usage=0: Attempted unsuccessfully due to failure or interruption - not used
+            // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
+            // Method=Cell ID, Usage=2: Attempted successfully: results used to verify but not generate location - not used
+            // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
+            byte[] utranPosData = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
+
+            // Method=MS-Based, GANSSId=Galileo
+            // Method=MS-Assisted, GANSSId=GLONASS
+            // Method=Conventional, GANSSId=SBAS
+            byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
+
+            // Method=MS-Based, GANSSId=Galileo
+            // Method=MS-Assisted, GANSSId=GLONASS
+            // Method=Conventional, GANSSId=SBAS
+            byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
+
+            switch (rand.nextInt(4) + 1) {
+                case 1:
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
+                    break;
+                case 2:
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
+                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
+                    break;
+                case 3:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
+                    break;
+                case 4:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
+                    break;
+            }
+
+            boolean deferredMTLRResponseIndicator = false;
+            LocationType locationType = provideSubscriberLocationRequestIndication.getLocationType();
+            if (locationType.getDeferredLocationEventType() != null) {
+                deferredMTLRResponseIndicator = true;
+            }
+
+            int mcc, mnc, lac, ci;
+            mcc = 748;
+            mnc = 1;
+            lac = 101;
+            ci = 10263;
+            boolean saiPresent = false;
+            switch(rand.nextInt(10) + 1) {
+                case 1:
+                    saiPresent = true;
+                    break;
+                case 2:
+                    lac = 119;
+                    ci = 15336;
+                    break;
+                case 3:
+                    lac = 118;
+                    ci = 292;
+                    break;
+                case 4:
+                    lac = 109;
+                    ci = 10175;
+                    saiPresent = true;
+                    break;
+                case 5:
+                    lac = 11;
+                    ci = 4812;
+                    saiPresent = true;
+                    break;
+                case 6:
+                    mnc = 7;
+                    lac = 8820;
+                    ci = 9748;
+                    break;
+                case 7:
+                    mnc = 7;
+                    lac = 8552;
+                    ci = 8239;
+                    saiPresent = true;
+                    break;
+                case 8:
+                    mnc = 10;
+                    lac = 9501;
+                    ci = 35100;
+                    break;
+                case 9:
+                    mnc = 7;
+                    lac = 8313;
+                    ci = 9281;
+                    saiPresent = true;
+                    break;
+                case 10:
+                    mnc = 7;
+                    lac = 8820;
+                    ci = 8051;
+                    break;
+            }
+            CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
+            CellGlobalIdOrServiceAreaIdFixedLength cgiOrSai = null;
+            try {
+                cgiOrSai = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdFixedLength(mcc, mnc, lac, ci);
+            } catch (MAPException ex) {
+                logger.error(ex.getMessage());
+            }
+            cellGlobalIdOrServiceAreaIdOrLAI = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdOrLAI(cgiOrSai);
+
+            VelocityEstimate velocityEstimate = null;
+            if (provideSubscriberLocationRequestIndication.getLCSQoS() != null) {
+                if (provideSubscriberLocationRequestIndication.getLCSQoS().getVelocityRequest()) {
+                    VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
+                    int horizontalSpeed = 101;
+                    int bearing = 3;
+                    int verticalSpeed = 2;
+                    int uncertaintyHorizontalSpeed = 5;
+                    int uncertaintyVerticalSpeed = 1;
+                    velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
+                }
+            }
+
+            boolean moLrShortCircuitIndicator = provideSubscriberLocationRequestIndication.getMoLrShortCircuitIndicator();
+
+            ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
+            ServingNodeAddress targetServingNodeForHandover = new ServingNodeAddressImpl(networkNodeNumber, true);
+
+            // Method=Standalone, AddPosId=WLAN
+            // Method=MS-Assisted, AddPosId=Bluetooth
+            byte[] data = new byte[] {0x57, (byte) 0x8F};
+            UtranAdditionalPositioningData utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(data);
+
+            Integer utranBaroPressureMeas = 110000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
+
+            //File civicAddressFile = new File("map/load/src/main/java/org/restcomm/protocols/ss7/map/load/lsm/civicAddress.xml");
+            //byte[] civicAddressByteArray = new byte[(int) civicAddressFile.length()];
+            String civicAddressString = "<cl:civicAddress>\n" +
+                    "                        <cl:country>US</cl:country>\n" +
+                    "                        <cl:A1>New York</cl:A1>\n" +
+                    "                        <cl:A3>New York</cl:A3>\n" +
+                    "                        <cl:A6>Broadway</cl:A6>\n" +
+                    "                        <cl:HNO>123</cl:HNO>\n" +
+                    "                        <cl:LOC>Suite 75</cl:LOC>\n" +
+                    "                        <cl:PC>10027-0401</cl:PC>\n" +
+                    "                    </cl:civicAddress>";
+            byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
+            UtranCivicAddress utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
+
+            mapDialogPslResponse.addProvideSubscriberLocationResponse(invokeId, locationEstimate, geranPositioningDataInfo, utranPositioningDataInfo,
+                    ageOfLocationEstimate, additionalLocationEstimate, null, deferredMTLRResponseIndicator,
+                    cellGlobalIdOrServiceAreaIdOrLAI, saiPresent, accuracyFulfilmentIndicator, velocityEstimate,
+                    moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData,
+                    targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
+
+            mapDialogPslResponse.close(false);
+
+            Thread.sleep(2000);
+            /*
+             * Create Dialog for sending not deferred MAP SLR to the GMLC
+             */
+            AddressString origRef = mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
+            AddressString destRef = mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_GMLC_ADDRESS);
+            SccpAddress origSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, SERVER_SSN, SCCP_MSC_ADDRESS);
+            SccpAddress destSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, CLIENT_SSN, SCCP_GMLC_ADDRESS);
+            MAPDialogLsm slrDialog = mapProvider.getMAPServiceLsm()
+                    .createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationSvcEnquiryContext,
+                            MAPApplicationContextVersion.version3), origSccpAddress, origRef, destSccpAddress, destRef);
+
+            Integer lcsReferenceNumber = rand.nextInt(Integer.MAX_VALUE) - 1;
+            sendMapSLR(slrDialog, true, lcsReferenceNumber);
+
+        } catch (MAPException e) {
+            logger.error(String.format("Error while sending MAP PSL response:" + e));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -1077,11 +1530,6 @@ public class Server extends TestHarnessLocationServicesManagement {
     }
 
     @Override
-    public void onProvideSubscriberLocationRequest(ProvideSubscriberLocationRequest provideSubscriberLocationRequestIndication) {
-
-    }
-
-    @Override
     public void onProvideSubscriberLocationResponse(ProvideSubscriberLocationResponse provideSubscriberLocationResponseIndication) {
 
     }
@@ -1094,19 +1542,5 @@ public class Server extends TestHarnessLocationServicesManagement {
     @Override
     public void onSubscriberLocationReportResponse(SubscriberLocationReportResponse subscriberLocationReportResponseIndication) {
 
-    }
-
-    protected static byte[] hexStringToByteArray(String s) {
-        int len;
-        byte[] data = null;
-        if (s != null) {
-            len = s.length();
-            data = new byte[len / 2];
-            for (int i = 0; i < len; i += 2) {
-                data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                        + Character.digit(s.charAt(i+1), 16));
-            }
-        }
-        return data;
     }
 }

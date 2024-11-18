@@ -160,7 +160,7 @@ public class ReportingOptionMillisecondsImpl implements ReportingOptionMilliseco
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(_PrimitiveName);
-        sb.append("_PrimitiveName [");
+        sb.append(" [");
 
         sb.append("reportingAmountMilliseconds=");
         sb.append(this.reportingAmountMilliseconds);

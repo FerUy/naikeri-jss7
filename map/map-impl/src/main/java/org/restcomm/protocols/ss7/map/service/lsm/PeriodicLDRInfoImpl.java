@@ -20,8 +20,8 @@ import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
  */
 public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
 
-    private static final int _TAG_Reporting_Option_Milliseconds = 0;
     public static final String _PrimitiveName = "PeriodicLDRInfo";
+    private static final int _TAG_Reporting_Option_Milliseconds = 0;
 
     private int reportingAmount;
     private int reportingInterval;
@@ -188,7 +188,7 @@ public class PeriodicLDRInfoImpl implements PeriodicLDRInfo, MAPAsnPrimitive {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(_PrimitiveName);
-        sb.append("_PrimitiveName [");
+        sb.append(" [");
 
         sb.append("reportingAmount=");
         sb.append(this.reportingAmount);

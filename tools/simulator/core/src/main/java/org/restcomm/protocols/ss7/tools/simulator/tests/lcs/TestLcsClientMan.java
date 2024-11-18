@@ -456,7 +456,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             MAPDialogLsm mapDialogLsm = mapServiceLsm.createNewDialog(appCnt, this.mapMan.createOrigAddress(), origReference,
                     this.mapMan.createDestAddress(), destReference);
             logger.debug("MAPDialogLsm Created");
-            TestLcsClientConfigurationData configData = this.testerHost.getConfigurationData().getTestLcsClientConfigurationData();
+            //TestLcsClientConfigurationData configData = this.testerHost.getConfigurationData().getTestLcsClientConfigurationData();
 
             // Then, create parameters for concerning MAP operation
             ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number,
@@ -500,10 +500,10 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             boolean ellipsoidPointWithUncertaintyEllipse = true;
             boolean polygon = false;
             boolean ellipsoidPointWithAltitude = false;
-            boolean ellipsoidPointWithAltitudeAndUncertaintyElipsoid = false;
+            boolean ellipsoidPointWithAltitudeAndUncertaintyEllipsoid = false;
             boolean ellipsoidArc = false;
             SupportedGADShapes supportedGADShapes = new SupportedGADShapesImpl(ellipsoidPoint, ellipsoidPointWithUncertaintyCircle,
-                    ellipsoidPointWithUncertaintyEllipse, polygon, ellipsoidPointWithAltitude, ellipsoidPointWithAltitudeAndUncertaintyElipsoid, ellipsoidArc);
+                    ellipsoidPointWithUncertaintyEllipse, polygon, ellipsoidPointWithAltitude, ellipsoidPointWithAltitudeAndUncertaintyEllipsoid, ellipsoidArc);
             Integer lcsReferenceNumber = 379;
             Integer lcsServiceTypeID = 1;
             // DataCodingScheme codingScheme = new DataCodingSchemeImpl(1);
@@ -567,7 +567,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             currentRequestDef += "Sent SLR Request;";
 
         } catch (MAPException e) {
-            return "Exception " + e.toString();
+            return "Exception " + e;
         }
 
         return "subscriberLocationReportRequest sent";
@@ -829,7 +829,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             MAPDialogLsm clientDialogLsm = mapServiceLsm.createNewDialog(appCnt, this.mapMan.createOrigAddress(), origReference,
                     this.mapMan.createDestAddress(), destReference);
             logger.debug("MAPDialogLsm Created");
-            TestLcsServerConfigurationData configData = this.testerHost.getConfigurationData().getTestLcsServerConfigurationData();
+            //TestLcsServerConfigurationData configData = this.testerHost.getConfigurationData().getTestLcsServerConfigurationData();
 
             // Create Routing Information parameters for concerning MAP operation
             ISDNAddressString naEsrd = new ISDNAddressStringImpl(AddressNature.international_number,
@@ -852,7 +852,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             this.countMapLcsReq++;
 
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: SubscriberLocationReportResponse", createSLRResData(clientDialogLsm.getLocalDialogId(),
-                    naEsrd.toString(), naEsrk.toString()), Level.INFO);
+                    naEsrd.toString(), null), Level.INFO);
 
             currentRequestDef += "Sent SLR Request;";
 
@@ -1075,25 +1075,25 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
         try {
             sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC())).append(", ");
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         sb.append("\", MNC=\"");
         try {
             sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC())).append(", ");
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         sb.append("\", LAC=\"");
         try {
             sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac())).append(", ");
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         sb.append("\", LAC=\"");
         try {
             sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode())).append(", ");
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         sb.append("\", H-GMLCAddress=\"");
         sb.append(hgmlcAddress);
@@ -1169,7 +1169,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
                     createSLRResData(curDialog.getLocalDialogId(), getNaESRDAddress(), getNaESRKAddress()), Level.INFO);
 
         } catch (MAPException e) {
-            logger.debug("Failed building response " + e.toString());
+            logger.debug("Failed building response " + e);
         }
     }
 
@@ -1192,15 +1192,13 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
     @Override
     public void putAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setAddressNature(x);
+        this.setAddressNature(x);
     }
 
     @Override
     public void putNumberingPlanType(String val) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-        if (x != null)
-            this.setNumberingPlanType(x);
+        this.setNumberingPlanType(x);
     }
 
     @Override
@@ -1306,8 +1304,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
     @Override
     public void putLCSEventType(String val) {
         LCSEventType x = LCSEventType.createInstance(val);
-        if (x != null)
-            this.setLCSEventType(x);
+        this.setLCSEventType(x);
     }
 
     @Override
