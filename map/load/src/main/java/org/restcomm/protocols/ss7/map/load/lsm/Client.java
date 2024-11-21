@@ -789,10 +789,6 @@ public class Client extends TestHarnessLocationServicesManagement {
             PeriodicLDRInfo periodicLDRInfo = null;
             if (locationEstimateType == LocationEstimateType.activateDeferredLocation ||
                     locationEstimateType == LocationEstimateType.cancelDeferredLocation) {
-
-                AreaDefinition areaDefinition = getAreaDefinition(rand.nextInt(10) + 1);
-                Integer intervalTime = 10;
-                areaEventInfo = new AreaEventInfoImpl(areaDefinition, occurrenceInfo, intervalTime);
                 if (deferredLocationEventType.getPeriodicLDR()) {
                     int reportingAmount = 3;
                     int reportingInterval = 600;
@@ -804,6 +800,10 @@ public class Client extends TestHarnessLocationServicesManagement {
                         periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
                     else
                         periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, null);
+                } else {
+                    AreaDefinition areaDefinition = getAreaDefinition(rand.nextInt(10) + 1);
+                    Integer intervalTime = 10;
+                    areaEventInfo = new AreaEventInfoImpl(areaDefinition, occurrenceInfo, intervalTime);
                 }
             }
 
