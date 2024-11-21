@@ -11,23 +11,23 @@ import org.restcomm.protocols.ss7.map.primitives.BitStringBase;
 public class DeferredLocationEventTypeImpl extends BitStringBase implements DeferredLocationEventType {
 
     private static final int _INDEX_MS_AVAILABLE = 0;
-    private static final int _INDEX__ENTERING_INTO_AREA = 1;
+    private static final int _INDEX_ENTERING_INTO_AREA = 1;
     private static final int _INDEX_LEAVING_FROM_AREA = 2;
     private static final int _INDEX_BEING_INSIDE_AREA = 3;
     private static final int _INDEX_PERIODIC_LDR = 4;
 
     public DeferredLocationEventTypeImpl() {
-        super(1, 16, 4, "DeferredLocationEventType");
+        super(1, 16, 5, "DeferredLocationEventType");
     }
 
     public DeferredLocationEventTypeImpl(boolean msAvailable, boolean enteringIntoArea, boolean leavingFromArea,
                                          boolean beingInsideArea, boolean periodicLDR) {
-        super(1, 16, 4, "DeferredLocationEventType");
+        super(1, 16, 5, "DeferredLocationEventType");
 
         if (msAvailable)
             this.bitString.set(_INDEX_MS_AVAILABLE);
         if (enteringIntoArea)
-            this.bitString.set(_INDEX__ENTERING_INTO_AREA);
+            this.bitString.set(_INDEX_ENTERING_INTO_AREA);
         if (leavingFromArea)
             this.bitString.set(_INDEX_LEAVING_FROM_AREA);
         if (beingInsideArea)
@@ -51,7 +51,7 @@ public class DeferredLocationEventTypeImpl extends BitStringBase implements Defe
      * @see org.mobicents.protocols.ss7.map.api.service.lsm.DeferredLocationEventType#getEnteringIntoArea()
      */
     public boolean getEnteringIntoArea() {
-        return this.bitString.get(_INDEX__ENTERING_INTO_AREA);
+        return this.bitString.get(_INDEX_ENTERING_INTO_AREA);
     }
 
     /*
