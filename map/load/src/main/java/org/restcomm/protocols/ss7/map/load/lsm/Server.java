@@ -408,8 +408,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                     NumberingPlan.ISDN, SCCP_SGSN_ADDRESS);
             AdditionalNumber additionalNumber = new AdditionalNumberImpl(null, sgsnNumber);
             LMSI lmsi;
-            int lmsiRandom = rand.nextInt(10) + 1;
-            switch (lmsiRandom) {
+            switch (rand.nextInt(10) + 1) {
                 case 1:
                     lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 233, (byte) 140});
                     break;
@@ -616,8 +615,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                     NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
 
             LMSI lmsi;
-            int lmsiRandom = rand.nextInt(10) + 1;
-            switch (lmsiRandom) {
+            switch (rand.nextInt(10) + 1) {
                 case 1:
                     lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 233, (byte) 140});
                     break;
@@ -663,8 +661,7 @@ public class Server extends TestHarnessLocationServicesManagement {
             // ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10, ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13,
             // ellipsoidPoint14, ellipsoidPoint15;
             // 3 <= numberOfPoints <= 15
-            int typeOfShapeRandomOption = rand.nextInt(6) + 1;
-            switch (typeOfShapeRandomOption) {
+            switch (rand.nextInt(6) + 1) {
                 case 1:
                     typeOfShape = TypeOfShape.EllipsoidPoint;
                     latitude = 34.909744;
@@ -756,68 +753,51 @@ public class Server extends TestHarnessLocationServicesManagement {
                 ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
                 EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
 
-                /*  char packet_bytes[] = { 0x53, 0x29, 0xea, 0x8a, 0x37, 0x43, 0x11, 0x29, 0xea, 0x88, 0x37, 0x43, 0x03, 0x29, 0xea, 0x00, 0x37, 0x43, 0x18};   */
-                byte[] polygonData1 = { 83,
-                        41, (byte) 234, (byte) 138, 55, 67, 17,
-                        41, (byte) 234, (byte) 136, 55, 67, 3,
-                        41, (byte) 234, 0, 55, 67, 24};
-
-                /*  char packet_bytes[] = { 0x53, 0x29, 0xea, 0x8a, 0x37, 0x43, 0x11, 0x29, 0xea, 0x88, 0x37, 0x43, 0x03, 0x29, 0xea, 0x00, 0x37, 0x43, 0x18};  */
-                byte[] polygonData2 = { 83,
-                        44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
-                        44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
-                        44, 29, (byte) 190, 53, (byte) 227, 123};
-
-                /* char packet_bytes[] =  { 0x53, 0x24, 0xa7, 0x3c, 0x34, 0x25, 0x00, 0x24, 0xa7, 0x31, 0x34, 0x24, 0xff, 0x24, 0xa7, 0x32,0x34, 0x25, 0x00}; */
-                byte[] polygonData3 = { 83,
-                        36, (byte) 167, 60, 52, 37, 0,
-                        36, (byte) 167, 49, 52, 36, (byte) 255,
-                        36, (byte) 167, 50, 52, 37, 0};
-
-                /* char packet_bytes[] =  { 0x53, 0x24, 0x7c, 0xa3, 0x3b, 0x31, 0x70, 0x24, 0x7e, 0x07, 0x3b, 0x31, 0x8a, 0x24, 0x7f, 0xe0, 0x3b, 0x31, 0x48}; */
-                byte[] polygonData4 = { 83,
-                        36, 124, (byte) 163, 59, 49, 112,
-                        36, 126, 7, 59, 49, (byte) 138,
-                        36, 127, (byte) 224, 59, 49, 72};
-
-            /* char packet_bytes[] =  { 0x53, 0x25, 0xe5, 0xb3, 0x34, 0x42, 0xd3, 0x25, 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25, 0xe6, 0x83, 0x34, 0x43, 0x79
-                                        0x25, 0xe6, 0x84, 0x34, 0x43, 0x7d};  */
-                byte[] polygonData5 = { 84,
-                        37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
-                        37, (byte) 230, 64, 52, 67, 124,
-                        37, (byte) 230, (byte) 131, 52, 67, 121,
-                        37, (byte) 230, (byte) 132, 52, 67, 125};
-
-                Polygon polygon1;
-                Polygon polygon2;
-                Polygon polygon3;
-                Polygon polygon4;
-                Polygon polygon5;
-                PolygonImpl polygon6 = new PolygonImpl();
-
                 try {
                     switch (additionalLocationEstimateRandomOption) {
                         case 1:
-                            polygon1 = new PolygonImpl(polygonData1);
+                            byte[] polygonData1 = { 83,
+                                    41, (byte) 234, (byte) 138, 55, 67, 17,
+                                    41, (byte) 234, (byte) 136, 55, 67, 3,
+                                    41, (byte) 234, 0, 55, 67, 24};
+                            Polygon polygon1 = new PolygonImpl(polygonData1);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon1.getData());
                             break;
                         case 2:
-                            polygon2 = new PolygonImpl(polygonData2);
+                            byte[] polygonData2 = { 83,
+                                    44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                                    44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                                    44, 29, (byte) 190, 53, (byte) 227, 123};
+                            Polygon polygon2 = new PolygonImpl(polygonData2);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon2.getData());
                             break;
                         case 3:
-                            polygon3 = new PolygonImpl(polygonData3);
+                            byte[] polygonData3 = { 83,
+                                    36, (byte) 167, 60, 52, 37, 0,
+                                    36, (byte) 167, 49, 52, 36, (byte) 255,
+                                    36, (byte) 167, 50, 52, 37, 0};
+                            Polygon polygon3 = new PolygonImpl(polygonData3);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon3.getData());
                             break;
                         case 4:
-                            polygon4 = new PolygonImpl(polygonData4);
+                            byte[] polygonData4 = { 83,
+                                    36, 124, (byte) 163, 59, 49, 112,
+                                    36, 126, 7, 59, 49, (byte) 138,
+                                    36, 127, (byte) 224, 59, 49, 72};
+                            Polygon polygon4 = new PolygonImpl(polygonData4);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon4.getData());
                             break;
                         case 5:
-                            polygon5 = new PolygonImpl(polygonData5);
+                            byte[] polygonData5 = { 84,
+                                    37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                                    37, (byte) 230, 64, 52, 67, 124,
+                                    37, (byte) 230, (byte) 131, 52, 67, 121,
+                                    37, (byte) 230, (byte) 132, 52, 67, 125};
+                            Polygon polygon5 = new PolygonImpl(polygonData5);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon5.getData());
                             break;
                         case 6:
+                            PolygonImpl polygon6 = new PolygonImpl();
                             polygon6.setData(ellipsoidPoints);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon6.getData());
                             break;
@@ -873,14 +853,15 @@ public class Server extends TestHarnessLocationServicesManagement {
                         periodicLDR = true;
                         int reportingAmount = 3;
                         int reportingInterval = 600;
-                        int reportingAmountMilliseconds = 863999; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
-                        int reportingIntervalMilliseconds = 100; // ReportingIntervalMilliseconds ::= INTEGER (1..999)
-                        ReportingOptionMilliseconds reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl(reportingAmountMilliseconds, reportingIntervalMilliseconds);
                         int randReporting = rand.nextInt(2) + 1;
-                        if (randReporting == 1)
+                        if (randReporting == 1) {
+                            int reportingAmountMilliseconds = 863999; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
+                            int reportingIntervalMilliseconds = 100; // ReportingIntervalMilliseconds ::= INTEGER (1..999)
+                            ReportingOptionMilliseconds reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl(reportingAmountMilliseconds, reportingIntervalMilliseconds);
                             periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
-                        else
+                        } else {
                             periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, null);
+                        }
                         sequenceNumber = 1;
                         break;
                 }
@@ -914,8 +895,7 @@ public class Server extends TestHarnessLocationServicesManagement {
             lac = 101;
             ci = 10263;
             boolean saiPresent = false;
-            int cgiRand = rand.nextInt(10) + 1;
-            switch(cgiRand) {
+            switch(rand.nextInt(10) + 1) {
                 case 1:
                     saiPresent = true;
                     break;
@@ -986,45 +966,44 @@ public class Server extends TestHarnessLocationServicesManagement {
             // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
             // Method=Timing Advance, Usage=3: Attempted successfully: results used to generate location
             // Method=Conventional GPS, Usage=2: Attempted successfully: results used to verify but not generate location
-            byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
+            // byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
 
             // Method=OTDOA, Usage=3: Attempted successfully: results used to generate location
             // Method=Reserved (GERAN use only), Usage=0: Attempted unsuccessfully due to failure or interruption - not used
             // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
             // Method=Cell ID, Usage=2: Attempted successfully: results used to verify but not generate location - not used
             // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
-            byte[] utranPosData = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
+            // byte[] utranPosData = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
 
             // Method=MS-Based, GANSSId=Galileo
             // Method=MS-Assisted, GANSSId=GLONASS
             // Method=Conventional, GANSSId=SBAS
-            byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
+            // byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
 
             // Method=MS-Based, GANSSId=Galileo
             // Method=MS-Assisted, GANSSId=GLONASS
             // Method=Conventional, GANSSId=SBAS
-            byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
+            // byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
 
             // Method=Standalone, AddPosId=WLAN
             // Method=MS-Assisted, AddPosId=Bluetooth
-            byte[] data = new byte[] {0x57, (byte) 0x8F};
+            // byte[] utranAddPosData = new byte[] {0x57, (byte) 0x8F};
 
-            int randPos = rand.nextInt(4) + 1;
-            switch (randPos) {
+            switch (rand.nextInt(4) + 1) {
                 case 1:
-                    geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
                     break;
                 case 2:
-                    geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
-                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03});
                     break;
                 case 3:
-                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b});
                     break;
                 case 4:
-                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
-                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
-                    utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(data);
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b});
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03});
+                    utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(new byte[] {0x57, (byte) 0x8F});
                     break;
             }
 
@@ -1186,70 +1165,58 @@ public class Server extends TestHarnessLocationServicesManagement {
             }
 
             if (typeOfShape == TypeOfShape.Polygon) {
-                ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
-                ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
-                ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
-                ellipsoidPoint4 = new EllipsoidPoint(-3.040019, 70.681903);
-                ellipsoidPoint5 = new EllipsoidPoint(-3.045001, 70.700109);
-                ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
-                EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
-
-                byte[] polygonData1 = { 83,
-                        41, (byte) 234, (byte) 138, 55, 67, 17,
-                        41, (byte) 234, (byte) 136, 55, 67, 3,
-                        41, (byte) 234, 0, 55, 67, 24};
-
-                byte[] polygonData2 = { 83,
-                        44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
-                        44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
-                        44, 29, (byte) 190, 53, (byte) 227, 123};
-
-                byte[] polygonData3 = { 83,
-                        36, (byte) 167, 60, 52, 37, 0,
-                        36, (byte) 167, 49, 52, 36, (byte) 255,
-                        36, (byte) 167, 50, 52, 37, 0};
-
-                byte[] polygonData4 = { 83,
-                        36, 124, (byte) 163, 59, 49, 112,
-                        36, 126, 7, 59, 49, (byte) 138,
-                        36, 127, (byte) 224, 59, 49, 72};
-
-                byte[] polygonData5 = { 84,
-                        37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
-                        37, (byte) 230, 64, 52, 67, 124,
-                        37, (byte) 230, (byte) 131, 52, 67, 121,
-                        37, (byte) 230, (byte) 132, 52, 67, 125};
-
-                Polygon polygon1;
-                Polygon polygon2;
-                Polygon polygon3;
-                Polygon polygon4;
-                Polygon polygon5;
-                PolygonImpl polygon6 = new PolygonImpl();
-
                 try {
                     switch (rand.nextInt(6) + 1) {
                         case 1:
-                            polygon1 = new PolygonImpl(polygonData1);
+                            byte[] polygonData1 = { 83,
+                                    41, (byte) 234, (byte) 138, 55, 67, 17,
+                                    41, (byte) 234, (byte) 136, 55, 67, 3,
+                                    41, (byte) 234, 0, 55, 67, 24};
+                            Polygon polygon1 = new PolygonImpl(polygonData1);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon1.getData());
                             break;
                         case 2:
-                            polygon2 = new PolygonImpl(polygonData2);
+                            byte[] polygonData2 = { 83,
+                                    44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                                    44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                                    44, 29, (byte) 190, 53, (byte) 227, 123};
+                            Polygon polygon2 = new PolygonImpl(polygonData2);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon2.getData());
                             break;
                         case 3:
-                            polygon3 = new PolygonImpl(polygonData3);
+                            byte[] polygonData3 = { 83,
+                                    36, (byte) 167, 60, 52, 37, 0,
+                                    36, (byte) 167, 49, 52, 36, (byte) 255,
+                                    36, (byte) 167, 50, 52, 37, 0};
+                            Polygon polygon3 = new PolygonImpl(polygonData3);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon3.getData());
                             break;
                         case 4:
-                            polygon4 = new PolygonImpl(polygonData4);
+                            byte[] polygonData4 = { 83,
+                                    36, 124, (byte) 163, 59, 49, 112,
+                                    36, 126, 7, 59, 49, (byte) 138,
+                                    36, 127, (byte) 224, 59, 49, 72};
+                            Polygon polygon4 = new PolygonImpl(polygonData4);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon4.getData());
                             break;
                         case 5:
-                            polygon5 = new PolygonImpl(polygonData5);
+                            byte[] polygonData5 = { 84,
+                                    37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                                    37, (byte) 230, 64, 52, 67, 124,
+                                    37, (byte) 230, (byte) 131, 52, 67, 121,
+                                    37, (byte) 230, (byte) 132, 52, 67, 125};
+                            Polygon polygon5 = new PolygonImpl(polygonData5);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon5.getData());
                             break;
                         case 6:
+                            ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
+                            ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
+                            ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
+                            ellipsoidPoint4 = new EllipsoidPoint(-3.040019, 70.681903);
+                            ellipsoidPoint5 = new EllipsoidPoint(-3.045001, 70.700109);
+                            ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
+                            EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
+                            PolygonImpl polygon6 = new PolygonImpl();
                             polygon6.setData(ellipsoidPoints);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon6.getData());
                             break;
@@ -1263,6 +1230,7 @@ public class Server extends TestHarnessLocationServicesManagement {
             UtranPositioningDataInfoImpl utranPositioningDataInfo = null;
             GeranGANSSpositioningDataImpl geranGanssPositioningData = null;
             UtranGANSSpositioningDataImpl utranGanssPositioningData = null;
+            UtranAdditionalPositioningData utranAdditionalPositioningData = null;
             // Method=Mobile Based E-OTD, Usage=1: Attempted successfully: results not used to generate location
             // Method=Mobile Assisted E-OTD, Usage=3: Attempted successfully: results used to generate location
             // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
@@ -1270,39 +1238,44 @@ public class Server extends TestHarnessLocationServicesManagement {
             // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
             // Method=Timing Advance, Usage=3: Attempted successfully: results used to generate location
             // Method=Conventional GPS, Usage=2: Attempted successfully: results used to verify but not generate location
-            byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
+            // byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
 
             // Method=OTDOA, Usage=3: Attempted successfully: results used to generate location
             // Method=Reserved (GERAN use only), Usage=0: Attempted unsuccessfully due to failure or interruption - not used
             // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
             // Method=Cell ID, Usage=2: Attempted successfully: results used to verify but not generate location - not used
             // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
-            byte[] utranPosData = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
+            // byte[] utranPosData = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
 
             // Method=MS-Based, GANSSId=Galileo
             // Method=MS-Assisted, GANSSId=GLONASS
             // Method=Conventional, GANSSId=SBAS
-            byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
+            // byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
 
             // Method=MS-Based, GANSSId=Galileo
             // Method=MS-Assisted, GANSSId=GLONASS
             // Method=Conventional, GANSSId=SBAS
-            byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
+            // byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
+
+            // Method=Standalone, AddPosId=WLAN
+            // Method=MS-Assisted, AddPosId=Bluetooth
+            // byte[] utranAddPosData = new byte[] {0x57, (byte) 0x8F};
 
             switch (rand.nextInt(4) + 1) {
                 case 1:
-                    geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
                     break;
                 case 2:
-                    geranPositioningDataInfo = new PositioningDataInformationImpl(geranPosData);
-                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03});
                     break;
                 case 3:
-                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b});
                     break;
                 case 4:
-                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPosData);
-                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b});
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03});
+                    utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(new byte[] {0x57, (byte) 0x8F});
                     break;
             }
 
@@ -1395,11 +1368,6 @@ public class Server extends TestHarnessLocationServicesManagement {
             ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number,
                     NumberingPlan.ISDN, SCCP_MSC_ADDRESS);
             ServingNodeAddress targetServingNodeForHandover = new ServingNodeAddressImpl(networkNodeNumber, true);
-
-            // Method=Standalone, AddPosId=WLAN
-            // Method=MS-Assisted, AddPosId=Bluetooth
-            byte[] data = new byte[] {0x57, (byte) 0x8F};
-            UtranAdditionalPositioningData utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(data);
 
             Integer utranBaroPressureMeas = 110000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
 

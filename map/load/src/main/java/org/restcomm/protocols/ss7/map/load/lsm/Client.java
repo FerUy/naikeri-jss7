@@ -522,12 +522,11 @@ public class Client extends TestHarnessLocationServicesManagement {
 
         this.rateLimiterObj.acquire();
 
-        // Send Authentication Info
+        // Send SRILCS
         sendRoutingInfoForLCSRequest();
     }
 
     private void sendRoutingInfoForLCSRequest() {
-
         try {
             // First create Dialog
             AddressString origRef = mapProvider.getMAPParameterFactory()
@@ -668,6 +667,7 @@ public class Client extends TestHarnessLocationServicesManagement {
                     locationEstimateType = LocationEstimateType.notificationVerificationOnly;
                     break;
             }
+            OccurrenceInfo occurrenceInfo = null;
             if (locationEstimateType == LocationEstimateType.activateDeferredLocation ||
                     locationEstimateType == LocationEstimateType.cancelDeferredLocation) {
                 boolean msAvailable = false;
@@ -678,18 +678,24 @@ public class Client extends TestHarnessLocationServicesManagement {
                 switch (rand.nextInt(5) + 1) {
                     case 1:
                         msAvailable = true;
+                        occurrenceInfo = OccurrenceInfo.oneTimeEvent;
+                        // beingInsideArea is always treated as oneTimeEvent regardless of the possible value of occurrenceInfo inside areaEventInfo.
                         break;
                     case 2:
                         enteringIntoArea = true;
+                        occurrenceInfo = OccurrenceInfo.multipleTimeEvent;
                         break;
                     case 3:
                         leavingFromArea = true;
+                        occurrenceInfo = OccurrenceInfo.multipleTimeEvent;
                         break;
                     case 4:
                         beingInsideArea = true;
+                        occurrenceInfo = OccurrenceInfo.multipleTimeEvent;
                         break;
                     case 5:
                         periodicLDR = true;
+                        occurrenceInfo = OccurrenceInfo.multipleTimeEvent;
                         break;
                 }
                 deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
@@ -785,19 +791,20 @@ public class Client extends TestHarnessLocationServicesManagement {
                     locationEstimateType == LocationEstimateType.cancelDeferredLocation) {
 
                 AreaDefinition areaDefinition = getAreaDefinition(rand.nextInt(10) + 1);
-                OccurrenceInfo occurrenceInfo = OccurrenceInfo.multipleTimeEvent;
                 Integer intervalTime = 10;
                 areaEventInfo = new AreaEventInfoImpl(areaDefinition, occurrenceInfo, intervalTime);
-                int reportingAmount = 3;
-                int reportingInterval = 600;
-                int reportingAmountMilliseconds = 863999; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
-                int reportingIntervalMilliseconds = 100; // ReportingIntervalMilliseconds ::= INTEGER (1..999)
-                ReportingOptionMilliseconds reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl(reportingAmountMilliseconds, reportingIntervalMilliseconds);
-                int randReporting = rand.nextInt(2) + 1;
-                if (randReporting == 1)
-                    periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
-                else
-                    periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, null);
+                if (deferredLocationEventType.getPeriodicLDR()) {
+                    int reportingAmount = 3;
+                    int reportingInterval = 600;
+                    int reportingAmountMilliseconds = 863999; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
+                    int reportingIntervalMilliseconds = 100; // ReportingIntervalMilliseconds ::= INTEGER (1..999)
+                    ReportingOptionMilliseconds reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl(reportingAmountMilliseconds, reportingIntervalMilliseconds);
+                    int randReporting = rand.nextInt(2) + 1;
+                    if (randReporting == 1)
+                        periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
+                    else
+                        periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, null);
+                }
             }
 
             GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
