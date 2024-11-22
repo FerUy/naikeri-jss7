@@ -180,7 +180,7 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
         return posMethod;
     }
 
-    private String getUsage(int u) {
+    public String getUsage(int u) {
         String usage = null;
         /*
          * Coding of usage (bits 3-1):
@@ -233,9 +233,9 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
     public static void main(String[] args) throws MAPException {
         byte[] data = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
         UtranPositioningDataInfoImpl utranPositioningData = new UtranPositioningDataInfoImpl(data);
-        HashMap<String, Integer> methodsAndGanssIds = utranPositioningData.getUtranPositioningDataSet();
+        HashMap<String, Integer> methodsAndUsage = utranPositioningData.getUtranPositioningDataSet();
 
-        for (HashMap.Entry<String, Integer> entry : methodsAndGanssIds.entrySet()) {
+        for (HashMap.Entry<String, Integer> entry : methodsAndUsage.entrySet()) {
             String key = entry.getKey();
             Integer value = entry.getValue();
             System.out.println("Method=" + key + ", Usage=" + value + ": " + utranPositioningData.getUsage(value));

@@ -76,7 +76,7 @@ public class PolygonImpl extends OctetStringBase implements Polygon {
         for (int position = 0; position < numberOfPoints; position++) {
             EllipsoidPoint ellipsoidPoint = getEllipsoidPoint(position);
             sb.append(String.format(", Point%d_lat=%f, ", position, ellipsoidPoint.getLatitude()));
-            sb.append(String.format("Point%d_lat=%f", position, ellipsoidPoint.getLongitude()));
+            sb.append(String.format("Point%d_long=%f", position, ellipsoidPoint.getLongitude()));
         }
         sb.append("]");
 

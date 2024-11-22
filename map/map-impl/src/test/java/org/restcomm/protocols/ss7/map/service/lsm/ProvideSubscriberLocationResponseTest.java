@@ -3,51 +3,48 @@ package org.restcomm.protocols.ss7.map.service.lsm;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.MAPParameterFactoryImpl;
+import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPParameterFactory;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdFixedLength;
 import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaIdOrLAI;
+import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AccuracyFulfilmentIndicator;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AddGeographicalInformation;
+import org.restcomm.protocols.ss7.map.api.service.lsm.EllipsoidPoint;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ExtGeographicalInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
-import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationRequest;
-import org.restcomm.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ServingNodeAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranAdditionalPositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranCivicAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranPositioningDataInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityEstimate;
+import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
 import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdOrLAIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.LAIFixedLengthImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.AddGeographicalInformationImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.ExtGeographicalInformationImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.GeranGANSSpositioningDataImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.PositioningDataInformationImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.ProvideSubscriberLocationResponseImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.ServingNodeAddressImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.UtranGANSSpositioningDataImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.UtranPositioningDataInfoImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.VelocityEstimateImpl;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
@@ -62,7 +59,8 @@ import org.testng.annotations.Test;
  */
 public class ProvideSubscriberLocationResponseTest {
 
-    MAPParameterFactory MAPParameterFactory = new MAPParameterFactoryImpl();
+    MAPParameterFactory mapParameterFactory = new MAPParameterFactoryImpl();
+    private static Logger logger = Logger.getLogger(ProvideSubscriberLocationResponseTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -114,6 +112,141 @@ public class ProvideSubscriberLocationResponseTest {
                 0x7f, 0x23, (byte) 0x80, 0x01, 0x00, (byte) 0x84, 0x02, 0x00,
                 0x03, (byte) 0xa6, 0x09, (byte) 0x80, 0x07, 0x04, (byte) 0xf4, 0x27,
                 0x13, (byte) 0x94, 0x2d, (byte) 0xc1,
+        };
+    }
+
+    private byte[] getEncodedDataLSMLoadTest1() {
+        return new byte[] {0x30, (byte) 0x82, 0x01, (byte) 0xe4, 0x04, 0x0d,
+                (byte) 0xa0, (byte) 0xb1, (byte) 0xb1, 0x3f, (byte) 0xd8, (byte) 0xf3, 0x21, 0x00,
+                0x05, 0x01, 0x14, 0x14, 0x02, (byte) 0x80, 0x01, 0x0a,
+                (byte) 0x83, 0x00, (byte) 0x85, 0x07, 0x00, 0x00, 0x43, 0x4b,
+                0x00, 0x62, 0x2b, (byte) 0xa6, 0x09, (byte) 0x80, 0x07, 0x47,
+                (byte) 0xf8, 0x10, 0x00, 0x0b, 0x12, (byte) 0xcc, (byte) 0x87, 0x00,
+                (byte) 0x88, 0x01, 0x00, (byte) 0x89, 0x07, 0x30, 0x03, 0x00,
+                0x65, 0x02, 0x05, 0x01, (byte) 0x8a, 0x00, (byte) 0x8c, 0x05,
+                0x01, 0x63, (byte) 0x8b, 0x02, 0x03, (byte) 0xad, 0x09, (byte) 0x80,
+                0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64, 0x00, 0x51,
+                (byte) 0x8e, 0x02, 0x57, (byte) 0x8f, (byte) 0x8f, 0x03, 0x01, (byte) 0xad,
+                (byte) 0xb0, (byte) 0x90, (byte) 0x82, 0x01, (byte) 0x8d, 0x3c, 0x63, 0x6c,
+                0x3a, 0x63, 0x69, 0x76, 0x69, 0x63, 0x41, 0x64,
+                0x64, 0x72, 0x65, 0x73, 0x73, 0x3e, 0x0a, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x3c,
+                0x63, 0x6c, 0x3a, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+                0x72, 0x79, 0x3e, 0x55, 0x53, 0x3c, 0x2f, 0x63,
+                0x6c, 0x3a, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72,
+                0x79, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a, 0x41,
+                0x31, 0x3e, 0x4e, 0x65, 0x77, 0x20, 0x59, 0x6f,
+                0x72, 0x6b, 0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x41,
+                0x31, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a, 0x41,
+                0x33, 0x3e, 0x4e, 0x65, 0x77, 0x20, 0x59, 0x6f,
+                0x72, 0x6b, 0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x41,
+                0x33, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a, 0x41,
+                0x36, 0x3e, 0x42, 0x72, 0x6f, 0x61, 0x64, 0x77,
+                0x61, 0x79, 0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x41,
+                0x36, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a, 0x48,
+                0x4e, 0x4f, 0x3e, 0x31, 0x32, 0x33, 0x3c, 0x2f,
+                0x63, 0x6c, 0x3a, 0x48, 0x4e, 0x4f, 0x3e, 0x0a,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x3c, 0x63, 0x6c, 0x3a, 0x4c, 0x4f, 0x43, 0x3e,
+                0x53, 0x75, 0x69, 0x74, 0x65, 0x20, 0x37, 0x35,
+                0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x4c, 0x4f, 0x43,
+                0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a, 0x50, 0x43,
+                0x3e, 0x31, 0x30, 0x30, 0x32, 0x37, 0x2d, 0x30,
+                0x34, 0x30, 0x31, 0x3c, 0x2f, 0x63, 0x6c, 0x3a,
+                0x50, 0x43, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x63, 0x69, 0x76,
+                0x69, 0x63, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+                0x73, 0x3e
+        };
+    }
+
+    private byte[] getEncodedDataLSMLoadTest2() {
+        return new byte[] { 0x30, (byte) 0x82, 0x02, 0x00, 0x04, 0x07,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x80,
+                0x01, 0x00, (byte) 0x82, 0x25, 0x56, (byte) 0x84, 0x22, 0x68,
+                0x32, 0x54, (byte) 0xbe, (byte) 0x84, 0x4a, (byte) 0x8a, 0x32, 0x48,
+                0x2a, (byte) 0x84, 0x2e, (byte) 0xed, 0x32, 0x15, (byte) 0xc5, (byte) 0x84,
+                0x52, (byte) 0xd6, 0x32, 0x43, 0x3f, (byte) 0x84, 0x54, (byte) 0xa6,
+                0x32, 0x46, (byte) 0x8f, (byte) 0x84, 0x40, 0x43, 0x32, 0x7d,
+                0x28, (byte) 0x83, 0x00, (byte) 0x84, 0x08, 0x00, 0x03, 0x1b,
+                0x21, 0x2b, 0x3a, 0x43, 0x60, (byte) 0xa6, 0x09, (byte) 0x80,
+                0x07, 0x47, (byte) 0xf8, 0x10, 0x00, 0x77, 0x3b, (byte) 0xe8,
+                (byte) 0x88, 0x01, 0x00, (byte) 0x89, 0x07, 0x30, 0x03, 0x00,
+                0x65, 0x02, 0x05, 0x01, (byte) 0x8a, 0x00, (byte) 0x8b, 0x05,
+                0x00, 0x63, (byte) 0x8b, 0x02, 0x03, (byte) 0xad, 0x09, (byte) 0x80,
+                0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64, 0x00, 0x51,
+                (byte) 0x8f, 0x03, 0x01, (byte) 0xad, (byte) 0xb0, (byte) 0x90, (byte) 0x82, 0x01,
+                (byte) 0x8d, 0x3c, 0x63, 0x6c, 0x3a, 0x63, 0x69, 0x76,
+                0x69, 0x63, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+                0x73, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a, 0x63,
+                0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x3e, 0x55,
+                0x53, 0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x63, 0x6f,
+                0x75, 0x6e, 0x74, 0x72, 0x79, 0x3e, 0x0a, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x3c,
+                0x63, 0x6c, 0x3a, 0x41, 0x31, 0x3e, 0x4e, 0x65,
+                0x77, 0x20, 0x59, 0x6f, 0x72, 0x6b, 0x3c, 0x2f,
+                0x63, 0x6c, 0x3a, 0x41, 0x31, 0x3e, 0x0a, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x3c,
+                0x63, 0x6c, 0x3a, 0x41, 0x33, 0x3e, 0x4e, 0x65,
+                0x77, 0x20, 0x59, 0x6f, 0x72, 0x6b, 0x3c, 0x2f,
+                0x63, 0x6c, 0x3a, 0x41, 0x33, 0x3e, 0x0a, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x3c,
+                0x63, 0x6c, 0x3a, 0x41, 0x36, 0x3e, 0x42, 0x72,
+                0x6f, 0x61, 0x64, 0x77, 0x61, 0x79, 0x3c, 0x2f,
+                0x63, 0x6c, 0x3a, 0x41, 0x36, 0x3e, 0x0a, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x3c,
+                0x63, 0x6c, 0x3a, 0x48, 0x4e, 0x4f, 0x3e, 0x31,
+                0x32, 0x33, 0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x48,
+                0x4e, 0x4f, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a,
+                0x4c, 0x4f, 0x43, 0x3e, 0x53, 0x75, 0x69, 0x74,
+                0x65, 0x20, 0x37, 0x35, 0x3c, 0x2f, 0x63, 0x6c,
+                0x3a, 0x4c, 0x4f, 0x43, 0x3e, 0x0a, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x3c, 0x63,
+                0x6c, 0x3a, 0x50, 0x43, 0x3e, 0x31, 0x30, 0x30,
+                0x32, 0x37, 0x2d, 0x30, 0x34, 0x30, 0x31, 0x3c,
+                0x2f, 0x63, 0x6c, 0x3a, 0x50, 0x43, 0x3e, 0x0a,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+                0x20, 0x20, 0x20, 0x20, 0x3c, 0x2f, 0x63, 0x6c,
+                0x3a, 0x63, 0x69, 0x76, 0x69, 0x63, 0x41, 0x64,
+                0x64, 0x72, 0x65, 0x73, 0x73, 0x3e
         };
     }
 
@@ -174,6 +307,9 @@ public class ProvideSubscriberLocationResponseTest {
         GeranGANSSpositioningData geranGANSSpositioningData = psl1.getGeranGANSSpositioningData();
         UtranGANSSpositioningData utranGANSSpositioningData = psl1.getUtranGANSSpositioningData();
         ServingNodeAddress targetServingNodeForHandover = psl1.getTargetServingNodeForHandover();
+        UtranAdditionalPositioningData utranAdditionalPositioningData = psl1.getUtranAdditionalPositioningData();
+        Integer utranBaroPressureMeas = psl1.getUtranBaroPressureMeas();
+        UtranCivicAddress utranCivicAddress = psl1.getUtranCivicAddress();
 
         assertTrue(Arrays.equals(locationEstimate.getData(), getExtGeographicalInformation()));
         assertNull(geranPositioningData);
@@ -190,6 +326,9 @@ public class ProvideSubscriberLocationResponseTest {
         assertNull(geranGANSSpositioningData);
         assertNull(utranGANSSpositioningData);
         assertNull(targetServingNodeForHandover);
+        assertNull(utranAdditionalPositioningData);
+        assertNull(utranBaroPressureMeas);
+        assertNull(utranCivicAddress);
 
         // test 2
         rawData = getEncodedDataSergey();
@@ -217,6 +356,9 @@ public class ProvideSubscriberLocationResponseTest {
         geranGANSSpositioningData = psl2.getGeranGANSSpositioningData();
         utranGANSSpositioningData = psl2.getUtranGANSSpositioningData();
         targetServingNodeForHandover = psl2.getTargetServingNodeForHandover();
+        utranAdditionalPositioningData = psl2.getUtranAdditionalPositioningData();
+        utranBaroPressureMeas = psl2.getUtranBaroPressureMeas();
+        utranCivicAddress = psl2.getUtranCivicAddress();
 
         assertTrue(Arrays.equals(locationEstimate.getData(), getExtGeographicalInformation()));
         assertTrue(Arrays.equals(geranPositioningData.getData(), getPositioningDataInformation()));
@@ -235,6 +377,9 @@ public class ProvideSubscriberLocationResponseTest {
         assertTrue(Arrays.equals(geranGANSSpositioningData.getData(), getGeranGANSSpositioningData()));
         assertTrue(Arrays.equals(utranGANSSpositioningData.getData(), getUtranGANSSpositioningData()));
         assertEquals(targetServingNodeForHandover.getMscNumber().getAddress(), "444666888");
+        assertNull(utranAdditionalPositioningData);
+        assertNull(utranBaroPressureMeas);
+        assertNull(utranCivicAddress);
 
         // test 3 with real data from Indian operator
         rawData = getEncodedDataIndia1();
@@ -262,6 +407,9 @@ public class ProvideSubscriberLocationResponseTest {
         geranGANSSpositioningData = psl3.getGeranGANSSpositioningData();
         utranGANSSpositioningData = psl3.getUtranGANSSpositioningData();
         targetServingNodeForHandover = psl3.getTargetServingNodeForHandover();
+        utranAdditionalPositioningData = psl3.getUtranAdditionalPositioningData();
+        utranBaroPressureMeas = psl3.getUtranBaroPressureMeas();
+        utranCivicAddress = psl3.getUtranCivicAddress();
 
         // Wireshark sample description corresponding to bytes from getEncodedDataIndia1():
         //    opCode: localValue (0)
@@ -305,6 +453,9 @@ public class ProvideSubscriberLocationResponseTest {
         assertNull(geranGANSSpositioningData);
         assertNull(utranGANSSpositioningData);
         assertNull(targetServingNodeForHandover);
+        assertNull(utranAdditionalPositioningData);
+        assertNull(utranBaroPressureMeas);
+        assertNull(utranCivicAddress);
 
         // test 4 with real data from Indian operator
         rawData = getEncodedDataIndia2();
@@ -332,7 +483,9 @@ public class ProvideSubscriberLocationResponseTest {
         geranGANSSpositioningData = psl4.getGeranGANSSpositioningData();
         utranGANSSpositioningData = psl4.getUtranGANSSpositioningData();
         targetServingNodeForHandover = psl4.getTargetServingNodeForHandover();
-
+        utranAdditionalPositioningData = psl4.getUtranAdditionalPositioningData();
+        utranBaroPressureMeas = psl4.getUtranBaroPressureMeas();
+        utranCivicAddress = psl4.getUtranCivicAddress();
         // Wireshark sample description corresponding to bytes from getEncodedDataIndia2():
         //            opCode: localValue (0)
         //                localValue: provideSubscriberLocation (83)
@@ -373,6 +526,9 @@ public class ProvideSubscriberLocationResponseTest {
         assertNull(geranGANSSpositioningData);
         assertNull(utranGANSSpositioningData);
         assertNull(targetServingNodeForHandover);
+        assertNull(utranAdditionalPositioningData);
+        assertNull(utranBaroPressureMeas);
+        assertNull(utranCivicAddress);
 
         // test 5 with real data from Indian operator
         rawData = getEncodedDataIndiaWithGERANPositioningData();
@@ -400,7 +556,9 @@ public class ProvideSubscriberLocationResponseTest {
         geranGANSSpositioningData = psl5.getGeranGANSSpositioningData();
         utranGANSSpositioningData = psl5.getUtranGANSSpositioningData();
         targetServingNodeForHandover = psl5.getTargetServingNodeForHandover();
-
+        utranAdditionalPositioningData = psl5.getUtranAdditionalPositioningData();
+        utranBaroPressureMeas = psl5.getUtranBaroPressureMeas();
+        utranCivicAddress = psl5.getUtranCivicAddress();
         // Wireshark sample description corresponding to bytes from getEncodedDataIndiaWithGERANPositioningData():
         // Component: returnResultLast (2)
         //    returnResultLast
@@ -418,11 +576,6 @@ public class ProvideSubscriberLocationResponseTest {
         //            geranPositioningData: 0003
         //            cellIdOrSai: cellGlobalIdOrServiceAreaIdFixedLength (0)
         //                cellGlobalIdOrServiceAreaIdFixedLength: 04f42713942dc1
-        /*
-        geranPositioningData = new PositioningDataInformationImpl(new byte[] {0x00, 0x03});
-        cellCgiOrSaiFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(404, 72, 5012, 11713);
-         */
-
         assertEquals(locationEstimate.getTypeOfShape(), TypeOfShape.EllipsoidPointWithUncertaintyCircle);
         assertTrue(Math.abs(locationEstimate.getLatitude() - 10.55648) < 0.00001);
         assertTrue(Math.abs(locationEstimate.getLongitude() - 76.21489) < 0.00001);
@@ -446,6 +599,307 @@ public class ProvideSubscriberLocationResponseTest {
         assertNull(geranGANSSpositioningData);
         assertNull(utranGANSSpositioningData);
         assertNull(targetServingNodeForHandover);
+        assertNull(utranAdditionalPositioningData);
+        assertNull(utranBaroPressureMeas);
+        assertNull(utranCivicAddress);
+
+        // test 6 from LSM load
+        rawData = getEncodedDataLSMLoadTest1();
+
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        assertEquals(tag, Tag.SEQUENCE);
+
+        ProvideSubscriberLocationResponseImpl psl6 = new ProvideSubscriberLocationResponseImpl();
+        psl6.decodeAll(asn);
+
+        locationEstimate = psl6.getLocationEstimate();
+        geranPositioningData = psl6.getGeranPositioningData();
+        utranPositioningData = psl6.getUtranPositioningData();
+        ageOfLocationEstimate = psl6.getAgeOfLocationEstimate();
+        additionalLocationEstimate = psl6.getAdditionalLocationEstimate();
+        extensionContainer = psl6.getExtensionContainer();
+        deferredMTLRResponseIndicator = psl6.getDeferredMTLRResponseIndicator();
+        cellGlobalIdOrServiceAreaIdOrLAI = psl6.getCellIdOrSai();
+        saiPresent = psl6.getSaiPresent();
+        accuracyFulfilmentIndicator = psl6.getAccuracyFulfilmentIndicator();
+        velocityEstimate = psl6.getVelocityEstimate();
+        moLrShortCircuitIndicator = psl6.getMoLrShortCircuitIndicator();
+        geranGANSSpositioningData = psl6.getGeranGANSSpositioningData();
+        utranGANSSpositioningData = psl6.getUtranGANSSpositioningData();
+        targetServingNodeForHandover = psl6.getTargetServingNodeForHandover();
+        utranAdditionalPositioningData = psl6.getUtranAdditionalPositioningData();
+        utranBaroPressureMeas = psl6.getUtranBaroPressureMeas();
+        utranCivicAddress = psl6.getUtranCivicAddress();
+        // Wireshark sample description corresponding to bytes from getEncodedDataLSMLoadTest1():
+        // Component: returnResultLast (2)
+        //    returnResultLast
+        //        invokeID: 0
+        //        resultretres
+        //            opCode: localValue (0)
+        //            locationEstimate: a0b1b13fd8f321000501141402
+        //                1010 .... = Location estimate: Ellipsoid Arc (10)
+        //                1... .... = Sign of latitude: South (1)
+        //                .011 0001 1011 0001 0011 1111 = Degrees of latitude: 3256639 (-34.93995 degrees)
+        //                1101 1000 1111 0011 0010 0001 = Degrees of longitude: -2559199 (-54.91446 degrees)
+        //                Inner radius: 5
+        //                .000 0001 = Uncertainty radius: 1
+        //                Offset angle: 20
+        //                Included angle: 20
+        //                .000 0010 = Confidence(%): 2
+        //                [Location OSM URI: https://www.openstreetmap.org/?mlat=-34.93995&mlon=-54.91446&zoom=12]
+        //            ageOfLocationEstimate: 10
+        //            deferredmt-lrResponseIndicator
+        //            utranPositioningData: 0000434b00622b
+        //            cellIdOrSai: cellGlobalIdOrServiceAreaIdFixedLength (0)
+        //                cellGlobalIdOrServiceAreaIdFixedLength: 47f810000b12cc
+        //            sai-Present
+        //            accuracyFulfilmentIndicator: requestedAccuracyFulfilled (0)
+        //            velocityEstimate: 30030065020501
+        //            mo-lrShortCircuitIndicator
+        //            utranGANSSpositioningData: 01638b0203
+        //            targetServingNodeForHandover: msc-Number (0)
+        //                msc-Number: 91947101640051
+        //                    1... .... = Extension: No Extension
+        //                    .001 .... = Nature of number: International Number (0x1)
+        //                    .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+        //                    E.164 number (MSISDN): 491710460015
+        //            utranAdditionalPositioningData: 578f
+        //            utranBaroPressureMeas: 110000
+        //            utranCivicAddress […]: 3c636c3a6369766963416464726573733e0a202020202020202020202020202020202020202
+        //            0202020203c636c3a636f756e7472793e55533c2f636c3a636f756e7472793e0a202020202020202020202020202020202
+        //            0202020202020203c636c3a41313e4e657720596f
+        assertEquals(locationEstimate.getTypeOfShape(), TypeOfShape.EllipsoidArc);
+        assertTrue(Math.abs(locationEstimate.getLatitude() - (-34.93995)) < 0.00001);
+        assertTrue(Math.abs(locationEstimate.getLongitude() - (-54.91446)) < 0.00001);
+        assertEquals(locationEstimate.getInnerRadius(), 5);
+        assertTrue(Math.abs(locationEstimate.getUncertaintyRadius() - 1) < 0.1);
+        assertEquals(locationEstimate.getOffsetAngle(), 20.0);
+        assertEquals(locationEstimate.getIncludedAngle(), 20.0);
+        assertEquals(locationEstimate.getConfidence(), 2);
+        assertNull(geranPositioningData);
+        assertEquals(utranPositioningData.getUtranPositioningDataDiscriminator(), 0);
+        UtranPositioningDataInfoImpl utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranPositioningData.getData());
+        HashMap<String, Integer> utranPositioningDataMethodsAndUsage = utranPositioningDataInfo.getUtranPositioningDataSet();
+        assertNotNull(utranPositioningDataMethodsAndUsage.get("OTDOA"));
+        assertNotNull(utranPositioningDataMethodsAndUsage.get("Reserved (GERAN use only)"));
+        assertNotNull(utranPositioningDataMethodsAndUsage.get("U-TDOA"));
+        assertNotNull(utranPositioningDataMethodsAndUsage.get("Cell ID"));
+        assertNotNull(utranPositioningDataMethodsAndUsage.get("Mobile Assisted GPS"));
+        assertNull(utranPositioningDataMethodsAndUsage.get("Mobile Based GPS"));
+        assertNull(utranPositioningDataMethodsAndUsage.get("Conventional GPS"));
+        assertNull(utranPositioningDataMethodsAndUsage.get("IPDL"));
+        assertNull(utranPositioningDataMethodsAndUsage.get("RTT"));
+        ArrayList<String> utranPosMethods = utranPositioningDataInfo.getUtranLocationGeneratedPositioningMethods();
+        assertEquals(utranPosMethods.get(0), "U-TDOA");
+        assertEquals(utranPosMethods.get(1), "OTDOA");
+        assertEquals(utranPosMethods.get(2), "Mobile Assisted GPS");
+        assertEquals(ageOfLocationEstimate.intValue(), 10);
+        assertNull(additionalLocationEstimate);
+        assertNull(extensionContainer);
+        assertTrue(deferredMTLRResponseIndicator);
+        assertEquals(cellGlobalIdOrServiceAreaIdOrLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
+        assertEquals(cellGlobalIdOrServiceAreaIdOrLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 1);
+        assertEquals(cellGlobalIdOrServiceAreaIdOrLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 11);
+        assertEquals(cellGlobalIdOrServiceAreaIdOrLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 4812);
+        assertTrue(saiPresent);
+        assertEquals(accuracyFulfilmentIndicator, AccuracyFulfilmentIndicator.requestedAccuracyFulfilled);
+        assertEquals(velocityEstimate.getVelocityType(), VelocityType.HorizontalWithVerticalVelocityAndUncertainty);
+        assertEquals(velocityEstimate.getHorizontalSpeed(), 101);
+        assertEquals(velocityEstimate.getBearing(), 3);
+        assertEquals(velocityEstimate.getVerticalSpeed(), 2);
+        assertEquals(velocityEstimate.getUncertaintyHorizontalSpeed(), 5);
+        assertEquals(velocityEstimate.getUncertaintyVerticalSpeed(), 1);
+        assertTrue(moLrShortCircuitIndicator);
+        assertNull(geranGANSSpositioningData);
+        UtranGANSSpositioningDataImpl utranGanssPositioningData = new UtranGANSSpositioningDataImpl(utranGANSSpositioningData.getData());
+        HashMap<String, String> methodsAndGanssIds = utranGanssPositioningData.getLocationGeneratedMethodsAndGANSSId();
+        Set<String> utranGanssMethods = methodsAndGanssIds.keySet();
+        Collection<String> utranGanssIds = methodsAndGanssIds.values();
+        assertTrue(utranGanssMethods.contains("MS-Based"));
+        assertTrue(utranGanssMethods.contains("MS-Assisted"));
+        assertTrue(utranGanssMethods.contains("Conventional"));
+        assertFalse(utranGanssMethods.contains("Reserved"));
+        assertTrue(utranGanssIds.contains("Galileo"));
+        assertTrue(utranGanssIds.contains("GLONASS"));
+        assertTrue(utranGanssIds.contains("SBAS"));
+        assertFalse(utranGanssIds.contains("Modernized GPS"));
+        assertFalse(utranGanssIds.contains("QZSS"));
+        assertFalse(utranGanssIds.contains("BDS"));
+        assertNull(targetServingNodeForHandover.getMmeNumber());
+        assertEquals(targetServingNodeForHandover.getMscNumber().getAddressNature(), AddressNature.international_number);
+        assertEquals(targetServingNodeForHandover.getMscNumber().getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(targetServingNodeForHandover.getMscNumber().getAddress(), "491710460015");
+        assertFalse(targetServingNodeForHandover.getMscNumber().isExtension());
+        UtranAdditionalPositioningDataImpl utranAdditionalPositioningDataImpl = new UtranAdditionalPositioningDataImpl(utranAdditionalPositioningData.getData());
+        HashMap<String, String> methodsAndAddPosIds = utranAdditionalPositioningDataImpl.getUtranAdditionalPositioningDataSet();
+        Set<String> utranAddMethods = methodsAndAddPosIds.keySet();
+        Collection<String> utranAddPosIds = methodsAndAddPosIds.values();
+        assertTrue(utranAddMethods.contains("Standalone"));
+        assertTrue(utranAddMethods.contains("MS-Assisted"));
+        assertFalse(utranAddMethods.contains("Reserved"));
+        assertTrue(utranAddPosIds.contains("WLAN"));
+        assertTrue(utranAddPosIds.contains("Bluetooth"));
+        assertFalse(utranAddPosIds.contains("Barometric Pressure"));
+        assertFalse(utranAddPosIds.contains("MBS"));
+        assertEquals(utranBaroPressureMeas.intValue(), 110000);
+        String civicAddressString = "<cl:civicAddress>\n" +
+                "                        <cl:country>US</cl:country>\n" +
+                "                        <cl:A1>New York</cl:A1>\n" +
+                "                        <cl:A3>New York</cl:A3>\n" +
+                "                        <cl:A6>Broadway</cl:A6>\n" +
+                "                        <cl:HNO>123</cl:HNO>\n" +
+                "                        <cl:LOC>Suite 75</cl:LOC>\n" +
+                "                        <cl:PC>10027-0401</cl:PC>\n" +
+                "                    </cl:civicAddress>";
+        assertEquals(utranCivicAddress.getData(), civicAddressString.getBytes(StandardCharsets.UTF_8));
+
+        // test 7 from LSM load
+        rawData = getEncodedDataLSMLoadTest2();
+
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        assertEquals(tag, Tag.SEQUENCE);
+
+        ProvideSubscriberLocationResponseImpl psl7 = new ProvideSubscriberLocationResponseImpl();
+        psl7.decodeAll(asn);
+
+        locationEstimate = psl7.getLocationEstimate();
+        geranPositioningData = psl7.getGeranPositioningData();
+        utranPositioningData = psl7.getUtranPositioningData();
+        ageOfLocationEstimate = psl7.getAgeOfLocationEstimate();
+        additionalLocationEstimate = psl7.getAdditionalLocationEstimate();
+        extensionContainer = psl7.getExtensionContainer();
+        deferredMTLRResponseIndicator = psl7.getDeferredMTLRResponseIndicator();
+        cellGlobalIdOrServiceAreaIdOrLAI = psl7.getCellIdOrSai();
+        saiPresent = psl7.getSaiPresent();
+        accuracyFulfilmentIndicator = psl7.getAccuracyFulfilmentIndicator();
+        velocityEstimate = psl7.getVelocityEstimate();
+        moLrShortCircuitIndicator = psl7.getMoLrShortCircuitIndicator();
+        geranGANSSpositioningData = psl7.getGeranGANSSpositioningData();
+        utranGANSSpositioningData = psl7.getUtranGANSSpositioningData();
+        targetServingNodeForHandover = psl7.getTargetServingNodeForHandover();
+        utranAdditionalPositioningData = psl7.getUtranAdditionalPositioningData();
+        utranBaroPressureMeas = psl7.getUtranBaroPressureMeas();
+        utranCivicAddress = psl7.getUtranCivicAddress();
+        // Wireshark sample description corresponding to bytes from getEncodedDataLSMLoadTest2():
+        // Component: returnResultLast (2)
+        //    returnResultLast
+        //        invokeID: 0
+        //        resultretres
+        //            opCode: localValue (0)
+        //            locationEstimate: 00000000000000
+        //                0000 .... = Location estimate: Ellipsoid Point (0)
+        //                0... .... = Sign of latitude: North (0)
+        //                .000 0000 0000 0000 0000 0000 = Degrees of latitude: 0 (0.00000 degrees)
+        //                0000 0000 0000 0000 0000 0000 = Degrees of longitude: 0 (0.00000 degrees)
+        //                [Location OSM URI: https://www.openstreetmap.org/?mlat=0.00000&mlon=0.00000&zoom=12]
+        //            ageOfLocationEstimate: 0
+        //            add-LocationEstimate: 568422683254be844a8a32482a842eed3215c58452d632433f8454a632468f844043327d28
+        //            deferredmt-lrResponseIndicator
+        //            geranPositioningData: 00031b212b3a4360
+        //            cellIdOrSai: cellGlobalIdOrServiceAreaIdFixedLength (0)
+        //                cellGlobalIdOrServiceAreaIdFixedLength: 47f81000773be8
+        //            accuracyFulfilmentIndicator: requestedAccuracyFulfilled (0)
+        //            velocityEstimate: 30030065020501
+        //            mo-lrShortCircuitIndicator
+        //            geranGANSSpositioningData: 00638b0203
+        //            targetServingNodeForHandover: msc-Number (0)
+        //                msc-Number: 91947101640051
+        //                    1... .... = Extension: No Extension
+        //                    .001 .... = Nature of number: International Number (0x1)
+        //                    .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+        //                    E.164 number (MSISDN): 491710460015
+        //            utranBaroPressureMeas: 110000
+        //            utranCivicAddress […]: 3c636c3a6369766963416464726573733e0a202020202020202020202020202020202020202
+        //            0202020203c636c3a636f756e7472793e55533c2f636c3a636f756e7472793e0a202020202020202020202020202020202
+        //            0202020202020203c636c3a41313e4e657720596f
+        assertEquals(locationEstimate.getTypeOfShape(), TypeOfShape.EllipsoidPoint);
+        assertTrue(Math.abs(locationEstimate.getLatitude() - (0.00000)) < 0.00001);
+        assertTrue(Math.abs(locationEstimate.getLongitude() - (0.00000)) < 0.00001);
+        PositioningDataInformationImpl positioningData = new PositioningDataInformationImpl(geranPositioningData.getData());
+        HashMap<String, Integer> geranMethodsAndUsage = positioningData.getPositioningMethodsAndUsage();
+        assertNotNull(geranMethodsAndUsage.get("Mobile Based E-OTD"));
+        assertNotNull(geranMethodsAndUsage.get("Mobile Assisted E-OTD"));
+        assertNotNull(geranMethodsAndUsage.get("U-TDOA"));
+        assertNotNull(geranMethodsAndUsage.get("Cell ID"));
+        assertNotNull(geranMethodsAndUsage.get("Mobile Assisted GPS"));
+        assertNotNull(geranMethodsAndUsage.get("Timing Advance"));
+        assertNotNull(geranMethodsAndUsage.get("Conventional GPS"));
+        assertNull(geranMethodsAndUsage.get("Reserved (not to be used)"));
+        ArrayList<String> geranPosMethods = positioningData.getLocationGeneratedPositioningMethods();
+        assertEquals(geranPosMethods.get(0), "Timing Advance");
+        assertEquals(geranPosMethods.get(1), "Mobile Assisted E-OTD");
+        assertEquals(geranPosMethods.get(2), "Mobile Assisted GPS");
+        assertEquals(geranPosMethods.get(3), "U-TDOA");
+        assertNull(utranPositioningData);
+        assertEquals(ageOfLocationEstimate.intValue(), 0);
+        assertEquals(additionalLocationEstimate.getData(), new byte[] {86, -124, 34, 104, 50, 84, -66, -124, 74, -118, 50,
+                72, 42, -124, 46, -19, 50, 21, -59, -124, 82, -42, 50, 67, 63, -124, 84, -90, 50, 70, -113, -124, 64, 67,
+                50, 125, 40});
+        PolygonImpl polygon = new PolygonImpl(additionalLocationEstimate.getData());
+        assertEquals(polygon.getNumberOfPoints(), 6);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(0).getLatitude() - (-2.907000)) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(0).getLongitude() - 70.778003) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(1).getLatitude() - (-3.017228)) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(1).getLongitude() - 70.708909) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(2).getLatitude() - (-2.941386)) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(2).getLongitude() - 70.432084) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(3).getLatitude() - (-3.040016)) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(3).getLongitude() - 70.681894) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(4).getLatitude() - (-3.044994)) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(4).getLongitude() - 70.700090) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(5).getLatitude() - (-2.989000)) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(5).getLongitude() - 71.000004) < 0.000001);
+        assertNull(extensionContainer);
+        assertTrue(deferredMTLRResponseIndicator);
+        assertEquals(cellGlobalIdOrServiceAreaIdOrLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
+        assertEquals(cellGlobalIdOrServiceAreaIdOrLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 1);
+        assertEquals(cellGlobalIdOrServiceAreaIdOrLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 119);
+        assertEquals(cellGlobalIdOrServiceAreaIdOrLAI.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 15336);
+        assertFalse(saiPresent);
+        assertEquals(accuracyFulfilmentIndicator, AccuracyFulfilmentIndicator.requestedAccuracyFulfilled);
+        assertEquals(velocityEstimate.getVelocityType(), VelocityType.HorizontalWithVerticalVelocityAndUncertainty);
+        assertEquals(velocityEstimate.getHorizontalSpeed(), 101);
+        assertEquals(velocityEstimate.getBearing(), 3);
+        assertEquals(velocityEstimate.getVerticalSpeed(), 2);
+        assertEquals(velocityEstimate.getUncertaintyHorizontalSpeed(), 5);
+        assertEquals(velocityEstimate.getUncertaintyVerticalSpeed(), 1);
+        assertTrue(moLrShortCircuitIndicator);
+        GeranGANSSpositioningDataImpl geranGansspositioningData = new GeranGANSSpositioningDataImpl(geranGANSSpositioningData.getData());
+        HashMap<String, String> geranGanssMethodsAndGanssIds = geranGansspositioningData.getLocationGeneratedMethodsAndGANSSId();
+        Set<String> geranGanssMethods = geranGanssMethodsAndGanssIds.keySet();
+        Collection<String> geranGanssIds = geranGanssMethodsAndGanssIds.values();
+        assertTrue(geranGanssMethods.contains("MS-Based"));
+        assertTrue(geranGanssMethods.contains("MS-Assisted"));
+        assertTrue(geranGanssMethods.contains("Conventional"));
+        assertFalse(geranGanssMethods.contains("Reserved"));
+        assertTrue(geranGanssIds.contains("Galileo"));
+        assertTrue(geranGanssIds.contains("GLONASS"));
+        assertTrue(geranGanssIds.contains("SBAS"));
+        assertFalse(geranGanssIds.contains("Modernized GPS"));
+        assertFalse(geranGanssIds.contains("QZSS"));
+        assertFalse(geranGanssIds.contains("BDS"));
+        assertNull(utranGANSSpositioningData);
+        assertNull(targetServingNodeForHandover.getMmeNumber());
+        assertEquals(targetServingNodeForHandover.getMscNumber().getAddressNature(), AddressNature.international_number);
+        assertEquals(targetServingNodeForHandover.getMscNumber().getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(targetServingNodeForHandover.getMscNumber().getAddress(), "491710460015");
+        assertFalse(targetServingNodeForHandover.getMscNumber().isExtension());
+        assertNull(utranAdditionalPositioningData);
+        assertEquals(utranBaroPressureMeas.intValue(), 110000);
+        civicAddressString = "<cl:civicAddress>\n" +
+                "                        <cl:country>US</cl:country>\n" +
+                "                        <cl:A1>New York</cl:A1>\n" +
+                "                        <cl:A3>New York</cl:A3>\n" +
+                "                        <cl:A6>Broadway</cl:A6>\n" +
+                "                        <cl:HNO>123</cl:HNO>\n" +
+                "                        <cl:LOC>Suite 75</cl:LOC>\n" +
+                "                        <cl:PC>10027-0401</cl:PC>\n" +
+                "                    </cl:civicAddress>";
+        assertEquals(utranCivicAddress.getData(), civicAddressString.getBytes(StandardCharsets.UTF_8));
     }
 
     @Test(groups = { "functional.encode", "service.lsm" })
@@ -491,8 +945,7 @@ public class ProvideSubscriberLocationResponseTest {
         ProvideSubscriberLocationResponseImpl psl2 = new ProvideSubscriberLocationResponseImpl(locationEstimate, geranPositioningData, utranPositioningData, 15,
                 additionalLocationEstimate, null, true, cellGlobalIdOrServiceAreaIdOrLAI, true,
                 AccuracyFulfilmentIndicator.requestedAccuracyFulfilled, velocityEstimate, true, geranGANSSpositioningData,
-                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas,
-                utranCivicAddress);
+                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
 
         asnOS = new AsnOutputStream();
         psl2.encodeAll(asnOS);
@@ -556,8 +1009,7 @@ public class ProvideSubscriberLocationResponseTest {
         ProvideSubscriberLocationResponseImpl psl3 = new ProvideSubscriberLocationResponseImpl(locationEstimate, geranPositioningData, utranPositioningData,
                 ageOfLocationEstimate, additionalLocationEstimate, extensionContainer, deferredMTLRResponseIndicator, cellGlobalIdOrServiceAreaIdOrLAI,
                 saiPresent, accuracyFulfilmentIndicator, velocityEstimate, moLrShortCircuitIndicator, geranGANSSpositioningData,
-                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas,
-                utranCivicAddress);
+                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
 
         asnOS = new AsnOutputStream();
         psl3.encodeAll(asnOS);
@@ -606,8 +1058,7 @@ public class ProvideSubscriberLocationResponseTest {
         ProvideSubscriberLocationResponseImpl psl4 = new ProvideSubscriberLocationResponseImpl(locationEstimate, geranPositioningData, utranPositioningData,
                 ageOfLocationEstimate, additionalLocationEstimate, extensionContainer, deferredMTLRResponseIndicator, cellGlobalIdOrServiceAreaIdOrLAI,
                 saiPresent, accuracyFulfilmentIndicator, velocityEstimate, moLrShortCircuitIndicator, geranGANSSpositioningData,
-                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas,
-                utranCivicAddress);
+                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
 
         asnOS = new AsnOutputStream();
         psl4.encodeAll(asnOS);
@@ -657,11 +1108,181 @@ public class ProvideSubscriberLocationResponseTest {
         ProvideSubscriberLocationResponseImpl psl5 = new ProvideSubscriberLocationResponseImpl(locationEstimate, geranPositioningData, utranPositioningData,
                 ageOfLocationEstimate, additionalLocationEstimate, extensionContainer, deferredMTLRResponseIndicator, cellGlobalIdOrServiceAreaIdOrLAI,
                 saiPresent, accuracyFulfilmentIndicator, velocityEstimate, moLrShortCircuitIndicator, geranGANSSpositioningData,
-                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas,
-                utranCivicAddress);
+                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
 
         asnOS = new AsnOutputStream();
         psl5.encodeAll(asnOS);
+
+        encodedData = asnOS.toByteArray();
+        assertTrue(Arrays.equals(rawData, encodedData));
+
+        // test 6 from LSM load
+        rawData = getEncodedDataLSMLoadTest1();
+
+        // Wireshark sample description corresponding to bytes from getEncodedDataLSMLoadTest1():
+        // Component: returnResultLast (2)
+        //    returnResultLast
+        //        invokeID: 0
+        //        resultretres
+        //            opCode: localValue (0)
+        //            locationEstimate: a0b1b13fd8f321000501141402
+        //                1010 .... = Location estimate: Ellipsoid Arc (10)
+        //                1... .... = Sign of latitude: South (1)
+        //                .011 0001 1011 0001 0011 1111 = Degrees of latitude: 3256639 (-34.93995 degrees)
+        //                1101 1000 1111 0011 0010 0001 = Degrees of longitude: -2559199 (-54.91446 degrees)
+        //                Inner radius: 5
+        //                .000 0001 = Uncertainty radius: 1
+        //                Offset angle: 20
+        //                Included angle: 20
+        //                .000 0010 = Confidence(%): 2
+        //                [Location OSM URI: https://www.openstreetmap.org/?mlat=-34.93995&mlon=-54.91446&zoom=12]
+        //            ageOfLocationEstimate: 10
+        //            deferredmt-lrResponseIndicator
+        //            utranPositioningData: 0000434b00622b
+        //            cellIdOrSai: cellGlobalIdOrServiceAreaIdFixedLength (0)
+        //                cellGlobalIdOrServiceAreaIdFixedLength: 47f810000b12cc
+        //            sai-Present
+        //            accuracyFulfilmentIndicator: requestedAccuracyFulfilled (0)
+        //            velocityEstimate: 30030065020501
+        //            mo-lrShortCircuitIndicator
+        //            utranGANSSpositioningData: 01638b0203
+        //            targetServingNodeForHandover: msc-Number (0)
+        //                msc-Number: 91947101640051
+        //                    1... .... = Extension: No Extension
+        //                    .001 .... = Nature of number: International Number (0x1)
+        //                    .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+        //                    E.164 number (MSISDN): 491710460015
+        //            utranAdditionalPositioningData: 578f
+        //            utranBaroPressureMeas: 110000
+        //            utranCivicAddress […]: 3c636c3a6369766963416464726573733e0a202020202020202020202020202020202020202
+        //            0202020203c636c3a636f756e7472793e55533c2f636c3a636f756e7472793e0a202020202020202020202020202020202
+        //            0202020202020203c636c3a41313e4e657720596f
+        typeOfShape = TypeOfShape.EllipsoidArc;
+        latitude = -34.939956;
+        longitude = -54.914474;
+        innerRadius = 5;
+        uncertaintyRadius = 1.50;
+        offsetAngle = 20.0;
+        includedAngle = 20.0;
+        confidence = 2;
+        locationEstimate = new ExtGeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis,
+                angleOfMajorAxis, confidence, altitude, uncertaintyAltitude, innerRadius, uncertaintyRadius, offsetAngle,
+                includedAngle);
+        geranPositioningData = null;
+        utranPositioningData = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b});
+        ageOfLocationEstimate = 10;
+        deferredMTLRResponseIndicator = true;
+        cellCgiOrSaiFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(748, 1, 11, 4812);
+        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellCgiOrSaiFixedLength);
+        saiPresent = true;
+        accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyFulfilled;
+        VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
+        int horizontalSpeed = 101;
+        int bearing = 3;
+        int verticalSpeed = 2;
+        int uncertaintyHorizontalSpeed = 5;
+        int uncertaintyVerticalSpeed = 1;
+        velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
+        moLrShortCircuitIndicator = true;
+        utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03});
+        ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                NumberingPlan.ISDN, "491710460015");
+        targetServingNodeForHandover = new ServingNodeAddressImpl(networkNodeNumber, true);
+        utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(new byte[] {0x57, (byte) 0x8F});
+        utranBaroPressureMeas = 110000;
+        String civicAddressString = "<cl:civicAddress>\n" +
+                "                        <cl:country>US</cl:country>\n" +
+                "                        <cl:A1>New York</cl:A1>\n" +
+                "                        <cl:A3>New York</cl:A3>\n" +
+                "                        <cl:A6>Broadway</cl:A6>\n" +
+                "                        <cl:HNO>123</cl:HNO>\n" +
+                "                        <cl:LOC>Suite 75</cl:LOC>\n" +
+                "                        <cl:PC>10027-0401</cl:PC>\n" +
+                "                    </cl:civicAddress>";
+        byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
+        utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
+
+        ProvideSubscriberLocationResponseImpl psl6 = new ProvideSubscriberLocationResponseImpl(locationEstimate, geranPositioningData, utranPositioningData,
+                ageOfLocationEstimate, additionalLocationEstimate, extensionContainer, deferredMTLRResponseIndicator, cellGlobalIdOrServiceAreaIdOrLAI,
+                saiPresent, accuracyFulfilmentIndicator, velocityEstimate, moLrShortCircuitIndicator, geranGANSSpositioningData,
+                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
+
+        asnOS = new AsnOutputStream();
+        psl6.encodeAll(asnOS);
+
+        encodedData = asnOS.toByteArray();
+        assertTrue(Arrays.equals(rawData, encodedData));
+
+        // test 7 from LSM load
+        rawData = getEncodedDataLSMLoadTest2();
+
+        // Wireshark sample description corresponding to bytes from getEncodedDataLSMLoadTest2():
+        // Component: returnResultLast (2)
+        //    returnResultLast
+        //        invokeID: 0
+        //        resultretres
+        //            opCode: localValue (0)
+        //            locationEstimate: 00000000000000
+        //                0000 .... = Location estimate: Ellipsoid Point (0)
+        //                0... .... = Sign of latitude: North (0)
+        //                .000 0000 0000 0000 0000 0000 = Degrees of latitude: 0 (0.00000 degrees)
+        //                0000 0000 0000 0000 0000 0000 = Degrees of longitude: 0 (0.00000 degrees)
+        //                [Location OSM URI: https://www.openstreetmap.org/?mlat=0.00000&mlon=0.00000&zoom=12]
+        //            ageOfLocationEstimate: 0
+        //            add-LocationEstimate: 568422683254be844a8a32482a842eed3215c58452d632433f8454a632468f844043327d28
+        //            deferredmt-lrResponseIndicator
+        //            geranPositioningData: 00031b212b3a4360
+        //            cellIdOrSai: cellGlobalIdOrServiceAreaIdFixedLength (0)
+        //                cellGlobalIdOrServiceAreaIdFixedLength: 47f81000773be8
+        //            accuracyFulfilmentIndicator: requestedAccuracyFulfilled (0)
+        //            velocityEstimate: 30030065020501
+        //            mo-lrShortCircuitIndicator
+        //            geranGANSSpositioningData: 00638b0203
+        //            targetServingNodeForHandover: msc-Number (0)
+        //                msc-Number: 91947101640051
+        //                    1... .... = Extension: No Extension
+        //                    .001 .... = Nature of number: International Number (0x1)
+        //                    .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+        //                    E.164 number (MSISDN): 491710460015
+        //            utranBaroPressureMeas: 110000
+        //            utranCivicAddress […]: 3c636c3a6369766963416464726573733e0a202020202020202020202020202020202020202
+        //            0202020203c636c3a636f756e7472793e55533c2f636c3a636f756e7472793e0a202020202020202020202020202020202
+        //            0202020202020203c636c3a41313e4e657720596f
+        ExtGeographicalInformation extGeographicalInformation = null;
+        try {
+            latitude = 0.0;
+            longitude = 0.0;
+            extGeographicalInformation = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
+        } catch (MAPException e) {
+            logger.error(e.getMessage());
+        }
+        geranPositioningData = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+        utranPositioningData = null;
+        ageOfLocationEstimate = 0;
+        EllipsoidPoint ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
+        EllipsoidPoint ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
+        EllipsoidPoint ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
+        EllipsoidPoint ellipsoidPoint4 = new EllipsoidPoint(-3.040019, 70.681903);
+        EllipsoidPoint ellipsoidPoint5 = new EllipsoidPoint(-3.045001, 70.700109);
+        EllipsoidPoint ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
+        EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
+        PolygonImpl polygon6 = new PolygonImpl();
+        polygon6.setData(ellipsoidPoints);
+        additionalLocationEstimate = new AddGeographicalInformationImpl(polygon6.getData());
+        cellCgiOrSaiFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(748, 1, 119, 15336);
+        cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellCgiOrSaiFixedLength);
+        saiPresent = false;
+        geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03});
+        utranGANSSpositioningData = null;
+        utranAdditionalPositioningData = null;
+
+        ProvideSubscriberLocationResponseImpl psl7 = new ProvideSubscriberLocationResponseImpl(extGeographicalInformation, geranPositioningData, utranPositioningData,
+                ageOfLocationEstimate, additionalLocationEstimate, extensionContainer, deferredMTLRResponseIndicator, cellGlobalIdOrServiceAreaIdOrLAI,
+                saiPresent, accuracyFulfilmentIndicator, velocityEstimate, moLrShortCircuitIndicator, geranGANSSpositioningData,
+                utranGANSSpositioningData, targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
+
+        asnOS = new AsnOutputStream();
+        psl7.encodeAll(asnOS);
 
         encodedData = asnOS.toByteArray();
         assertTrue(Arrays.equals(rawData, encodedData));

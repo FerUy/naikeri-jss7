@@ -92,7 +92,7 @@ public class PositioningDataInformationImpl extends OctetStringBase implements P
         return posMethodsAndUsage;
     }
 
-    private String getPositioningMethod(int code) {
+    public String getPositioningMethod(int code) {
         /*
          * Coding of positioning method (bits 8-4):
          * 00000    Timing Advance
@@ -159,7 +159,7 @@ public class PositioningDataInformationImpl extends OctetStringBase implements P
         return posMethod;
     }
 
-    private String getUsage(int u) {
+    public String getUsage(int u) {
         String usage = null;
         /*
          * Coding of usage (bits 3-1)
