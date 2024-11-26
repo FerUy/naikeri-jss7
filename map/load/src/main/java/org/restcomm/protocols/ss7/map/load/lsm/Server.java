@@ -821,7 +821,7 @@ public class Server extends TestHarnessLocationServicesManagement {
             }
 
             DeferredLocationEventType deferredLocationEventType;
-            TerminationCause terminationCause;
+            TerminationCause terminationCause = null;
             DeferredmtlrData deferredmtlrData = null;
             // the deferredmt-lrData parameter shall be included if and only if the lcs-Event indicates a deferredmt-lrResponse.
             PeriodicLDRInfo periodicLDRInfo = null; // This parameter refers to the periodic reporting interval and reporting amount of the deferred periodic location.
@@ -866,7 +866,7 @@ public class Server extends TestHarnessLocationServicesManagement {
                         break;
                 }
                 deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
-                terminationCause = TerminationCause.congestion;
+                terminationCause = TerminationCause.mtlrRestart;
                 deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
             }
 
@@ -1016,20 +1016,24 @@ public class Server extends TestHarnessLocationServicesManagement {
 
             GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
 
-            Integer utranBaroPressureMeas = 110000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
-            //File civicAddressFile = new File("map/load/src/main/java/org/restcomm/protocols/ss7/map/load/lsm/civicAddress.xml");
-            //byte[] civicAddressByteArray = new byte[(int) civicAddressFile.length()];
-            String civicAddressString = "<cl:civicAddress>\n" +
-                    "                        <cl:country>US</cl:country>\n" +
-                    "                        <cl:A1>New York</cl:A1>\n" +
-                    "                        <cl:A3>New York</cl:A3>\n" +
-                    "                        <cl:A6>Broadway</cl:A6>\n" +
-                    "                        <cl:HNO>123</cl:HNO>\n" +
-                    "                        <cl:LOC>Suite 75</cl:LOC>\n" +
-                    "                        <cl:PC>10027-0401</cl:PC>\n" +
-                    "                    </cl:civicAddress>";
-            byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
-            UtranCivicAddress utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
+            Integer utranBaroPressureMeas = null;
+            UtranCivicAddress utranCivicAddress = null;
+            if (geranPositioningDataInfo == null && geranGanssPositioningData == null) {
+                utranBaroPressureMeas = 110000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
+                //File civicAddressFile = new File("map/load/src/main/java/org/restcomm/protocols/ss7/map/load/lsm/civicAddress.xml");
+                //byte[] civicAddressByteArray = new byte[(int) civicAddressFile.length()];
+                String civicAddressString = "<cl:civicAddress>\n" +
+                        "                        <cl:country>US</cl:country>\n" +
+                        "                        <cl:A1>New York</cl:A1>\n" +
+                        "                        <cl:A3>New York</cl:A3>\n" +
+                        "                        <cl:A6>Broadway</cl:A6>\n" +
+                        "                        <cl:HNO>123</cl:HNO>\n" +
+                        "                        <cl:LOC>Suite 75</cl:LOC>\n" +
+                        "                        <cl:PC>10027-0401</cl:PC>\n" +
+                        "                    </cl:civicAddress>";
+                byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
+                utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
+            }
 
             mapDialogSLR.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk,
                     locationEstimate, ageOfLocationEstimate, slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData,
