@@ -37,6 +37,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.AddGeographicalInformation
 import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
 import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredLocationEventType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredmtlrData;
+import org.restcomm.protocols.ss7.map.api.service.lsm.EllipsoidPoint;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ExtGeographicalInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
@@ -281,17 +282,17 @@ public class SubscriberLocationReportRequestTest {
         };
     }
 
-    private byte[] getEncodedDataLSMLoadEnteringIntoArea() {
+    private byte[] getEncodedLSMLoadTestBeingInsideArea() {
         return new byte[] { 0x30, (byte) 0x82,
-                0x03, (byte) 0xf1, 0x0a, 0x01, 0x03, 0x30, 0x28, (byte) 0x80,
+                0x02, 0x70, 0x0a, 0x01, 0x03, 0x30, 0x28, (byte) 0x80,
                 0x01, 0x01, (byte) 0xa1, 0x06, (byte) 0x80, 0x04, (byte) 0x91, 0x44,
                 0x54, 0x76, (byte) 0x82, 0x04, (byte) 0x91, 0x12, 0x09, 0x32,
                 (byte) 0x83, 0x01, 0x00, (byte) 0xa4, 0x0b, (byte) 0x80, 0x01, 0x0f,
                 (byte) 0x82, 0x03, (byte) 0xb9, 0x58, 0x0c, (byte) 0x83, 0x01, 0x03,
                 (byte) 0x85, 0x05, 0x04, 0x65, 0x39, 0x31, 0x31, 0x30,
                 (byte) 0x81, (byte) 0xd8, 0x04, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01,
-                0x64, 0x00, 0x51, (byte) 0x80, 0x04, 0x72, 0x02, (byte) 0xe7,
-                (byte) 0xd5, (byte) 0x82, 0x00, (byte) 0xa3, 0x09, (byte) 0x81, 0x07, (byte) 0x91,
+                0x64, 0x00, 0x51, (byte) 0x80, 0x04, 0x72, 0x02, (byte) 0xeb,
+                0x37, (byte) 0x82, 0x00, (byte) 0xa3, 0x09, (byte) 0x81, 0x07, (byte) 0x91,
                 (byte) 0x94, 0x71, 0x01, 0x64, 0x00, 0x52, (byte) 0x84, 0x02,
                 0x03, (byte) 0xf0, (byte) 0x85, 0x02, 0x03, (byte) 0xf8, (byte) 0x86, 0x36,
                 0x6d, 0x6d, 0x65, 0x63, 0x30, 0x33, 0x2e, 0x6d,
@@ -316,100 +317,52 @@ public class SubscriberLocationReportRequestTest {
                 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37,
                 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e,
                 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f,
-                0x72, 0x67, (byte) 0x81, 0x08, 0x47, 0x08, 0x62, 0x31,
-                (byte) 0x85, (byte) 0x83, 0x47, (byte) 0xf0, (byte) 0x82, 0x08, 0x01, 0x70,
-                0x21, 0x32, 0x26, 0x65, 0x78, (byte) 0xf8, (byte) 0x85, 0x0d,
-                (byte) 0xa0, (byte) 0xb1, (byte) 0xb1, 0x3f, (byte) 0xd8, (byte) 0xf3, 0x21, 0x00,
-                0x05, 0x01, 0x14, 0x14, 0x02, (byte) 0x86, 0x01, 0x00,
-                (byte) 0xa7, 0x04, (byte) 0xa1, 0x02, (byte) 0x80, 0x00, (byte) 0xa9, (byte) 0x81,
-                (byte) 0xe2, 0x03, 0x02, 0x03, 0x10, (byte) 0x80, 0x01, 0x03,
-                (byte) 0xa1, (byte) 0x81, (byte) 0xd8, 0x04, 0x07, (byte) 0x91, (byte) 0x94, 0x71,
-                0x01, 0x64, 0x00, 0x51, (byte) 0x80, 0x04, 0x72, 0x02,
-                (byte) 0xe7, (byte) 0xd5, (byte) 0x82, 0x00, (byte) 0xa3, 0x09, (byte) 0x81, 0x07,
-                (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64, 0x00, 0x52, (byte) 0x84,
-                0x02, 0x03, (byte) 0xf0, (byte) 0x85, 0x02, 0x03, (byte) 0xf8, (byte) 0x86,
-                0x36, 0x6d, 0x6d, 0x65, 0x63, 0x30, 0x33, 0x2e,
-                0x6d, 0x6d, 0x65, 0x67, 0x69, 0x33, 0x30, 0x30,
-                0x30, 0x2e, 0x6d, 0x6d, 0x65, 0x2e, 0x65, 0x70,
-                0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30, 0x32,
+                0x72, 0x67, (byte) 0x81, 0x08, 0x47, 0x08, 0x72, 0x76,
+                0x53, 0x15, 0x27, (byte) 0xf9, (byte) 0x82, 0x08, 0x01, 0x70,
+                0x01, 0x74, (byte) 0x86, (byte) 0x88, 0x52, (byte) 0xf1, (byte) 0x85, 0x07,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x86,
+                0x01, 0x00, (byte) 0xa7, 0x04, (byte) 0xa1, 0x02, (byte) 0x80, 0x00,
+                (byte) 0x88, 0x19, 0x54, 0x25, (byte) 0xe5, (byte) 0xb3, 0x34, 0x42,
+                (byte) 0xd3, 0x25, (byte) 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25,
+                (byte) 0xe6, (byte) 0x83, 0x34, 0x43, 0x79, 0x25, (byte) 0xe6, (byte) 0x84,
+                0x34, 0x43, 0x7d, (byte) 0xa9, (byte) 0x81, (byte) 0xe2, 0x03, 0x02,
+                0x03, 0x10, (byte) 0x80, 0x01, 0x04, (byte) 0xa1, (byte) 0x81, (byte) 0xd8,
+                0x04, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64, 0x00,
+                0x51, (byte) 0x80, 0x04, 0x72, 0x02, (byte) 0xeb, 0x37, (byte) 0x82,
+                0x00, (byte) 0xa3, 0x09, (byte) 0x81, 0x07, (byte) 0x91, (byte) 0x94, 0x71,
+                0x01, 0x64, 0x00, 0x52, (byte) 0x84, 0x02, 0x03, (byte) 0xf0,
+                (byte) 0x85, 0x02, 0x03, (byte) 0xf8, (byte) 0x86, 0x36, 0x6d, 0x6d,
+                0x65, 0x63, 0x30, 0x33, 0x2e, 0x6d, 0x6d, 0x65,
+                0x67, 0x69, 0x33, 0x30, 0x30, 0x30, 0x2e, 0x6d,
+                0x6d, 0x65, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
+                0x6e, 0x63, 0x30, 0x30, 0x32, 0x2e, 0x6d, 0x63,
+                0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
+                0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
+                0x2e, 0x6f, 0x72, 0x67, (byte) 0x88, 0x29, 0x61, 0x61,
+                0x61, 0x33, 0x30, 0x30, 0x30, 0x2e, 0x61, 0x61,
+                0x61, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30, 0x32,
                 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e,
                 0x33, 0x67, 0x70, 0x70, 0x6e, 0x65, 0x74, 0x77,
-                0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67, (byte) 0x88,
-                0x29, 0x61, 0x61, 0x61, 0x33, 0x30, 0x30, 0x30,
-                0x2e, 0x61, 0x61, 0x61, 0x2e, 0x6d, 0x6e, 0x63,
-                0x30, 0x30, 0x32, 0x2e, 0x6d, 0x63, 0x63, 0x37,
-                0x34, 0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e,
-                0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f,
-                0x72, 0x67, (byte) 0x89, 0x2c, 0x6d, 0x6d, 0x65, 0x2e,
-                0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65,
+                0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67, (byte) 0x89,
+                0x2c, 0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e,
+                0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e,
+                0x6d, 0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d,
+                0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67,
+                0x70, 0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+                0x6b, 0x2e, 0x6f, 0x72, 0x67, (byte) 0x8a, 0x21, 0x65,
                 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30,
                 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38,
                 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e, 0x65, 0x74,
                 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67,
-                (byte) 0x8a, 0x21, 0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e,
-                0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63,
-                0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70, 0x70,
-                0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e,
-                0x6f, 0x72, 0x67, (byte) 0x8a, 0x01, (byte) 0xa0, (byte) 0x8b, 0x08,
-                0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60,
-                (byte) 0xad, 0x09, (byte) 0x80, 0x07, 0x47, (byte) 0xf8, 0x10, 0x00,
-                0x77, 0x3b, (byte) 0xe8, (byte) 0x8e, 0x05, 0x04, 0x0a, 0x00,
-                0x00, 0x0e, (byte) 0x8f, 0x01, 0x01, (byte) 0x93, 0x01, 0x01,
-                (byte) 0x94, 0x07, 0x30, 0x03, 0x00, 0x65, 0x02, 0x05,
-                0x01, (byte) 0x97, 0x00, (byte) 0x98, 0x05, 0x00, 0x63, (byte) 0x8b,
-                0x02, 0x03, (byte) 0xba, 0x09, (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x94,
-                0x71, 0x01, 0x64, 0x00, 0x51, (byte) 0x9c, 0x03, 0x01,
-                (byte) 0xad, (byte) 0xb0, (byte) 0x9d, (byte) 0x82, 0x01, (byte) 0x8d, 0x3c, 0x63,
-                0x6c, 0x3a, 0x63, 0x69, 0x76, 0x69, 0x63, 0x41,
-                0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x3e, 0x0a,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x3c, 0x63, 0x6c, 0x3a, 0x63, 0x6f, 0x75, 0x6e,
-                0x74, 0x72, 0x79, 0x3e, 0x55, 0x53, 0x3c, 0x2f,
-                0x63, 0x6c, 0x3a, 0x63, 0x6f, 0x75, 0x6e, 0x74,
-                0x72, 0x79, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a,
-                0x41, 0x31, 0x3e, 0x4e, 0x65, 0x77, 0x20, 0x59,
-                0x6f, 0x72, 0x6b, 0x3c, 0x2f, 0x63, 0x6c, 0x3a,
-                0x41, 0x31, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a,
-                0x41, 0x33, 0x3e, 0x4e, 0x65, 0x77, 0x20, 0x59,
-                0x6f, 0x72, 0x6b, 0x3c, 0x2f, 0x63, 0x6c, 0x3a,
-                0x41, 0x33, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a,
-                0x41, 0x36, 0x3e, 0x42, 0x72, 0x6f, 0x61, 0x64,
-                0x77, 0x61, 0x79, 0x3c, 0x2f, 0x63, 0x6c, 0x3a,
-                0x41, 0x36, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a,
-                0x48, 0x4e, 0x4f, 0x3e, 0x31, 0x32, 0x33, 0x3c,
-                0x2f, 0x63, 0x6c, 0x3a, 0x48, 0x4e, 0x4f, 0x3e,
-                0x0a, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x3c, 0x63, 0x6c, 0x3a, 0x4c, 0x4f, 0x43,
-                0x3e, 0x53, 0x75, 0x69, 0x74, 0x65, 0x20, 0x37,
-                0x35, 0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x4c, 0x4f,
-                0x43, 0x3e, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x3c, 0x63, 0x6c, 0x3a, 0x50,
-                0x43, 0x3e, 0x31, 0x30, 0x30, 0x32, 0x37, 0x2d,
-                0x30, 0x34, 0x30, 0x31, 0x3c, 0x2f, 0x63, 0x6c,
-                0x3a, 0x50, 0x43, 0x3e, 0x0a, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
-                0x20, 0x3c, 0x2f, 0x63, 0x6c, 0x3a, 0x63, 0x69,
-                0x76, 0x69, 0x63, 0x41, 0x64, 0x64, 0x72, 0x65,
-                0x73, 0x73, 0x3e
+                (byte) 0x8a, 0x01, 0x49, (byte) 0x8b, 0x08, 0x00, 0x03, 0x1b,
+                0x21, 0x2b, 0x3a, 0x43, 0x60, (byte) 0xad, 0x09, (byte) 0x80,
+                0x07, 0x47, (byte) 0xf8, 0x70, 0x22, 0x74, 0x26, 0x14,
+                (byte) 0x8e, 0x05, 0x04, 0x0a, 0x00, 0x00, 0x0e, (byte) 0x8f,
+                0x01, 0x01, (byte) 0x93, 0x01, 0x01, (byte) 0x94, 0x07, 0x30,
+                0x03, 0x00, 0x65, 0x02, 0x05, 0x01, (byte) 0x97, 0x00,
+                (byte) 0x98, 0x05, 0x00, 0x63, (byte) 0x8b, 0x02, 0x03, (byte) 0xba,
+                0x09, (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x94, 0x71, 0x01, 0x64,
+                0x00, 0x51
         };
     }
 
@@ -1135,7 +1088,7 @@ public class SubscriberLocationReportRequestTest {
         assertEquals(utranCivicAddress.getData(), civicAddressString.getBytes(StandardCharsets.UTF_8));
 
         // test 5 with data from LSM load test (being inside area), GERAN/GERANGANSS position data
-        data = getEncodedDataLSMLoadEnteringIntoArea();
+        data = getEncodedLSMLoadTestBeingInsideArea();
 
         asn = new AsnInputStream(data);
         tag = asn.readTag();
@@ -1190,6 +1143,7 @@ public class SubscriberLocationReportRequestTest {
          *                     .001 .... = Nature of number: International Number (0x1)
          *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
          *                     E.164 number (MSISDN): 444567
+         *                         Country Code: United Kingdom of Great Britain and Northern Ireland (44)
          *             lcsClientDialedByMS: 91120932
          *                 1... .... = Extension: No Extension
          *                 .001 .... = Nature of number: International Number (0x1)
@@ -1212,7 +1166,8 @@ public class SubscriberLocationReportRequestTest {
          *                 .001 .... = Nature of number: International Number (0x1)
          *                 .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
          *                 E.164 number (MSISDN): 491710460015
-         *             lmsi: 7202e7d5
+         *                     Country Code: Germany (Federal Republic of) (49)
+         *             lmsi: 7202eb37
          *             gprsNodeIndicator
          *             additional-Number: sgsn-Number (1)
          *                 sgsn-Number: 91947101640052
@@ -1220,6 +1175,7 @@ public class SubscriberLocationReportRequestTest {
          *                     .001 .... = Nature of number: International Number (0x1)
          *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
          *                     E.164 number (MSISDN): 491710460025
+         *                         Country Code: Germany (Federal Republic of) (49)
          *             Padding: 3
          *             supportedLCS-CapabilitySets: f0
          *                 1... .... = lcsCapabilitySet1: True
@@ -1238,25 +1194,21 @@ public class SubscriberLocationReportRequestTest {
          *             aaa-Server-Name: aaa3000.aaa.mnc002.mcc748.3gppnetwork.org
          *             sgsn-Name: mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org
          *             sgsn-Realm: epc.mnc001.mcc748.3gppnetwork.org
-         *         IMSI: 748026135838740
-         *         [Association IMSI: 748026135838740]
-         *         imei: 01702132266578f8
-         *             TBCD digits: 100712236256878
-         *         locationEstimate: a0b1b13fd8f321000501141402
-         *             1010 .... = Location estimate: Ellipsoid Arc (10)
-         *             1... .... = Sign of latitude: South (1)
-         *             .011 0001 1011 0001 0011 1111 = Degrees of latitude: 3256639 (-34.93995 degrees)
-         *             1101 1000 1111 0011 0010 0001 = Degrees of longitude: -2559199 (-54.91446 degrees)
-         *             Inner radius: 5
-         *             .000 0001 = Uncertainty radius: 1
-         *             Offset angle: 20
-         *             Included angle: 20
-         *             .000 0010 = Confidence(%): 2
-         *             [Location OSM URI: https://www.openstreetmap.org/?mlat=-34.93995&mlon=-54.91446&zoom=12]
+         *         IMSI: 748027673551729
+         *         [Association IMSI: 748027673551729]
+         *         imei: 01700174868852f1
+         *             TBCD digits: 100710476888251
+         *         locationEstimate: 00000000000000
+         *             0000 .... = Location estimate: Ellipsoid Point (0)
+         *             0... .... = Sign of latitude: North (0)
+         *             .000 0000 0000 0000 0000 0000 = Degrees of latitude: 0 (0.00000 degrees)
+         *             0000 0000 0000 0000 0000 0000 = Degrees of longitude: 0 (0.00000 degrees)
+         *             [Location OSM URI: https://www.openstreetmap.org/?mlat=0.00000&mlon=0.00000&zoom=12]
          *         ageOfLocationEstimate: 0
          *         slr-ArgExtensionContainer
          *             slr-Arg-PCS-Extensions
          *                 na-ESRK-Request
+         *         add-LocationEstimate: 5425e5b33442d325e64034437c25e68334437925e68434437d
          *         deferredmt-lrData
          *             Padding: 3
          *             deferredLocationEventType: 10
@@ -1265,12 +1217,45 @@ public class SubscriberLocationReportRequestTest {
          *                 ..0. .... = leavingFromArea: False
          *                 ...1 .... = beingInsideArea: True
          *                 .... 0... = periodicLDR: False
-         *             terminationCause: congestion (3)
+         *             terminationCause: mt-lrRestart (4)
          *             lcsLocationInfo
-         *         lcs-ReferenceNumber: a0
+         *                 networkNode-Number: 91947101640051
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460015
+         *                         Country Code: Germany (Federal Republic of) (49)
+         *                 lmsi: 7202eb37
+         *                 gprsNodeIndicator
+         *                 additional-Number: sgsn-Number (1)
+         *                     sgsn-Number: 91947101640052
+         *                         1... .... = Extension: No Extension
+         *                         .001 .... = Nature of number: International Number (0x1)
+         *                         .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                         E.164 number (MSISDN): 491710460025
+         *                             Country Code: Germany (Federal Republic of) (49)
+         *                 Padding: 3
+         *                 supportedLCS-CapabilitySets: f0
+         *                     1... .... = lcsCapabilitySet1: True
+         *                     .1.. .... = lcsCapabilitySet2: True
+         *                     ..1. .... = lcsCapabilitySet3: True
+         *                     ...1 .... = lcsCapabilitySet4: True
+         *                     .... 0... = lcsCapabilitySet5: False
+         *                 Padding: 3
+         *                 additional-LCS-CapabilitySets: f8
+         *                     1... .... = lcsCapabilitySet1: True
+         *                     .1.. .... = lcsCapabilitySet2: True
+         *                     ..1. .... = lcsCapabilitySet3: True
+         *                     ...1 .... = lcsCapabilitySet4: True
+         *                     .... 1... = lcsCapabilitySet5: True
+         *                 mme-Name: mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org
+         *                 aaa-Server-Name: aaa3000.aaa.mnc002.mcc748.3gppnetwork.org
+         *                 sgsn-Name: mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org
+         *                 sgsn-Realm: epc.mnc001.mcc748.3gppnetwork.org
+         *         lcs-ReferenceNumber: 49
          *         geranPositioningData: 00031b212b3a4360
          *         cellIdOrSai: cellGlobalIdOrServiceAreaIdFixedLength (0)
-         *             cellGlobalIdOrServiceAreaIdFixedLength: 47f81000773be8
+         *             cellGlobalIdOrServiceAreaIdFixedLength: 47f87022742614
          *         h-gmlc-Address: 040a00000e
          *             GSN-Address IPv4: 10.0.0.14
          *         lcsServiceTypeID: emergencyAlertServices (1)
@@ -1284,8 +1269,7 @@ public class SubscriberLocationReportRequestTest {
          *                 .001 .... = Nature of number: International Number (0x1)
          *                 .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
          *                 E.164 number (MSISDN): 491710460015
-         *         utranBaroPressureMeas: 110000
-         *         utranCivicAddress […]: 3c636c3a6369766963416464726573733e0a2020202020202020202020202020202020202020202020203c636c3a636f756e7472793e55533c2f636c3a636f756e7472793e0a2020202020202020202020202020202020202020202020203c636c3a41313e4e657720596f
+         *                     Country Code: Germany (Federal Republic of) (49)
          */
         assertEquals(lcsEvent, LCSEvent.deferredmtlrResponse);
         lcsClientType = lcsClientID.getLCSClientType();
@@ -1314,7 +1298,7 @@ public class SubscriberLocationReportRequestTest {
         assertEquals(lcsLocationInfo.getNetworkNodeNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(lcsLocationInfo.getNetworkNodeNumber().getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(lcsLocationInfo.getNetworkNodeNumber().getAddress(), "491710460015");
-        assertEquals(lcsLocationInfo.getLMSI().getData(), new byte[] { 0x72, 0x02, (byte) 0xe7, (byte) 0xd5});
+        assertEquals(lcsLocationInfo.getLMSI().getData(), new byte[] { 0x72, 0x02, (byte) 0xeb, (byte) 0x37});
         assertTrue(lcsLocationInfo.getGprsNodeIndicator());
         assertEquals(lcsLocationInfo.getAdditionalNumber().getSGSNNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(lcsLocationInfo.getAdditionalNumber().getSGSNNumber().getNumberingPlan(), NumberingPlan.ISDN);
@@ -1341,26 +1325,33 @@ public class SubscriberLocationReportRequestTest {
         assertNull(msisdn);
         assertNull(naEsrd);
         assertNull(naEsrk);
-        assertEquals(imsi.getData(), "748026135838740");
-        assertEquals(imei.getIMEI(), "100712236256878");
-        assertEquals(locationEstimate.getTypeOfShape(), TypeOfShape.EllipsoidArc);
-        assertTrue(Math.abs(locationEstimate.getLatitude() - (-34.93995)) < 0.00001);
-        assertTrue(Math.abs(locationEstimate.getLongitude() - (-54.91446)) < 0.00001);
-        assertEquals(locationEstimate.getInnerRadius(), 5);
-        assertTrue(Math.abs(locationEstimate.getUncertaintyRadius() - 1) < 0.1); // r = 45((1+0.025)^17 -1)
-        assertEquals(locationEstimate.getOffsetAngle(), 20.0);
-        assertEquals(locationEstimate.getIncludedAngle(), 20.0);
-        assertEquals(locationEstimate.getConfidence(), 2);
-        assertEquals(ageOfLocationEstimate.intValue(), 0);
+        assertEquals(imsi.getData(), "748027673551729");
+        assertEquals(imei.getIMEI(), "100710476888251");
+        assertEquals(locationEstimate.getTypeOfShape(), TypeOfShape.EllipsoidPoint);
+        assertEquals(locationEstimate.getTypeOfShape(), TypeOfShape.EllipsoidPoint);
+        assertTrue(Math.abs(locationEstimate.getLatitude() - (0.00000)) < 0.00001);
+        assertTrue(Math.abs(locationEstimate.getLongitude() - (0.00000)) < 0.00001);
         assertTrue(slrArgExtensionContainer.getSlrArgPcsExtensions().getNaEsrkRequest());
         assertNull(slrArgExtensionContainer.getPrivateExtensionList());
-        assertNull(addLocationEstimate);
+        assertEquals(ageOfLocationEstimate.intValue(), 0);
+        assertEquals(addLocationEstimate.getData(), new byte[] {84, 37, -27, -77, 52, 66, -45, 37, -26, 64, 52, 67, 124, 37, -26, -125, 52, 67, 121, 37, -26,
+                -124, 52, 67, 125});
+        polygon = new PolygonImpl(addLocationEstimate.getData());
+        assertEquals(polygon.getNumberOfPoints(), 4);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(0).getLatitude() - 26.646513) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(0).getLongitude() - 73.492076) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(1).getLatitude() - 26.648026) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(1).getLongitude() - 73.495703) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(2).getLatitude() - 26.648744) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(2).getLongitude() - 73.495638) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(3).getLatitude() - 26.648755) < 0.000001);
+        assertTrue(Math.abs(polygon.getEllipsoidPoint(3).getLongitude() - 73.495724) < 0.000001);
         assertFalse(deferredmtlrData.getDeferredLocationEventType().getMsAvailable());
         assertFalse(deferredmtlrData.getDeferredLocationEventType().getEnteringIntoArea());
         assertFalse(deferredmtlrData.getDeferredLocationEventType().getLeavingFromArea());
         assertTrue(deferredmtlrData.getDeferredLocationEventType().getBeingInsideArea());
         assertFalse(deferredmtlrData.getDeferredLocationEventType().getPeriodicLDR());
-        assertEquals(deferredmtlrData.getTerminationCause(), TerminationCause.congestion);
+        assertEquals(deferredmtlrData.getTerminationCause(), TerminationCause.mtlrRestart);
         assertTrue(deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets().getCapabilitySetRelease98_99());
         assertTrue(deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets().getCapabilitySetRelease4());
         assertTrue(deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets().getCapabilitySetRelease5());
@@ -1379,7 +1370,7 @@ public class SubscriberLocationReportRequestTest {
         assertEquals(sgsnName, new DiameterIdentityImpl("mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8)));
         sgsnRealm = deferredmtlrData.getLCSLocationInfo().getSgsnRealm();
         assertEquals(sgsnRealm, new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8)));
-        assertEquals(lcsReferenceNumber.intValue(), -96); // 0xa0 = -96
+        assertEquals(lcsReferenceNumber.intValue(), 73); // 0x49 = 73
         geranPositioningData = new PositioningDataInformationImpl(geranPositioningData.getData());
         HashMap<String, Integer> geranMethodsAndUsage = geranPositioningData.getPositioningMethodsAndUsage();
         assertNotNull(geranMethodsAndUsage.get("Mobile Based E-OTD"));
@@ -1397,9 +1388,9 @@ public class SubscriberLocationReportRequestTest {
         assertEquals(geranPosMethods.get(3), "U-TDOA");
         assertNull(utranPositioningData);
         assertEquals(cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 748);
-        assertEquals(cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 1);
-        assertEquals(cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 119);
-        assertEquals(cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 15336);
+        assertEquals(cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC(), 7);
+        assertEquals(cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 8820);
+        assertEquals(cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode(), 9748);
         assertEquals(hGmlcAddress.getGSNAddressAddressType(), GSNAddressAddressType.IPv4);
         assertEquals(hGmlcAddress.getGSNAddressData(), new byte[] { 0x0a, 0x00, 0x00, 0x0e });
         assertEquals(lcsServiceTypeID.intValue(), 1);
@@ -1436,17 +1427,8 @@ public class SubscriberLocationReportRequestTest {
         assertEquals(targetServingNodeForHandover.getMscNumber().getAddress(), "491710460015");
         assertFalse(targetServingNodeForHandover.getMscNumber().isExtension());
         assertNull(utranAdditionalPositioningData);
-        assertEquals(utranBaroPressureMeas.intValue(), 110000);
-        civicAddressString = "<cl:civicAddress>\n" +
-                "                        <cl:country>US</cl:country>\n" +
-                "                        <cl:A1>New York</cl:A1>\n" +
-                "                        <cl:A3>New York</cl:A3>\n" +
-                "                        <cl:A6>Broadway</cl:A6>\n" +
-                "                        <cl:HNO>123</cl:HNO>\n" +
-                "                        <cl:LOC>Suite 75</cl:LOC>\n" +
-                "                        <cl:PC>10027-0401</cl:PC>\n" +
-                "                    </cl:civicAddress>";
-        assertEquals(utranCivicAddress.getData(), civicAddressString.getBytes(StandardCharsets.UTF_8));
+        assertNull(utranBaroPressureMeas);
+        assertNull(utranCivicAddress);
     }
 
     @Test(groups = { "functional.encode", "service.lsm" })
@@ -1896,7 +1878,7 @@ public class SubscriberLocationReportRequestTest {
         assertTrue(Arrays.equals(data, encodedData));
 
         // test 5 with data from LSM load test (being inside area), GERAN/GERANGANSS position data
-        data = getEncodedDataLSMLoadEnteringIntoArea();
+        data = getEncodedLSMLoadTestBeingInsideArea();
         /*
          * Component: invoke (1)
          *     invoke
@@ -1911,6 +1893,7 @@ public class SubscriberLocationReportRequestTest {
          *                     .001 .... = Nature of number: International Number (0x1)
          *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
          *                     E.164 number (MSISDN): 444567
+         *                         Country Code: United Kingdom of Great Britain and Northern Ireland (44)
          *             lcsClientDialedByMS: 91120932
          *                 1... .... = Extension: No Extension
          *                 .001 .... = Nature of number: International Number (0x1)
@@ -1933,7 +1916,8 @@ public class SubscriberLocationReportRequestTest {
          *                 .001 .... = Nature of number: International Number (0x1)
          *                 .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
          *                 E.164 number (MSISDN): 491710460015
-         *             lmsi: 7202e7d5
+         *                     Country Code: Germany (Federal Republic of) (49)
+         *             lmsi: 7202eb37
          *             gprsNodeIndicator
          *             additional-Number: sgsn-Number (1)
          *                 sgsn-Number: 91947101640052
@@ -1941,6 +1925,7 @@ public class SubscriberLocationReportRequestTest {
          *                     .001 .... = Nature of number: International Number (0x1)
          *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
          *                     E.164 number (MSISDN): 491710460025
+         *                         Country Code: Germany (Federal Republic of) (49)
          *             Padding: 3
          *             supportedLCS-CapabilitySets: f0
          *                 1... .... = lcsCapabilitySet1: True
@@ -1959,25 +1944,21 @@ public class SubscriberLocationReportRequestTest {
          *             aaa-Server-Name: aaa3000.aaa.mnc002.mcc748.3gppnetwork.org
          *             sgsn-Name: mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org
          *             sgsn-Realm: epc.mnc001.mcc748.3gppnetwork.org
-         *         IMSI: 748026135838740
-         *         [Association IMSI: 748026135838740]
-         *         imei: 01702132266578f8
-         *             TBCD digits: 100712236256878
-         *         locationEstimate: a0b1b13fd8f321000501141402
-         *             1010 .... = Location estimate: Ellipsoid Arc (10)
-         *             1... .... = Sign of latitude: South (1)
-         *             .011 0001 1011 0001 0011 1111 = Degrees of latitude: 3256639 (-34.93995 degrees)
-         *             1101 1000 1111 0011 0010 0001 = Degrees of longitude: -2559199 (-54.91446 degrees)
-         *             Inner radius: 5
-         *             .000 0001 = Uncertainty radius: 1
-         *             Offset angle: 20
-         *             Included angle: 20
-         *             .000 0010 = Confidence(%): 2
-         *             [Location OSM URI: https://www.openstreetmap.org/?mlat=-34.93995&mlon=-54.91446&zoom=12]
+         *         IMSI: 748027673551729
+         *         [Association IMSI: 748027673551729]
+         *         imei: 01700174868852f1
+         *             TBCD digits: 100710476888251
+         *         locationEstimate: 00000000000000
+         *             0000 .... = Location estimate: Ellipsoid Point (0)
+         *             0... .... = Sign of latitude: North (0)
+         *             .000 0000 0000 0000 0000 0000 = Degrees of latitude: 0 (0.00000 degrees)
+         *             0000 0000 0000 0000 0000 0000 = Degrees of longitude: 0 (0.00000 degrees)
+         *             [Location OSM URI: https://www.openstreetmap.org/?mlat=0.00000&mlon=0.00000&zoom=12]
          *         ageOfLocationEstimate: 0
          *         slr-ArgExtensionContainer
          *             slr-Arg-PCS-Extensions
          *                 na-ESRK-Request
+         *         add-LocationEstimate: 5425e5b33442d325e64034437c25e68334437925e68434437d
          *         deferredmt-lrData
          *             Padding: 3
          *             deferredLocationEventType: 10
@@ -1986,12 +1967,45 @@ public class SubscriberLocationReportRequestTest {
          *                 ..0. .... = leavingFromArea: False
          *                 ...1 .... = beingInsideArea: True
          *                 .... 0... = periodicLDR: False
-         *             terminationCause: congestion (3)
+         *             terminationCause: mt-lrRestart (4)
          *             lcsLocationInfo
-         *         lcs-ReferenceNumber: a0
+         *                 networkNode-Number: 91947101640051
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460015
+         *                         Country Code: Germany (Federal Republic of) (49)
+         *                 lmsi: 7202eb37
+         *                 gprsNodeIndicator
+         *                 additional-Number: sgsn-Number (1)
+         *                     sgsn-Number: 91947101640052
+         *                         1... .... = Extension: No Extension
+         *                         .001 .... = Nature of number: International Number (0x1)
+         *                         .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                         E.164 number (MSISDN): 491710460025
+         *                             Country Code: Germany (Federal Republic of) (49)
+         *                 Padding: 3
+         *                 supportedLCS-CapabilitySets: f0
+         *                     1... .... = lcsCapabilitySet1: True
+         *                     .1.. .... = lcsCapabilitySet2: True
+         *                     ..1. .... = lcsCapabilitySet3: True
+         *                     ...1 .... = lcsCapabilitySet4: True
+         *                     .... 0... = lcsCapabilitySet5: False
+         *                 Padding: 3
+         *                 additional-LCS-CapabilitySets: f8
+         *                     1... .... = lcsCapabilitySet1: True
+         *                     .1.. .... = lcsCapabilitySet2: True
+         *                     ..1. .... = lcsCapabilitySet3: True
+         *                     ...1 .... = lcsCapabilitySet4: True
+         *                     .... 1... = lcsCapabilitySet5: True
+         *                 mme-Name: mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org
+         *                 aaa-Server-Name: aaa3000.aaa.mnc002.mcc748.3gppnetwork.org
+         *                 sgsn-Name: mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org
+         *                 sgsn-Realm: epc.mnc001.mcc748.3gppnetwork.org
+         *         lcs-ReferenceNumber: 49
          *         geranPositioningData: 00031b212b3a4360
          *         cellIdOrSai: cellGlobalIdOrServiceAreaIdFixedLength (0)
-         *             cellGlobalIdOrServiceAreaIdFixedLength: 47f81000773be8
+         *             cellGlobalIdOrServiceAreaIdFixedLength: 47f87022742614
          *         h-gmlc-Address: 040a00000e
          *             GSN-Address IPv4: 10.0.0.14
          *         lcsServiceTypeID: emergencyAlertServices (1)
@@ -2005,8 +2019,7 @@ public class SubscriberLocationReportRequestTest {
          *                 .001 .... = Nature of number: International Number (0x1)
          *                 .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
          *                 E.164 number (MSISDN): 491710460015
-         *         utranBaroPressureMeas: 110000
-         *         utranCivicAddress […]: 3c636c3a6369766963416464726573733e0a2020202020202020202020202020202020202020202020203c636c3a636f756e7472793e55533c2f636c3a636f756e7472793e0a2020202020202020202020202020202020202020202020203c636c3a41313e4e657720596f
+         *                     Country Code: Germany (Federal Republic of) (49)
          */
         externalAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "444567");
         lcsClientExternalID = new LCSClientExternalIDImpl(externalAddress, null);
@@ -2021,7 +2034,7 @@ public class SubscriberLocationReportRequestTest {
         lcsClientID = new LCSClientIDImpl(LCSClientType.valueAddedServices, lcsClientExternalID, lcsClientInternalID, lcsClientName, lcsClientDialedByMS,
                 lcsAPN, lcsRequestorID);
         networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460015");
-        lmsi = new LMSIImpl(new byte[] { 0x72, 0x02, (byte) 0xe7, (byte) 0xd5});
+        lmsi = new LMSIImpl(new byte[] { 0x72, 0x02, (byte) 0xeb, (byte) 0x37});
         sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460025");
         additionalNumber = new AdditionalNumberImpl(null, sgsnNumber);
         lcsCapabilitySetRelease7 = false;
@@ -2036,31 +2049,37 @@ public class SubscriberLocationReportRequestTest {
         sgsnRealm = new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
         lcsLocationInfo = new LCSLocationInfoImpl(networkNodeNumber, lmsi, null, gprsNodeIndicator, additionalNumber,
                 supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
-        imsi = new IMSIImpl("748026135838740");
-        imei = new IMEIImpl("100712236256878");
-        typeOfShape = TypeOfShape.EllipsoidArc;
-        latitude = -34.939956;
-        longitude = -54.914474;
-        innerRadius = 5;
-        uncertaintyRadius = 1.50;
-        offsetAngle = 20.0;
-        includedAngle = 20.0;
-        confidence = 2;
+        imsi = new IMSIImpl("748027673551729");
+        imei = new IMEIImpl("100710476888251");
+        latitude = 0.000000;
+        longitude = 0.000000;
+        uncertainty = 0;
+        uncertaintySemiMajorAxis = 0;
+        uncertaintySemiMinorAxis = 0;
+        angleOfMajorAxis = 0;
+        uncertaintyAltitude = 0;
+        uncertaintyRadius = 0;
+        offsetAngle = 0;
+        includedAngle = 0;
         locationEstimate = new ExtGeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty,
                 uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude,
                 innerRadius, uncertaintyRadius, offsetAngle, includedAngle);
         slrArgPcsExtensions = new SLRArgPCSExtensionsImpl(naEsrkRequest);
         slrArgExtensionContainer = new SLRArgExtensionContainerImpl(null, slrArgPcsExtensions);
+        addLocationEstimate = new AddGeographicalInformationImpl(new byte[] {0x54, 0x25, (byte) 0xe5, (byte) 0xb3, 0x34, 0x42, (byte) 0xd3,
+                0x25, (byte) 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25, (byte) 0xe6, (byte) 0x83, 0x34, 0x43, 0x79, 0x25, (byte) 0xe6, (byte) 0x84, 0x34, 0x43,
+                0x7d});
         beingInsideArea = true;
         periodicLDR = false;
         periodicLDRInfo = null;
         deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
+        terminationCause = TerminationCause.mtlrRestart;
         deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
-        lcsReferenceNumber = 160;
+        lcsReferenceNumber = 73;
         ageOfLocationEstimate = 0;
         geranPositioningData = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
         utranPositioningData = null;
-        cgiOrSaiFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(748, 1, 119, 15336);
+        cgiOrSaiFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(748, 7, 8820, 9748);
         cellIdOrSai = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cgiOrSaiFixedLength);
         hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
         lcsServiceTypeID = 1;
@@ -2071,18 +2090,8 @@ public class SubscriberLocationReportRequestTest {
         utranGANSSpositioningData = null;
         targetServingNodeForHandover = new ServingNodeAddressImpl(networkNodeNumber, isMsc);
         utranAdditionalPositioningData = null;
-        utranBaroPressureMeas = 110000;
-        civicAddressString = "<cl:civicAddress>\n" +
-                "                        <cl:country>US</cl:country>\n" +
-                "                        <cl:A1>New York</cl:A1>\n" +
-                "                        <cl:A3>New York</cl:A3>\n" +
-                "                        <cl:A6>Broadway</cl:A6>\n" +
-                "                        <cl:HNO>123</cl:HNO>\n" +
-                "                        <cl:LOC>Suite 75</cl:LOC>\n" +
-                "                        <cl:PC>10027-0401</cl:PC>\n" +
-                "                    </cl:civicAddress>";
-        civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
-        utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
+        utranBaroPressureMeas = null;
+        utranCivicAddress = null;
 
         SubscriberLocationReportRequestImpl slr4 = new SubscriberLocationReportRequestImpl(lcsEvent,
                 lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate, ageOfLocationEstimate,
