@@ -60,7 +60,7 @@ import org.testng.annotations.Test;
 public class ProvideSubscriberLocationResponseTest {
 
     MAPParameterFactory mapParameterFactory = new MAPParameterFactoryImpl();
-    private static Logger logger = Logger.getLogger(ProvideSubscriberLocationResponseTest.class);
+    private static final Logger logger = Logger.getLogger(ProvideSubscriberLocationResponseTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
