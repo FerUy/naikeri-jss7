@@ -611,7 +611,7 @@ public class Client extends EventTestHarness {
         IMSI imsi2 = this.mapParameterFactory.createIMSI("25007123456789");
 
         clientDialogSms.addMoForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI,
-                MAPExtensionContainerTest.GetTestExtensionContainer(), imsi2);
+                MAPExtensionContainerTest.GetTestExtensionContainer(), imsi2, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.MoForwardShortMessageIndication, null, sequence++));
         clientDialogSms.send();

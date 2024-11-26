@@ -48,10 +48,11 @@ public interface MAPDialogSms extends MAPDialog {
      * @return invokeId
      */
     Long addMoForwardShortMessageRequest(SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA, SmsSignalInfo sm_RP_UI,
-            MAPExtensionContainer extensionContainer, IMSI imsi) throws MAPException;
+            MAPExtensionContainer extensionContainer, IMSI imsi, CorrelationID correlationID, SMDeliveryOutcome smDeliveryOutcome) throws MAPException;
 
     Long addMoForwardShortMessageRequest(int customInvokeTimeout, SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA,
-            SmsSignalInfo sm_RP_UI, MAPExtensionContainer extensionContainer, IMSI imsi) throws MAPException;
+            SmsSignalInfo sm_RP_UI, MAPExtensionContainer extensionContainer, IMSI imsi, CorrelationID correlationID,
+            SMDeliveryOutcome smDeliveryOutcome) throws MAPException;
 
     /**
      * Sending MAP-MO-FORWARD-SHORT-MESSAGE response

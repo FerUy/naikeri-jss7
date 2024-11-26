@@ -121,12 +121,14 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
     }
 
     public Long addMoForwardShortMessageRequest(SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA, SmsSignalInfo sm_RP_UI,
-            MAPExtensionContainer extensionContainer, IMSI imsi) throws MAPException {
-        return addMoForwardShortMessageRequest(_Timer_Default, sm_RP_DA, sm_RP_OA, sm_RP_UI, extensionContainer, imsi);
+            MAPExtensionContainer extensionContainer, IMSI imsi, CorrelationID correlationID,
+            SMDeliveryOutcome smDeliveryOutcome) throws MAPException {
+        return addMoForwardShortMessageRequest(_Timer_Default, sm_RP_DA, sm_RP_OA, sm_RP_UI, extensionContainer, imsi, correlationID, smDeliveryOutcome);
     }
 
     public Long addMoForwardShortMessageRequest(int customInvokeTimeout, SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA,
-            SmsSignalInfo sm_RP_UI, MAPExtensionContainer extensionContainer, IMSI imsi) throws MAPException {
+            SmsSignalInfo sm_RP_UI, MAPExtensionContainer extensionContainer, IMSI imsi, CorrelationID correlationID,
+            SMDeliveryOutcome smDeliveryOutcome) throws MAPException {
 
         if (this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.shortMsgMORelayContext
                 || this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3)
@@ -143,7 +145,7 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
         invoke.setOperationCode(operationCode);
 
         MoForwardShortMessageRequestImpl moForwardShortMessageRequest = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI,
-                extensionContainer, imsi);
+                extensionContainer, imsi, correlationID, smDeliveryOutcome);
         AsnOutputStream aos = new AsnOutputStream();
         moForwardShortMessageRequest.encodeData(aos);
 

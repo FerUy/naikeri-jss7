@@ -4215,7 +4215,7 @@ public class MAPFunctionalTest extends SccpHarness {
             SM_RP_OA sm_RP_OA = this.mapParameterFactory.createSM_RP_OA_Msisdn(msisdn1);
             IMSI imsi2 = this.mapParameterFactory.createIMSI("25007123456789");
 
-            Long invokeId = dlg.addMoForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, imsi2);
+            Long invokeId = dlg.addMoForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, imsi2, null, null);
 
             int maxMsgLen = dlg.getMaxUserDataLength();
             int curMsgLen = dlg.getMessageUserDataLengthOnSend();

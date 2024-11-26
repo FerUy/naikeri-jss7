@@ -983,7 +983,7 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
                         if (dlg.getApplicationContext().getApplicationContextVersion().getVersion() <= 2)
                             dlg.addForwardShortMessageRequest(md.da, md.oa, md.si, false);
                         else
-                            dlg.addMoForwardShortMessageRequest(md.da, md.oa, md.si, null, null);
+                            dlg.addMoForwardShortMessageRequest(md.da, md.oa, md.si, null, null, null, null);
                         mapDialog.send();
 
                         String mtData = createMtData(mapDialog.getLocalDialogId(), md.destImsi, md.vlrNumber, md.origIsdnNumber, md.serviceCentreAddr);

@@ -20,8 +20,8 @@ public class SRIReaction extends EnumeratedBase {
     public static final int VAL_ERROR_CALL_BARRED = 4;
     public static final int VAL_ERROR_ABSENT_SUBSCRIBER = 5;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(VAL_RETURN_SUCCESS, "Return success");

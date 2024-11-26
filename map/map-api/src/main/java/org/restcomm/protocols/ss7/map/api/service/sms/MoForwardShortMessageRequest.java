@@ -4,20 +4,21 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 
 /**
- *
- MAP V3:
- *
- * mo-ForwardSM OPERATION ::= { --Timer ml ARGUMENT MO-ForwardSM-Arg RESULT MO-ForwardSM-Res -- optional ERRORS { systemFailure
- * | unexpectedDataValue | facilityNotSupported | sm-DeliveryFailure} CODE local:46 }
- *
- * MO-ForwardSM-Arg ::= SEQUENCE { sm-RP-DA SM-RP-DA, sm-RP-OA SM-RP-OA, sm-RP-UI SignalInfo, extensionContainer
- * ExtensionContainer OPTIONAL, ... , imsi IMSI OPTIONAL }
- *
- *
- *
+ <code>
+  MO-ForwardSM-Arg ::= SEQUENCE {
+    sm-RP-DA            SM-RP-DA,
+    sm-RP-OA            SM-RP-OA,
+    sm-RP-UI            SignalInfo,
+    extensionContainer  ExtensionContainer      OPTIONAL,
+    ... ,
+    imsi                IMSI                    OPTIONAL,
+    correlationID       [0] CorrelationID       OPTIONAL,
+    sm-DeliveryOutcome  [1] SM-DeliveryOutcome  OPTIONAL
+  }
+ </code>
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface MoForwardShortMessageRequest extends SmsMessage {
 
@@ -31,4 +32,7 @@ public interface MoForwardShortMessageRequest extends SmsMessage {
 
     IMSI getIMSI();
 
+    CorrelationID getCorrelationID();
+
+    SMDeliveryOutcome getSmDeliveryOutcome();
 }

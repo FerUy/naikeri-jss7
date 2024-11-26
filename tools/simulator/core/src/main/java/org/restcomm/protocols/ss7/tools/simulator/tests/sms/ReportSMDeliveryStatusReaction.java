@@ -17,8 +17,8 @@ public class ReportSMDeliveryStatusReaction extends EnumeratedBase {
     public static final int VAL_RETURN_SUCCESS = 1;
     public static final int VAL_ERROR_UNKNOWN_SUBSCRIBER = 2;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(VAL_RETURN_SUCCESS, "Return success");

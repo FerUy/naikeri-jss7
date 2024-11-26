@@ -706,7 +706,7 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
                 if (this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().getMapProtocolVersion().intValue() <= 2)
                     curDialog.addForwardShortMessageRequest(da, oa, si, false);
                 else
-                    curDialog.addMoForwardShortMessageRequest(da, oa, si, null, null);
+                    curDialog.addMoForwardShortMessageRequest(da, oa, si, null, null, null, null);
                 curDialog.send();
 
                 String mtData = createMoData(curDialog.getLocalDialogId(), destIsdnNumber, origIsdnNumber, serviceCentreAddr);
@@ -1467,7 +1467,7 @@ public class TestSmsClientMan extends TesterBase implements TestSmsClientManMBea
                     if (dlg.getApplicationContext().getApplicationContextVersion().getVersion() <= 2)
                         dlg.addForwardShortMessageRequest(md.da, md.oa, md.si, false);
                     else
-                        dlg.addMoForwardShortMessageRequest(md.da, md.oa, md.si, null, null);
+                        dlg.addMoForwardShortMessageRequest(md.da, md.oa, md.si, null, null, null, null);
                     mapDialog.send();
 
                     String mtData = createMoData(mapDialog.getLocalDialogId(), md.destIsdnNumber, md.origIsdnNumber, md.serviceCentreAddr);

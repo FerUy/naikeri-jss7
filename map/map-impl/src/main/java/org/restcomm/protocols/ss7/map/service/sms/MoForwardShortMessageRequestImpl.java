@@ -14,7 +14,9 @@ import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
 import org.restcomm.protocols.ss7.map.api.service.sms.MoForwardShortMessageRequest;
+import org.restcomm.protocols.ss7.map.api.service.sms.SMDeliveryOutcome;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_DA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_OA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
@@ -24,9 +26,14 @@ import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements MoForwardShortMessageRequest {
+
+    protected static final int _TAG_correlationID = 0;
+    protected static final int _TAG_smDeliveryOutcome = 1;
+
+    protected String _PrimitiveName = "MoForwardShortMessageRequest";
 
     private SM_RP_DA sm_RP_DA;
     private SM_RP_OA sm_RP_OA;
@@ -34,18 +41,22 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
     private MAPExtensionContainer extensionContainer;
     private IMSI imsi;
 
-    protected String _PrimitiveName = "MoForwardShortMessageRequest";
+    private CorrelationID correlationID;
+    private SMDeliveryOutcome smDeliveryOutcome;
+
 
     public MoForwardShortMessageRequestImpl() {
     }
 
     public MoForwardShortMessageRequestImpl(SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA, SmsSignalInfo sm_RP_UI,
-            MAPExtensionContainer extensionContainer, IMSI imsi) {
+            MAPExtensionContainer extensionContainer, IMSI imsi, CorrelationID correlationID, SMDeliveryOutcome smDeliveryOutcome) {
         this.sm_RP_DA = sm_RP_DA;
         this.sm_RP_OA = sm_RP_OA;
         this.sm_RP_UI = (SmsSignalInfoImpl) sm_RP_UI;
         this.extensionContainer = extensionContainer;
         this.imsi = imsi;
+        this.correlationID = correlationID;
+        this.smDeliveryOutcome = smDeliveryOutcome;
     }
 
     public MAPMessageType getMessageType() {
@@ -74,6 +85,15 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
     public IMSI getIMSI() {
         return this.imsi;
+    }
+
+    @Override
+    public CorrelationID getCorrelationID() {
+        return this.correlationID;
+    }
+
+    public SMDeliveryOutcome getSmDeliveryOutcome() {
+        return this.smDeliveryOutcome;
     }
 
     public int getTag() throws MAPException {
@@ -119,6 +139,8 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
         this.sm_RP_UI = null;
         this.extensionContainer = null;
         this.imsi = null;
+        this.correlationID = null;
+        this.smDeliveryOutcome = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -130,7 +152,7 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
             switch (num) {
                 case 0:
-                    // SM_RP_DA
+                    // sm-RP-DA   SM-RP-DA
                     if (ais.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC || !ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ": Parameter 0 bad tag class or not primitive",
@@ -140,7 +162,7 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
                     break;
 
                 case 1:
-                    // SM_RP_OA
+                    // sm-RP-OA   SM_RP_OA
                     if (ais.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC || !ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ": Parameter 1 bad tag class or not primitive",
@@ -150,7 +172,7 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
                     break;
 
                 case 2:
-                    // sm-RP-UI
+                    // sm-RP-UI   SignalInfo
                     if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ": Parameter 2 bad tag class or not primitive",
@@ -165,6 +187,7 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
                 default:
                     if (tag == Tag.SEQUENCE && ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
+                        // extensionContainer   ExtensionContainer   OPTIONAL
                         if (ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter extensionContainer is primitive",
@@ -172,11 +195,30 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
                         this.extensionContainer = new MAPExtensionContainerImpl();
                         ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
                     } else if (tag == Tag.STRING_OCTET && ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
+                        // imsi   IMSI   OPTIONAL
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter imsi is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
                         this.imsi = new IMSIImpl();
                         ((IMSIImpl) this.imsi).decodeAll(ais);
+                    } else if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
+                        if (tag == _TAG_correlationID) {
+                            // correlationID   [0] CorrelationID   OPTIONAL
+                            if (ais.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".correlationID: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            this.correlationID = new CorrelationIDImpl();
+                            ((CorrelationIDImpl) this.correlationID).decodeAll(ais);
+                        } else if (tag == _TAG_smDeliveryOutcome) {
+                            // sm-DeliveryOutcome  [1] SM-DeliveryOutcome  OPTIONAL
+                            if (!ais.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".sMDeliveryOutcome: Parameter bad tag or tag class or not primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            int i1 = (int) ais.readInteger();
+                            this.smDeliveryOutcome = SMDeliveryOutcome.getInstance(i1);
+                        }
                     } else {
                         ais.advanceElement();
                     }
@@ -210,17 +252,32 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
 
-        if (this.sm_RP_DA == null || this.sm_RP_OA == null || this.sm_RP_UI == null)
-            throw new MAPException("sm_RP_DA,sm_RP_OA and sm_RP_UI must not be null");
+        try {
 
-        ((SM_RP_DAImpl) this.sm_RP_DA).encodeAll(asnOutputStream);
-        ((SM_RP_OAImpl) this.sm_RP_OA).encodeAll(asnOutputStream);
-        this.sm_RP_UI.encodeAll(asnOutputStream);
+            if (this.sm_RP_DA == null || this.sm_RP_OA == null || this.sm_RP_UI == null)
+                throw new MAPException("sm_RP_DA,sm_RP_OA and sm_RP_UI must not be null");
 
-        if (this.extensionContainer != null)
-            ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
-        if (this.imsi != null)
-            ((IMSIImpl) this.imsi).encodeAll(asnOutputStream);
+            ((SM_RP_DAImpl) this.sm_RP_DA).encodeAll(asnOutputStream);
+            ((SM_RP_OAImpl) this.sm_RP_OA).encodeAll(asnOutputStream);
+            this.sm_RP_UI.encodeAll(asnOutputStream);
+
+            if (this.extensionContainer != null)
+                ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
+
+            if (this.imsi != null)
+                ((IMSIImpl) this.imsi).encodeAll(asnOutputStream);
+
+            if (this.correlationID != null)
+                ((CorrelationIDImpl) this.correlationID).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_correlationID);
+
+            if (this.smDeliveryOutcome != null)
+                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smDeliveryOutcome, this.smDeliveryOutcome.getCode());
+
+        } catch (IOException e) {
+            throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
+        } catch (AsnException e) {
+            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -235,24 +292,32 @@ public class MoForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
         if (this.sm_RP_DA != null) {
             sb.append(", sm_RP_DA=");
-            sb.append(this.sm_RP_DA.toString());
+            sb.append(this.sm_RP_DA);
         }
         if (this.sm_RP_OA != null) {
             sb.append(", sm_RP_OA=");
-            sb.append(this.sm_RP_OA.toString());
+            sb.append(this.sm_RP_OA);
         }
         if (this.sm_RP_UI != null) {
             sb.append(", sm_RP_UI=[");
-            sb.append(this.sm_RP_UI.toString());
+            sb.append(this.sm_RP_UI);
             sb.append("]");
         }
         if (this.extensionContainer != null) {
             sb.append(", extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
         }
         if (this.imsi != null) {
             sb.append(", imsi=");
-            sb.append(this.imsi.toString());
+            sb.append(this.imsi);
+        }
+        if (this.correlationID != null) {
+            sb.append(", correlationID=");
+            sb.append(this.correlationID);
+        }
+        if (this.smDeliveryOutcome != null) {
+            sb.append(", smDeliveryOutcome=");
+            sb.append(this.smDeliveryOutcome);
         }
 
         sb.append("]");

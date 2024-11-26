@@ -18,8 +18,8 @@ public class SmsCodingType extends EnumeratedBase {
     public static final int VAL_UCS2 = 2;
     public static final int VAL_GSM8 = 3;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(VAL_GSM7, "GSM7");

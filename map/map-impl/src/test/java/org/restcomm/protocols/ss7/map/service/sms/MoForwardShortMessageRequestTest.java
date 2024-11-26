@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class MoForwardShortMessageRequestTest {
 
@@ -167,7 +167,7 @@ public class MoForwardShortMessageRequestTest {
         sm_RP_OA.setMsisdn(msisdn);
         SmsSignalInfo sm_RP_UI = new SmsSignalInfoImpl(new byte[] { 11, 22, 33, 44, 55, 66, 77, 0, 1, 2, 3, 4, 5, 6, 7, 9, 8 },
                 null);
-        MoForwardShortMessageRequestImpl ind = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, null);
+        MoForwardShortMessageRequestImpl ind = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, null, null, null);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
@@ -184,7 +184,7 @@ public class MoForwardShortMessageRequestTest {
         sm_RP_UI = new SmsSignalInfoImpl(new byte[] { 11, 22, 33, 44, 55, 66, 77, 0, 1, 2, 3, 4, 5, 6, 7, 9, 8, 1, 2, 2, 2, 2,
                 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4 }, null);
         IMSI imsi = new IMSIImpl("001012233349902");
-        ind = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, imsi);
+        ind = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, imsi, null, null);
 
         asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
@@ -197,7 +197,7 @@ public class MoForwardShortMessageRequestTest {
         sm_RP_OA = new SM_RP_OAImpl();
         sm_RP_UI = new SmsSignalInfoImpl(new byte[] { 11, 22, 33, 44, 55, 66, 77, 0, 1, 2, 3, 4, 5, 6, 7, 9, 8, 1, 2, 2, 2, 2,
                 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 99, 88, 77, 66, 55, 44, 44, 33, 22, 11, 11, 0 }, null);
-        ind = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, null);
+        ind = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, null, null, null);
 
         asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
@@ -214,7 +214,7 @@ public class MoForwardShortMessageRequestTest {
         sm_RP_UI = new SmsSignalInfoImpl(new byte[] { 11, 22, 33, 44, 55, 66, 77, 88, 99 }, null);
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
         imsi = new IMSIImpl("240881122334455");
-        ind = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, extensionContainer, imsi);
+        ind = new MoForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, extensionContainer, imsi, null, null);
 
         asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);

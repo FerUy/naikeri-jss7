@@ -17,7 +17,7 @@ import org.restcomm.protocols.ss7.tools.simulator.level3.MapProtocolVersion;
  */
 public class TestSmsServerConfigurationData_OldFormat extends TestSmsServerConfigurationData {
 
-    protected static final XMLFormat<TestSmsServerConfigurationData_OldFormat> XML = new XMLFormat<TestSmsServerConfigurationData_OldFormat>(
+    protected static final XMLFormat<TestSmsServerConfigurationData_OldFormat> XML = new XMLFormat<>(
             TestSmsServerConfigurationData_OldFormat.class) {
 
         public void write(TestSmsServerConfigurationData_OldFormat srv, OutputElement xml) throws XMLStreamException {
@@ -27,19 +27,19 @@ public class TestSmsServerConfigurationData_OldFormat extends TestSmsServerConfi
             srv.hlrSsn = xml.getAttribute(HLR_SSN).toInt();
             srv.vlrSsn = xml.getAttribute(VLR_SSN).toInt();
 
-            srv.serviceCenterAddress = (String) xml.get(SERVICE_CENTER_ADDRESS, String.class);
+            srv.serviceCenterAddress = xml.get(SERVICE_CENTER_ADDRESS, String.class);
 
-            String an = (String) xml.get(ADDRESS_NATURE, String.class);
+            String an = xml.get(ADDRESS_NATURE, String.class);
             srv.addressNature = AddressNature.valueOf(an);
-            String np = (String) xml.get(NUMBERING_PLAN, String.class);
+            String np = xml.get(NUMBERING_PLAN, String.class);
             srv.numberingPlan = NumberingPlan.valueOf(np);
-            String mpv = (String) xml.get(MAP_PROTOCOL_VERSION, String.class);
+            String mpv = xml.get(MAP_PROTOCOL_VERSION, String.class);
             srv.mapProtocolVersion = MapProtocolVersion.createInstance(mpv);
-            String ton = (String) xml.get(TYPE_OF_NUMBER, String.class);
+            String ton = xml.get(TYPE_OF_NUMBER, String.class);
             srv.typeOfNumber = TypeOfNumber.valueOf(ton);
-            String npi = (String) xml.get(NUMBERING_PLAN_IDENTIFICATION, String.class);
+            String npi = xml.get(NUMBERING_PLAN_IDENTIFICATION, String.class);
             srv.numberingPlanIdentification = NumberingPlanIdentification.valueOf(npi);
-            String sct = (String) xml.get(SMS_CODING_TYPE, String.class);
+            String sct = xml.get(SMS_CODING_TYPE, String.class);
             srv.smsCodingType = SmsCodingType.createInstance(sct);
         }
     };

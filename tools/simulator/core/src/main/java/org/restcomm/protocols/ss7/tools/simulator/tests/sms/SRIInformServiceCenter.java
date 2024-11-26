@@ -20,8 +20,8 @@ public class SRIInformServiceCenter extends EnumeratedBase {
     public static final int MWD_mcef_mnrf = 4;
     public static final int MWD_mnrg = 5;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(MWD_NO, "No data in MWD file");

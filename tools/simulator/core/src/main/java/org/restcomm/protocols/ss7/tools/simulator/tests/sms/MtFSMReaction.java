@@ -23,8 +23,8 @@ public class MtFSMReaction extends EnumeratedBase {
     public static final int VAL_ERROR_EQUIPMENT_PROTOCOL_ERROR = 7;
     public static final int VAL_ERROR_EQUIPMENT_PROTOCOL_ERROR_WITH_TPDU = 8;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(VAL_RETURN_SUCCESS, "Return success");

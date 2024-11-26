@@ -328,7 +328,7 @@ public class Client extends TestHarnessSmsMo {
         MAPExtensionContainer mapExtensionContainer = null;
         IMSI imsi = new IMSIImpl("124356871012345");
 
-        mapDialogSms.addMoForwardShortMessageRequest(sm_rp_da, sm_rp_oa, smsSignalInfo, mapExtensionContainer, imsi);
+        mapDialogSms.addMoForwardShortMessageRequest(sm_rp_da, sm_rp_oa, smsSignalInfo, mapExtensionContainer, imsi, null, null);
 
         // nbConcurrentDialogs.incrementAndGet();
 
