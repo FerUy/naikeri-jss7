@@ -1,10 +1,13 @@
 package org.restcomm.protocols.ss7.map.api.service.sms;
 
 /**
- *
- * SM-DeliveryOutcome ::= ENUMERATED { memoryCapacityExceeded (0), absentSubscriber (1), successfulTransfer (2)}
- *
- *
+ <code>
+  SM-DeliveryOutcome ::= ENUMERATED {
+   memoryCapacityExceeded (0),
+   absentSubscriber       (1),
+   successfulTransfer     (2)
+  }
+ </code>
  *
  * @author sergey vetyutnev
  *
@@ -15,7 +18,7 @@ public enum SMDeliveryOutcome {
 
     private int code;
 
-    private SMDeliveryOutcome(int code) {
+    SMDeliveryOutcome(int code) {
         this.code = code;
     }
 
