@@ -7,10 +7,18 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 
 /**
- * SM-RP-DA ::= CHOICE { imsi [0] IMSI, lmsi [1] LMSI, serviceCentreAddressDA [4] AddressString, noSM-RP-DA [5] NULL}
  *
- * Only one method getIMSI(), getLMSI() or getServiceCentreAddressDA() will return the non null value If all these methods
- * return null - this means noSM-RP-DA value
+ <code>
+  SM-RP-DA ::= CHOICE {
+   imsi                   [0] IMSI,
+   lmsi                   [1] LMSI,
+   serviceCentreAddressDA [4] AddressString,
+   noSM-RP-DA             [5] NULL
+  }
+
+  Only one method getIMSI(), getLMSI() or getServiceCentreAddressDA() will return a non null value.
+  If all these methods return null, this means noSM-RP-DA.
+ </code>
  *
  * @author sergey vetyutnev
  *
