@@ -164,11 +164,11 @@ public class SM_RP_OAImpl implements SM_RP_OA, MAPAsnPrimitive {
 
         if (this.msisdn != null) {
             sb.append("msisdn=");
-            sb.append(this.msisdn.toString());
+            sb.append(this.msisdn);
         }
         if (this.serviceCentreAddressOA != null) {
             sb.append("serviceCentreAddressOA=");
-            sb.append(this.serviceCentreAddressOA.toString());
+            sb.append(this.serviceCentreAddressOA);
         }
 
         sb.append("]");
