@@ -18,7 +18,7 @@ import org.restcomm.protocols.ss7.map.primitives.SequenceBase;
 /**
 *
 * @author kostiantyn nosach
-*
+* @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
 */
 
 public class CorrelationIDImpl extends SequenceBase implements CorrelationID {
@@ -123,8 +123,11 @@ public class CorrelationIDImpl extends SequenceBase implements CorrelationID {
         if (this.sipUriA != null)
             ((SipUriImpl) this.sipUriA).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SipUriA);
 
-        if (this.sipUriB != null)
+        if (this.sipUriB != null) {
             ((SipUriImpl) this.sipUriB).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SipUriB);
+        } else {
+            throw new MAPException("sipUriB must not be null in " + _PrimitiveName + " operation");
+        }
     }
 
     @Override
