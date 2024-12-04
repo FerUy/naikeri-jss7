@@ -204,13 +204,18 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
     }
 
     public Long addMtForwardShortMessageRequest(SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA, SmsSignalInfo sm_RP_UI,
-            boolean moreMessagesToSend, MAPExtensionContainer extensionContainer) throws MAPException {
+            boolean moreMessagesToSend, MAPExtensionContainer extensionContainer, Integer smDeliveryTimer,
+            Time smDeliveryStartTime, boolean smsOverIPOnlyIndicator, CorrelationID correlationID, Time maximumRetransmissionTime,
+            ISDNAddressString smsGmscAddress, NetworkNodeDiameterAddress smsGmscDiameterAddress) throws MAPException {
         return this.addMtForwardShortMessageRequest(_Timer_Default, sm_RP_DA, sm_RP_OA, sm_RP_UI, moreMessagesToSend,
-                extensionContainer);
+                extensionContainer, smDeliveryTimer, smDeliveryStartTime, smsOverIPOnlyIndicator, correlationID,
+                maximumRetransmissionTime, smsGmscAddress, smsGmscDiameterAddress);
     }
 
     public Long addMtForwardShortMessageRequest(int customInvokeTimeout, SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA,
-            SmsSignalInfo sm_RP_UI, boolean moreMessagesToSend, MAPExtensionContainer extensionContainer) throws MAPException {
+            SmsSignalInfo sm_RP_UI, boolean moreMessagesToSend, MAPExtensionContainer extensionContainer, Integer smDeliveryTimer,
+            Time smDeliveryStartTime, boolean smsOverIPOnlyIndicator, CorrelationID correlationID, Time maximumRetransmissionTime,
+            ISDNAddressString smsGmscAddress, NetworkNodeDiameterAddress smsGmscDiameterAddress) throws MAPException {
 
         if (this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.shortMsgMTRelayContext
                 || this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3)
@@ -229,7 +234,8 @@ public class MAPDialogSmsImpl extends MAPDialogImpl implements MAPDialogSms {
             invoke.setOperationCode(operationCode);
 
             MtForwardShortMessageRequestImpl mtForwardShortMessageRequest = new MtForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI,
-                    moreMessagesToSend, extensionContainer);
+                    moreMessagesToSend, extensionContainer, smDeliveryTimer, smDeliveryStartTime, smsOverIPOnlyIndicator, correlationID,
+                    maximumRetransmissionTime, smsGmscAddress, smsGmscDiameterAddress);
             AsnOutputStream aos = new AsnOutputStream();
             mtForwardShortMessageRequest.encodeData(aos);
 

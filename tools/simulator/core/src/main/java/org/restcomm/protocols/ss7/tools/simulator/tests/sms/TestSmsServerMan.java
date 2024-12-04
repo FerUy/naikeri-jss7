@@ -609,7 +609,7 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
                 if (this.testerHost.getConfigurationData().getTestSmsServerConfigurationData().getMapProtocolVersion().intValue() <= 2)
                     curDialog.addForwardShortMessageRequest(da, oa, si, false);
                 else
-                    curDialog.addMtForwardShortMessageRequest(da, oa, si, false, null);
+                    curDialog.addMtForwardShortMessageRequest(da, oa, si, false, null, null, null, false, null, null, null, null);
                 curDialog.send();
 
                 String mtData = createMtData(curDialog.getLocalDialogId(), destImsi, vlrNumber, origIsdnNumber, serviceCentreAddr);

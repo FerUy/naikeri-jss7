@@ -643,7 +643,7 @@ public class Client extends EventTestHarness {
         SM_RP_OA sm_RP_OA = this.mapParameterFactory.createSM_RP_OA_ServiceCentreAddressOA(msisdn1);
         SmsSignalInfo sm_RP_UI = new SmsSignalInfoImpl(new byte[] { 21, 22, 23, 24, 25 }, null);
         clientDialogSms.addMtForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI, true,
-                MAPExtensionContainerTest.GetTestExtensionContainer());
+                MAPExtensionContainerTest.GetTestExtensionContainer(), null, null, false, null, null, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.MtForwardShortMessageIndication, null, sequence++));
         clientDialogSms.send();

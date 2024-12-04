@@ -72,10 +72,15 @@ public interface MAPDialogSms extends MAPDialog {
      * @param extensionContainer optional
      */
     Long addMtForwardShortMessageRequest(SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA, SmsSignalInfo sm_RP_UI,
-            boolean moreMessagesToSend, MAPExtensionContainer extensionContainer) throws MAPException;
+            boolean moreMessagesToSend, MAPExtensionContainer extensionContainer, Integer smDeliveryTimer,
+            Time smDeliveryStartTime, boolean smsOverIPOnlyIndicator, CorrelationID correlationID,
+            Time maximumRetransmissionTime, ISDNAddressString smsGmscAddress, NetworkNodeDiameterAddress smsGmscDiameterAddress) throws MAPException;
 
     Long addMtForwardShortMessageRequest(int customInvokeTimeout, SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA,
-            SmsSignalInfo sm_RP_UI, boolean moreMessagesToSend, MAPExtensionContainer extensionContainer) throws MAPException;
+            SmsSignalInfo sm_RP_UI, boolean moreMessagesToSend, MAPExtensionContainer extensionContainer,
+            Integer smDeliveryTimer, Time smDeliveryStartTime, boolean smsOverIPOnlyIndicator,
+            CorrelationID correlationID, Time maximumRetransmissionTime, ISDNAddressString smsGmscAddress,
+            NetworkNodeDiameterAddress smsGmscDiameterAddress) throws MAPException;
 
     /**
      * Sending MAP-MT-FORWARD-SHORT-MESSAGE response

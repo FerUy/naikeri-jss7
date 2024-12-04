@@ -165,7 +165,7 @@ public class AreaEventInfoImpl extends SequenceBase implements AreaEventInfo {
         int result = 1;
         result = prime * result + ((areaDefinition == null) ? 0 : areaDefinition.hashCode());
         result = prime * result + ((occurrenceInfo == null) ? 0 : occurrenceInfo.getInfo());
-        result = prime * result + ((intervalTime == null) ? 0 : (int) intervalTime);
+        result = prime * result + ((intervalTime == null) ? 0 : intervalTime);
         return result;
     }
 
@@ -194,13 +194,10 @@ public class AreaEventInfoImpl extends SequenceBase implements AreaEventInfo {
                 return false;
         }
         if (this.intervalTime == null) {
-            if (other.intervalTime != null)
-                return false;
+            return other.intervalTime == null;
         } else {
-            if ((int) this.intervalTime != (int) other.intervalTime)
-                return false;
+            return (int) this.intervalTime == other.intervalTime;
         }
-        return true;
     }
 
     @Override
@@ -215,11 +212,11 @@ public class AreaEventInfoImpl extends SequenceBase implements AreaEventInfo {
         }
         if (this.occurrenceInfo != null) {
             sb.append(", occurrenceInfo=");
-            sb.append(this.occurrenceInfo.toString());
+            sb.append(this.occurrenceInfo);
         }
         if (this.intervalTime != null) {
             sb.append(", intervalTime=");
-            sb.append(this.intervalTime.toString());
+            sb.append(this.intervalTime);
         }
 
         sb.append("]");

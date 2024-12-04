@@ -1024,7 +1024,9 @@ public class Client extends TestHarnessSmsMt {
 
             MAPExtensionContainer mapExtensionContainer = null;
 
-            mapDialogSms.addMtForwardShortMessageRequest(da, oa, si, moreMessagesToSend, mapExtensionContainer);
+            mapDialogSms.addMtForwardShortMessageRequest(da, oa, si, moreMessagesToSend, mapExtensionContainer, null,
+                    null, false, null, null, null,
+                    null);
 
             mapDialogSms.send();
 

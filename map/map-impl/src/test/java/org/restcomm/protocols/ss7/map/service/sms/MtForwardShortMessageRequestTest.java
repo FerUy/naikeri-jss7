@@ -37,7 +37,7 @@ public class MtForwardShortMessageRequestTest {
                 3, 4, 4, 4, 4, 4, 4, 99, 88, 77, 66, 55, 44, 44, 33, 22, 11, 11, 0 };
     }
 
-    private byte[] getEncodedDataFull() {
+    private byte[] _getEncodedData2() {
         return new byte[] { 48, 70, -128, 8, 1, -128, 56, 67, 84, 101, 118, -9, -124, 6, -111, 17, 17, 33, 34, 34, 4, 7, 11,
                 22, 33, 44, 55, 66, 77, 5, 0, 48, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3,
                 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33 };
@@ -68,7 +68,7 @@ public class MtForwardShortMessageRequestTest {
         assertTrue(Arrays.equals(ui.getData(), new byte[] { 11, 22, 33, 44, 55, 66, 77, 0, 1, 2, 3, 4, 5, 6, 7, 9, 8, 1, 2, 2,
                 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 99, 88, 77, 66, 55, 44, 44, 33, 22, 11, 11, 0 }));
 
-        rawData = getEncodedDataFull();
+        rawData = _getEncodedData2();
         asn = new AsnInputStream(rawData);
 
         tag = asn.readTag();
@@ -104,7 +104,8 @@ public class MtForwardShortMessageRequestTest {
         SmsSignalInfo sm_RP_UI = new SmsSignalInfoImpl(new byte[] { 11, 22, 33, 44, 55, 66, 77, 0, 1, 2, 3, 4, 5, 6, 7, 9, 8,
                 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 99, 88, 77, 66, 55, 44, 44, 33, 22, 11,
                 11, 0 }, null);
-        MtForwardShortMessageRequestImpl ind = new MtForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, false, null);
+        MtForwardShortMessageRequestImpl ind = new MtForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, false, null,
+                null, null, false, null, null, null, null);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
@@ -120,13 +121,14 @@ public class MtForwardShortMessageRequestTest {
         sm_RP_OA.setServiceCentreAddressOA(sca);
         sm_RP_UI = new SmsSignalInfoImpl(new byte[] { 11, 22, 33, 44, 55, 66, 77 }, null);
         ind = new MtForwardShortMessageRequestImpl(sm_RP_DA, sm_RP_OA, sm_RP_UI, true,
-                MAPExtensionContainerTest.GetTestExtensionContainer());
+                MAPExtensionContainerTest.GetTestExtensionContainer(), null, null,
+                false, null, null, null, null);
 
         asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
 
         encodedData = asnOS.toByteArray();
-        rawData = getEncodedDataFull();
+        rawData = _getEncodedData2();
         assertTrue(Arrays.equals(rawData, encodedData));
     }
 
