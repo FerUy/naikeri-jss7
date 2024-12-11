@@ -16,7 +16,7 @@ public enum SmsTpduType {
 
     private int code;
 
-    private SmsTpduType(int code) {
+    SmsTpduType(int code) {
         this.code = code;
     }
 

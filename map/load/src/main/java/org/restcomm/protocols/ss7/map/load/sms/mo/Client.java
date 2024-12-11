@@ -2,6 +2,7 @@
 package org.restcomm.protocols.ss7.map.load.sms.mo;
 
 import com.google.common.util.concurrent.RateLimiter;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
@@ -22,6 +23,7 @@ import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPMessage;
+import org.restcomm.protocols.ss7.map.api.MAPMessageType;
 import org.restcomm.protocols.ss7.map.api.MAPProvider;
 import org.restcomm.protocols.ss7.map.api.dialog.MAPAbortProviderReason;
 import org.restcomm.protocols.ss7.map.api.dialog.MAPAbortSource;
@@ -38,6 +40,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.InformServiceCentreRequest;
@@ -52,14 +55,17 @@ import org.restcomm.protocols.ss7.map.api.service.sms.ReadyForSMRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ReadyForSMResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.ReportSMDeliveryStatusRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ReportSMDeliveryStatusResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.SMDeliveryOutcome;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_DA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.SipUri;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
 import org.restcomm.protocols.ss7.map.api.smstpdu.AddressField;
 import org.restcomm.protocols.ss7.map.api.smstpdu.DataCodingScheme;
 import org.restcomm.protocols.ss7.map.api.smstpdu.NumberingPlanIdentification;
 import org.restcomm.protocols.ss7.map.api.smstpdu.ProtocolIdentifier;
+import org.restcomm.protocols.ss7.map.api.smstpdu.SmsTpdu;
 import org.restcomm.protocols.ss7.map.api.smstpdu.SmsTpduType;
 import org.restcomm.protocols.ss7.map.api.smstpdu.TypeOfNumber;
 import org.restcomm.protocols.ss7.map.api.smstpdu.UserData;
@@ -68,8 +74,10 @@ import org.restcomm.protocols.ss7.map.api.smstpdu.ValidityPeriod;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
 import org.restcomm.protocols.ss7.map.primitives.AddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
+import org.restcomm.protocols.ss7.map.service.sms.CorrelationIDImpl;
 import org.restcomm.protocols.ss7.map.service.sms.SM_RP_DAImpl;
 import org.restcomm.protocols.ss7.map.service.sms.SM_RP_OAImpl;
+import org.restcomm.protocols.ss7.map.service.sms.SipUriImpl;
 import org.restcomm.protocols.ss7.map.service.sms.SmsSignalInfoImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.AddressFieldImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.DataCodingSchemeImpl;
@@ -102,9 +110,11 @@ import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 /**
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class Client extends TestHarnessSmsMo {
 
@@ -283,7 +293,7 @@ public class Client extends TestHarnessSmsMo {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 
@@ -324,11 +334,40 @@ public class Client extends TestHarnessSmsMo {
         UserData userData = new UserDataImpl("SMS load test", dataCodingScheme, userDataHeader, gsm8Charset);
         SmsTpduImpl smsTpdu = new SmsSubmitTpduImpl(rejectDuplicates, replyPathExists, statusReportRequest, messageReference, destinationAddress,
             protocolIdentifier, validityPeriod, userData);
-        SmsSignalInfo smsSignalInfo = new SmsSignalInfoImpl(smsTpdu, gsm8Charset);
-        MAPExtensionContainer mapExtensionContainer = null;
+        SmsSignalInfo sm_rp_ui = new SmsSignalInfoImpl(smsTpdu, gsm8Charset);
         IMSI imsi = new IMSIImpl("124356871012345");
+        long hlrIdDigits = RandomUtils.nextLong(748020000000000L, 748030000000000L);
+        IMSI hlrId = null;
+        SipUri sipUriA = null;
+        SipUri sipUriB;
+        CorrelationID correlationID = null;
+        SMDeliveryOutcome smDeliveryOutcome = null;
+        Random rand = new Random();
+        switch (rand.nextInt(6) + 1) {
+            case 1:
+                hlrId = new IMSIImpl(String.valueOf(hlrIdDigits));
+                sipUriB = new SipUriImpl("sip:fer@restcomm.org".getBytes(StandardCharsets.UTF_8));
+                correlationID = new CorrelationIDImpl(hlrId, sipUriA, sipUriB);
+                smDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
+                break;
+            case 2:
+                sipUriA = new SipUriImpl("sip:kbza@acme.com".getBytes(StandardCharsets.UTF_8));
+                sipUriB = new SipUriImpl("sip:fer@restcomm.org".getBytes(StandardCharsets.UTF_8));
+                correlationID = new CorrelationIDImpl(hlrId, sipUriA, sipUriB);
+                smDeliveryOutcome = SMDeliveryOutcome.memoryCapacityExceeded;
+                break;
+            case 3:
+                hlrId = new IMSIImpl(String.valueOf(hlrIdDigits));
+                sipUriA = new SipUriImpl("sip:kbza@acme.com".getBytes(StandardCharsets.UTF_8));
+                sipUriB = new SipUriImpl("sip:fer@restcomm.org".getBytes(StandardCharsets.UTF_8));
+                correlationID = new CorrelationIDImpl(hlrId, sipUriA, sipUriB);
+                smDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
+                break;
+            default:
+                break;
+        }
 
-        mapDialogSms.addMoForwardShortMessageRequest(sm_rp_da, sm_rp_oa, smsSignalInfo, mapExtensionContainer, imsi, null, null);
+        mapDialogSms.addMoForwardShortMessageRequest(sm_rp_da, sm_rp_oa, sm_rp_ui, null, imsi, correlationID, smDeliveryOutcome);
 
         // nbConcurrentDialogs.incrementAndGet();
 
@@ -521,9 +560,10 @@ public class Client extends TestHarnessSmsMo {
             client.terminate();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
+
 
     /*
      * (non-Javadoc)
@@ -716,7 +756,7 @@ public class Client extends TestHarnessSmsMo {
                 logger.warn("Completed 10000 Dialogs, dialogs per second: " + (float) (10000 / sec));
             }
         } else {
-            if (this.endCount >= NDIALOGS && !endReportPrinted) {
+            if (!endReportPrinted) {
                 endReportPrinted = true;
                 long current = System.currentTimeMillis();
                 logger.warn("Start Time = " + start);
@@ -793,6 +833,31 @@ public class Client extends TestHarnessSmsMo {
     }
 
     @Override
+    public void onMoForwardShortMessageResponse(MoForwardShortMessageResponse moForwardShortMessageResponseIndication) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onMoForwardShortMessageResponse for DialogId=%d", moForwardShortMessageResponseIndication
+                    .getMAPDialog().getLocalDialogId()));
+            try {
+                SmsSignalInfo sm_rp_ui = moForwardShortMessageResponseIndication.getSM_RP_UI();
+                SmsTpduType smsTpduType = null;
+                if (sm_rp_ui != null) {
+                    SmsTpdu smsTpdu = sm_rp_ui.decodeTpdu(true);
+                    smsTpduType = smsTpdu.getSmsTpduType();
+                }
+                MAPMessageType mt = moForwardShortMessageResponseIndication.getMessageType();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("onMoForwardShortMessageResponse for invokeId=%d" + moForwardShortMessageResponseIndication
+                            .getInvokeId() + ", sm_rp_ui= " + sm_rp_ui + ", smsTpduType=" + smsTpduType +
+                            ", message type=" + mt);
+                }
+
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+        }
+    }
+
+    @Override
     public void onForwardShortMessageRequest(ForwardShortMessageRequest forwardShortMessageRequestIndication) {
 
     }
@@ -804,11 +869,6 @@ public class Client extends TestHarnessSmsMo {
 
     @Override
     public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwardShortMessageRequestIndication) {
-
-    }
-
-    @Override
-    public void onMoForwardShortMessageResponse(MoForwardShortMessageResponse moForwardShortMessageResponseIndication) {
 
     }
 

@@ -21,6 +21,7 @@ import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPMessage;
+import org.restcomm.protocols.ss7.map.api.MAPMessageType;
 import org.restcomm.protocols.ss7.map.api.MAPProvider;
 import org.restcomm.protocols.ss7.map.api.dialog.MAPAbortProviderReason;
 import org.restcomm.protocols.ss7.map.api.dialog.MAPAbortSource;
@@ -30,9 +31,13 @@ import org.restcomm.protocols.ss7.map.api.dialog.MAPUserAbortChoice;
 import org.restcomm.protocols.ss7.map.api.dialog.ServingCheckData;
 import org.restcomm.protocols.ss7.map.api.errors.MAPErrorMessage;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
+import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ForwardShortMessageResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.InformServiceCentreRequest;
@@ -47,8 +52,15 @@ import org.restcomm.protocols.ss7.map.api.service.sms.ReadyForSMRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ReadyForSMResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.ReportSMDeliveryStatusRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.ReportSMDeliveryStatusResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.SMDeliveryOutcome;
+import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_DA;
+import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_OA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.SendRoutingInfoForSMResponse;
+import org.restcomm.protocols.ss7.map.api.service.sms.SipUri;
+import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
+import org.restcomm.protocols.ss7.map.api.smstpdu.SmsTpdu;
+import org.restcomm.protocols.ss7.map.api.smstpdu.SmsTpduType;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
 import org.restcomm.protocols.ss7.sccp.Router;
@@ -72,8 +84,10 @@ import org.restcomm.protocols.ss7.tcap.asn.ReturnResultLastImpl;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
+import java.util.Random;
+
 /**
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class Server extends TestHarnessSmsMo {
 
@@ -419,10 +433,8 @@ public class Server extends TestHarnessSmsMo {
 
     public static void main(String[] args) {
         IpChannelType ipChannelType = IpChannelType.SCTP;
-        if (args.length >= 1 && args[0].toLowerCase().equals("tcp")) {
+        if (args.length >= 1 && args[0].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
-        } else {
-            ipChannelType = IpChannelType.SCTP;
         }
         System.out.println("IpChannelType="+ipChannelType);
 
@@ -485,14 +497,13 @@ public class Server extends TestHarnessSmsMo {
         try {
             server.initializeStack(ipChannelType);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
     @Override
     public void onMAPMessage(MAPMessage mapMessage) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -541,6 +552,84 @@ public class Server extends TestHarnessSmsMo {
     }
 
     @Override
+    public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwardShortMessageRequestIndication) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onMoForwardShortMessageRequest for DialogId=%d", moForwardShortMessageRequestIndication
+                    .getMAPDialog().getLocalDialogId()));
+            try {
+                SmsSignalInfo sm_rp_ui = moForwardShortMessageRequestIndication.getSM_RP_UI();
+                SmsTpduType smsTpduType = null;
+                if (sm_rp_ui != null) {
+                    SmsTpdu smsTpdu = sm_rp_ui.decodeTpdu(true);
+                    smsTpduType = smsTpdu.getSmsTpduType();
+                }
+                MAPMessageType mt = moForwardShortMessageRequestIndication.getMessageType();
+
+                SM_RP_OA sm_rp_oa = moForwardShortMessageRequestIndication.getSM_RP_OA();
+                ISDNAddressString msisdn = null;
+                AddressString scOA = null;
+                if (sm_rp_oa != null) {
+                    msisdn = sm_rp_oa.getMsisdn();
+                    scOA = sm_rp_oa.getServiceCentreAddressOA();
+                }
+                SM_RP_DA sm_rp_da = moForwardShortMessageRequestIndication.getSM_RP_DA();
+                AddressString scDA = null;
+                IMSI imsiRpDa = null;
+                LMSI lmsi = null;
+                if (sm_rp_da != null) {
+                    scDA = sm_rp_da.getServiceCentreAddressDA();
+                    imsiRpDa = sm_rp_da.getIMSI();
+                    lmsi = sm_rp_da.getLMSI();
+                }
+                IMSI imsi = moForwardShortMessageRequestIndication.getIMSI();
+                CorrelationID correlationID = moForwardShortMessageRequestIndication.getCorrelationID();
+                IMSI hlrId = null;
+                SipUri sipUriA = null;
+                SipUri sipUriB = null;
+                if (correlationID != null) {
+                    hlrId = correlationID.getHlrId();
+                    sipUriA = correlationID.getSipUriA();
+                    sipUriB = correlationID.getSipUriB();
+                }
+                SMDeliveryOutcome smDeliveryOutcome = moForwardShortMessageRequestIndication.getSmDeliveryOutcome();
+                Integer smDeliveryOutcomeCode = null;
+                if (smDeliveryOutcome != null) {
+                    smDeliveryOutcomeCode = smDeliveryOutcome.getCode();
+                }
+
+                logger.debug("onMoForwardShortMessageResponse for invokeId=%d" + moForwardShortMessageRequestIndication
+                        .getInvokeId() + ", sm_rp_ui= " + sm_rp_ui + ", smsTpduType=" + smsTpduType +
+                        ", message type=" + mt + ", SM_RP_OA: msisdn=" + msisdn + ", SC OA=" + scOA + ", SM_RP_DA: scDA=" + scDA +
+                        ", imsi=" + imsiRpDa + ", lmsi=" + lmsi + ", IMSI: imsi=" + imsi + ", CorrelationID: hlrId=" + hlrId +
+                        ", sipUriA=" + sipUriA + ", sipUriB=" + sipUriB + ", SMDeliveryOutcome code=" + smDeliveryOutcomeCode);
+            } catch (MAPException e) {
+                logger.error("Error while decoding MoForwardShortMessageRequest ", e);
+            }
+        }
+
+        try {
+            long invokeId = moForwardShortMessageRequestIndication.getInvokeId();
+            MAPDialogSms mapDialogSms = moForwardShortMessageRequestIndication.getMAPDialog();
+
+            SmsSignalInfo sm_rp_ui = moForwardShortMessageRequestIndication.getSM_RP_UI();
+
+            Random rand = new Random();
+            if (rand.nextInt(2) + 1 == 1) {
+                ReturnResultLast returnResultLast = new ReturnResultLastImpl();
+                returnResultLast.setInvokeId(invokeId);
+                mapDialogSms.sendReturnResultLastComponent(returnResultLast);
+                mapDialogSms.close(false);
+            } else {
+                mapDialogSms.addMoForwardShortMessageResponse(invokeId, sm_rp_ui, null);
+                mapDialogSms.close(false);
+            }
+
+        } catch (MAPException e) {
+            logger.error("onMoForwardShortMessageRequest, error while processing and sending MoForwardShortMessageResponse ", e);
+        }
+    }
+
+    @Override
     public void onForwardShortMessageRequest(ForwardShortMessageRequest forwardShortMessageRequestIndication) {
 
     }
@@ -548,25 +637,6 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onForwardShortMessageResponse(ForwardShortMessageResponse forwardShortMessageResponseIndication) {
 
-    }
-
-    @Override
-    public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwardShortMessageRequestIndication) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onMoForwardShortMessageRequest for DialogId=%d", moForwardShortMessageRequestIndication
-                .getMAPDialog().getLocalDialogId()));
-        }
-        try {
-            long invokeId = moForwardShortMessageRequestIndication.getInvokeId();
-            MAPDialogSms mapDialogSms = moForwardShortMessageRequestIndication.getMAPDialog();
-            ReturnResultLast returnResultLast = new ReturnResultLastImpl();
-            returnResultLast.setInvokeId(invokeId);
-            mapDialogSms.sendReturnResultLastComponent(returnResultLast);
-            mapDialogSms.close(false);
-
-        } catch (MAPException e) {
-            logger.error("Error while sending MoForwardShortMessageRequest ", e);
-        }
     }
 
     @Override

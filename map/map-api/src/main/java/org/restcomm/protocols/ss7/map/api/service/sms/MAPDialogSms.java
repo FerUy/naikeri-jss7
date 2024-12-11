@@ -40,19 +40,23 @@ public interface MAPDialogSms extends MAPDialog {
     /**
      * Sending MAP-MO-FORWARD-SHORT-MESSAGE request
      *
-     * @param sm_RP_DA mandatory
-     * @param sm_RP_OA mandatory
-     * @param sm_RP_UI mandatory
-     * @param extensionContainer optional
-     * @param imsi optional
+     * @param sm_RP_DA (M) Contains the Service Centre address received from the mobile station
+     * @param sm_RP_OA (M) The MSISDN received from the VLR or from the SGSN is inserted in this parameter in the MO SM transfer
+     * @param sm_RP_UI (M) The short message transfer protocol data unit received from the Service Centre is inserted in this parameter
+     * @param extensionContainer (O)
+     * @param imsi (C) The IMSI of the originating subscriber shall be inserted in this parameter in the MO SM transfer
+     * @param correlationID (C) Composed of an HLR-Id identifying the destination user's HLR,
+     *                      a SIP-URI-B identifying the MSISDN-less destination user, and a SIP-URI-A identifying the originating user
+     * @param smDeliveryOutcome (C) Indicates the status of the mobile terminated SM delivery.
+     *                          Shall be present if Correlation ID is present and shall take one of the unsuccessful outcome values
+     *
      * @return invokeId
      */
-    Long addMoForwardShortMessageRequest(SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA, SmsSignalInfo sm_RP_UI,
-            MAPExtensionContainer extensionContainer, IMSI imsi, CorrelationID correlationID, SMDeliveryOutcome smDeliveryOutcome) throws MAPException;
+    Long addMoForwardShortMessageRequest(SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA, SmsSignalInfo sm_RP_UI, MAPExtensionContainer extensionContainer,
+            IMSI imsi, CorrelationID correlationID, SMDeliveryOutcome smDeliveryOutcome) throws MAPException;
 
-    Long addMoForwardShortMessageRequest(int customInvokeTimeout, SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA,
-            SmsSignalInfo sm_RP_UI, MAPExtensionContainer extensionContainer, IMSI imsi, CorrelationID correlationID,
-            SMDeliveryOutcome smDeliveryOutcome) throws MAPException;
+    Long addMoForwardShortMessageRequest(int customInvokeTimeout, SM_RP_DA sm_RP_DA, SM_RP_OA sm_RP_OA, SmsSignalInfo sm_RP_UI,
+            MAPExtensionContainer extensionContainer, IMSI imsi, CorrelationID correlationID, SMDeliveryOutcome smDeliveryOutcome) throws MAPException;
 
     /**
      * Sending MAP-MO-FORWARD-SHORT-MESSAGE response
