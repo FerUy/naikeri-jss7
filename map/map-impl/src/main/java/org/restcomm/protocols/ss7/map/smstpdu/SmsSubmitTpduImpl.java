@@ -281,16 +281,16 @@ public class SmsSubmitTpduImpl extends SmsTpduImpl implements SmsSubmitTpdu {
         sb.append(this.messageReference);
         if (this.destinationAddress != null) {
             sb.append(", destinationAddress [");
-            sb.append(this.destinationAddress.toString());
+            sb.append(this.destinationAddress);
             sb.append("]");
         }
         if (this.protocolIdentifier != null) {
             sb.append(", ");
-            sb.append(this.protocolIdentifier.toString());
+            sb.append(this.protocolIdentifier);
         }
         if (this.validityPeriod != null) {
             sb.append(", ");
-            sb.append(this.validityPeriod.toString());
+            sb.append(this.validityPeriod);
         }
         if (this.userData != null) {
             sb.append("\nMSG [");

@@ -351,7 +351,7 @@ public class UserDataImpl implements UserData {
             sb.append("]");
             if (this.decodedUserDataHeader != null) {
                 sb.append("\n");
-                sb.append(this.decodedUserDataHeader.toString());
+                sb.append(this.decodedUserDataHeader);
             }
         }
         sb.append("]");
