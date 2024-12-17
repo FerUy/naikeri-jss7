@@ -353,16 +353,16 @@ public class Client extends TestHarnessMobilityManagement {
     }
 
     private void initTCAP() throws Exception {
-        this.tcapStack = new TCAPStackImpl("Test", this.sccpStack.getSccpProvider(), VLR_SSN);
-        this.tcapStack.start();
-        this.tcapStack.setDialogIdleTimeout(60000);
-        this.tcapStack.setInvokeTimeout(30000);
-        this.tcapStack.setMaxDialogs(MAX_DIALOGS);
+        tcapStack = new TCAPStackImpl("Test", this.sccpStack.getSccpProvider(), VLR_SSN);
+        tcapStack.start();
+        tcapStack.setDialogIdleTimeout(60000);
+        tcapStack.setInvokeTimeout(30000);
+        tcapStack.setMaxDialogs(MAX_DIALOGS);
     }
 
     private void initMAP() throws Exception {
         // this.mapStack = new MAPStackImpl(this.sccpStack.getSccpProvider(), VLR_SSN);
-        this.mapStack = new MAPStackImpl("TestClient", this.tcapStack.getProvider());
+        this.mapStack = new MAPStackImpl("TestClient", tcapStack.getProvider());
         mapProvider = this.mapStack.getMAPProvider();
         mapProvider.addMAPDialogListener(this);
         mapProvider.getMAPServiceMobility().addMAPServiceListener(this);

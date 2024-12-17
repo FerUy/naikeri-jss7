@@ -278,9 +278,9 @@ public class MtForwardShortMessageRequestImpl extends SmsMessageImpl implements 
                             ((CorrelationIDImpl) this.correlationID).decodeAll(ais);
                         } else if (tag == _TAG_maximumRetransmissionTime) {
                             // maximumRetransmissionTime  [2] Time  OPTIONAL
-                            if (ais.isTagPrimitive())
+                            if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".sMDeliveryOutcome: Parameter is primitive",
+                                        + ".maximumRetransmissionTime: Parameter is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             this.maximumRetransmissionTime = new TimeImpl();
                             ((TimeImpl) this.maximumRetransmissionTime).decodeAll(ais);
