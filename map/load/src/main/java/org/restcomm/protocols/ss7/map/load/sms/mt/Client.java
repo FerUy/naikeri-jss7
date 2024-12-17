@@ -331,8 +331,7 @@ public class Client extends TestHarnessSmsMt {
                 .getInstance(MAPApplicationContextName.shortMsgGatewayContext, MAPApplicationContextVersion.version3),
             clientSccpAddress, originAddressString, serverSccpAddress, destinationAddressString);
 
-        ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number,
-            org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan.ISDN, "59899077937");
+        ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
         boolean sm_RP_PRI = true;
         AddressString serviceCentreAddress = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
         boolean gprsSupportIndicator = false;
