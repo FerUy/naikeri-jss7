@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.load.sms.mo;
 
 import org.apache.log4j.Logger;
@@ -18,6 +17,8 @@ import org.restcomm.protocols.ss7.m3ua.parameter.RoutingContext;
 import org.restcomm.protocols.ss7.m3ua.parameter.TrafficModeType;
 import org.restcomm.protocols.ss7.map.MAPStackImpl;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
+import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
+import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPMessage;
@@ -30,11 +31,13 @@ import org.restcomm.protocols.ss7.map.api.dialog.MAPRefuseReason;
 import org.restcomm.protocols.ss7.map.api.dialog.MAPUserAbortChoice;
 import org.restcomm.protocols.ss7.map.api.dialog.ServingCheckData;
 import org.restcomm.protocols.ss7.map.api.errors.MAPErrorMessage;
+import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.AlertServiceCentreResponse;
 import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
@@ -61,6 +64,8 @@ import org.restcomm.protocols.ss7.map.api.service.sms.SipUri;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
 import org.restcomm.protocols.ss7.map.api.smstpdu.SmsTpdu;
 import org.restcomm.protocols.ss7.map.api.smstpdu.SmsTpduType;
+import org.restcomm.protocols.ss7.map.primitives.AddressStringImpl;
+import org.restcomm.protocols.ss7.map.service.sms.CorrelationIDImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
 import org.restcomm.protocols.ss7.sccp.Router;
@@ -556,77 +561,121 @@ public class Server extends TestHarnessSmsMo {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("onMoForwardShortMessageRequest for DialogId=%d", moForwardShortMessageRequestIndication
                     .getMAPDialog().getLocalDialogId()));
-            try {
-                SmsSignalInfo sm_rp_ui = moForwardShortMessageRequestIndication.getSM_RP_UI();
-                SmsTpduType smsTpduType = null;
-                if (sm_rp_ui != null) {
-                    SmsTpdu smsTpdu = sm_rp_ui.decodeTpdu(true);
-                    smsTpduType = smsTpdu.getSmsTpduType();
-                }
-                MAPMessageType mt = moForwardShortMessageRequestIndication.getMessageType();
+        }
+        try {
+            SmsSignalInfo sm_rp_ui = moForwardShortMessageRequestIndication.getSM_RP_UI();
+            SmsTpduType smsTpduType = null;
+            if (sm_rp_ui != null) {
+                SmsTpdu smsTpdu = sm_rp_ui.decodeTpdu(true);
+                smsTpduType = smsTpdu.getSmsTpduType();
+            }
+            MAPMessageType mt = moForwardShortMessageRequestIndication.getMessageType();
 
-                SM_RP_OA sm_rp_oa = moForwardShortMessageRequestIndication.getSM_RP_OA();
-                ISDNAddressString msisdn = null;
-                AddressString scOA = null;
-                if (sm_rp_oa != null) {
-                    msisdn = sm_rp_oa.getMsisdn();
-                    scOA = sm_rp_oa.getServiceCentreAddressOA();
-                }
-                SM_RP_DA sm_rp_da = moForwardShortMessageRequestIndication.getSM_RP_DA();
-                AddressString scDA = null;
-                IMSI imsiRpDa = null;
-                LMSI lmsi = null;
-                if (sm_rp_da != null) {
-                    scDA = sm_rp_da.getServiceCentreAddressDA();
-                    imsiRpDa = sm_rp_da.getIMSI();
-                    lmsi = sm_rp_da.getLMSI();
-                }
-                IMSI imsi = moForwardShortMessageRequestIndication.getIMSI();
-                CorrelationID correlationID = moForwardShortMessageRequestIndication.getCorrelationID();
-                IMSI hlrId = null;
-                SipUri sipUriA = null;
-                SipUri sipUriB = null;
-                if (correlationID != null) {
-                    hlrId = correlationID.getHlrId();
-                    sipUriA = correlationID.getSipUriA();
-                    sipUriB = correlationID.getSipUriB();
-                }
-                SMDeliveryOutcome smDeliveryOutcome = moForwardShortMessageRequestIndication.getSmDeliveryOutcome();
-                Integer smDeliveryOutcomeCode = null;
+            SM_RP_OA sm_rp_oa = moForwardShortMessageRequestIndication.getSM_RP_OA();
+            ISDNAddressString msisdn = null;
+            AddressString scOA = null;
+            if (sm_rp_oa != null) {
+                msisdn = sm_rp_oa.getMsisdn();
+                scOA = sm_rp_oa.getServiceCentreAddressOA();
+            }
+            SM_RP_DA sm_rp_da = moForwardShortMessageRequestIndication.getSM_RP_DA();
+            AddressString scDA = null;
+            IMSI imsiRpDa = null;
+            LMSI lmsi = null;
+            if (sm_rp_da != null) {
+                scDA = sm_rp_da.getServiceCentreAddressDA();
+                imsiRpDa = sm_rp_da.getIMSI();
+                lmsi = sm_rp_da.getLMSI();
+            }
+            IMSI imsi = moForwardShortMessageRequestIndication.getIMSI();
+            CorrelationID correlationID = moForwardShortMessageRequestIndication.getCorrelationID();
+            IMSI hlrId = null;
+            SipUri sipUriA = null;
+            SipUri sipUriB = null;
+            SMDeliveryOutcome smDeliveryOutcome = moForwardShortMessageRequestIndication.getSmDeliveryOutcome();
+            Integer smDeliveryOutcomeCode = null;
+            if (correlationID != null) {
+                // correlationID is composed of an HLR-Id identifying the destination user's HLR,
+                // a SIP-URI-B identifying the MSISDN-less destination user,
+                // and a SIP-URI-A identifying the originating user.
+                // The Correlation ID indicates by its presence that the request
+                // is sent in the context of MSISDN-less SMS delivery in IMS,
+                // and that a Report-SM-Delivery status needs to be sent to the HLR to add the SC address to the MWD.
+                hlrId = correlationID.getHlrId();
+                sipUriA = correlationID.getSipUriA();
+                sipUriB = correlationID.getSipUriB();
                 if (smDeliveryOutcome != null) {
+                    // smDeliveryOutcome shall be present if Correlation ID is present and shall take one of the unsuccessful outcome values
+                    // (memoryCapacityExceeded(0), absentSubscriber(1))
                     smDeliveryOutcomeCode = smDeliveryOutcome.getCode();
                 }
-
-                logger.debug("onMoForwardShortMessageResponse for invokeId=%d" + moForwardShortMessageRequestIndication
-                        .getInvokeId() + ", sm_rp_ui= " + sm_rp_ui + ", smsTpduType=" + smsTpduType +
-                        ", message type=" + mt + ", SM_RP_OA: msisdn=" + msisdn + ", SC OA=" + scOA + ", SM_RP_DA: scDA=" + scDA +
-                        ", imsi=" + imsiRpDa + ", lmsi=" + lmsi + ", IMSI: imsi=" + imsi + ", CorrelationID: hlrId=" + hlrId +
-                        ", sipUriA=" + sipUriA + ", sipUriB=" + sipUriB + ", SMDeliveryOutcome code=" + smDeliveryOutcomeCode);
-            } catch (MAPException e) {
-                logger.error("Error while decoding MoForwardShortMessageRequest ", e);
+                MAPDialogSms mapDialogSmsForRSMDS = setReportSMDeliveryStatus(correlationID, smDeliveryOutcome, msisdn);
+                mapDialogSmsForRSMDS.send();
             }
-        }
 
-        try {
+            // the following applies only for debug purposes
+            logger.debug("onMoForwardShortMessageRequest for invokeId=%d" + moForwardShortMessageRequestIndication
+                    .getInvokeId() + ", sm_rp_ui= " + sm_rp_ui + ", smsTpduType=" + smsTpduType +
+                    ", message type=" + mt + ", SM_RP_OA: msisdn=" + msisdn + ", SC OA=" + scOA + ", SM_RP_DA: scDA=" + scDA +
+                    ", imsi=" + imsiRpDa + ", lmsi=" + lmsi + ", IMSI: imsi=" + imsi + ", CorrelationID: hlrId=" + hlrId +
+                    ", sipUriA=" + sipUriA + ", sipUriB=" + sipUriB + ", SMDeliveryOutcome code=" + smDeliveryOutcomeCode);
+
             long invokeId = moForwardShortMessageRequestIndication.getInvokeId();
-            MAPDialogSms mapDialogSms = moForwardShortMessageRequestIndication.getMAPDialog();
-
-            SmsSignalInfo sm_rp_ui = moForwardShortMessageRequestIndication.getSM_RP_UI();
+            MAPDialogSms mapDialogSmsMoFsmResp = moForwardShortMessageRequestIndication.getMAPDialog();
 
             Random rand = new Random();
             if (rand.nextInt(2) + 1 == 1) {
                 ReturnResultLast returnResultLast = new ReturnResultLastImpl();
                 returnResultLast.setInvokeId(invokeId);
-                mapDialogSms.sendReturnResultLastComponent(returnResultLast);
-                mapDialogSms.close(false);
+                mapDialogSmsMoFsmResp.sendReturnResultLastComponent(returnResultLast);
+                mapDialogSmsMoFsmResp.close(false);
             } else {
-                mapDialogSms.addMoForwardShortMessageResponse(invokeId, sm_rp_ui, null);
-                mapDialogSms.close(false);
+                mapDialogSmsMoFsmResp.addMoForwardShortMessageResponse(invokeId, sm_rp_ui, null);
+                mapDialogSmsMoFsmResp.close(false);
             }
 
         } catch (MAPException e) {
-            logger.error("onMoForwardShortMessageRequest, error while processing and sending MoForwardShortMessageResponse ", e);
+            logger.error("onMoForwardShortMessageRequest, error while processing and sending MoForwardShortMessageResponse " +
+                    "and/or ReportSMDeliveryStatusRequest (CorrelationID is not null within moForwardShortMessageRequestIndication", e);
         }
+    }
+
+    private MAPDialogSms setReportSMDeliveryStatus(CorrelationID correlationID, SMDeliveryOutcome smDeliveryOutcome, ISDNAddressString msisdn) {
+        MAPDialogSms mapDialogSms = null;
+        try {
+            AddressString originAddressString = this.mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "598990012345");
+            AddressString destinationAddressString = this.mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "598991900032");
+
+            SccpAddress origSccpAddress = createSccpAddressForMoSmsServer(ROUTING_INDICATOR, SERVER_SPC, SSN, SCCP_CLIENT_ADDRESS);
+            SccpAddress destSccpAddress  = createSccpAddressForMoSmsServer(ROUTING_INDICATOR, CLIENT_SPC, SSN, SCCP_SERVER_ADDRESS);
+            mapDialogSms = this.mapProvider.getMAPServiceSms().createNewDialog(MAPApplicationContext
+                            .getInstance(MAPApplicationContextName.shortMsgGatewayContext, MAPApplicationContextVersion.version3),
+                    origSccpAddress, originAddressString, destSccpAddress, destinationAddressString);
+
+            SipUri sipUriB = correlationID.getSipUriB(); // MAP RSMDS correlationID param contains the SIP-URI-B identifying the MSISDN-less destination user.
+            correlationID = new CorrelationIDImpl(null, null, sipUriB); // SIP-URI-A and HLR-ID shall be absent from this parameter.
+            AddressString serviceCentreAddress = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
+            Integer absentSubscriberDiagnosticSM =smDeliveryOutcome.getCode();
+            boolean gprsSupportIndicator = false;
+            boolean deliveryOutcomeIndicator = false;
+            boolean ipSmGwIndicator = true;
+            Integer ipSmGwAbsentSubscriberDiagnosticSM = smDeliveryOutcome.getCode();
+            boolean singleAttemptDelivery = true;
+
+            mapDialogSms.addReportSMDeliveryStatusRequest(msisdn, serviceCentreAddress, smDeliveryOutcome, absentSubscriberDiagnosticSM,
+                    null, gprsSupportIndicator, deliveryOutcomeIndicator, null,
+                    null, ipSmGwIndicator, smDeliveryOutcome, ipSmGwAbsentSubscriberDiagnosticSM, null,
+                    singleAttemptDelivery, correlationID, false, null, null,
+                    false, null, null);
+
+        } catch (MAPException e) {
+            logger.error("MAP Exception while creating MAP dialog for ReportSMDeliveryStatusRequest.", e);
+        } catch (Exception e) {
+            logger.error("Exception while creating MAP dialog for ReportSMDeliveryStatusRequest.", e);
+        }
+        return mapDialogSms;
     }
 
     @Override
@@ -702,5 +751,15 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onNoteSubscriberPresentRequest(NoteSubscriberPresentRequest noteSubscriberPresentRequest) {
 
+    }
+
+    private SccpAddress createSccpAddressForMoSmsServer(RoutingIndicator ri, int dpc, int ssn, String address) {
+        ParameterFactoryImpl fact = new ParameterFactoryImpl();
+        GlobalTitle gt = fact.createGlobalTitle(address, 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
+                BCDEvenEncodingScheme.INSTANCE, NatureOfAddress.INTERNATIONAL);
+        if (ssn < 0) {
+            ssn = SSN;
+        }
+        return fact.createSccpAddress(ri, gt, dpc, ssn);
     }
 }

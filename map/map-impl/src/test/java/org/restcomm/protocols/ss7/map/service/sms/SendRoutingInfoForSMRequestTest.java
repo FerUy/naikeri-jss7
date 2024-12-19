@@ -27,7 +27,6 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Tele
 import org.restcomm.protocols.ss7.map.smstpdu.AddressFieldImpl;
 import org.testng.annotations.Test;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.testng.Assert.assertEquals;
@@ -81,20 +80,15 @@ public class SendRoutingInfoForSMRequestTest {
     }
 
     private byte[] getEncodedDataRel18_2() {
-        return new byte[] { 0x30, 0x66,
-                (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x95, (byte) 0x98, 0x09, 0x77, 0x39,
-                (byte) 0xf7, (byte) 0x81, 0x01, (byte) 0xff, (byte) 0x82, 0x06, (byte) 0x91, (byte) 0x95,
-                (byte) 0x98, 0x09, 0x10, 0x32, (byte) 0x87, 0x00, (byte) 0x88, 0x01,
-                0x00, (byte) 0x8b, 0x00, (byte) 0x8c, 0x08, 0x09, 0x41, 0x50,
-                0x01, 0x65, 0x08, 0x00, (byte) 0xf0, (byte) 0xaf, 0x3d, (byte) 0x80,
-                0x08, 0x09, 0x41, 0x50, 0x01, 0x65, 0x08, 0x00,
-                (byte) 0xf0, (byte) 0x81, 0x17, 0x6d, 0x74, 0x4c, 0x6f, 0x61,
-                0x64, 0x54, 0x65, 0x73, 0x74, 0x40, 0x72, 0x65,
-                0x73, 0x74, 0x63, 0x6f, 0x6d, 0x6d, 0x2e, 0x6f,
-                0x72, 0x67, (byte) 0x82, 0x18, 0x35, 0x39, 0x38, 0x39,
-                0x39, 0x30, 0x37, 0x37, 0x39, 0x33, 0x37, 0x40,
-                0x72, 0x65, 0x73, 0x74, 0x63, 0x6f, 0x6d, 0x6d,
-                0x2e, 0x6f, 0x72, 0x67, (byte) 0x90, 0x00
+        return new byte[] { 0x30, 0x39,
+                (byte) 0x80, 0x09, (byte) 0x91, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, (byte) 0xf0, (byte) 0x81, 0x01, (byte) 0xff, (byte) 0x82, 0x04,
+                (byte) 0xbf, 0x77, 0x77, (byte) 0xf7, (byte) 0x87, 0x00, (byte) 0x88, 0x01,
+                0x00, (byte) 0x8b, 0x00, (byte) 0xaf, 0x1a, (byte) 0x82, 0x18, 0x35,
+                0x39, 0x38, 0x39, 0x39, 0x30, 0x37, 0x37, 0x39,
+                0x33, 0x37, 0x40, 0x72, 0x65, 0x73, 0x74, 0x63,
+                0x6f, 0x6d, 0x6d, 0x2e, 0x6f, 0x72, 0x67, (byte) 0x90,
+                0x00
         };
     }
 
@@ -103,6 +97,30 @@ public class SendRoutingInfoForSMRequestTest {
                 (byte) 0x80, 0x07, (byte) 0x91, (byte) 0x95, (byte) 0x98, 0x09, 0x77, 0x39,
                 (byte) 0xf7, (byte) 0x81, 0x01, (byte) 0xff, (byte) 0x82, 0x06, (byte) 0x91, (byte) 0x95,
                 (byte) 0x98, 0x09, 0x10, 0x32, (byte) 0x8a, 0x01, 0x01
+        };
+    }
+
+    private byte[] getEncodedDataRel18_4() {
+        return new byte[] { 0x30, 0x35,
+                (byte) 0x80, 0x09, (byte) 0x91, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, (byte) 0xf0, (byte) 0x81, 0x01, (byte) 0xff, (byte) 0x82, 0x06,
+                (byte) 0x91, (byte) 0x95, (byte) 0x98, 0x09, 0x10, 0x32, (byte) 0x87, 0x00,
+                (byte) 0x88, 0x01, 0x00, (byte) 0x89, 0x08, 0x0c, (byte) 0x91, (byte) 0x94,
+                0x71, 0x01, 0x64, 0x00, 0x02, (byte) 0x8c, 0x08, 0x09,
+                0x41, 0x50, 0x01, 0x65, 0x08, 0x00, (byte) 0xf0, (byte) 0x8e,
+                0x00, (byte) 0x8d, 0x00, (byte) 0x90, 0x00
+        };
+    }
+
+    private byte[] getEncodedDataRel18_5() {
+        return new byte[] { 0x30, 0x33,
+                (byte) 0x80, 0x09, (byte) 0x91, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, (byte) 0xf0, (byte) 0x81, 0x01, (byte) 0xff, (byte) 0x82, 0x02,
+                0x79, (byte) 0xf5, (byte) 0x87, 0x00, (byte) 0x88, 0x01, 0x00, (byte) 0xaf,
+                0x1a, (byte) 0x82, 0x18, 0x35, 0x39, 0x38, 0x39, 0x39,
+                0x30, 0x37, 0x37, 0x39, 0x33, 0x37, 0x40, 0x72,
+                0x65, 0x73, 0x74, 0x63, 0x6f, 0x6d, 0x6d, 0x2e,
+                0x6f, 0x72, 0x67
         };
     }
 
@@ -314,7 +332,7 @@ public class SendRoutingInfoForSMRequestTest {
         boolean smsfSupportIndicator = ind.getSmsfSupportIndicator();
         assertTrue(smsfSupportIndicator);
 
-        // test 8 (getEncodedDataRel18_2)
+        // test 8 (SRISM with correlationID => dummy MSISDN, ip-sm-gwGuidanceIndicator, smsf-supportIndicator)
         rawData = getEncodedDataRel18_2();
         asn = new AsnInputStream(rawData);
 
@@ -330,43 +348,34 @@ public class SendRoutingInfoForSMRequestTest {
          *         invokeID: 0
          *         opCode: localValue (0)
          *             localValue: sendRoutingInfoForSM (45)
-         *         msisdn: 919598097739f7
+         *         msisdn: 9100000000000000f0
          *             1... .... = Extension: No Extension
          *             .001 .... = Nature of number: International Number (0x1)
          *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
-         *             E.164 number (MSISDN): 59899077937
+         *             E.164 number (MSISDN): 000000000000000
          *         sm-RP-PRI: True
-         *         serviceCentreAddress: 919598091032
+         *         serviceCentreAddress: bf7777f7
          *             1... .... = Extension: No Extension
-         *             .001 .... = Nature of number: International Number (0x1)
-         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
-         *             E.164 number (MSISDN): 5989900123
+         *             .011 .... = Nature of number: Network Specific Number (0x3)
+         *             .... 1111 = Number plan: Reserved for extension (0xf)
+         *             Address digits: 77777
          *         gprsSupportIndicator
          *         sm-RP-MTI: 0
          *         ip-sm-gwGuidanceIndicator
-         *         IMSI: 901405105680000
-         *         [Association IMSI: 901405105680000]
-         *             Mobile Country Code (MCC): International Mobile, shared code (901)
-         *             Mobile Network Code (MNC): Deutsche Telekom AG (40)
          *         correlationID
-         *             IMSI: 901405105680000
-         *             [Association IMSI: 901405105680000]
-         *                 Mobile Country Code (MCC): International Mobile, shared code (901)
-         *                 Mobile Network Code (MNC): Deutsche Telekom AG (40)
-         *             sip-uri-A: 6d744c6f6164546573744072657374636f6d6d2e6f7267
          *             sip-uri-B: 35393839393037373933374072657374636f6d6d2e6f7267
          *         smsf-supportIndicator
          */
         msisdn = ind.getMsisdn();
         assertEquals(msisdn.getAddressNature(), AddressNature.international_number);
         assertEquals(msisdn.getNumberingPlan(), NumberingPlan.ISDN);
-        assertEquals(msisdn.getAddress(), "59899077937");
+        assertEquals(msisdn.getAddress(), "000000000000000");
         sm_RP_PRI = ind.getSm_RP_PRI();
         assertTrue(sm_RP_PRI);
         serviceCentreAddress = ind.getServiceCentreAddress();
-        assertEquals(serviceCentreAddress.getAddressNature(), AddressNature.international_number);
-        assertEquals(serviceCentreAddress.getNumberingPlan(), NumberingPlan.ISDN);
-        assertEquals(serviceCentreAddress.getAddress(), "5989900123");
+        assertEquals(serviceCentreAddress.getAddressNature(), AddressNature.network_specific_number);
+        assertEquals(serviceCentreAddress.getNumberingPlan(), NumberingPlan.reserved);
+        assertEquals(serviceCentreAddress.getAddress(), "77777");
         assertFalse(serviceCentreAddress.isExtension());
         extensionContainer = ind.getExtensionContainer();
         assertNull(extensionContainer);
@@ -381,22 +390,20 @@ public class SendRoutingInfoForSMRequestTest {
         ipSmGwGuidanceIndicator = ind.getIpSmGwGuidanceIndicator();
         assertTrue(ipSmGwGuidanceIndicator);
         imsi = ind.getImsi();
-        assertEquals(imsi.getData(), "901405105680000");
+        assertNull(imsi);
         t4TriggerIndicator = ind.getT4TriggerIndicator();
         assertFalse(t4TriggerIndicator);
         singleAttemptDelivery = ind.getSingleAttemptDelivery();
         assertFalse(singleAttemptDelivery);
         CorrelationID correlationID = ind.getCorrelationID();
-        assertEquals(correlationID.getHlrId().getData(), "901405105680000");
-        SipUri sipUriA = new SipUriImpl("mtLoadTest@restcomm.org".getBytes(StandardCharsets.UTF_8));
-        assertEquals(correlationID.getSipUriA(), sipUriA);
-        String uriB = msisdn.getAddress() + "@restcomm.org";
-        SipUri sipUriB = new SipUriImpl(uriB.getBytes(StandardCharsets.UTF_8));
-        assertEquals(correlationID.getSipUriB(), sipUriB);
+        assertNull(correlationID.getHlrId());
+        assertNull(correlationID.getSipUriA());
+        assertEquals(correlationID.getSipUriB().getData(), new byte[] { 0x35, 0x39, 0x38, 0x39, 0x39, 0x30, 0x37, 0x37, 0x39,
+                0x33, 0x37, 0x40, 0x72, 0x65, 0x73, 0x74, 0x63, 0x6f, 0x6d, 0x6d, 0x2e, 0x6f, 0x72, 0x67 });
         smsfSupportIndicator = ind.getSmsfSupportIndicator();
         assertTrue(smsfSupportIndicator);
 
-        // test 9 (getEncodedDataRel18_3)
+        // test 9 (with sm-deliveryNotIntended)
         rawData = getEncodedDataRel18_3();
         asn = new AsnInputStream(rawData);
 
@@ -458,6 +465,154 @@ public class SendRoutingInfoForSMRequestTest {
         assertNull(correlationID);
         smsfSupportIndicator = ind.getSmsfSupportIndicator();
         assertFalse(smsfSupportIndicator);
+
+        // test 10 (with t4-Trigger-Indicator => dummy MSISDN, SM-RP-SMEA)
+        rawData = getEncodedDataRel18_4();
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        ind = new SendRoutingInfoForSMRequestImpl();
+        ind.decodeAll(asn);
+
+        assertEquals(tag, Tag.SEQUENCE);
+        assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
+        /*
+         * Component: invoke (1)
+         *     invoke
+         *         invokeID: 0
+         *         opCode: localValue (0)
+         *             localValue: sendRoutingInfoForSM (45)
+         *         msisdn: 9100000000000000f0
+         *             1... .... = Extension: No Extension
+         *             .001 .... = Nature of number: International Number (0x1)
+         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *             E.164 number (MSISDN): 000000000000000
+         *         sm-RP-PRI: True
+         *         serviceCentreAddress: 919598091032
+         *             1... .... = Extension: No Extension
+         *             .001 .... = Nature of number: International Number (0x1)
+         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *             E.164 number (MSISDN): 5989900123
+         *         gprsSupportIndicator
+         *         sm-RP-MTI: 0
+         *         SM-RP-SMEA - (491710460020)
+         *             Length: 12 address digits
+         *             1... .... = Extension: No extension
+         *             .001 .... = Type of number: International (1)
+         *             .... 0001 = Numbering plan: ISDN/telephone (E.164/E.163) (1)
+         *             Digits: 491710460020
+         *         IMSI: 901405105680000
+         *         [Association IMSI: 901405105680000]
+         *             Mobile Country Code (MCC): International Mobile, shared code (901)
+         *             Mobile Network Code (MNC): Deutsche Telekom AG (40)
+         *         t4-Trigger-Indicator
+         *         singleAttemptDelivery
+         *         smsf-supportIndicator
+         */
+        msisdn = ind.getMsisdn();
+        assertEquals(msisdn.getAddressNature(), AddressNature.international_number);
+        assertEquals(msisdn.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(msisdn.getAddress(), "000000000000000");
+        sm_RP_PRI = ind.getSm_RP_PRI();
+        assertTrue(sm_RP_PRI);
+        serviceCentreAddress = ind.getServiceCentreAddress();
+        assertEquals(serviceCentreAddress.getAddressNature(), AddressNature.international_number);
+        assertEquals(serviceCentreAddress.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(serviceCentreAddress.getAddress(), "5989900123");
+        assertFalse(serviceCentreAddress.isExtension());
+        extensionContainer = ind.getExtensionContainer();
+        assertNull(extensionContainer);
+        gprsSupportIndicator = ind.getGprsSupportIndicator();
+        assertTrue(gprsSupportIndicator);
+        sm_RP_MTI = ind.getSM_RP_MTI();
+        assertEquals(sm_RP_MTI.getCode(), 0);
+        sm_RP_SMEA = ind.getSM_RP_SMEA();
+        assertEquals(sm_RP_SMEA.getAddressField().getTypeOfNumber(), TypeOfNumber.InternationalNumber);
+        assertEquals(sm_RP_SMEA.getAddressField().getNumberingPlanIdentification(), NumberingPlanIdentification.ISDNTelephoneNumberingPlan);
+        assertEquals(sm_RP_SMEA.getAddressField().getAddressValue(), "491710460020");
+        smDeliveryNotIntended = ind.getSmDeliveryNotIntended();
+        assertNull(smDeliveryNotIntended);
+        ipSmGwGuidanceIndicator = ind.getIpSmGwGuidanceIndicator();
+        assertFalse(ipSmGwGuidanceIndicator);
+        imsi = ind.getImsi();
+        assertEquals(imsi.getData(), "901405105680000");
+        t4TriggerIndicator = ind.getT4TriggerIndicator();
+        assertTrue(t4TriggerIndicator);
+        singleAttemptDelivery = ind.getSingleAttemptDelivery();
+        assertTrue(singleAttemptDelivery);
+        correlationID = ind.getCorrelationID();
+        assertNull(correlationID);
+        smsfSupportIndicator = ind.getSmsfSupportIndicator();
+        assertTrue(smsfSupportIndicator);
+
+        // test 11 (SRISM with correlationID => dummy MSISDN, SC address is extension)
+        rawData = getEncodedDataRel18_5();
+        asn = new AsnInputStream(rawData);
+
+        tag = asn.readTag();
+        ind = new SendRoutingInfoForSMRequestImpl();
+        ind.decodeAll(asn);
+
+        assertEquals(tag, Tag.SEQUENCE);
+        assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
+        /*
+         * Component: invoke (1)
+         *     invoke
+         *         invokeID: 0
+         *         opCode: localValue (0)
+         *             localValue: sendRoutingInfoForSM (45)
+         *         msisdn: 9100000000000000f0
+         *             1... .... = Extension: No Extension
+         *             .001 .... = Nature of number: International Number (0x1)
+         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *             E.164 number (MSISDN): 000000000000000
+         *         sm-RP-PRI: True
+         *         serviceCentreAddress: 79f5
+         *             0... .... = Extension: Extension
+         *             .111 .... = Nature of number: Reserved for extension (0x7)
+         *             .... 1001 = Number plan: Private Numbering (0x9)
+         *             Address digits: 5
+         *         gprsSupportIndicator
+         *         sm-RP-MTI: 0
+         *         correlationID
+         *             sip-uri-B: 35393839393037373933374072657374636f6d6d2e6f7267
+         */
+        msisdn = ind.getMsisdn();
+        assertEquals(msisdn.getAddressNature(), AddressNature.international_number);
+        assertEquals(msisdn.getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(msisdn.getAddress(), "000000000000000");
+        sm_RP_PRI = ind.getSm_RP_PRI();
+        assertTrue(sm_RP_PRI);
+        serviceCentreAddress = ind.getServiceCentreAddress();
+        assertEquals(serviceCentreAddress.getAddressNature(), AddressNature.reserved_for_extension);
+        assertEquals(serviceCentreAddress.getNumberingPlan(), NumberingPlan.private_plan);
+        assertEquals(serviceCentreAddress.getAddress(), "5");
+        assertTrue(serviceCentreAddress.isExtension());
+        extensionContainer = ind.getExtensionContainer();
+        assertNull(extensionContainer);
+        gprsSupportIndicator = ind.getGprsSupportIndicator();
+        assertTrue(gprsSupportIndicator);
+        sm_RP_MTI = ind.getSM_RP_MTI();
+        assertEquals(sm_RP_MTI.getCode(), 0);
+        sm_RP_SMEA = ind.getSM_RP_SMEA();
+        assertNull(sm_RP_SMEA);
+        smDeliveryNotIntended = ind.getSmDeliveryNotIntended();
+        assertNull(smDeliveryNotIntended);
+        ipSmGwGuidanceIndicator = ind.getIpSmGwGuidanceIndicator();
+        assertFalse(ipSmGwGuidanceIndicator);
+        imsi = ind.getImsi();
+        assertNull(imsi);
+        t4TriggerIndicator = ind.getT4TriggerIndicator();
+        assertFalse(t4TriggerIndicator);
+        singleAttemptDelivery = ind.getSingleAttemptDelivery();
+        assertFalse(singleAttemptDelivery);
+        correlationID = ind.getCorrelationID();
+        assertNull(correlationID.getHlrId());
+        assertNull(correlationID.getSipUriA());
+        assertEquals(correlationID.getSipUriB().getData(), new byte[] { 0x35, 0x39, 0x38, 0x39, 0x39, 0x30, 0x37, 0x37, 0x39,
+                0x33, 0x37, 0x40, 0x72, 0x65, 0x73, 0x74, 0x63, 0x6f, 0x6d, 0x6d, 0x2e, 0x6f, 0x72, 0x67 });
+        smsfSupportIndicator = ind.getSmsfSupportIndicator();
+        assertFalse(smsfSupportIndicator);
     }
 
     @Test(groups = { "functional.encode", "service.sms" })
@@ -465,9 +620,8 @@ public class SendRoutingInfoForSMRequestTest {
 
         // test 1 (getEncodedDataSimple)
         //msisdn + sca
-        ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                "13457745551");
-        AddressString sca = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "9821113333");
+        ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "13457745551");
+        AddressString sca = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "9821113333");
         SendRoutingInfoForSMRequestImpl ind = new SendRoutingInfoForSMRequestImpl(msisdn, false, sca, null, false, null, null,
                 null, false, null, false, false, null, null, false);
 
@@ -481,7 +635,7 @@ public class SendRoutingInfoForSMRequestTest {
         // test 2 (getEncodedDataComplex)
         // msisdn + sca + sm_RP_SMEA
         msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "13457745551");
-        sca = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "9821113333");
+        sca = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "9821113333");
         SM_RP_SMEA sm_RP_SMEA = new SM_RP_SMEAImpl(new byte[] { -111, 105, 49, 3, -105, 97 });
         ind = new SendRoutingInfoForSMRequestImpl(msisdn, false, sca, null, true, null, sm_RP_SMEA, null, false, null, false, false, null, null, false);
 
@@ -495,7 +649,7 @@ public class SendRoutingInfoForSMRequestTest {
         // test 3 (getEncodedData0)
         //msisdn + sca + sm_RP_SMEA + extContainer + SM_RP_MTI
         msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "111222333");
-        sca = new AddressStringImpl(AddressNature.network_specific_number, NumberingPlan.national, "4444");
+        sca = new AddressStringImpl(false, AddressNature.network_specific_number, NumberingPlan.national, "4444");
         sm_RP_SMEA = new SM_RP_SMEAImpl(new byte[] { -111, 105, 49, 3, -105, 97 });
         ind = new SendRoutingInfoForSMRequestImpl(msisdn, true, sca, MAPExtensionContainerTest.GetTestExtensionContainer(),
                 true, SM_RP_MTI.SMS_Status_Report, sm_RP_SMEA, null, false, null, false, false, null, null, false);
@@ -510,7 +664,7 @@ public class SendRoutingInfoForSMRequestTest {
         // test 4 (getEncodedData1)
         //msisdn + sca + tc
         msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "11111111");
-        sca = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22222222");
+        sca = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "22222222");
         TeleserviceCodeImpl tc = new TeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
         ind = new SendRoutingInfoForSMRequestImpl(msisdn, false, sca, null, false, null, null, null, false, null, false, false, tc, null, false);
 
@@ -524,7 +678,7 @@ public class SendRoutingInfoForSMRequestTest {
         // test 5 (getEncodedData2)
         //msisdn + sca + sm_RP_PRI + gprsSupportIndicator + ipSmGwGuidanceIndicator + t4TriggerIndicator + this.singleAttemptDelivery
         msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "11111111");
-        sca = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22222222");
+        sca = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "22222222");
         ind = new SendRoutingInfoForSMRequestImpl(msisdn, true, sca, null, true, null, null, null, true, null, true, true, null, null, false);
 
         asnOS = new AsnOutputStream();
@@ -537,7 +691,7 @@ public class SendRoutingInfoForSMRequestTest {
         // test 6 (getEncodedData3)
         //msisdn + sca + smDeliveryNotIntended
         msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "11111111");
-        sca = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "22222222");
+        sca = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "22222222");
         SMDeliveryNotIntended smDeliveryNotIntended = SMDeliveryNotIntended.onlyIMSIRequested;
         ind = new SendRoutingInfoForSMRequestImpl(msisdn, false, sca, null, false, null, null, smDeliveryNotIntended, false, null, false, false, null, null, false);
 
@@ -580,7 +734,7 @@ public class SendRoutingInfoForSMRequestTest {
          */
         msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
         boolean sm_RP_PRI = true;
-        AddressString serviceCentreAddress = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
+        sca = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
         boolean gprsSupportIndicator = true;
         SM_RP_MTI sM_RP_MTI = SM_RP_MTI.getInstance(0);
         AddressField addressField = new AddressFieldImpl(TypeOfNumber.InternationalNumber, NumberingPlanIdentification.ISDNTelephoneNumberingPlan, "491710460020");
@@ -589,7 +743,7 @@ public class SendRoutingInfoForSMRequestTest {
         boolean t4TriggerIndicator = true;
         boolean singleAttemptDelivery = true;
         boolean smsfSupportIndicator = true;
-        ind = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, serviceCentreAddress, null,
+        ind = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, sca, null,
                 gprsSupportIndicator, sM_RP_MTI, sm_RP_SMEA, null, ipSmGwGuidanceIndicator,
                 null, t4TriggerIndicator, singleAttemptDelivery, null, null, smsfSupportIndicator);
 
@@ -600,64 +754,54 @@ public class SendRoutingInfoForSMRequestTest {
         rawData = getEncodedDataRel18_1();
         assertTrue(Arrays.equals(rawData, encodedData));
 
-        // test 8 (getEncodedDataRel18_2)
+        // test 8 (SRISM with correlationID => dummy MSISDN, ip-sm-gwGuidanceIndicator, smsf-supportIndicator)
         /*
          * Component: invoke (1)
          *     invoke
          *         invokeID: 0
          *         opCode: localValue (0)
          *             localValue: sendRoutingInfoForSM (45)
-         *         msisdn: 919598097739f7
+         *         msisdn: 9100000000000000f0
          *             1... .... = Extension: No Extension
          *             .001 .... = Nature of number: International Number (0x1)
          *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
-         *             E.164 number (MSISDN): 59899077937
+         *             E.164 number (MSISDN): 000000000000000
          *         sm-RP-PRI: True
-         *         serviceCentreAddress: 919598091032
+         *         serviceCentreAddress: bf7777f7
          *             1... .... = Extension: No Extension
-         *             .001 .... = Nature of number: International Number (0x1)
-         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
-         *             E.164 number (MSISDN): 5989900123
+         *             .011 .... = Nature of number: Network Specific Number (0x3)
+         *             .... 1111 = Number plan: Reserved for extension (0xf)
+         *             Address digits: 77777
          *         gprsSupportIndicator
          *         sm-RP-MTI: 0
          *         ip-sm-gwGuidanceIndicator
-         *         IMSI: 901405105680000
-         *         [Association IMSI: 901405105680000]
-         *             Mobile Country Code (MCC): International Mobile, shared code (901)
-         *             Mobile Network Code (MNC): Deutsche Telekom AG (40)
          *         correlationID
-         *             IMSI: 901405105680000
-         *             [Association IMSI: 901405105680000]
-         *                 Mobile Country Code (MCC): International Mobile, shared code (901)
-         *                 Mobile Network Code (MNC): Deutsche Telekom AG (40)
-         *             sip-uri-A: 6d744c6f6164546573744072657374636f6d6d2e6f7267
          *             sip-uri-B: 35393839393037373933374072657374636f6d6d2e6f7267
          *         smsf-supportIndicator
          */
-        msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
-        serviceCentreAddress = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
+        msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+        sca = new AddressStringImpl(false, AddressNature.network_specific_number, NumberingPlan.reserved, "77777");
         sM_RP_MTI = SM_RP_MTI.getInstance(0);
         sm_RP_SMEA = null;
         ipSmGwGuidanceIndicator = true;
         t4TriggerIndicator = false;
         singleAttemptDelivery = false;
-        String uriB = msisdn.getAddress() + "@restcomm.org";
-        IMSI imsi = new IMSIImpl("901405105680000");
-        SipUri sipUriA = new SipUriImpl("mtLoadTest@restcomm.org".getBytes(StandardCharsets.UTF_8));
-        SipUri sipUriB = new SipUriImpl(uriB.getBytes(StandardCharsets.UTF_8));
-        CorrelationID correlationID = new CorrelationIDImpl(imsi, sipUriA, sipUriB);
-        ind = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, serviceCentreAddress, null,
+        SipUri sipUriB = new SipUriImpl(new byte[] { 0x35, 0x39, 0x38, 0x39, 0x39, 0x30, 0x37, 0x37, 0x39,
+                0x33, 0x37, 0x40, 0x72, 0x65, 0x73, 0x74, 0x63, 0x6f, 0x6d, 0x6d, 0x2e, 0x6f, 0x72, 0x67 });
+        CorrelationID correlationID = new CorrelationIDImpl(null, null, sipUriB);
+        ind = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, sca, null,
                 gprsSupportIndicator, sM_RP_MTI, sm_RP_SMEA, null, ipSmGwGuidanceIndicator,
-                imsi, t4TriggerIndicator, singleAttemptDelivery, null, correlationID, smsfSupportIndicator);
+                null, t4TriggerIndicator, singleAttemptDelivery, null, correlationID, smsfSupportIndicator);
 
         asnOS = new AsnOutputStream();
         ind.encodeAll(asnOS);
 
         encodedData = asnOS.toByteArray();
         rawData = getEncodedDataRel18_2();
+
         assertTrue(Arrays.equals(rawData, encodedData));
 
-        // test 8 (getEncodedDataRel18_3)
+        // test 9 (with sm-deliveryNotIntended)
         /*
          * Component: invoke (1)
          *     invoke
@@ -678,15 +822,71 @@ public class SendRoutingInfoForSMRequestTest {
          *         sm-deliveryNotIntended: onlyMCC-MNC-requested (1)
          */
         msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
-        serviceCentreAddress = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
+        sca = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
         gprsSupportIndicator = false;
         sM_RP_MTI = null;
         smDeliveryNotIntended = SMDeliveryNotIntended.onlyMCCMNCRequested;
         ipSmGwGuidanceIndicator = false;
-        imsi = null;
         correlationID = null;
         smsfSupportIndicator = false;
-        ind = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, serviceCentreAddress, null,
+        ind = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, sca, null,
+                gprsSupportIndicator, sM_RP_MTI, sm_RP_SMEA, smDeliveryNotIntended, ipSmGwGuidanceIndicator,
+                null, t4TriggerIndicator, singleAttemptDelivery, null, correlationID, smsfSupportIndicator);
+
+        asnOS = new AsnOutputStream();
+        ind.encodeAll(asnOS);
+
+        encodedData = asnOS.toByteArray();
+        rawData = getEncodedDataRel18_3();
+        assertTrue(Arrays.equals(rawData, encodedData));
+
+        // test 10 (with t4-Trigger-Indicator => dummy MSISDN, SM-RP-SMEA)
+        /*
+         * Component: invoke (1)
+         *     invoke
+         *         invokeID: 0
+         *         opCode: localValue (0)
+         *             localValue: sendRoutingInfoForSM (45)
+         *         msisdn: 9100000000000000f0
+         *             1... .... = Extension: No Extension
+         *             .001 .... = Nature of number: International Number (0x1)
+         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *             E.164 number (MSISDN): 000000000000000
+         *         sm-RP-PRI: True
+         *         serviceCentreAddress: 919598091032
+         *             1... .... = Extension: No Extension
+         *             .001 .... = Nature of number: International Number (0x1)
+         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *             E.164 number (MSISDN): 5989900123
+         *         gprsSupportIndicator
+         *         sm-RP-MTI: 0
+         *         SM-RP-SMEA - (491710460020)
+         *             Length: 12 address digits
+         *             1... .... = Extension: No extension
+         *             .001 .... = Type of number: International (1)
+         *             .... 0001 = Numbering plan: ISDN/telephone (E.164/E.163) (1)
+         *             Digits: 491710460020
+         *         IMSI: 901405105680000
+         *         [Association IMSI: 901405105680000]
+         *             Mobile Country Code (MCC): International Mobile, shared code (901)
+         *             Mobile Network Code (MNC): Deutsche Telekom AG (40)
+         *         t4-Trigger-Indicator
+         *         singleAttemptDelivery
+         *         smsf-supportIndicator
+         */
+        msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+        sca = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
+        gprsSupportIndicator = true;
+        sM_RP_MTI = SM_RP_MTI.getInstance(0);
+        addressField = new AddressFieldImpl(TypeOfNumber.InternationalNumber, NumberingPlanIdentification.ISDNTelephoneNumberingPlan, "491710460020");
+        sm_RP_SMEA = new SM_RP_SMEAImpl(addressField);
+        smDeliveryNotIntended = null;
+        IMSI imsi = new IMSIImpl("901405105680000");
+        t4TriggerIndicator = true;
+        singleAttemptDelivery = true;
+        smsfSupportIndicator = true;
+
+        ind = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, sca, null,
                 gprsSupportIndicator, sM_RP_MTI, sm_RP_SMEA, smDeliveryNotIntended, ipSmGwGuidanceIndicator,
                 imsi, t4TriggerIndicator, singleAttemptDelivery, null, correlationID, smsfSupportIndicator);
 
@@ -694,7 +894,53 @@ public class SendRoutingInfoForSMRequestTest {
         ind.encodeAll(asnOS);
 
         encodedData = asnOS.toByteArray();
-        rawData = getEncodedDataRel18_3();
+        rawData = getEncodedDataRel18_4();
+
+        assertTrue(Arrays.equals(rawData, encodedData));
+
+        // test 11 (SRISM with correlationID => dummy MSISDN, SC address is extension)
+        /*
+         * Component: invoke (1)
+         *     invoke
+         *         invokeID: 0
+         *         opCode: localValue (0)
+         *             localValue: sendRoutingInfoForSM (45)
+         *         msisdn: 9100000000000000f0
+         *             1... .... = Extension: No Extension
+         *             .001 .... = Nature of number: International Number (0x1)
+         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *             E.164 number (MSISDN): 000000000000000
+         *         sm-RP-PRI: True
+         *         serviceCentreAddress: 79f5
+         *             0... .... = Extension: Extension
+         *             .111 .... = Nature of number: Reserved for extension (0x7)
+         *             .... 1001 = Number plan: Private Numbering (0x9)
+         *             Address digits: 5
+         *         gprsSupportIndicator
+         *         sm-RP-MTI: 0
+         *         correlationID
+         *             sip-uri-B: 35393839393037373933374072657374636f6d6d2e6f7267
+         */
+        msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+        sca = new AddressStringImpl(true, AddressNature.reserved_for_extension, NumberingPlan.private_plan, "5");
+        sM_RP_MTI = SM_RP_MTI.getInstance(0);
+        sm_RP_SMEA = null;
+        t4TriggerIndicator = false;
+        singleAttemptDelivery = false;
+        sipUriB = new SipUriImpl(new byte[] { 0x35, 0x39, 0x38, 0x39, 0x39, 0x30, 0x37, 0x37, 0x39,
+                0x33, 0x37, 0x40, 0x72, 0x65, 0x73, 0x74, 0x63, 0x6f, 0x6d, 0x6d, 0x2e, 0x6f, 0x72, 0x67 });
+        correlationID = new CorrelationIDImpl(null, null, sipUriB);
+        smsfSupportIndicator = false;
+        ind = new SendRoutingInfoForSMRequestImpl(msisdn, sm_RP_PRI, sca, null,
+                gprsSupportIndicator, sM_RP_MTI, sm_RP_SMEA, null, ipSmGwGuidanceIndicator,
+                null, t4TriggerIndicator, singleAttemptDelivery, null, correlationID, smsfSupportIndicator);
+
+        asnOS = new AsnOutputStream();
+        ind.encodeAll(asnOS);
+
+        encodedData = asnOS.toByteArray();
+        rawData = getEncodedDataRel18_5();
+
         assertTrue(Arrays.equals(rawData, encodedData));
     }
 }

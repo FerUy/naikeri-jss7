@@ -43,6 +43,9 @@ public interface MAPDialogSms extends MAPDialog {
      *
      * @param sm_RP_DA (M) Contains the Service Centre address received from the mobile station.
      * @param sm_RP_OA (M) The MSISDN received from the VLR or the SGSN is inserted in this parameter in the MO SM transfer.
+     *                 The MSISDN received from the VLR or from the SGSN is inserted in this parameter in the mobile originated SM transfer.
+     *                 A Dummy MSISDN value is used for MSISDN-less SMS in IMS.
+     *                 In this case the originating user is identified by SIP-URI-A of the correlationID parameter.
      * @param sm_RP_UI (M) The SM transfer protocol data unit received from the SC is inserted in this parameter
      * @param extensionContainer (C)
      * @param imsi (C) The IMSI of the originating subscriber shall be inserted in this parameter in the MO SM transfer
@@ -145,7 +148,7 @@ public interface MAPDialogSms extends MAPDialog {
      *                             combine delivery of Short Message via MSC and/or via the SGSN.
      *                             The presence of this parameter is mandatory if the SMS-GMSC supports receiving of the two numbers from the HLR.
      * @param sM_RP_MTI (C) Represents the RP-Message Type Indicator of the Short Message.
-     *                  It is used to distinguish a SM sent to the MS in order to acknowledge an MO-SM initiated by the mobile from a normal MT-SM.
+     *                  It is used to distinguish an SM sent to the MS in order to acknowledge an MO-SM initiated by the mobile from a normal MT-SM.
      *                  This parameter is formatted according to the formatting rules of address fields as described in 3GPP TS 23.040.
      *                  This parameter shall be present when the feature «SM filtering by the HPLMN»
      *                  is supported by the SMS-GMSC and when the equivalent parameter
@@ -219,8 +222,6 @@ public interface MAPDialogSms extends MAPDialog {
      * @param serviceCentreAddress (M) Represents the address of a Short Message Service Centre (SMSC).
      * @param sMDeliveryOutcome (M) Indicates the status of the mobile terminated SM delivery
      *                          (three possible values: memoryCapacityExceeded(0), absentSubscriber(1), successfulTransfer(2)).
-     *                          Shall be present if Correlation ID is present and shall take one of the unsuccessful outcome values.
-     *                          This parameter indicates the status of the mobile terminated SM delivery
      * @param absentSubscriberDiagnosticSM (M) used to indicate the reason why the subscriber is absent.
      *                                     For the values for this parameter see 3GPP TS 23.040.
      * @param extensionContainer (C)
@@ -276,7 +277,7 @@ public interface MAPDialogSms extends MAPDialog {
      *
      * @param storedMSISDN (C) (a.k.a MSIsdn-Alert) Shall be present in case of unsuccessful delivery,
      *                    when the MSISDN received in the operation is different from the stored MSIsdn-Alert;
-     *                     the stored MSIsdn-Alert is the value that is returned to the gateway MSC.
+     *                    the stored MSIsdn-Alert is the value that is returned to the gateway MSC.
      * @param extensionContainer (C)
      */
     void addReportSMDeliveryStatusResponse(long invokeId, ISDNAddressString storedMSISDN,

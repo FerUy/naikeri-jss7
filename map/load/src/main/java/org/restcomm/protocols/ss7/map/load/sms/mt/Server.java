@@ -1,6 +1,4 @@
-
 package org.restcomm.protocols.ss7.map.load.sms.mt;
-
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.api.IpChannelType;
@@ -535,7 +533,7 @@ public class Server extends TestHarnessSmsMt {
         }
         System.out.println("ROUTING_CONTEXT="+ TestHarnessSmsMt.ROUTING_CONTEXT);
 
-        if(args.length >= 12){
+        if (args.length >= 12){
             TestHarnessSmsMt.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[11]);
         }
         System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT="+ TestHarnessSmsMt.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
@@ -787,7 +785,7 @@ public class Server extends TestHarnessSmsMt {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                logger.error("Interrupted Exception when closing dialog at onReportSMDeliveryStatusRequest", e);
+                logger.error("Interrupted exception when closing dialog at onReportSMDeliveryStatusRequest", e);
             }
 
             // Start a new dialog and send MAP ASC
@@ -795,7 +793,7 @@ public class Server extends TestHarnessSmsMt {
             mapDialogSmsAlertServiceCentre.send();
 
         } catch (MAPException e) {
-            logger.error("Error while sending SendRoutingInfoForSMRequest ", e);
+            logger.error("Error at onReportSMDeliveryStatusRequest when sending MAP ASC", e);
         }
     }
 
@@ -855,7 +853,6 @@ public class Server extends TestHarnessSmsMt {
         ISDNAddressString trd2Number = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900132");
         byte[] lmsiByte;
         LMSI lmsi = null;
-        MAPExtensionContainer mapExtensionContainer = null;
         boolean gprsNodeIndicator = false;
         AdditionalNumber additionalNumber = null;
         NetworkNodeDiameterAddress networkNodeDiameterAddress = null;

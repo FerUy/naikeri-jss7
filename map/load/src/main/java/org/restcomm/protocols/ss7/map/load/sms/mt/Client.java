@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.load.sms.mt;
 
 import com.google.common.util.concurrent.RateLimiter;
@@ -333,7 +332,7 @@ public class Client extends TestHarnessSmsMt {
 
         ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
         boolean sm_RP_PRI = true;
-        AddressString serviceCentreAddress = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
+        AddressString serviceCentreAddress = new AddressStringImpl(false, AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
         boolean gprsSupportIndicator = false;
         SM_RP_MTI sM_RP_MTI = null;
         TypeOfNumber typeOfNumber = TypeOfNumber.InternationalNumber;
@@ -348,13 +347,12 @@ public class Client extends TestHarnessSmsMt {
         boolean singleAttemptDelivery = false;
         // TeleserviceCode teleserviceCode = null; // teleservice must be absent in MAP version greater than 1
         String uriB = msisdn.getAddress() + "@restcomm.org";
-        SipUri sipUriA;
         SipUri sipUriB;
         CorrelationID correlationID = null;
         boolean smsfSupportIndicator = false;
 
         Random rand = new Random();
-        switch (rand.nextInt(6) + 1) {
+        switch (rand.nextInt(10) + 1) {
             case 1:
                 smDeliveryNotIntended = SMDeliveryNotIntended.getInstance(0);
                 break;
@@ -362,42 +360,62 @@ public class Client extends TestHarnessSmsMt {
                 gprsSupportIndicator = true;
                 sM_RP_MTI = SM_RP_MTI.getInstance(0);
                 ipSmGwGuidanceIndicator = true;
-                imsi = new IMSIImpl(String.valueOf(imsiForParams));
-                sipUriA = new SipUriImpl("mtLoadTest@restcomm.org".getBytes(StandardCharsets.UTF_8));
+                // correlationID contains the SIP-URI-B identifying the (MSISDN-less) destination user.
+                // SIP-URI-A and HLR-ID shall be absent from this parameter.
                 sipUriB = new SipUriImpl(uriB.getBytes(StandardCharsets.UTF_8));
-                correlationID = new CorrelationIDImpl(imsi, sipUriA, sipUriB);
+                correlationID = new CorrelationIDImpl(null, null, sipUriB);
+                // When UE shall be identified by a Correlation ID (SIP-URI-B)
+                // the MSISDN shall take the dummy MSISDN value (see clause 3 of 3GPP TS 23.003)
+                // ... the dummy MSISDN value composed of 15 digits set to 0 (encoded as an international E.164 number)
+                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+                serviceCentreAddress = new AddressStringImpl(false, AddressNature.network_specific_number, NumberingPlan.reserved, "77777");
                 smsfSupportIndicator = true;
                 break;
             case 3:
+                gprsSupportIndicator = true;
                 sM_RP_MTI = SM_RP_MTI.getInstance(0);
-                ipSmGwGuidanceIndicator = true;
+                sM_RP_SMEA = new SM_RP_SMEAImpl(addressField);
                 t4TriggerIndicator = true;
-                singleAttemptDelivery = true;
+                // When SRISM is sent by the SMS-GMSC to the HLR following an T4 Submit Trigger (see 3GPP TS 23.682),
+                // MSISDN may not be available. In this case the UE shall be identified by the IMSI
                 imsi = new IMSIImpl(String.valueOf(imsiForParams));
-                sipUriA = new SipUriImpl("mtLoadTest@restcomm.org".getBytes(StandardCharsets.UTF_8));
-                sipUriB = new SipUriImpl(uriB.getBytes(StandardCharsets.UTF_8));
-                correlationID = new CorrelationIDImpl(imsi, sipUriA, sipUriB);
+                // and the MSISDN shall take the dummy MSISDN value (see clause 3 of 3GPP TS 23.003).
+                // ... the dummy MSISDN value composed of 15 digits set to 0 (encoded as an international E.164 number)
+                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+                singleAttemptDelivery = true;
                 smsfSupportIndicator = true;
                 break;
             case 4:
                 gprsSupportIndicator = true;
                 sM_RP_MTI = SM_RP_MTI.getInstance(0);
-                sM_RP_SMEA = new SM_RP_SMEAImpl(addressField);
-                t4TriggerIndicator = true;
-                singleAttemptDelivery = true;
-                smsfSupportIndicator = true;
+                sipUriB = new SipUriImpl(uriB.getBytes(StandardCharsets.UTF_8));
+                // correlationID contains the SIP-URI-B identifying the (MSISDN-less) destination user.
+                // SIP-URI-A and HLR-ID shall be absent from this parameter.
+                correlationID = new CorrelationIDImpl(null, null, sipUriB);
+                // When UE shall be identified by a Correlation ID (SIP-URI-B)
+                // the MSISDN shall take the dummy MSISDN value (see clause 3 of 3GPP TS 23.003)
+                // ... the dummy MSISDN value composed of 15 digits set to 0 (encoded as an international E.164 number)
+                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+                serviceCentreAddress = new AddressStringImpl(true, AddressNature.reserved_for_extension, NumberingPlan.private_plan, "5");
                 break;
             case 5:
-                gprsSupportIndicator = true;
-                sM_RP_MTI = SM_RP_MTI.getInstance(0);
-                imsi = new IMSIImpl(String.valueOf(imsiForParams));
-                sipUriA = new SipUriImpl("mtLoadTest@restcomm.org".getBytes(StandardCharsets.UTF_8));
-                sipUriB = new SipUriImpl(uriB.getBytes(StandardCharsets.UTF_8));
-                correlationID = new CorrelationIDImpl(imsi, sipUriA, sipUriB);
-                smsfSupportIndicator = true;
+                smDeliveryNotIntended = SMDeliveryNotIntended.getInstance(1);
                 break;
             case 6:
-                smDeliveryNotIntended = SMDeliveryNotIntended.getInstance(1);
+                gprsSupportIndicator = true;
+                sM_RP_MTI = SM_RP_MTI.getInstance(0);
+                smsfSupportIndicator = true;
+                break;
+            case 7:
+                gprsSupportIndicator = true;
+                sM_RP_MTI = SM_RP_MTI.getInstance(1);
+                break;
+            case 8:
+                gprsSupportIndicator = true;
+                sM_RP_MTI = SM_RP_MTI.getInstance(0);
+                break;
+            default:
+                sM_RP_MTI = SM_RP_MTI.getInstance(0);
                 break;
         }
 

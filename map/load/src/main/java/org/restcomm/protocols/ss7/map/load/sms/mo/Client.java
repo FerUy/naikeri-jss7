@@ -1,8 +1,6 @@
-
 package org.restcomm.protocols.ss7.map.load.sms.mo;
 
 import com.google.common.util.concurrent.RateLimiter;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
@@ -74,6 +72,7 @@ import org.restcomm.protocols.ss7.map.api.smstpdu.ValidityPeriod;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
 import org.restcomm.protocols.ss7.map.primitives.AddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
+import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.service.sms.CorrelationIDImpl;
 import org.restcomm.protocols.ss7.map.service.sms.SM_RP_DAImpl;
 import org.restcomm.protocols.ss7.map.service.sms.SM_RP_OAImpl;
@@ -298,16 +297,15 @@ public class Client extends TestHarnessSmsMo {
         }
 
         this.rateLimiterObj.acquire();
-        // System.out.println("initiateSMS");
 
         // First create Dialog
         AddressString origRef = this.mapProvider.getMAPParameterFactory()
-                .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "12345");
+                .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "598991900032");
         AddressString destRef = this.mapProvider.getMAPParameterFactory()
-                .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "67890");
+                .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "598990012345");
 
-        SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, SSN, SCCP_CLIENT_ADDRESS);
-        SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, SSN, SCCP_SERVER_ADDRESS);
+        SccpAddress clientSccpAddress = createSccpAddressForMoSmsClient(ROUTING_INDICATOR, CLIENT_SPC, SSN, SCCP_CLIENT_ADDRESS);
+        SccpAddress serverSccpAddress = createSccpAddressForMoSmsClient(ROUTING_INDICATOR, SERVER_SPC, SSN, SCCP_SERVER_ADDRESS);
         MAPDialogSms mapDialogSms = this.mapProvider.getMAPServiceSms().createNewDialog(MAPApplicationContext
                 .getInstance(MAPApplicationContextName.shortMsgMORelayContext, MAPApplicationContextVersion.version3),
                 clientSccpAddress, origRef, serverSccpAddress, destRef);
@@ -318,7 +316,6 @@ public class Client extends TestHarnessSmsMo {
             .createISDNAddressString(AddressNature.international_number, NumberingPlan.ISDN, "31628838002");
         SM_RP_OAImpl sm_rp_oa = new SM_RP_OAImpl();
         sm_rp_oa.setMsisdn(msisdn);
-
         boolean rejectDuplicates = true;
         boolean replyPathExists = false;
         boolean statusReportRequest = true;
@@ -327,7 +324,6 @@ public class Client extends TestHarnessSmsMo {
             NumberingPlanIdentification.ISDNTelephoneNumberingPlan, "59899077937");
         ProtocolIdentifier protocolIdentifier = new ProtocolIdentifierImpl(0);
         ValidityPeriod validityPeriod = new ValidityPeriodImpl(3);
-        SmsTpduType smsTpduType = SmsTpduType.SMS_SUBMIT;
         DataCodingScheme dataCodingScheme = new DataCodingSchemeImpl(0);
         UserDataHeader userDataHeader = new UserDataHeaderImpl();
         Charset gsm8Charset = Charset.defaultCharset();
@@ -335,33 +331,52 @@ public class Client extends TestHarnessSmsMo {
         SmsTpduImpl smsTpdu = new SmsSubmitTpduImpl(rejectDuplicates, replyPathExists, statusReportRequest, messageReference, destinationAddress,
             protocolIdentifier, validityPeriod, userData);
         SmsSignalInfo sm_rp_ui = new SmsSignalInfoImpl(smsTpdu, gsm8Charset);
-        IMSI imsi = new IMSIImpl("124356871012345");
-        long hlrIdDigits = RandomUtils.nextLong(748020000000000L, 748030000000000L);
-        IMSI hlrId = null;
-        SipUri sipUriA = null;
+        IMSI imsi = null;
+        IMSI hlrId;
+        SipUri sipUriA;
         SipUri sipUriB;
         CorrelationID correlationID = null;
         SMDeliveryOutcome smDeliveryOutcome = null;
         Random rand = new Random();
         switch (rand.nextInt(6) + 1) {
             case 1:
-                hlrId = new IMSIImpl(String.valueOf(hlrIdDigits));
+                // A Dummy MSISDN value is used for MSISDN-less SMS in IMS.
+                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+                sm_rp_oa.setMsisdn(msisdn);
+                // In the  MSISDN-less SMS in IMS case the originating user is identified by SIP-URI-A of the correlationID parameter.
+                hlrId = new IMSIImpl(String.valueOf(901405105680001L));
+                sipUriA = new SipUriImpl("sip:kbza@acme.com".getBytes(StandardCharsets.UTF_8));
                 sipUriB = new SipUriImpl("sip:fer@restcomm.org".getBytes(StandardCharsets.UTF_8));
                 correlationID = new CorrelationIDImpl(hlrId, sipUriA, sipUriB);
                 smDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
                 break;
             case 2:
+                // A Dummy MSISDN value is used for MSISDN-less SMS in IMS.
+                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+                sm_rp_oa.setMsisdn(msisdn);
+                // In the  MSISDN-less SMS in IMS case the originating user is identified by SIP-URI-A of the correlationID parameter.
+                hlrId = new IMSIImpl(String.valueOf(901405105680002L));
                 sipUriA = new SipUriImpl("sip:kbza@acme.com".getBytes(StandardCharsets.UTF_8));
                 sipUriB = new SipUriImpl("sip:fer@restcomm.org".getBytes(StandardCharsets.UTF_8));
                 correlationID = new CorrelationIDImpl(hlrId, sipUriA, sipUriB);
                 smDeliveryOutcome = SMDeliveryOutcome.memoryCapacityExceeded;
                 break;
             case 3:
-                hlrId = new IMSIImpl(String.valueOf(hlrIdDigits));
+                // A Dummy MSISDN value is used for MSISDN-less SMS in IMS.
+                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "000000000000000");
+                sm_rp_oa.setMsisdn(msisdn);
+                // In the  MSISDN-less SMS in IMS case the originating user is identified by SIP-URI-A of the correlationID parameter.
+                hlrId = new IMSIImpl(String.valueOf(901405105680000L));
                 sipUriA = new SipUriImpl("sip:kbza@acme.com".getBytes(StandardCharsets.UTF_8));
                 sipUriB = new SipUriImpl("sip:fer@restcomm.org".getBytes(StandardCharsets.UTF_8));
                 correlationID = new CorrelationIDImpl(hlrId, sipUriA, sipUriB);
                 smDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
+                break;
+            case 4:
+                imsi = new IMSIImpl(String.valueOf(901405105680000L));
+                break;
+            case 5:
+                imsi = new IMSIImpl(String.valueOf(901405105680102L));
                 break;
             default:
                 break;
@@ -377,7 +392,7 @@ public class Client extends TestHarnessSmsMo {
         this.csvWriter.incrementCounter(CREATED_DIALOGS);
     }
 
-    private SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
+    private SccpAddress createSccpAddressForMoSmsClient(RoutingIndicator ri, int dpc, int ssn, String address) {
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         GlobalTitle gt = fact.createGlobalTitle(address, 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
         BCDEvenEncodingScheme.INSTANCE, NatureOfAddress.INTERNATIONAL);
@@ -753,7 +768,7 @@ public class Client extends TestHarnessSmsMo {
                 long current = System.currentTimeMillis();
                 float sec = (float) (current - prev) / 1000f;
                 prev = current;
-                logger.warn("Completed 10000 Dialogs, dialogs per second: " + (float) (10000 / sec));
+                logger.warn("Completed 10000 Dialogs, dialogs per second: " + (10000 / sec));
             }
         } else {
             if (!endReportPrinted) {
@@ -858,6 +873,23 @@ public class Client extends TestHarnessSmsMo {
     }
 
     @Override
+    public void onReportSMDeliveryStatusRequest(ReportSMDeliveryStatusRequest reportSMDeliveryStatusRequestIndication) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onReportSMDeliveryStatusRequest for DialogId=%d", reportSMDeliveryStatusRequestIndication
+                    .getMAPDialog().getLocalDialogId()));
+        }
+        try {
+            long invokeId = reportSMDeliveryStatusRequestIndication.getInvokeId();
+            MAPDialogSms mapDialogSms = reportSMDeliveryStatusRequestIndication.getMAPDialog();
+            ISDNAddressString storedMsisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
+            mapDialogSms.addReportSMDeliveryStatusResponse(invokeId, storedMsisdn, null);
+            mapDialogSms.close(false);
+        } catch (MAPException e) {
+            logger.error("Error onReportSMDeliveryStatusRequest", e);
+        }
+    }
+
+    @Override
     public void onForwardShortMessageRequest(ForwardShortMessageRequest forwardShortMessageRequestIndication) {
 
     }
@@ -889,11 +921,6 @@ public class Client extends TestHarnessSmsMo {
 
     @Override
     public void onSendRoutingInfoForSMResponse(SendRoutingInfoForSMResponse sendRoutingInfoForSMResponseIndication) {
-
-    }
-
-    @Override
-    public void onReportSMDeliveryStatusRequest(ReportSMDeliveryStatusRequest reportSMDeliveryStatusRequestIndication) {
 
     }
 
