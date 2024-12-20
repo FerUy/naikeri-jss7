@@ -306,7 +306,7 @@ public class Server extends TestHarnessSmsMt {
      */
     @Override
     public void onDialogRequest(MAPDialog mapDialog, AddressString destReference, AddressString origReference,
-            MAPExtensionContainer extensionContainer) {
+                                MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format(
                     "onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s MAPExtensionContainer=%s",
@@ -316,7 +316,7 @@ public class Server extends TestHarnessSmsMt {
 
     @Override
     public void onDialogRequestEricsson(MAPDialog mapDialog, AddressString destReference, AddressString origReference,
-            AddressString imsi, AddressString vlr) {
+                                        AddressString imsi, AddressString vlr) {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s ",
                     mapDialog.getLocalDialogId(), destReference, origReference));
@@ -559,7 +559,6 @@ public class Server extends TestHarnessSmsMt {
     @Override
     public void onMAPMessage(MAPMessage mapMessage) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -621,7 +620,7 @@ public class Server extends TestHarnessSmsMt {
     public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwardShortMessageRequestIndication) {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("onMoForwardShortMessageRequest for DialogId=%d", moForwardShortMessageRequestIndication
-                .getMAPDialog().getLocalDialogId()));
+                    .getMAPDialog().getLocalDialogId()));
         }
         try {
             long invokeId = moForwardShortMessageRequestIndication.getInvokeId();
@@ -643,7 +642,7 @@ public class Server extends TestHarnessSmsMt {
     public void onMtForwardShortMessageRequest(MtForwardShortMessageRequest mtForwardShortMessageRequestIndication) {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("onMtForwardShortMessageRequest for DialogId=%d", mtForwardShortMessageRequestIndication
-                .getMAPDialog().getLocalDialogId()));
+                    .getMAPDialog().getLocalDialogId()));
         }
         try {
             long invokeId = mtForwardShortMessageRequestIndication.getInvokeId();
@@ -715,29 +714,39 @@ public class Server extends TestHarnessSmsMt {
     public void onSendRoutingInfoForSMRequest(SendRoutingInfoForSMRequest sendRoutingInfoForSMRequestIndication) {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("onSendRoutingInfoForSMRequest for DialogId=%d", sendRoutingInfoForSMRequestIndication
-                .getMAPDialog().getLocalDialogId()));
+                    .getMAPDialog().getLocalDialogId()));
         }
         try {
             long invokeId = sendRoutingInfoForSMRequestIndication.getInvokeId();
             MAPDialogSms mapDialogSms = sendRoutingInfoForSMRequestIndication.getMAPDialog();
             mapDialogSms.setUserObject(invokeId);
 
+            IMSI imsi;
+            LocationInfoWithLMSI locationInfoWithLMSI;
+            IpSmGwGuidance ipSmGwGuidance = null;
+
             Random rand = new Random();
-            int responseChoice = rand.nextInt(4) + 1;
-            switch (responseChoice) {
+            switch (rand.nextInt(3) + 1) {
                 case 1:
-                case 2:
-                case 3:
-                    IMSI imsi = new IMSIImpl("748031234567890");
-                    LocationInfoWithLMSI locationInfoWithLMSI = setLocationInfoWithLMSI();
-                    int minimumDeliveryTimeValue = 30;
-                    int recommendedDeliveryTimeValue = 60;
-                    IpSmGwGuidance ipSmGwGuidance = new IpSmGwGuidanceImpl(minimumDeliveryTimeValue, recommendedDeliveryTimeValue, null);
+                    imsi = new IMSIImpl("748031234567890");
+                    locationInfoWithLMSI = setLocationInfoWithLMSI(sendRoutingInfoForSMRequestIndication);
                     mapDialogSms.addSendRoutingInfoForSMResponse(invokeId, imsi, locationInfoWithLMSI,
                             null, null, ipSmGwGuidance);
                     mapDialogSms.close(false);
                     break;
-                case 4:
+                case 2:
+                    imsi = new IMSIImpl("748031234567891");
+                    locationInfoWithLMSI = setLocationInfoWithLMSI(sendRoutingInfoForSMRequestIndication);
+                    if (sendRoutingInfoForSMRequestIndication.getIpSmGwGuidanceIndicator()) {
+                        int minimumDeliveryTimeValue = 30;
+                        int recommendedDeliveryTimeValue = 60;
+                        ipSmGwGuidance = new IpSmGwGuidanceImpl(minimumDeliveryTimeValue, recommendedDeliveryTimeValue, null);
+                    }
+                    mapDialogSms.addSendRoutingInfoForSMResponse(invokeId, imsi, locationInfoWithLMSI,
+                            null, null, ipSmGwGuidance);
+                    mapDialogSms.close(false);
+                    break;
+                case 3:
                     ISDNAddressString storedMSISDN = sendRoutingInfoForSMRequestIndication.getMsisdn();
                     boolean scAddressNotIncluded = false;
                     boolean mnrfSet = true;
@@ -772,7 +781,7 @@ public class Server extends TestHarnessSmsMt {
     public void onReportSMDeliveryStatusRequest(ReportSMDeliveryStatusRequest reportSMDeliveryStatusRequestIndication) {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("onReportSMDeliveryStatusRequest for DialogId=%d", reportSMDeliveryStatusRequestIndication
-                .getMAPDialog().getLocalDialogId()));
+                    .getMAPDialog().getLocalDialogId()));
         }
         try {
             MAPDialogSms mapDialogSms = reportSMDeliveryStatusRequestIndication.getMAPDialog();
@@ -798,6 +807,24 @@ public class Server extends TestHarnessSmsMt {
     }
 
     @Override
+    public void onReadyForSMRequest(ReadyForSMRequest readyForSMRequest) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onReadyForSMRequest for DialogId=%d", readyForSMRequest
+                    .getMAPDialog().getLocalDialogId()));
+        }
+        try {
+            MAPDialogSms mapDialogSms = readyForSMRequest.getMAPDialog();
+            mapDialogSms.setUserObject(readyForSMRequest.getInvokeId());
+            mapDialogSms.addReadyForSMResponse(readyForSMRequest.getInvokeId(), null);
+            mapDialogSms.close(false);
+
+        } catch (MAPException e) {
+            logger.error("Error while sending SendRoutingInfoForSMRequest ", e);
+        }
+
+    }
+
+    @Override
     public void onReportSMDeliveryStatusResponse(ReportSMDeliveryStatusResponse reportSMDeliveryStatusResponseIndication) {
 
     }
@@ -818,24 +845,6 @@ public class Server extends TestHarnessSmsMt {
     }
 
     @Override
-    public void onReadyForSMRequest(ReadyForSMRequest readyForSMRequest) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onReadyForSMRequest for DialogId=%d", readyForSMRequest
-                    .getMAPDialog().getLocalDialogId()));
-        }
-        try {
-            MAPDialogSms mapDialogSms = readyForSMRequest.getMAPDialog();
-            mapDialogSms.setUserObject(readyForSMRequest.getInvokeId());
-            mapDialogSms.addReadyForSMResponse(readyForSMRequest.getInvokeId(), null);
-            mapDialogSms.close(false);
-
-        } catch (MAPException e) {
-            logger.error("Error while sending SendRoutingInfoForSMRequest ", e);
-        }
-
-    }
-
-    @Override
     public void onReadyForSMResponse(ReadyForSMResponse readyForSMResponse) {
 
     }
@@ -845,13 +854,12 @@ public class Server extends TestHarnessSmsMt {
 
     }
 
-    private static LocationInfoWithLMSI setLocationInfoWithLMSI() {
+    private static LocationInfoWithLMSI setLocationInfoWithLMSI(SendRoutingInfoForSMRequest sriSMReqInd) {
         ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900032");
         ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900032");
         ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900130");
         ISDNAddressString trdNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900131");
         ISDNAddressString trd2Number = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900132");
-        byte[] lmsiByte;
         LMSI lmsi = null;
         boolean gprsNodeIndicator = false;
         AdditionalNumber additionalNumber = null;
@@ -868,70 +876,54 @@ public class Server extends TestHarnessSmsMt {
         boolean smsfNon3gppAddressIndicator = false;
 
         Random rand = new Random();
-        int paramRamdom = rand.nextInt(5) + 1;
-        switch (paramRamdom) {
+        switch (rand.nextInt(5) + 1) {
             case 1:
-                lmsiByte = new byte[] {114, 2, (byte) 233, (byte) 140};
-                lmsi = new LMSIImpl(lmsiByte);
-                String mmeNameStr = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
-                String mmeRealmStr = "epc.mnc002.mcc748.3gppnetwork.org";
-                byte[] mmeN = mmeNameStr.getBytes();
-                byte[] mmeR = mmeRealmStr.getBytes();
-                DiameterIdentity mmeName = new DiameterIdentityImpl(mmeN);
-                DiameterIdentity mmeRealm = new DiameterIdentityImpl(mmeR);
+                lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 233, (byte) 140});
+                DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+                DiameterIdentity mmeRealm = new DiameterIdentityImpl("epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+                DiameterIdentity addMmeName = new DiameterIdentityImpl("mmec031.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+                DiameterIdentity addMmeRealm = new DiameterIdentityImpl("epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+                DiameterIdentity thirdMmeName = new DiameterIdentityImpl("mmec032.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+                DiameterIdentity thirdMmeRealm = new DiameterIdentityImpl("epc.mnc002.mcc748.3gppnetwork.org".getBytes());
                 networkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl(mmeName, mmeRealm);
-                String addMmeNameStr = "mmec031.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
-                String addMmeRealmStr = "epc.mnc002.mcc748.3gppnetwork.org";
-                byte[] addMmeN = addMmeNameStr.getBytes();
-                byte[] addMmeR = addMmeRealmStr.getBytes();
-                DiameterIdentity addMmeName = new DiameterIdentityImpl(addMmeN);
-                DiameterIdentity addMmeRealm = new DiameterIdentityImpl(addMmeR);
-                thirdNetworkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl(addMmeName, addMmeRealm);
-                String ThirdMmeNameStr = "mmec031.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
-                String ThirdMmeRealmStr = "epc.mnc002.mcc748.3gppnetwork.org";
-                byte[] thirdMmeN = ThirdMmeNameStr.getBytes();
-                byte[] thirdMmeR = ThirdMmeRealmStr.getBytes();
-                DiameterIdentity thirdMmeName = new DiameterIdentityImpl(thirdMmeN);
-                DiameterIdentity thirdMmeRealm = new DiameterIdentityImpl(thirdMmeR);
-                additionalNetworkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl(thirdMmeName, thirdMmeRealm);
-                imsNodeIndicator = true;
+                additionalNetworkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl(addMmeName, addMmeRealm);
+                thirdNetworkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl(thirdMmeName, thirdMmeRealm);
+                if (sriSMReqInd.getIpSmGwGuidanceIndicator())
+                    imsNodeIndicator = true;
                 break;
             case 2:
-                lmsiByte = new byte[] {113, (byte) 255, (byte) 172, (byte) 206};
-                lmsi = new LMSIImpl(lmsiByte);
-                additionalNumber = new AdditionalNumberImpl(mscNumber, null);
-                thirdNumber = new AdditionalNumberImpl(trdNumber, null);
+                lmsi = new LMSIImpl(new byte[] {113, (byte) 255, (byte) 172, (byte) 206});
+                if (sriSMReqInd.getGprsSupportIndicator()) {
+                    gprsNodeIndicator = true;
+                    additionalNumber = new AdditionalNumberImpl(sgsnNumber, null);
+                    thirdNumber = new AdditionalNumberImpl(null, trd2Number);
+                } else {
+                    additionalNumber = new AdditionalNumberImpl(mscNumber, null);
+                    thirdNumber = new AdditionalNumberImpl(trdNumber, null);
+                }
                 break;
             case 3:
-                lmsiByte = new byte[] {114, 2, (byte) 235, 55};
-                lmsi = new LMSIImpl(lmsiByte);
+                lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 235, 55});
                 gprsNodeIndicator = true;
-                additionalNumber = new AdditionalNumberImpl(sgsnNumber, null);
-                thirdNumber = new AdditionalNumberImpl(null, trd2Number);
                 break;
             case 4:
-                lmsiByte = new byte[] {114, 2, (byte) 231, (byte) 213};
-                lmsi = new LMSIImpl(lmsiByte);
-                smsfNon3gppAddressIndicator = true;
+                lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 231, (byte) 213});
+                if (sriSMReqInd.getSmsfSupportIndicator()) {
+                    smsfNon3gppNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900600");
+                    DiameterIdentity smsfNon3gppName = new DiameterIdentityImpl("smsf03.mnc002.mcc748".getBytes(StandardCharsets.UTF_8));
+                    DiameterIdentity smsfNon3gppRealm = new DiameterIdentityImpl("mnc002.mcc748.telco.com".getBytes(StandardCharsets.UTF_8));
+                    smsfNon3gppDiameterAddress = new NetworkNodeDiameterAddressImpl(smsfNon3gppName, smsfNon3gppRealm);
+                    smsfNon3gppAddressIndicator = true;
+                }
                 break;
             case 5:
-                smsf3gppNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900505");
-                String smsfNameStr = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
-                String smsfRealmStr = "epc.mnc002.mcc748.3gppnetwork.org";
-                byte[] smsfN = smsfNameStr.getBytes();
-                byte[] smsfR = smsfRealmStr.getBytes();
-                DiameterIdentity smsfName = new DiameterIdentityImpl(smsfN);
-                DiameterIdentity smsfRealm = new DiameterIdentityImpl(smsfR);
-                smsf3gppDiameterAddress = new NetworkNodeDiameterAddressImpl(smsfName, smsfRealm);
-                smsfNon3gppNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900600");
-                String smsfNameNon3gppStr = "smsf03.mnc002.mcc748";
-                String smsfRealmNon3gppStr = "mnc002.mcc748.telco.com";
-                byte[] smsfNon3gppN = smsfNameNon3gppStr.getBytes();
-                byte[] smsfNon3gppR = smsfRealmNon3gppStr.getBytes();
-                DiameterIdentity smsfNon3gppName = new DiameterIdentityImpl(smsfNon3gppN);
-                DiameterIdentity smsfNon3gppRealm = new DiameterIdentityImpl(smsfNon3gppR);
-                smsfNon3gppDiameterAddress = new NetworkNodeDiameterAddressImpl(smsfNon3gppName, smsfNon3gppRealm);
-                smsf3gppAddressIndicator = true;
+                if (sriSMReqInd.getSmsfSupportIndicator()) {
+                    smsf3gppNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900505");
+                    DiameterIdentity smsfName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    DiameterIdentity smsfRealm = new DiameterIdentityImpl("epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    smsf3gppDiameterAddress = new NetworkNodeDiameterAddressImpl(smsfName, smsfRealm);
+                    smsf3gppAddressIndicator = true;
+                }
                 break;
         }
 

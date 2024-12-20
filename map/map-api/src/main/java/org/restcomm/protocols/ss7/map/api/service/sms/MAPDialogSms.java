@@ -197,6 +197,7 @@ public interface MAPDialogSms extends MAPDialog {
     /**
      * Sending MAP-SEND-ROUTING-INFO-FOR-SM response
      *
+     * @param invokeId (M)
      * @param imsi (M) Contains the International Mobile Subscriber Identity defined in 3GPP TS 23.003.
      *             If enforcement of routing a SM via the HPLMN of the receiving MS is deployed,
      *             this parameter contains an MT Correlation ID instead of an IMSI when the service is used between SMS-GMSC and SMS Router
@@ -204,8 +205,48 @@ public interface MAPDialogSms extends MAPDialog {
      *             If the "SM-Delivery Not Intended" parameter was present in the Indication with a value of "only MCC+MNC requested",
      *             then this parameter may contain MCC+MNC+dummy MSIN.
      *             The presence of this parameter is mandatory in a successful case.
-     * @param locationInfoWithLMSI mandatory
-     * @param extensionContainer optional
+     * @param locationInfoWithLMSI (M) composed of:
+     *                             networkNode-Number                   [1] ISDN-AddressString,
+     *                             lmsi                                     LMSI                       OPTIONAL,
+     *                             extensionContainer                       ExtensionContainer         OPTIONAL,
+     *                             ...,
+     *                             gprsNodeIndicator                    [5] NULL                       OPTIONAL,
+     *                             -- gprsNodeIndicator is set only if the SGSN number is sent as the Network Node Number
+     *                             additional-Number                    [6] Additional-Number          OPTIONAL,
+     *                             networkNodeDiameterAddress           [7] NetworkNodeDiameterAddress OPTIONAL,
+     *                             additionalNetworkNodeDiameterAddress [8] NetworkNodeDiameterAddress OPTIONAL,
+     *                             thirdNumber                          [9] Additional-Number          OPTIONAL,
+     *                             thirdNetworkNodeDiameterAddress     [10] NetworkNodeDiameterAddress OPTIONAL,
+     *                             imsNodeIndicator                    [11] NULL                       OPTIONAL,
+     *                             -- gprsNodeIndicator and imsNodeIndicator shall not both be present.
+     *                             -- additionalNumber and thirdNumber shall not both contain the same type of number.
+     *                             smsf-3gpp-Number                    [12] ISDN-AddressString         OPTIONAL,
+     *                             smsf-3gpp-DiameterAddress           [13] NetworkNodeDiameterAddress OPTIONAL,
+     *                             smsf-non-3gpp-Number                [14] ISDN-AddressString         OPTIONAL,
+     *                             smsf-non-3gpp-DiameterAddress       [15] NetworkNodeDiameterAddress OPTIONAL,
+     *                             smsf-3gpp-address-indicator         [16] NULL                       OPTIONAL,
+     *                             smsf-non-3gpp-address-indicator     [17] NULL                       OPTIONAL
+     *                             --
+     *                             -- If smsf-supportIndicator was not included in the request, in RoutingInfoForSM-Arg,
+     *                             -- then smsf-3gpp Number/DiameterAddress, smsf-non-3gpp Number/DiameterAddress and
+     *                             -- smsf-address-indicator and smsf-non-3gpp-address-indicator shall be absent.
+     *                             --
+     *                             -- If smsf-3gpp-address-indicator is present, it indicates that the networkNode-Number
+     *                             -- (and networkNodeDiameterAddress, if present) contains the address of an SMSF for 3GPP access.
+     *                             --
+     *                             -- If smsf-non-3gpp-address-indicator is present, it indicates that the
+     *                             -- networkNode-Number (and networkNodeDiameterAddress, if present) contains the
+     *                             -- address of an SMSF for non 3GPP access.
+     *                             --
+     *                             -- At most one of gprsNodeIndicator, imsNodeIndicator, smsf-3gpp-address-indicator
+     *                             -- and smsf-non-3gpp-address-indicator shall be present. Absence of all these
+     *                             -- indicators indicate that the networkNode-Number (and networkNodeDiameterAddress,
+     *                             -- if present) contains the address of an MSC/MME.
+     * @param extensionContainer (O)
+     * @param mwdSet (C) (must be absent in MAP version greater than 1)
+     * @param ipSmGwGuidance (U) Contains the recommended and the minimum timer values for supervision of MT-FSM response.
+     *                       Shall be absent if the IP-SM-GW-Guidance Support Indicator in the request is absent.
+     *                       This parameter is only used by IP-SM-GW and SMS-GMSC
      */
     void addSendRoutingInfoForSMResponse(long invokeId, IMSI imsi, LocationInfoWithLMSI locationInfoWithLMSI,
             MAPExtensionContainer extensionContainer, Boolean mwdSet, IpSmGwGuidance ipSmGwGuidance) throws MAPException;
