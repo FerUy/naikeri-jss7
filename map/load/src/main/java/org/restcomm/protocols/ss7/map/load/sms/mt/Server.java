@@ -69,15 +69,10 @@ import org.restcomm.protocols.ss7.map.api.service.sms.SipUri;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsGmscAlertEvent;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
 import org.restcomm.protocols.ss7.map.api.smstpdu.AbsoluteTimeStamp;
-import org.restcomm.protocols.ss7.map.api.smstpdu.AddressField;
-import org.restcomm.protocols.ss7.map.api.smstpdu.CharacterSet;
-import org.restcomm.protocols.ss7.map.api.smstpdu.DataCodingScheme;
-import org.restcomm.protocols.ss7.map.api.smstpdu.NumberingPlanIdentification;
+import org.restcomm.protocols.ss7.map.api.smstpdu.FailureCause;
 import org.restcomm.protocols.ss7.map.api.smstpdu.ProtocolIdentifier;
-import org.restcomm.protocols.ss7.map.api.smstpdu.SmsDeliverTpdu;
-import org.restcomm.protocols.ss7.map.api.smstpdu.TypeOfNumber;
+import org.restcomm.protocols.ss7.map.api.smstpdu.SmsDeliverReportTpdu;
 import org.restcomm.protocols.ss7.map.api.smstpdu.UserData;
-import org.restcomm.protocols.ss7.map.api.smstpdu.UserDataHeader;
 import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageAbsentSubscriberSMImpl;
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
@@ -92,12 +87,10 @@ import org.restcomm.protocols.ss7.map.service.sms.LocationInfoWithLMSIImpl;
 import org.restcomm.protocols.ss7.map.service.sms.MWStatusImpl;
 import org.restcomm.protocols.ss7.map.service.sms.SipUriImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.AbsoluteTimeStampImpl;
-import org.restcomm.protocols.ss7.map.smstpdu.AddressFieldImpl;
-import org.restcomm.protocols.ss7.map.smstpdu.ApplicationPortAddressing16BitAddressImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.DataCodingSchemeImpl;
+import org.restcomm.protocols.ss7.map.smstpdu.FailureCauseImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.ProtocolIdentifierImpl;
-import org.restcomm.protocols.ss7.map.smstpdu.SmsDeliverTpduImpl;
-import org.restcomm.protocols.ss7.map.smstpdu.UserDataHeaderImpl;
+import org.restcomm.protocols.ss7.map.smstpdu.SmsDeliverReportTpduImpl;
 import org.restcomm.protocols.ss7.map.smstpdu.UserDataImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
@@ -122,7 +115,6 @@ import org.restcomm.protocols.ss7.tcap.asn.ReturnResultLastImpl;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -137,8 +129,6 @@ public class Server extends TestHarnessSmsMt {
 
     private static final Logger logger = Logger.getLogger(Server.class);
 
-    // MAP
-    private MAPStackImpl mapStack;
     private MAPProvider mapProvider;
 
     // TCAP
@@ -147,9 +137,6 @@ public class Server extends TestHarnessSmsMt {
     // SCCP
     SccpExtModuleImpl sccpExtModule;
     private SccpStackImpl sccpStack;
-    private SccpResource sccpResource;
-    private Router router;
-    private RouterExt routerExt;
 
     // M3UA
     private M3UAManagementImpl serverM3UAMgmt;
@@ -205,12 +192,10 @@ public class Server extends TestHarnessSmsMt {
         this.serverM3UAMgmt.removeAllResources();
 
         // Step 1 : Create App Server
-
         RoutingContext rc = factory.createRoutingContext(new long[] { 101L });
         TrafficModeType trafficModeType = factory.createTrafficModeType(TrafficModeType.Loadshare);
         NetworkAppearance na = factory.createNetworkAppearance(102L);
-        As as = this.serverM3UAMgmt.createAs("RAS1", Functionality.SGW, ExchangeType.SE, IPSPType.CLIENT, rc, trafficModeType,
-                1, na);
+        As as = this.serverM3UAMgmt.createAs("RAS1", Functionality.SGW, ExchangeType.SE, IPSPType.CLIENT, rc, trafficModeType, 1, na);
 
         // Step 2 : Create ASP
         AspFactory aspFactory = this.serverM3UAMgmt.createAspFactory("RASP1", SERVER_ASSOCIATION_NAME);
@@ -220,6 +205,8 @@ public class Server extends TestHarnessSmsMt {
 
         // Step 4: Add Route. Remote point code is 2
         this.serverM3UAMgmt.addRoute(CLIENT_SPC, -1, -1, "RAS1");
+
+        logger.debug("AS="+as+", ASP factory="+aspFactory+", ASP="+asp);
     }
 
     private void initSCCP() throws Exception {
@@ -232,16 +219,16 @@ public class Server extends TestHarnessSmsMt {
         this.sccpStack.start();
         this.sccpStack.removeAllResources();
 
-        this.router = this.sccpStack.getRouter();
-        this.routerExt = sccpExtModule.getRouterExt();
-        this.sccpResource = this.sccpStack.getSccpResource();
+        Router router = this.sccpStack.getRouter();
+        RouterExt routerExt = sccpExtModule.getRouterExt();
+        SccpResource sccpResource = this.sccpStack.getSccpResource();
 
-        this.sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, CLIENT_SPC, SSN, 0, false);
+        sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
+        sccpResource.addRemoteSsn(0, CLIENT_SPC, SSN, 0, false);
 
-        this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
-        this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
-        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
+        router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
+        router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
+        router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -250,16 +237,16 @@ public class Server extends TestHarnessSmsMt {
         GlobalTitle gt2 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
                 ec, NatureOfAddress.INTERNATIONAL);
         SccpAddress localAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt1, SERVER_SPC, 0);
-        this.routerExt.addRoutingAddress(1, localAddress);
+        routerExt.addRoutingAddress(1, localAddress);
         SccpAddress remoteAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, CLIENT_SPC, 0);
-        this.routerExt.addRoutingAddress(2, remoteAddress);
+        routerExt.addRoutingAddress(2, remoteAddress);
 
         GlobalTitle gt = fact.createGlobalTitle("*", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress pattern = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 0);
-        this.routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
+        routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
                 "K", 1, -1, null, 0, null);
-        this.routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern,
+        routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern,
                 "K", 2, -1, null, 0, null);
     }
 
@@ -272,15 +259,16 @@ public class Server extends TestHarnessSmsMt {
     }
 
     private void initMAP() throws Exception {
-        this.mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
-        this.mapProvider = this.mapStack.getMAPProvider();
+        // MAP
+        MAPStackImpl mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
+        this.mapProvider = mapStack.getMAPProvider();
 
         this.mapProvider.addMAPDialogListener(this);
         this.mapProvider.getMAPServiceSms().addMAPServiceListener(this);
 
         this.mapProvider.getMAPServiceSms().activate();
 
-        this.mapStack.start();
+        mapStack.start();
     }
 
     /*
@@ -546,16 +534,6 @@ public class Server extends TestHarnessSmsMt {
         }
     }
 
-    private SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
-        ParameterFactoryImpl fact = new ParameterFactoryImpl();
-        GlobalTitle gt = fact.createGlobalTitle(address, 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
-            BCDEvenEncodingScheme.INSTANCE, NatureOfAddress.INTERNATIONAL);
-        if (ssn < 0) {
-            ssn = SSN;
-        }
-        return fact.createSccpAddress(ri, gt, dpc, ssn);
-    }
-
     @Override
     public void onMAPMessage(MAPMessage mapMessage) {
         // TODO Auto-generated method stub
@@ -647,45 +625,20 @@ public class Server extends TestHarnessSmsMt {
         try {
             long invokeId = mtForwardShortMessageRequestIndication.getInvokeId();
             MAPDialogSms mapDialogSms = mtForwardShortMessageRequestIndication.getMAPDialog();
-            mapDialogSms.setUserObject(invokeId);
 
-            AddressField originatingAddress = new AddressFieldImpl(TypeOfNumber.Alphanumeric, NumberingPlanIdentification.Unknown, "447");
-            AbsoluteTimeStamp serviceCentreTimeStamp = getAbsoluteTimeStamp();
-            int dcsVal = 4; // 0 = GSM7, 4 = GSM8, 8 = UCS2
-            DataCodingScheme dcs = new DataCodingSchemeImpl(dcsVal);
-            UserDataHeader udh = null;
-            if (dcs.getCharacterSet() == CharacterSet.GSM8) {
-                ApplicationPortAddressing16BitAddressImpl apa16 = new ApplicationPortAddressing16BitAddressImpl(16020, 0);
-                udh = new UserDataHeaderImpl();
-                udh.addInformationElement(apa16);
-            }
-            boolean moreMessagesToSend = false;
-            boolean forwardedOrSpawned = false;
-            boolean replyPathExists = false;
-            boolean statusReportIndication = false;
-            Charset gsm8Charset = Charset.defaultCharset();
-            UserData userData = new UserDataImpl("Load test MT-SMS text", dcs, udh, gsm8Charset);
-            ProtocolIdentifier pi = new ProtocolIdentifierImpl(0);
-            SmsDeliverTpdu tpdu;
-            SmsSignalInfo sm_RP_UI;
             Random rand = new Random();
-            int responseChoice = rand.nextInt(4) + 1;
-            switch (responseChoice) {
+            switch (rand.nextInt(4) + 1) {
                 case 1:
-                    statusReportIndication = true;
-                    tpdu = new SmsDeliverTpduImpl(moreMessagesToSend, forwardedOrSpawned, replyPathExists, statusReportIndication, originatingAddress, pi, serviceCentreTimeStamp, userData);
-                    sm_RP_UI = mapProvider.getMAPParameterFactory().createSmsSignalInfo(tpdu, gsm8Charset);
+                    UserData userData = new UserDataImpl("MT-FSM response", new DataCodingSchemeImpl(0), null, null);
+                    ProtocolIdentifier protocolIdentifier = new ProtocolIdentifierImpl(0);
+                    FailureCause failureCause = new FailureCauseImpl(200);
+                    SmsDeliverReportTpdu smsDeliverReportTpdu = new SmsDeliverReportTpduImpl(failureCause, protocolIdentifier, userData);
+                    SmsSignalInfo sm_RP_UI = mapProvider.getMAPParameterFactory().createSmsSignalInfo(smsDeliverReportTpdu, null);
                     mapDialogSms.addMtForwardShortMessageResponse(invokeId, sm_RP_UI, null);
                     mapDialogSms.close(false);
                     break;
                 case 2:
-                    moreMessagesToSend = true;
-                    forwardedOrSpawned = true;
-                    replyPathExists = true;
-                    statusReportIndication = true;
-                    tpdu = new SmsDeliverTpduImpl(moreMessagesToSend, forwardedOrSpawned, replyPathExists, statusReportIndication, originatingAddress, pi, serviceCentreTimeStamp, userData);
-                    sm_RP_UI = mapProvider.getMAPParameterFactory().createSmsSignalInfo(tpdu, gsm8Charset);
-                    mapDialogSms.addMtForwardShortMessageResponse(invokeId, sm_RP_UI, null);
+                    mapDialogSms.addMtForwardShortMessageResponse(invokeId, null, null);
                     mapDialogSms.close(false);
                     break;
                 case 3:
@@ -731,7 +684,7 @@ public class Server extends TestHarnessSmsMt {
                     imsi = new IMSIImpl("748031234567890");
                     locationInfoWithLMSI = setLocationInfoWithLMSI(sendRoutingInfoForSMRequestIndication);
                     mapDialogSms.addSendRoutingInfoForSMResponse(invokeId, imsi, locationInfoWithLMSI,
-                            null, null, ipSmGwGuidance);
+                            null, null, null);
                     mapDialogSms.close(false);
                     break;
                 case 2:

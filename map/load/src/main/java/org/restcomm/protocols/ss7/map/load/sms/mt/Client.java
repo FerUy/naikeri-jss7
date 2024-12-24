@@ -146,9 +146,6 @@ public class Client extends TestHarnessSmsMt {
     // SCCP
     SccpExtModuleImpl sccpExtModule;
     private SccpStackImpl sccpStack;
-    private Router router;
-    private RouterExt routerExt;
-    private SccpResource sccpResource;
 
     // M3UA
     private M3UAManagementImpl clientM3UAMgmt;
@@ -247,16 +244,16 @@ public class Client extends TestHarnessSmsMt {
         this.sccpStack.start();
         this.sccpStack.removeAllResources();
 
-        this.router = this.sccpStack.getRouter();
-        this.routerExt = sccpExtModule.getRouterExt();
-        this.sccpResource = this.sccpStack.getSccpResource();
+        Router router = this.sccpStack.getRouter();
+        RouterExt routerExt = sccpExtModule.getRouterExt();
+        SccpResource sccpResource = this.sccpStack.getSccpResource();
 
-        this.sccpResource.addRemoteSpc(0, SERVER_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, SERVER_SPC, SSN, 0, false);
+        sccpResource.addRemoteSpc(0, SERVER_SPC, 0, 0);
+        sccpResource.addRemoteSsn(0, SERVER_SPC, SSN, 0, false);
 
-        this.router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
-        this.router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
-        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
+        router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
+        router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
+        router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -265,16 +262,16 @@ public class Client extends TestHarnessSmsMt {
         GlobalTitle gt2 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress localAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt1, CLIENT_SPC, 0);
-        this.routerExt.addRoutingAddress(1, localAddress);
+        routerExt.addRoutingAddress(1, localAddress);
         SccpAddress remoteAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, SERVER_SPC, 0);
-        this.routerExt.addRoutingAddress(2, remoteAddress);
+        routerExt.addRoutingAddress(2, remoteAddress);
 
         GlobalTitle gt = fact.createGlobalTitle("*", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress pattern = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 0);
-        this.routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
+        routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
                 "K", 1, -1, null, 0, null);
-        this.routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern, "K",
+        routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern, "K",
                 2, -1, null, 0, null);
     }
 
@@ -1014,7 +1011,6 @@ public class Client extends TestHarnessSmsMt {
                 udh = new UserDataHeaderImpl();
                 udh.addInformationElement(apa16);
             }
-
             boolean moreMessagesToSend = false;
             boolean forwardedOrSpawned = false;
             boolean replyPathExists = false;

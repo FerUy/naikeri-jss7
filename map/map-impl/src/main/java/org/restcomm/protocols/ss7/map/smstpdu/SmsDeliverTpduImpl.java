@@ -229,16 +229,16 @@ public class SmsDeliverTpduImpl extends SmsTpduImpl implements SmsDeliverTpdu {
             if (started)
                 sb.append(", ");
             sb.append("originatingAddress [");
-            sb.append(this.originatingAddress.toString());
+            sb.append(this.originatingAddress);
             sb.append("]");
         }
         if (this.protocolIdentifier != null) {
             sb.append(", ");
-            sb.append(this.protocolIdentifier.toString());
+            sb.append(this.protocolIdentifier);
         }
         if (this.serviceCentreTimeStamp != null) {
             sb.append(", serviceCentreTimeStamp [");
-            sb.append(this.serviceCentreTimeStamp.toString());
+            sb.append(this.serviceCentreTimeStamp);
             sb.append("]");
         }
         if (this.userData != null) {
