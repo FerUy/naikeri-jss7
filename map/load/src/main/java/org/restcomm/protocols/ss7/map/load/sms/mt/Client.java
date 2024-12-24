@@ -1000,7 +1000,7 @@ public class Client extends TestHarnessSmsMt {
 
             SM_RP_DA sm_RP_DA = mapProvider.getMAPParameterFactory().createSM_RP_DA(imsi);
             AddressString serviceCentreAddressOA = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
-            SM_RP_OA sm_RP_OR = mapProvider.getMAPParameterFactory().createSM_RP_OA_ServiceCentreAddressOA(serviceCentreAddressOA);
+            SM_RP_OA sm_RP_OA = mapProvider.getMAPParameterFactory().createSM_RP_OA_ServiceCentreAddressOA(serviceCentreAddressOA);
             AddressField originatingAddress = new AddressFieldImpl(TypeOfNumber.Alphanumeric, NumberingPlanIdentification.Unknown, "447");
             AbsoluteTimeStamp serviceCentreTimeStamp = getAbsoluteTimeStamp();
             int dcsVal = 4; // 0 = GSM7, 4 = GSM8, 8 = UCS2
@@ -1071,7 +1071,7 @@ public class Client extends TestHarnessSmsMt {
                     break;
             }
 
-            mapDialogSms.addMtForwardShortMessageRequest(sm_RP_DA, sm_RP_OR, sm_RP_UI, moreMessagesToSend, null, smDeliveryTimer,
+            mapDialogSms.addMtForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI, moreMessagesToSend, null, smDeliveryTimer,
                     smDeliveryStartTime, smsOverIPOnlyIndicator, correlationID, maximumRetransmissionTime, smsGmscAddress,
                     smsGmscDiameterAddress);
 
