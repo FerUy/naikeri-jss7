@@ -1679,7 +1679,7 @@ public class Client extends EventTestHarness {
         ssList.add(ssCode);
 
         clientDialogMobility.addDeleteSubscriberDataRequest(imsi, basicServiceList, ssList, false, null, false, false, false, null, null, false, null, false,
-                false, null, false, false, null, false, false);
+                false, null, false, false, null, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.DeleteSubscriberData, null, sequence++));
         clientDialogMobility.send();
 
@@ -1699,7 +1699,7 @@ public class Client extends EventTestHarness {
         ZoneCode egionalSubscriptionIdentifier = this.mapParameterFactory.createZoneCode(10);
 
         clientDialogMobility.addDeleteSubscriberDataRequest(imsi, null, null, true, egionalSubscriptionIdentifier, false, false, false, null, null, false,
-                null, false, false, null, false, false, null, false, false);
+                null, false, false, null, false, false, null, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.DeleteSubscriberData, null, sequence++));
         clientDialogMobility.send();
 

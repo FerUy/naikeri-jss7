@@ -1220,13 +1220,20 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw, boolean roamingRestrictedInSgsnDueToUnsuppportedFeature,
             LSAInformationWithdraw lsaInformationWithdraw, boolean gmlcListWithdraw, boolean istInformationWithdraw, SpecificCSIWithdraw specificCSIWithdraw,
             boolean chargingCharacteristicsWithdraw, boolean stnSrWithdraw, EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw,
-            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted) throws MAPException {
+            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted, boolean subscribedPeriodicTAURAUTimerWithdraw,
+            boolean subscribedPeriodicLAUTimerWithdraw, boolean subscribedVsrvccWithdraw, boolean vplmnCsgSubscriptionDeleted,
+            boolean additionalMSISDNWithdraw, boolean csToPsSRVCCWithdraw, boolean imsiGroupIdListWithdraw, boolean userPlaneIntegrityProtectionWithdraw,
+            boolean dlBufferingSuggestedPacketCountWithdraw, boolean ueUsageTypeWithdraw, boolean resetIdsWithdraw, boolean iabOperationWithdraw)
+            throws MAPException {
 
         return this.addDeleteSubscriberDataRequest(_Timer_Default, imsi, basicServiceList, ssList, roamingRestrictionDueToUnsupportedFeature,
                 regionalSubscriptionIdentifier, vbsGroupIndication, vgcsGroupIndication, camelSubscriptionInfoWithdraw, extensionContainer,
                 gprsSubscriptionDataWithdraw, roamingRestrictedInSgsnDueToUnsuppportedFeature, lsaInformationWithdraw, gmlcListWithdraw,
                 istInformationWithdraw, specificCSIWithdraw, chargingCharacteristicsWithdraw, stnSrWithdraw, epsSubscriptionDataWithdraw,
-                apnOiReplacementWithdraw, csgSubscriptionDeleted);
+                apnOiReplacementWithdraw, csgSubscriptionDeleted, subscribedPeriodicTAURAUTimerWithdraw, subscribedPeriodicLAUTimerWithdraw,
+                subscribedVsrvccWithdraw, vplmnCsgSubscriptionDeleted, additionalMSISDNWithdraw, csToPsSRVCCWithdraw, imsiGroupIdListWithdraw,
+                userPlaneIntegrityProtectionWithdraw, dlBufferingSuggestedPacketCountWithdraw, ueUsageTypeWithdraw, resetIdsWithdraw,
+                iabOperationWithdraw);
     }
 
     @Override
@@ -1236,14 +1243,18 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
             GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw, boolean roamingRestrictedInSgsnDueToUnsuppportedFeature,
             LSAInformationWithdraw lsaInformationWithdraw, boolean gmlcListWithdraw, boolean istInformationWithdraw, SpecificCSIWithdraw specificCSIWithdraw,
             boolean chargingCharacteristicsWithdraw, boolean stnSrWithdraw, EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw,
-            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted) throws MAPException {
+            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted, boolean subscribedPeriodicTAURAUTimerWithdraw,
+            boolean subscribedPeriodicLAUTimerWithdraw, boolean subscribedVsrvccWithdraw, boolean vplmnCsgSubscriptionDeleted,
+            boolean additionalMSISDNWithdraw, boolean csToPsSRVCCWithdraw, boolean imsiGroupIdListWithdraw, boolean userPlaneIntegrityProtectionWithdraw,
+            boolean dlBufferingSuggestedPacketCountWithdraw, boolean ueUsageTypeWithdraw, boolean resetIdsWithdraw, boolean iabOperationWithdraw)
+            throws MAPException {
 
         boolean isSubscriberDataMngtContext = false;
         if ((this.mapApplicationContext.getApplicationContextName() == MAPApplicationContextName.subscriberDataMngtContext)
                 && (this.mapApplicationContext.getApplicationContextVersion() == MAPApplicationContextVersion.version1
                         || this.mapApplicationContext.getApplicationContextVersion() == MAPApplicationContextVersion.version2 || this.mapApplicationContext.getApplicationContextVersion() == MAPApplicationContextVersion.version3))
             isSubscriberDataMngtContext = true;
-        if (isSubscriberDataMngtContext == false)
+        if (!isSubscriberDataMngtContext)
             throw new MAPException("Bad application context name for DeleteSubscriberDataRequest: must be subscriberDataMngtContext_V1, V2 or V3");
 
         Invoke invoke = this.mapProviderImpl.getTCAPProvider().getComponentPrimitiveFactory().createTCInvokeRequest();
@@ -1258,11 +1269,14 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
         operationCode.setLocalOperationCode((long) MAPOperationCode.deleteSubscriberData);
         invoke.setOperationCode(operationCode);
 
-        DeleteSubscriberDataRequestImpl deleteSubscriberDataRequest = new DeleteSubscriberDataRequestImpl(imsi, basicServiceList, ssList, roamingRestrictionDueToUnsupportedFeature,
-                regionalSubscriptionIdentifier, vbsGroupIndication, vgcsGroupIndication, camelSubscriptionInfoWithdraw, extensionContainer,
-                gprsSubscriptionDataWithdraw, roamingRestrictedInSgsnDueToUnsuppportedFeature, lsaInformationWithdraw, gmlcListWithdraw,
-                istInformationWithdraw, specificCSIWithdraw, chargingCharacteristicsWithdraw, stnSrWithdraw, epsSubscriptionDataWithdraw,
-                apnOiReplacementWithdraw, csgSubscriptionDeleted);
+        DeleteSubscriberDataRequestImpl deleteSubscriberDataRequest = new DeleteSubscriberDataRequestImpl(imsi, basicServiceList, ssList,
+                roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionIdentifier, vbsGroupIndication, vgcsGroupIndication,
+                camelSubscriptionInfoWithdraw, extensionContainer, gprsSubscriptionDataWithdraw, roamingRestrictedInSgsnDueToUnsuppportedFeature,
+                lsaInformationWithdraw, gmlcListWithdraw, istInformationWithdraw, specificCSIWithdraw, chargingCharacteristicsWithdraw, stnSrWithdraw,
+                epsSubscriptionDataWithdraw, apnOiReplacementWithdraw, csgSubscriptionDeleted, subscribedPeriodicTAURAUTimerWithdraw,
+                subscribedPeriodicLAUTimerWithdraw, subscribedVsrvccWithdraw, vplmnCsgSubscriptionDeleted, additionalMSISDNWithdraw, csToPsSRVCCWithdraw,
+                imsiGroupIdListWithdraw, userPlaneIntegrityProtectionWithdraw, dlBufferingSuggestedPacketCountWithdraw, ueUsageTypeWithdraw, resetIdsWithdraw,
+                iabOperationWithdraw);
 
         AsnOutputStream aos = new AsnOutputStream();
         deleteSubscriberDataRequest.encodeData(aos);
