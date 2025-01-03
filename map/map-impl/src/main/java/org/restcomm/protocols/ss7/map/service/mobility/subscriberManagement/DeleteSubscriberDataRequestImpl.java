@@ -136,6 +136,18 @@ public class DeleteSubscriberDataRequestImpl extends MobilityMessageImpl impleme
         this.epsSubscriptionDataWithdraw = epsSubscriptionDataWithdraw;
         this.apnOiReplacementWithdraw = apnOiReplacementWithdraw;
         this.csgSubscriptionDeleted = csgSubscriptionDeleted;
+        this.subscribedPeriodicTAURAUTimerWithdraw = subscribedPeriodicTAURAUTimerWithdraw;
+        this.subscribedPeriodicLAUTimerWithdraw = subscribedPeriodicLAUTimerWithdraw;
+        this.subscribedVsrvccWithdraw = subscribedVsrvccWithdraw;
+        this.vplmnCsgSubscriptionDeleted = vplmnCsgSubscriptionDeleted;
+        this.additionalMSISDNWithdraw = additionalMSISDNWithdraw;
+        this.csToPsSRVCCWithdraw = csToPsSRVCCWithdraw;
+        this.imsiGroupIdListWithdraw = imsiGroupIdListWithdraw;
+        this.userPlaneIntegrityProtectionWithdraw = userPlaneIntegrityProtectionWithdraw;
+        this.dlBufferingSuggestedPacketCountWithdraw = dlBufferingSuggestedPacketCountWithdraw;
+        this.ueUsageTypeWithdraw = ueUsageTypeWithdraw;
+        this.resetIdsWithdraw = resetIdsWithdraw;
+        this.iabOperationWithdraw = iabOperationWithdraw;
     }
 
     public MAPMessageType getMessageType() {
