@@ -231,15 +231,14 @@ import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterfaceImpl;
 import org.restcomm.protocols.ss7.tcap.TCAPStackImpl;
 import org.restcomm.protocols.ss7.tcap.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
-import org.restcomm.protocols.ss7.tcap.asn.ReturnResultLastImpl;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
-import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import static org.restcomm.protocols.ss7.map.load.mobility_management.gprs.TestHarnessMobilityManagement.SCCP_SGSN_ADDRESS;
 import static org.restcomm.protocols.ss7.map.load.mobility_management.gprs.TestHarnessMobilityManagement.SGSN_SSN;
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
@@ -248,7 +247,7 @@ import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
  */
 public class Client extends TestHarnessMobilityManagement {
 
-    private static Logger logger = Logger.getLogger(Client.class);
+    private static final Logger logger = Logger.getLogger(Client.class);
 
     // TCAP
     private TCAPStack tcapStack;
@@ -260,9 +259,6 @@ public class Client extends TestHarnessMobilityManagement {
     // SCCP
     SccpExtModuleImpl sccpExtModule;
     private SccpStackImpl sccpStack;
-    private Router router;
-    private RouterExt routerExt;
-    private SccpResource sccpResource;
 
     // M3UA
     private M3UAManagementImpl clientM3UAMgmt;
@@ -343,6 +339,7 @@ public class Client extends TestHarnessMobilityManagement {
 
         // Step3 : Assign ASP to AS
         Asp asp = this.clientM3UAMgmt.assignAspToAs("AS1", "ASP1");
+        logger.debug(asp);
 
         // Step 4: Add Route. Remote point code is 2
         clientM3UAMgmt.addRoute(SERVER_SPC, -1, -1, "AS1");
@@ -361,16 +358,16 @@ public class Client extends TestHarnessMobilityManagement {
         this.sccpStack.start();
         this.sccpStack.removeAllResources();
 
-        this.router = this.sccpStack.getRouter();
-        this.routerExt = sccpExtModule.getRouterExt();
-        this.sccpResource = this.sccpStack.getSccpResource();
+        Router router = this.sccpStack.getRouter();
+        RouterExt routerExt = sccpExtModule.getRouterExt();
+        SccpResource sccpResource = this.sccpStack.getSccpResource();
 
-        this.sccpResource.addRemoteSpc(0, SERVER_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, SERVER_SPC, HLR_SSN, 0, false);
+        sccpResource.addRemoteSpc(0, SERVER_SPC, 0, 0);
+        sccpResource.addRemoteSsn(0, SERVER_SPC, HLR_SSN, 0, false);
 
-        this.router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
-        this.router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
-        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
+        router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
+        router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
+        router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -379,16 +376,16 @@ public class Client extends TestHarnessMobilityManagement {
         GlobalTitle gt2 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress localAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt1, CLIENT_SPC, 0);
-        this.routerExt.addRoutingAddress(1, localAddress);
+        routerExt.addRoutingAddress(1, localAddress);
         SccpAddress remoteAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, SERVER_SPC, 0);
-        this.routerExt.addRoutingAddress(2, remoteAddress);
+        routerExt.addRoutingAddress(2, remoteAddress);
 
         GlobalTitle gt = fact.createGlobalTitle("*", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress pattern = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 0);
-        this.routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
+        routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
                 "K", 1, -1, null, 0, null);
-        this.routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern, "K",
+        routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern, "K",
                 2, -1, null, 0, null);
     }
 
@@ -456,10 +453,8 @@ public class Client extends TestHarnessMobilityManagement {
         int noOfConcurrentCalls = Integer.parseInt(args[1]);
 
         IpChannelType ipChannelType = IpChannelType.SCTP;
-        if (args.length >= 3 && args[2].toLowerCase().equals("tcp")) {
+        if (args.length >= 3 && args[2].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
-        } else {
-            ipChannelType = IpChannelType.SCTP;
         }
 
         System.out.println("IpChannelType=" + ipChannelType);
@@ -560,9 +555,7 @@ public class Client extends TestHarnessMobilityManagement {
 
         System.out.println("SENDING_MESSAGE_THREAD_COUNT=" + TestHarnessMobilityManagement.SENDING_MESSAGE_THREAD_COUNT);
 
-        // logger.info("Number of calls to be completed = " + noOfCalls +
-        // " Number of concurrent calls to be maintained = " +
-        // noOfConcurrentCalls);
+        logger.info("Number of calls to be completed = " + noOfCalls + " Number of concurrent calls to be maintained = " + noOfConcurrentCalls);
 
         NDIALOGS = noOfCalls;
 
@@ -826,7 +819,7 @@ public class Client extends TestHarnessMobilityManagement {
                 long current = System.currentTimeMillis();
                 float sec = (float) (current - prev) / 1000f;
                 prev = current;
-                logger.warn("Completed 10000 Dialogs, dialogs per second: " + (float) (10000 / sec));
+                logger.warn("Completed 10000 Dialogs, dialogs per second: " + (10000 / sec));
             }
         } else {
             if (!endReportPrinted) {
@@ -837,7 +830,7 @@ public class Client extends TestHarnessMobilityManagement {
                 float sec = (float) (current - start) / 1000f;
 
                 logger.warn("Total time in sec = " + sec);
-                logger.warn("Throughput = " + (float) (NDIALOGS / sec));
+                logger.warn("Throughput = " + (NDIALOGS / sec));
             }
         }
     }
@@ -941,8 +934,7 @@ public class Client extends TestHarnessMobilityManagement {
                 imsi = new IMSIImpl("901405105682583");
             }
 
-            ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                    "491710490000");
+            ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
             GSNAddress sgsnAddress = new GSNAddressImpl(new byte[] { 23, 5, 38, 48, 81, 5 });
             boolean solsaSupportIndicator = false;
             Boolean sendSubscriberData = true;
@@ -1059,45 +1051,7 @@ public class Client extends TestHarnessMobilityManagement {
             ArrayList<SSCode> ssList = new ArrayList<>();
             SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.allSS);
             ssList.add(ssCode);
-            boolean allOGCallsBarred= true;
-            boolean internationalOGCallsBarred = true;
-            boolean internationalOGCallsNotToHPLMNCountryBarred= true;
-            boolean premiumRateInformationOGCallsBarred = false;
-            boolean premiumRateEntertainmentOGCallsBarred= true;
-            boolean ssAccessBarred= true;
-            boolean interzonalOGCallsBarred = true;
-            boolean interzonalOGCallsNotToHPLMNCountryBarred= true;
-            boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = true;
-            boolean allECTBarred= true;
-            boolean chargeableECTBarred= true;
-            boolean internationalECTBarred = true;
-            boolean interzonalECTBarred= true;
-            boolean doublyChargeableECTBarred= true;
-            boolean multipleECTBarred = true;
-            boolean allPacketOrientedServicesBarred= true;
-            boolean roamerAccessToHPLMNAPBarred= false;
-            boolean roamerAccessToVPLMNAPBarred = false;
-            boolean roamingOutsidePLMNOGCallsBarred= false;
-            boolean allICCallsBarred= true;
-            boolean roamingOutsidePLMNICCallsBarred = true;
-            boolean roamingOutsidePLMNICountryICCallsBarred= true;
-            boolean roamingOutsidePLMNBarred = false;
-            boolean roamingOutsidePLMNCountryBarred= false;
-            boolean registrationAllCFBarred= true;
-            boolean registrationCFNotToHPLMNBarred = true;
-            boolean registrationInterzonalCFBarred= true;
-            boolean registrationInterzonalCFNotToHPLMNBarred = false;
-            boolean registrationInternationalCFBarred = true;
-            ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred,
-                    internationalOGCallsNotToHPLMNCountryBarred, premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred,
-                    ssAccessBarred, interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred,
-                    interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, allECTBarred, chargeableECTBarred,
-                    internationalECTBarred, interzonalECTBarred, doublyChargeableECTBarred, multipleECTBarred,
-                    allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
-                    roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
-                    roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred,
-                    roamingOutsidePLMNCountryBarred, registrationAllCFBarred, registrationCFNotToHPLMNBarred,
-                    registrationInterzonalCFBarred, registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
+            ODBGeneralData odbGeneralData = getOdbGeneralData();
             RegionalSubscriptionResponse regionalSubscriptionResponse = RegionalSubscriptionResponse.tooManyZoneCodes;
             SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
             MAPExtensionContainer extensionContainer = null;
@@ -1122,6 +1076,48 @@ public class Client extends TestHarnessMobilityManagement {
         } catch (MAPException e) {
             logger.error("Error while processing InsertSubscriberDataRequest ", e);
         }
+    }
+
+    private static ODBGeneralData getOdbGeneralData() {
+        boolean allOGCallsBarred= true;
+        boolean internationalOGCallsBarred = true;
+        boolean internationalOGCallsNotToHPLMNCountryBarred= true;
+        boolean premiumRateInformationOGCallsBarred = false;
+        boolean premiumRateEntertainmentOGCallsBarred= true;
+        boolean ssAccessBarred= true;
+        boolean interzonalOGCallsBarred = true;
+        boolean interzonalOGCallsNotToHPLMNCountryBarred= true;
+        boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = true;
+        boolean allECTBarred= true;
+        boolean chargeableECTBarred= true;
+        boolean internationalECTBarred = true;
+        boolean interzonalECTBarred= true;
+        boolean doublyChargeableECTBarred= true;
+        boolean multipleECTBarred = true;
+        boolean allPacketOrientedServicesBarred= true;
+        boolean roamerAccessToHPLMNAPBarred= false;
+        boolean roamerAccessToVPLMNAPBarred = false;
+        boolean roamingOutsidePLMNOGCallsBarred= false;
+        boolean allICCallsBarred= true;
+        boolean roamingOutsidePLMNICCallsBarred = true;
+        boolean roamingOutsidePLMNICountryICCallsBarred= true;
+        boolean roamingOutsidePLMNBarred = false;
+        boolean roamingOutsidePLMNCountryBarred= false;
+        boolean registrationAllCFBarred= true;
+        boolean registrationCFNotToHPLMNBarred = true;
+        boolean registrationInterzonalCFBarred= true;
+        boolean registrationInterzonalCFNotToHPLMNBarred = false;
+        boolean registrationInternationalCFBarred = true;
+        return new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred,
+                internationalOGCallsNotToHPLMNCountryBarred, premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred,
+                ssAccessBarred, interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred,
+                interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, allECTBarred, chargeableECTBarred,
+                internationalECTBarred, interzonalECTBarred, doublyChargeableECTBarred, multipleECTBarred,
+                allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
+                roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
+                roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred,
+                roamingOutsidePLMNCountryBarred, registrationAllCFBarred, registrationCFNotToHPLMNBarred,
+                registrationInterzonalCFBarred, registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
     }
 
     @Override
@@ -1165,10 +1161,9 @@ public class Client extends TestHarnessMobilityManagement {
         try {
             long invokeId = cancelLocationRequest.getInvokeId();
             MAPDialogMobility cancelLocationRequestDialog = cancelLocationRequest.getMAPDialog();
-            ReturnResultLast returnResultLast = new ReturnResultLastImpl();
-            returnResultLast.setInvokeId(invokeId);
-            cancelLocationRequestDialog.sendReturnResultLastComponent(returnResultLast);
+            cancelLocationRequestDialog.addCancelLocationResponse(invokeId, null);
             cancelLocationRequestDialog.close(false);
+
             if (cancelLocationRequest.getCancellationType() == CancellationType.subscriptionWithdraw) {
                 if (cancelLocationRequest.isReattachRequired()) {
                     sendAuthenticationInfoRequest("901405105682021");
@@ -1275,7 +1270,6 @@ public class Client extends TestHarnessMobilityManagement {
             MAPDialogMobility mapDialogMobility = provideSubscriberInfoRequest.getMAPDialog();
             RequestedInfo requestedInfo = provideSubscriberInfoRequest.getRequestedInfo();
 
-            long invokeTimeout = 30;
             SubscriberInfo subscriberInfo;
             LocationInformationGPRS locationInformationGPRS = null;
             PSSubscriberState psSubscriberState = null;
@@ -1287,7 +1281,7 @@ public class Client extends TestHarnessMobilityManagement {
             boolean saiPresent;
             int mcc, mnc, lac, cellId;
             CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
-            String sgsnAddress = getSGSNSCCPAddress("4917104600010").getGlobalTitle().getDigits();
+            String sgsnAddress = getSGSNSCCPAddress(SCCP_SGSN_ADDRESS).getGlobalTitle().getDigits();
             ISDNAddressString sgsnNumber;
             GeographicalInformation geographicalInformation = null;
             GeodeticInformation geodeticInformation = null;
@@ -1646,7 +1640,7 @@ public class Client extends TestHarnessMobilityManagement {
                     locationInformationGPRS, psSubscriberState, imei, null, gprsMSClass, mnpInfoRes,
                     imsVoiceOverPsSessionsIndication, lastUEActivityTime, lastRATType, epsSubscriberState,
                     locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
-            mapDialogMobility.addProvideSubscriberInfoResponse(invokeTimeout, subscriberInfo, null);
+            mapDialogMobility.addProvideSubscriberInfoResponse(invokeId, subscriberInfo, null);
 
             mapDialogMobility.close(false);
 
@@ -1767,7 +1761,39 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onDeleteSubscriberDataRequest(DeleteSubscriberDataRequest deleteSubscriberDataRequest) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onDeleteSubscriberDataRequest over DialogId=%d", deleteSubscriberDataRequest
+                    .getMAPDialog().getLocalDialogId()));
+        }
+        try {
+            long invokeId = deleteSubscriberDataRequest.getInvokeId();
+            MAPDialogMobility mapDialogMobility = deleteSubscriberDataRequest.getMAPDialog();
 
+            Random rand = new Random();
+            RegionalSubscriptionResponse regionalSubscriptionResponse = null;
+            switch (rand.nextInt(10 + 1)) {
+                case 1:
+                    regionalSubscriptionResponse = RegionalSubscriptionResponse.networkNodeAreaRestricted;
+                    break;
+                case 2:
+                    regionalSubscriptionResponse =  RegionalSubscriptionResponse.tooManyZoneCodes;
+                    break;
+                case 3:
+                    regionalSubscriptionResponse =  RegionalSubscriptionResponse.zoneCodesConflict;
+                    break;
+                case 4:
+                    regionalSubscriptionResponse =  RegionalSubscriptionResponse.regionalSubscNotSupported;
+                    break;
+                default:
+                    break;
+            }
+
+            mapDialogMobility.addDeleteSubscriberDataResponse(invokeId, regionalSubscriptionResponse, null);
+            mapDialogMobility.close(false);
+
+        } catch (MAPException e) {
+            logger.error("Error while processing MAP DSD request and sending MAP DSD response", e);
+        }
     }
 
     @Override
@@ -1816,7 +1842,6 @@ public class Client extends TestHarnessMobilityManagement {
             boolean segmentationProhibited = false;
             boolean immediateResponsePreferred = false;
             ReSynchronisationInfo reSynchronisationInfo = getReSynchronisationInfo();
-            MAPExtensionContainer mapExtensionContainer = null;
             RequestingNodeType requestingNodeType = RequestingNodeType.sgsn;
             byte[] mccMnc = new byte[] {0x47, (byte) 0xf8, 0x10};
             PlmnId requestingPlmnId = new PlmnIdImpl(mccMnc);
@@ -1825,7 +1850,7 @@ public class Client extends TestHarnessMobilityManagement {
             boolean ueUsageTypeRequestIndication = false;
 
             mapDialogMobility.addSendAuthenticationInfoRequest(imsi, numberOfRequestedVectors, segmentationProhibited,
-                    immediateResponsePreferred, reSynchronisationInfo, mapExtensionContainer, requestingNodeType, requestingPlmnId,
+                    immediateResponsePreferred, reSynchronisationInfo, null, requestingNodeType, requestingPlmnId,
                     numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndication);
 
             mapDialogMobility.send();
@@ -1916,7 +1941,7 @@ public class Client extends TestHarnessMobilityManagement {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ie) {
-                logger.error(ie.getMessage());
+                logger.error("Interrupted Exception on "+getClient()+", " +ie.getMessage());
             }
             try {
                 // Create Dialog
@@ -2088,9 +2113,7 @@ public class Client extends TestHarnessMobilityManagement {
                         break;
                 }
 
-                int customInvokeTimeout = 30;
-
-                mapDialogMobility.addPurgeMSRequest(customInvokeTimeout, imsi, null, sgsnNumber, null, null,
+                mapDialogMobility.addPurgeMSRequest(imsi, null, sgsnNumber, null, null,
                         locationInformationGPRS, null);
                 mapDialogMobility.send();
 
@@ -2099,6 +2122,7 @@ public class Client extends TestHarnessMobilityManagement {
             }
         }
     }
+
 
     /*
      * SGSN SCCP Address creation

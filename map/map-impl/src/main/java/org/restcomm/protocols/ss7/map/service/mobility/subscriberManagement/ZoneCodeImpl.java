@@ -36,8 +36,7 @@ public class ZoneCodeImpl extends OctetStringBase implements ZoneCode {
         if (this.data == null || this.data.length != 2)
             return 0;
 
-        int res = ((this.data[0] & 0xFF) << 8) | (this.data[1] & 0xFF);
-        return res;
+        return ((this.data[0] & 0xFF) << 8) | (this.data[1] & 0xFF);
     }
 
 }

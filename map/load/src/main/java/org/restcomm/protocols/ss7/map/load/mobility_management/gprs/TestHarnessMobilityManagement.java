@@ -66,6 +66,7 @@ public abstract class TestHarnessMobilityManagement implements MAPDialogListener
 
     protected static String SCCP_CLIENT_ADDRESS = "491710490000";
     protected static String SCCP_SERVER_ADDRESS = "882285000008002";
+    protected static String SCCP_SGSN_ADDRESS = "4917104600010";
 
     protected static RoutingIndicator ROUTING_INDICATOR = RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN;
 

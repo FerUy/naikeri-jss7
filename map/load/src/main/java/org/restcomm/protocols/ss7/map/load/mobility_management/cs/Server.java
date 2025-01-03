@@ -106,6 +106,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AdditionalSubscriptions;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AdjacentAccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AllocationRetentionPriority;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSAllocationRetentionPriority;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGSubscriptionData;
@@ -127,6 +128,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EDRXCycleLengthValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSQoSSubscribed;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSSubscriptionData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSSubscriptionDataWithdraw;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtAccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
@@ -135,12 +137,15 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionDataWithdraw;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.IMSIGroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LCSInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAInformationWithdraw;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LocalGroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LongGroupId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MCSI;
@@ -171,6 +176,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SSCSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SSCamelData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SpecificAPNInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SpecificCSIWithdraw;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SubscriberStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TBcsmCamelTDPData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TBcsmCamelTdpCriteria;
@@ -228,13 +234,18 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EDRX
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EDRXCycleLengthValueImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSQoSSubscribedImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSSubscriptionDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSSubscriptionDataWithdrawImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtAccessRestrictionDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBasicServiceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSStatusImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GroupIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.IMSIGroupIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAInformationWithdrawImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LocalGroupIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LongGroupIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MCSIImpl;
@@ -253,12 +264,14 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSC
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCSIImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCSIImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCamelDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SpecificCSIWithdrawImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTDPDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTdpCriteriaImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TCSIImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VlrCamelSubscriptionInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VoiceBroadcastDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VoiceGroupCallDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ZoneCodeImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSSubscriptionOptionImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
@@ -293,10 +306,8 @@ import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
  */
 public class Server extends TestHarnessMobilityManagement {
 
-    private static Logger logger = Logger.getLogger(Server.class);
+    private static final Logger logger = Logger.getLogger(Server.class);
 
-    // MAP
-    private MAPStackImpl mapStack;
     private static MAPProvider mapProvider;
 
     // TCAP
@@ -305,9 +316,6 @@ public class Server extends TestHarnessMobilityManagement {
     // SCCP
     SccpExtModuleImpl sccpExtModule;
     private SccpStackImpl sccpStack;
-    private SccpResource sccpResource;
-    private Router router;
-    private RouterExt routerExt;
 
     // M3UA
     private M3UAManagementImpl serverM3UAMgmt;
@@ -318,7 +326,7 @@ public class Server extends TestHarnessMobilityManagement {
     int endCount = 0;
     volatile long start = System.currentTimeMillis();
 
-    static Long imsiForPSI = 748026871012340L;
+    static Long imsiForSenders = 748026871012340L;
 
     protected void initializeStack(IpChannelType ipChannelType) throws Exception {
 
@@ -369,14 +377,16 @@ public class Server extends TestHarnessMobilityManagement {
         RoutingContext rc = factory.createRoutingContext(new long[] { 101L });
         TrafficModeType trafficModeType = factory.createTrafficModeType(TrafficModeType.Loadshare);
         NetworkAppearance na = factory.createNetworkAppearance(102L);
-        As as = this.serverM3UAMgmt.createAs("RAS1", Functionality.SGW, ExchangeType.SE, IPSPType.CLIENT, rc, trafficModeType,
-                1, na);
+        As as = this.serverM3UAMgmt.createAs("RAS1", Functionality.SGW, ExchangeType.SE, IPSPType.CLIENT, rc, trafficModeType, 1, na);
+        logger.debug(as);
 
         // Step 2 : Create ASP
         AspFactory aspFactor = this.serverM3UAMgmt.createAspFactory("RASP1", SERVER_ASSOCIATION_NAME);
+        logger.debug(aspFactor);
 
         // Step3 : Assign ASP to AS
         Asp asp = this.serverM3UAMgmt.assignAspToAs("RAS1", "RASP1");
+        logger.debug(asp);
 
         // Step 4: Add Route. Remote point code is 2
         this.serverM3UAMgmt.addRoute(CLIENT_SPC, -1, -1, "RAS1");
@@ -392,16 +402,16 @@ public class Server extends TestHarnessMobilityManagement {
         this.sccpStack.start();
         this.sccpStack.removeAllResources();
 
-        this.router = this.sccpStack.getRouter();
-        this.routerExt = sccpExtModule.getRouterExt();
-        this.sccpResource = this.sccpStack.getSccpResource();
+        Router router = this.sccpStack.getRouter();
+        RouterExt routerExt = sccpExtModule.getRouterExt();
+        SccpResource sccpResource = this.sccpStack.getSccpResource();
 
-        this.sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, CLIENT_SPC, VLR_SSN, 0, false);
+        sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
+        sccpResource.addRemoteSsn(0, CLIENT_SPC, VLR_SSN, 0, false);
 
-        this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
-        this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
-        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
+        router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
+        router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
+        router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -410,16 +420,16 @@ public class Server extends TestHarnessMobilityManagement {
         GlobalTitle gt2 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
                 ec, NatureOfAddress.INTERNATIONAL);
         SccpAddress localAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt1, SERVER_SPC, 0);
-        this.routerExt.addRoutingAddress(1, localAddress);
+        routerExt.addRoutingAddress(1, localAddress);
         SccpAddress remoteAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, CLIENT_SPC, 0);
-        this.routerExt.addRoutingAddress(2, remoteAddress);
+        routerExt.addRoutingAddress(2, remoteAddress);
 
         GlobalTitle gt = fact.createGlobalTitle("*", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress pattern = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 0);
-        this.routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
+        routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
                 "K", 1, -1, null, 0, null);
-        this.routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern,
+        routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern,
                 "K", 2, -1, null, 0, null);
     }
 
@@ -432,15 +442,16 @@ public class Server extends TestHarnessMobilityManagement {
     }
 
     private void initMAP() throws Exception {
-        this.mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
-        mapProvider = this.mapStack.getMAPProvider();
+        // MAP
+        MAPStackImpl mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
+        mapProvider = mapStack.getMAPProvider();
 
         mapProvider.addMAPDialogListener(this);
         mapProvider.getMAPServiceMobility().addMAPServiceListener(this);
 
         mapProvider.getMAPServiceMobility().activate();
 
-        this.mapStack.start();
+        mapStack.start();
     }
 
 
@@ -788,7 +799,6 @@ public class Server extends TestHarnessMobilityManagement {
             authenticationQuintupletList.add(authenticationQuintuplet);
             QuintupletList quintupletList = new QuintupletListImpl(authenticationQuintupletList);
             AuthenticationSetList authenticationSetList = new AuthenticationSetListImpl(quintupletList);
-            MAPExtensionContainer mapExtensionContainer = null;
             byte[] epsRand = new byte[] {(byte) 0xf6, (byte) 0xe2, (byte) 0xc3, (byte) 0xdc, (byte) 0xa4, (byte) 0xca,
                     (byte) 0xae, (byte) 0x9e, 0x4c, (byte) 0xba, 0x0f, (byte) 0xd3, 0x42, 0x72, (byte) 0xee, 0x46};
             byte[] epsXres = new byte[] {0x1e, 0x42, (byte) 0xe6, 0x58, (byte) 0xce, (byte) 0x99, 0x33, (byte) 0xb6};
@@ -797,14 +807,13 @@ public class Server extends TestHarnessMobilityManagement {
             byte[] epsKasme = new byte[] {0x70, (byte) 0xad, (byte) 0x8c, (byte) 0xd7, (byte) 0x89, 0x28, (byte) 0xc2, (byte) 0xde,
                     (byte) 0x97, (byte) 0xcf, (byte) 0xe7, (byte) 0xb8, (byte) 0xbf, 0x10, 0x40, (byte) 0xe9, (byte) 0xa4, (byte) 0xdd,
                     0x79, (byte) 0x80, 0x5b, 0x54, 0x61, (byte) 0x95, (byte) 0xc2, (byte) 0xb6, 0x0c, (byte) 0xb4, (byte) 0xcc, 0x41, (byte) 0xbe, 0x47};
-            EpcAv epcAuthVector = new EpcAvImpl(epsRand, epsXres, epsAutn, epsKasme, mapExtensionContainer);
+            EpcAv epcAuthVector = new EpcAvImpl(epsRand, epsXres, epsAutn, epsKasme, null);
             ArrayList<EpcAv> epcAvList = new ArrayList<>();
             epcAvList.add(epcAuthVector);
             EpsAuthenticationSetList epsAuthenticationSetList = new EpsAuthenticationSetListImpl(epcAvList);
-            byte[] ueUsageTypeBytes = new byte[] {0, 0, 0, (byte) 0x80};
-            UEUsageType ueUsageType = new UEUsageTypeImpl(ueUsageTypeBytes);
+            UEUsageType ueUsageType = new UEUsageTypeImpl(new byte[] {0, 0, 0, (byte) 0x80});
 
-            mapDialogMobility.addSendAuthenticationInfoResponse(invokeId, authenticationSetList, mapExtensionContainer,
+            mapDialogMobility.addSendAuthenticationInfoResponse(invokeId, authenticationSetList, null,
                     epsAuthenticationSetList, ueUsageType);
 
             mapDialogMobility.close(false);
@@ -859,7 +868,7 @@ public class Server extends TestHarnessMobilityManagement {
                 cancelLocationDialog.send();
             }
 
-            long isdInvokeId = updateLocationRequestIndication.getInvokeId() + 1;
+            long invokeId = updateLocationRequestIndication.getInvokeId();
             MAPDialogMobility insertSubscriberDataDialog = updateLocationRequestIndication.getMAPDialog();
 
             MAPExtensionContainer extCont = null;
@@ -1205,7 +1214,7 @@ public class Server extends TestHarnessMobilityManagement {
             // iabOperationAllowedIndicator
             boolean iabOperationAllowedIndicator = true;
 
-            insertSubscriberDataDialog.addInsertSubscriberDataRequest(isdInvokeId, imsi, msisdn, category, subscriberStatus,
+            insertSubscriberDataDialog.addInsertSubscriberDataRequest(invokeId, imsi, msisdn, category, subscriberStatus,
                     bearerServiceList, teleserviceList, provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature,
                     regionalSubscriptionData, vbsSubscriptionData, vgcsSubscriptionData, vlrCamelSubscriptionInfo, extCont,
                     naeaPreferredCI, gprsSubscriptionData, roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode,
@@ -1284,10 +1293,9 @@ public class Server extends TestHarnessMobilityManagement {
             long invokeId = insertSubscriberDataResponse.getInvokeId();
             MAPDialogMobility mapDialogMobility = insertSubscriberDataResponse.getMAPDialog();
             ISDNAddressString hlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285000008002");
-            MAPExtensionContainer extensionContainer = null;
-            boolean addCapability = false;
-            boolean pagingAreaCapability = false;
-            mapDialogMobility.addUpdateLocationResponse(invokeId, hlrNumber, extensionContainer, addCapability, pagingAreaCapability);
+            boolean addCapability = true;
+            boolean pagingAreaCapability = true;
+            mapDialogMobility.addUpdateLocationResponse(invokeId, hlrNumber, null, addCapability, pagingAreaCapability);
 
             mapDialogMobility.close(false);
 
@@ -1312,6 +1320,8 @@ public class Server extends TestHarnessMobilityManagement {
         new Thread(new SubscriptionWithdrawReattach(this)).start();
         // Send a random PSI request
         new Thread(new PSISender(this)).start();
+        // Start a new DSD request (simulating an OSS request)
+        new Thread(new DsdSender(this)).start();
     }
 
     @Override
@@ -1340,9 +1350,8 @@ public class Server extends TestHarnessMobilityManagement {
                 freezeTMSI = true;
             else if (ssn == 149)
                 freezePTMSI = true;
-            MAPExtensionContainer extensionContainer = null;
             boolean freezeMTMSI = false;
-            mapDialogMobility.addPurgeMSResponse(invokeId, freezeTMSI, freezePTMSI, extensionContainer, freezeMTMSI);
+            mapDialogMobility.addPurgeMSResponse(invokeId, freezeTMSI, freezePTMSI, null, freezeMTMSI);
 
             mapDialogMobility.close(false);
 
@@ -1490,14 +1499,14 @@ public class Server extends TestHarnessMobilityManagement {
             try {
                 Thread.sleep(1000);
                 logger.debug("On Subscription Withdraw and Reattach command, about to send CL");
-                server4SubscriptionWithdrawReattach.sendCLOnSubWithdrawAndReattach("901405105682021");
+                server4SubscriptionWithdrawReattach.sendCLOnSubWithdrawAndReattach();
             } catch (InterruptedException e) {
                 logger.error("Error: " + e.getMessage());
             }
         }
     }
 
-    private void sendCLOnSubWithdrawAndReattach(String imsiDigits) {
+    private void sendCLOnSubWithdrawAndReattach() {
         try {
             AddressString clDestinationRef = mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
@@ -1511,7 +1520,7 @@ public class Server extends TestHarnessMobilityManagement {
             cancelLocationDialog = mapProvider.getMAPServiceMobility().createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationCancellationContext, MAPApplicationContextVersion.version3),
                     clClientSccpAddress, clOriginRef, clServerSccpAddress, clDestinationRef);
 
-            IMSI imsi = new IMSIImpl(imsiDigits);
+            IMSI imsi = new IMSIImpl("901405105682021");
             IMSIWithLMSI imsiWithLmsi = null;
             CancellationType cancellationType = CancellationType.subscriptionWithdraw;
             MAPExtensionContainer extensionContainer = null;
@@ -1546,11 +1555,11 @@ public class Server extends TestHarnessMobilityManagement {
 
         @Override
         public void run() {
-            ++imsiForPSI;
+            ++imsiForSenders;
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ie) {
-                logger.error(ie.getMessage());
+                logger.error("Interrupted Exception on "+getServer4PsiSender()+", " +ie.getMessage());
             }
 
             try {
@@ -1567,12 +1576,10 @@ public class Server extends TestHarnessMobilityManagement {
                                 psiClientSccpAddress, psiOriginRef, psiServerSccpAddress, psiDestinationRef);
 
                 Random rand = new Random();
-                int randPSi = rand.nextInt(7) + 1;
-                IMSI imsi = new IMSIImpl(String.valueOf(imsiForPSI));
+                IMSI imsi = new IMSIImpl(String.valueOf(imsiForSenders));
                 byte[] lmsiByte;
                 LMSI lmsi;
-                int lmsiRandom = rand.nextInt(10) + 1;
-                switch (lmsiRandom) {
+                switch (rand.nextInt(10) + 1) {
                     case 1:
                         lmsiByte = new byte[] {114, 2, (byte) 233, (byte) 140};
                         lmsi = new LMSIImpl(lmsiByte);
@@ -1613,7 +1620,7 @@ public class Server extends TestHarnessMobilityManagement {
                 boolean localTimeZoneRequest;
                 RequestedInfo requestedInfo = null;
                 EMLPPPriority callPriority = null;
-                switch (randPSi) {
+                switch (rand.nextInt(7) + 1) {
                     case 1:
                         locationInformation = true;
                         subscriberState = true;
@@ -1721,8 +1728,7 @@ public class Server extends TestHarnessMobilityManagement {
                         break;
                 }
 
-                long invokeTimeout = 30;
-                mapDialogMobility.addProvideSubscriberInfoRequest(invokeTimeout, imsi, lmsi, requestedInfo, extensionContainer, callPriority);
+                mapDialogMobility.addProvideSubscriberInfoRequest(imsi, lmsi, requestedInfo, null, callPriority);
                 mapDialogMobility.send();
 
             } catch (MAPException e) {
@@ -1730,6 +1736,616 @@ public class Server extends TestHarnessMobilityManagement {
             }
 
         }
+    }
+
+    private static class DsdSender implements Runnable {
+
+        private final Server server4DsdSender;
+
+        public DsdSender(Server server) {
+            server4DsdSender = server;
+        }
+
+        public Server getServer4DsdSender() {
+            return server4DsdSender;
+        }
+
+        @Override
+        public void run() {
+            ++imsiForSenders;
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ie) {
+                logger.error("Interrupted Exception on "+getServer4DsdSender()+", " +ie.getMessage());
+            }
+            try {
+                // Create Dialog for MAP DSD
+                AddressString dsdDestinationRef = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, SCCP_SERVER_ADDRESS);
+                AddressString dsdOriginRef = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400000");
+
+                SccpAddress dsdClientSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
+                SccpAddress dsdServerSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, "491710400000");
+                MAPDialogMobility mapDialogMobility = mapProvider.getMAPServiceMobility().
+                        createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.subscriberDataMngtContext, MAPApplicationContextVersion.version3),
+                                dsdClientSccpAddress, dsdOriginRef, dsdServerSccpAddress, dsdDestinationRef);
+
+                Random rand = new Random();
+                IMSI imsi = new IMSIImpl(String.valueOf(imsiForSenders));
+                ArrayList<ExtBasicServiceCode> basicServiceList = new ArrayList<>();
+                BearerServiceCodeValue bearerServiceCodeValue = getBearerServiceCodeValue();
+                ExtBearerServiceCode extBearerServiceCode = new ExtBearerServiceCodeImpl(bearerServiceCodeValue);
+                ExtBasicServiceCode extBasicServiceCode1 = new ExtBasicServiceCodeImpl(extBearerServiceCode);
+                TeleserviceCodeValue teleserviceCodeValue = getTeleserviceCodeValue();
+                ExtTeleserviceCode extTeleserviceCode = new ExtTeleserviceCodeImpl(teleserviceCodeValue);
+                ExtBasicServiceCode extBasicServiceCode2 = new ExtBasicServiceCodeImpl(extTeleserviceCode);
+                basicServiceList.add(extBasicServiceCode1);
+                basicServiceList.add(extBasicServiceCode2);
+                ArrayList<SSCode> ssList = new ArrayList<>();
+                SupplementaryCodeValue supplementaryCodeValue = getSupplementaryCodeValue();
+                SSCode ssCode = new SSCodeImpl(supplementaryCodeValue);
+                ssList.add(ssCode);
+                boolean roamingRestrictionDueToUnsupportedFeature = true;
+                ZoneCode regionalSubscriptionIdentifier = new ZoneCodeImpl(new byte[] {0x21, 0x0F});
+                boolean vbsGroupIndication = true;
+                boolean vgcsGroupIndication = true;
+                boolean camelSubscriptionInfoWithdraw = true;
+                GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw = null;
+                boolean roamingRestrictedInSgsnDueToUnsuppportedFeature = true;
+                LSAInformationWithdraw lsaInformationWithdraw = null;
+                switch (rand.nextInt(2 + 1)) {
+                    case 1:
+                        ArrayList<LSAIdentity> lsaIdentityList = new ArrayList<>();
+                        LSAIdentity lsaIdentity1 = new LSAIdentityImpl(new byte[]{12, 10, 1});
+                        LSAIdentity lsaIdentity2 = new LSAIdentityImpl(new byte[]{12, 12, 2});
+                        lsaIdentityList.add(lsaIdentity1);
+                        lsaIdentityList.add(lsaIdentity2);
+                        lsaInformationWithdraw = new LSAInformationWithdrawImpl(lsaIdentityList);
+                        break;
+                    case 2:
+                        lsaInformationWithdraw = new LSAInformationWithdrawImpl(true);
+                        break;
+                }
+                boolean gmlcListWithdraw = true;
+                boolean istInformationWithdraw = true;
+                SpecificCSIWithdraw specificCSIWithdraw = new SpecificCSIWithdrawImpl(true, false, false, true, false, false, false, false, false, false,
+                        false, false, false, false);
+                boolean chargingCharacteristicsWithdraw = true;
+                boolean stnSrWithdraw = true;
+                EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw = null;
+                switch (rand.nextInt(3 + 1)) {
+                    case 1:
+                        ArrayList<Integer> contextIdList = new ArrayList<>();
+                        contextIdList.add(1);
+                        contextIdList.add(2);
+                        epsSubscriptionDataWithdraw = new EPSSubscriptionDataWithdrawImpl(contextIdList);
+                        break;
+                    case 2:
+                        epsSubscriptionDataWithdraw = new EPSSubscriptionDataWithdrawImpl(true);
+                        break;
+                }
+                boolean apnOiReplacementWithdraw = true;
+                boolean csgSubscriptionDeleted = true;
+                boolean subscribedPeriodicTAURAUTimerWithdraw = true;
+                boolean subscribedPeriodicLAUTimerWithdraw = true;
+                boolean subscribedVsrvccWithdraw = true;
+                boolean vplmnCsgSubscriptionDeleted = true;
+                boolean additionalMSISDNWithdraw = true;
+                boolean csToPsSRVCCWithdraw = true;
+                boolean imsiGroupIdListWithdraw = true;
+                boolean userPlaneIntegrityProtectionWithdraw = true;
+                boolean dlBufferingSuggestedPacketCountWithdraw = true;
+                boolean ueUsageTypeWithdraw = true;
+                boolean resetIdsWithdraw = true;
+                boolean iabOperationWithdraw = true;
+
+                mapDialogMobility.addDeleteSubscriberDataRequest(imsi, basicServiceList, ssList,
+                        roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionIdentifier, vbsGroupIndication, vgcsGroupIndication,
+                        camelSubscriptionInfoWithdraw, null, gprsSubscriptionDataWithdraw, roamingRestrictedInSgsnDueToUnsuppportedFeature,
+                        lsaInformationWithdraw, gmlcListWithdraw, istInformationWithdraw, specificCSIWithdraw, chargingCharacteristicsWithdraw, stnSrWithdraw,
+                        epsSubscriptionDataWithdraw, apnOiReplacementWithdraw, csgSubscriptionDeleted, subscribedPeriodicTAURAUTimerWithdraw,
+                        subscribedPeriodicLAUTimerWithdraw, subscribedVsrvccWithdraw, vplmnCsgSubscriptionDeleted, additionalMSISDNWithdraw, csToPsSRVCCWithdraw,
+                        imsiGroupIdListWithdraw, userPlaneIntegrityProtectionWithdraw, dlBufferingSuggestedPacketCountWithdraw, ueUsageTypeWithdraw, resetIdsWithdraw,
+                        iabOperationWithdraw);
+                mapDialogMobility.send();
+
+            } catch (MAPException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static BearerServiceCodeValue getBearerServiceCodeValue() {
+        BearerServiceCodeValue bearerServiceCodeValue;
+        Random rand = new Random();
+        switch (rand.nextInt(51 + 1)) {
+            case 2:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataCDAServices;
+                break;
+            case 3:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_300bps;
+                break;
+            case 4:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_1200bps;
+                break;
+            case 5:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_1200_75bps;
+                break;
+            case 6:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_2400bps;
+                break;
+            case 7:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_4800bps;
+                break;
+            case 8:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_9600bps;
+                break;
+            case 9:
+                bearerServiceCodeValue = BearerServiceCodeValue.general_dataCDA;
+                break;
+            case 10:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataCDS_Services;
+                break;
+            case 11:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDS_1200bps;
+                break;
+            case 12:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDS_2400bps;
+                break;
+            case 13:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDS_4800bps;
+                break;
+            case 14:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDS_9600bps;
+                break;
+            case 15:
+                bearerServiceCodeValue = BearerServiceCodeValue.general_dataCDS;
+                break;
+            case 16:
+                bearerServiceCodeValue = BearerServiceCodeValue.allPadAccessCA_Services;
+                break;
+            case 17:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_300bps;
+                break;
+            case 18:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_1200bps;
+                break;
+            case 19:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_1200_75bps;
+                break;
+            case 20:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_2400bps;
+                break;
+            case 21:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_4800bps;
+                break;
+            case 22:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_9600bps;
+                break;
+            case 23:
+                bearerServiceCodeValue = BearerServiceCodeValue.general_padAccessCA;
+                break;
+            case 24:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataPDS_Services;
+                break;
+            case 25:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataPDS_2400bps;
+                break;
+            case 26:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataPDS_4800bps;
+                break;
+            case 27:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataPDS_9600bps;
+                break;
+            case 28:
+                bearerServiceCodeValue = BearerServiceCodeValue.allAlternateSpeech_DataCDA;
+                break;
+            case 29:
+                bearerServiceCodeValue = BearerServiceCodeValue.allAlternateSpeech_DataCDS;
+                break;
+            case 30:
+                bearerServiceCodeValue = BearerServiceCodeValue.allSpeechFollowedByDataCDA;
+                break;
+            case 31:
+                bearerServiceCodeValue = BearerServiceCodeValue.allSpeechFollowedByDataCDS;
+                break;
+            case 32:
+                bearerServiceCodeValue = BearerServiceCodeValue.general_dataPDS;
+                break;
+            case 33:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataCircuitAsynchronous;
+                break;
+            case 34:
+                bearerServiceCodeValue = BearerServiceCodeValue.allAsynchronousServices;
+                break;
+            case 35:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataCircuitSynchronous;
+                break;
+            case 36:
+                bearerServiceCodeValue = BearerServiceCodeValue.allSynchronousServices;
+                break;
+            case 37:
+                bearerServiceCodeValue = BearerServiceCodeValue.allPLMN_specificBS;
+                break;
+            case 38:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_1;
+                break;
+            case 39:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_2;
+                break;
+            case 40:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_3;
+                break;
+            case 41:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_4;
+                break;
+            case 42:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_5;
+                break;
+            case 43:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_6;
+                break;
+            case 44:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_7;
+                break;
+            case 45:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_8;
+                break;
+            case 46:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_9;
+                break;
+            case 47:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_A;
+                break;
+            case 48:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_B;
+                break;
+            case 49:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_C;
+                break;
+            case 50:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_E;
+                break;
+            case 51:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_F;
+                break;
+            default:
+                bearerServiceCodeValue = BearerServiceCodeValue.allBearerServices;
+                break;
+        }
+        return bearerServiceCodeValue;
+    }
+
+    private static TeleserviceCodeValue getTeleserviceCodeValue() {
+        TeleserviceCodeValue teleserviceCodeValue;
+        Random rand = new Random();
+        switch (rand.nextInt(33 + 1)) {
+            case 2:
+                teleserviceCodeValue = TeleserviceCodeValue.allSpeechTransmissionServices;
+                break;
+            case 3:
+                teleserviceCodeValue = TeleserviceCodeValue.telephony;
+                break;
+            case 4:
+                teleserviceCodeValue = TeleserviceCodeValue.emergencyCalls;
+                break;
+            case 5:
+                teleserviceCodeValue = TeleserviceCodeValue.allShortMessageServices;
+                break;
+            case 6:
+                teleserviceCodeValue = TeleserviceCodeValue.shortMessageMT_PP;
+                break;
+            case 7:
+                teleserviceCodeValue = TeleserviceCodeValue.shortMessageMO_PP;
+                break;
+            case 8:
+                teleserviceCodeValue = TeleserviceCodeValue.cellBroadcast;
+                break;
+            case 9:
+                teleserviceCodeValue = TeleserviceCodeValue.allFacsimileTransmissionServices;
+                break;
+            case 10:
+                teleserviceCodeValue = TeleserviceCodeValue.facsimileGroup3AndAlterSpeech;
+                break;
+            case 11:
+                teleserviceCodeValue = TeleserviceCodeValue.automaticFacsimileGroup3;
+                break;
+            case 12:
+                teleserviceCodeValue = TeleserviceCodeValue.facsimileGroup4;
+                break;
+            case 13:
+                teleserviceCodeValue = TeleserviceCodeValue.allDataTeleservices;
+                break;
+            case 14:
+                teleserviceCodeValue = TeleserviceCodeValue.allTeleservices_ExeptSMS;
+                break;
+            case 15:
+                teleserviceCodeValue = TeleserviceCodeValue.allVoiceGroupCallServices;
+                break;
+            case 16:
+                teleserviceCodeValue = TeleserviceCodeValue.voiceGroupCall;
+                break;
+            case 17:
+                teleserviceCodeValue = TeleserviceCodeValue.voiceBroadcastCall;
+                break;
+            case 18:
+                teleserviceCodeValue = TeleserviceCodeValue.allPLMN_specificTS;
+                break;
+            case 19:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_1;
+                break;
+            case 20:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_2;
+                break;
+            case 21:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_3;
+                break;
+            case 22:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_4;
+                break;
+            case 23:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_5;
+                break;
+            case 24:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_6;
+                break;
+            case 25:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_7;
+                break;
+            case 26:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_8;
+                break;
+            case 27:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_9;
+                break;
+            case 28:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_A;
+                break;
+            case 29:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_B;
+                break;
+            case 30:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_C;
+                break;
+            case 31:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_D;
+                break;
+            case 32:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_E;
+                break;
+            case 33:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_F;
+                break;
+            default:
+                teleserviceCodeValue = TeleserviceCodeValue.allTeleservices;
+                break;
+        }
+        return teleserviceCodeValue;
+    }
+
+    private static SupplementaryCodeValue getSupplementaryCodeValue() {
+        SupplementaryCodeValue supplementaryCodeValue;
+        Random rand = new Random();
+        switch (rand.nextInt(72 + 1)) {
+            case 1:
+                supplementaryCodeValue = SupplementaryCodeValue.allLineIdentificationSS;
+                break;
+            case 2:
+                supplementaryCodeValue = SupplementaryCodeValue.clip;
+                break;
+            case 3:
+                supplementaryCodeValue = SupplementaryCodeValue.clir;
+                break;
+            case 4:
+                supplementaryCodeValue = SupplementaryCodeValue.colp;
+                break;
+            case 5:
+                supplementaryCodeValue = SupplementaryCodeValue.colr;
+                break;
+            case 6:
+                supplementaryCodeValue = SupplementaryCodeValue.mci;
+                break;
+            case 7:
+                supplementaryCodeValue = SupplementaryCodeValue.allNameIdentificationSS;
+                break;
+            case 8:
+                supplementaryCodeValue = SupplementaryCodeValue.cnap;
+                break;
+            case 9:
+                supplementaryCodeValue = SupplementaryCodeValue.allForwardingSS;
+                break;
+            case 10:
+                supplementaryCodeValue = SupplementaryCodeValue.cfu;
+                break;
+            case 11:
+                supplementaryCodeValue = SupplementaryCodeValue.allCondForwardingSS;
+                break;
+            case 12:
+                supplementaryCodeValue = SupplementaryCodeValue.cfb;
+                break;
+            case 13:
+                supplementaryCodeValue = SupplementaryCodeValue.cfnry;
+                break;
+            case 14:
+                supplementaryCodeValue = SupplementaryCodeValue.cfnrc;
+                break;
+            case 15:
+                supplementaryCodeValue = SupplementaryCodeValue.cd;
+                break;
+            case 16:
+                supplementaryCodeValue = SupplementaryCodeValue.allCallOfferingSS;
+                break;
+            case 17:
+                supplementaryCodeValue = SupplementaryCodeValue.ect;
+                break;
+            case 18:
+                supplementaryCodeValue = SupplementaryCodeValue.mah;
+                break;
+            case 19:
+                supplementaryCodeValue = SupplementaryCodeValue.allCallCompletionSS;
+                break;
+            case 20:
+                supplementaryCodeValue = SupplementaryCodeValue.cw;
+                break;
+            case 21:
+                supplementaryCodeValue = SupplementaryCodeValue.hold;
+                break;
+            case 22:
+                supplementaryCodeValue = SupplementaryCodeValue.ccbs_A;
+                break;
+            case 23:
+                supplementaryCodeValue = SupplementaryCodeValue.ccbs_B;
+                break;
+            case 24:
+                supplementaryCodeValue = SupplementaryCodeValue.mc;
+                break;
+            case 25:
+                supplementaryCodeValue = SupplementaryCodeValue.allMultiPartySS;
+                break;
+            case 26:
+                supplementaryCodeValue = SupplementaryCodeValue.multiPTY;
+                break;
+            case 27:
+                supplementaryCodeValue = SupplementaryCodeValue.allCommunityOfInterestSS;
+                break;
+            case 28:
+                supplementaryCodeValue = SupplementaryCodeValue.cug;
+                break;
+            case 29:
+                supplementaryCodeValue = SupplementaryCodeValue.allChargingSS;
+                break;
+            case 30:
+                supplementaryCodeValue = SupplementaryCodeValue.aoci;
+                break;
+            case 31:
+                supplementaryCodeValue = SupplementaryCodeValue.aocc;
+                break;
+            case 32:
+                supplementaryCodeValue = SupplementaryCodeValue.allAdditionalInfoTransferSS;
+                break;
+            case 33:
+                supplementaryCodeValue = SupplementaryCodeValue.uus1;
+                break;
+            case 34:
+                supplementaryCodeValue = SupplementaryCodeValue.uus2;
+                break;
+            case 35:
+                supplementaryCodeValue = SupplementaryCodeValue.uus3;
+                break;
+            case 36:
+                supplementaryCodeValue = SupplementaryCodeValue.allCallRestrictionSS;
+                break;
+            case 37:
+                supplementaryCodeValue = SupplementaryCodeValue.barringOfOutgoingCalls;
+                break;
+            case 38:
+                supplementaryCodeValue = SupplementaryCodeValue.baoc;
+                break;
+            case 39:
+                supplementaryCodeValue = SupplementaryCodeValue.boic;
+                break;
+            case 40:
+                supplementaryCodeValue = SupplementaryCodeValue.boicExHC;
+                break;
+            case 41:
+                supplementaryCodeValue = SupplementaryCodeValue.barringOfIncomingCalls;
+                break;
+            case 42:
+                supplementaryCodeValue = SupplementaryCodeValue.baic;
+                break;
+            case 43:
+                supplementaryCodeValue = SupplementaryCodeValue.bicRoam;
+                break;
+            case 44:
+                supplementaryCodeValue = SupplementaryCodeValue.allPLMN_specificSS;
+                break;
+            case 45:
+                supplementaryCodeValue = SupplementaryCodeValue.allCallPrioritySS;
+                break;
+            case 46:
+                supplementaryCodeValue = SupplementaryCodeValue.emlpp;
+                break;
+            case 47:
+                supplementaryCodeValue = SupplementaryCodeValue.allLCSPrivacyException;
+                break;
+            case 48:
+                supplementaryCodeValue = SupplementaryCodeValue.universal;
+                break;
+            case 49:
+                supplementaryCodeValue = SupplementaryCodeValue.callrelated;
+                break;
+            case 50:
+                supplementaryCodeValue = SupplementaryCodeValue.callunrelated;
+                break;
+            case 51:
+                supplementaryCodeValue = SupplementaryCodeValue.plmnoperator;
+                break;
+            case 52:
+                supplementaryCodeValue = SupplementaryCodeValue.serviceType;
+                break;
+            case 53:
+                supplementaryCodeValue = SupplementaryCodeValue.allMOLR_SS;
+                break;
+            case 54:
+                supplementaryCodeValue = SupplementaryCodeValue.basicSelfLocation;
+                break;
+            case 55:
+                supplementaryCodeValue = SupplementaryCodeValue.autonomousSelfLocation;
+                break;
+            case 56:
+                supplementaryCodeValue = SupplementaryCodeValue.transferToThirdParty;
+                break;
+            case 57:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_1;
+                break;
+            case 58:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_2;
+                break;
+            case 59:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_3;
+                break;
+            case 60:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_4;
+                break;
+            case 61:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_5;
+                break;
+            case 62:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_6;
+                break;
+            case 63:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_7;
+                break;
+            case 64:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_8;
+                break;
+            case 65:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_9;
+                break;
+            case 66:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_a;
+                break;
+            case 67:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_b;
+                break;
+            case 68:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_c;
+                break;
+            case 69:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_d;
+                break;
+            case 70:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_e;
+                break;
+            case 71:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_f;
+                break;
+            default:
+                supplementaryCodeValue = SupplementaryCodeValue.allSS;
+                break;
+        }
+        return supplementaryCodeValue;
     }
 
     private static SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
