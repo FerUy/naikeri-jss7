@@ -76,7 +76,7 @@ public class ExtBearerServiceCodeImpl extends OctetStringBase implements ExtBear
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<ExtBearerServiceCodeImpl> EXT_BEARER_SERVICE_CODE_XML = new XMLFormat<ExtBearerServiceCodeImpl>(
+    protected static final XMLFormat<ExtBearerServiceCodeImpl> EXT_BEARER_SERVICE_CODE_XML = new XMLFormat<>(
             ExtBearerServiceCodeImpl.class) {
 
         @Override

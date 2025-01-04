@@ -152,8 +152,10 @@ public class BasicServiceCodeImpl implements BasicServiceCode, MAPAsnPrimitive {
     }
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
-        if (this.bearerService == null && this.teleservice == null || this.bearerService != null && this.teleservice != null) {
-            throw new MAPException("Error while decoding " + _PrimitiveName + ": One and only one choice must be selected");
+        if (this.bearerService == null && this.teleservice == null
+                || this.bearerService != null && this.teleservice != null) {
+            throw new MAPException("Error while decoding " + _PrimitiveName + ": one and only one choice " +
+                    "between bearerService and teleservice must be selected");
         }
 
         if (this.bearerService != null) {
@@ -171,11 +173,12 @@ public class BasicServiceCodeImpl implements BasicServiceCode, MAPAsnPrimitive {
         sb.append(" [");
 
         if (this.bearerService != null) {
-            sb.append("bearerService=" + this.bearerService.toString());
-            sb.append(", ");
+            sb.append(bearerService);
         }
-        if (this.teleservice != null)
-            sb.append("teleservice=" + this.teleservice.toString());
+        if (this.teleservice != null) {
+            sb.append(teleservice);
+        }
+
         sb.append("]");
 
         return sb.toString();
@@ -205,18 +208,14 @@ public class BasicServiceCodeImpl implements BasicServiceCode, MAPAsnPrimitive {
         } else if (!bearerService.equals(other.bearerService))
             return false;
         if (teleservice == null) {
-            if (other.teleservice != null)
-                return false;
-        } else if (!teleservice.equals(other.teleservice))
-            return false;
-        return true;
+            return other.teleservice == null;
+        } else return teleservice.equals(other.teleservice);
     }
 
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<BasicServiceCodeImpl> BASIC_SERVICE_CODE_XMLS = new XMLFormat<BasicServiceCodeImpl>(
-            BasicServiceCodeImpl.class) {
+    protected static final XMLFormat<BasicServiceCodeImpl> BASIC_SERVICE_CODE_XMLS = new XMLFormat<>(BasicServiceCodeImpl.class) {
 
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, BasicServiceCodeImpl ssCode) throws XMLStreamException {
