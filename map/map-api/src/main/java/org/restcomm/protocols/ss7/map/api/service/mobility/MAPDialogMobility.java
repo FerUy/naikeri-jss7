@@ -360,7 +360,11 @@ public interface MAPDialogMobility extends MAPDialog {
             GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw, boolean roamingRestrictedInSgsnDueToUnsuppportedFeature,
             LSAInformationWithdraw lsaInformationWithdraw, boolean gmlcListWithdraw, boolean istInformationWithdraw, SpecificCSIWithdraw specificCSIWithdraw,
             boolean chargingCharacteristicsWithdraw, boolean stnSrWithdraw, EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw,
-            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted) throws MAPException;
+            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted, boolean subscribedPeriodicTAURAUTimerWithdraw,
+            boolean subscribedPeriodicLAUTimerWithdraw, boolean subscribedVsrvccWithdraw, boolean vplmnCsgSubscriptionDeleted,
+            boolean additionalMSISDNWithdraw, boolean csToPsSRVCCWithdraw, boolean imsiGroupIdListWithdraw, boolean userPlaneIntegrityProtectionWithdraw,
+            boolean dlBufferingSuggestedPacketCountWithdraw, boolean ueUsageTypeWithdraw, boolean resetIdsWithdraw, boolean iabOperationWithdraw)
+            throws MAPException;
 
     Long addDeleteSubscriberDataRequest(long customInvokeTimeout, IMSI imsi, ArrayList<ExtBasicServiceCode> basicServiceList, ArrayList<SSCode> ssList,
             boolean roamingRestrictionDueToUnsupportedFeature, ZoneCode regionalSubscriptionIdentifier, boolean vbsGroupIndication,
@@ -368,7 +372,11 @@ public interface MAPDialogMobility extends MAPDialog {
             GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw, boolean roamingRestrictedInSgsnDueToUnsuppportedFeature,
             LSAInformationWithdraw lsaInformationWithdraw, boolean gmlcListWithdraw, boolean istInformationWithdraw, SpecificCSIWithdraw specificCSIWithdraw,
             boolean chargingCharacteristicsWithdraw, boolean stnSrWithdraw, EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw,
-            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted) throws MAPException;
+            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted, boolean subscribedPeriodicTAURAUTimerWithdraw,
+            boolean subscribedPeriodicLAUTimerWithdraw, boolean subscribedVsrvccWithdraw, boolean vplmnCsgSubscriptionDeleted,
+            boolean additionalMSISDNWithdraw, boolean csToPsSRVCCWithdraw, boolean imsiGroupIdListWithdraw, boolean userPlaneIntegrityProtectionWithdraw,
+            boolean dlBufferingSuggestedPacketCountWithdraw, boolean ueUsageTypeWithdraw, boolean resetIdsWithdraw, boolean iabOperationWithdraw)
+            throws MAPException;
 
     void addDeleteSubscriberDataResponse(long invokeId, RegionalSubscriptionResponse regionalSubscriptionResponse, MAPExtensionContainer extensionContainer)
             throws MAPException;

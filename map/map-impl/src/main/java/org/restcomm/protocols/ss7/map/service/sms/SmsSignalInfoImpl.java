@@ -3,6 +3,7 @@ package org.restcomm.protocols.ss7.map.service.sms;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
@@ -23,6 +24,8 @@ import org.restcomm.protocols.ss7.map.smstpdu.SmsTpduImpl;
 public class SmsSignalInfoImpl implements SmsSignalInfo, MAPAsnPrimitive {
 
     public static final String _PrimitiveName = "SmsSignalInfo";
+
+    protected Logger logger = Logger.getLogger(SmsSignalInfoImpl.class);
 
     private byte[] data;
     private Charset gsm8Charset;
@@ -134,17 +137,19 @@ public class SmsSignalInfoImpl implements SmsSignalInfo, MAPAsnPrimitive {
         try {
             SmsTpdu tpdu = SmsTpduImpl.createInstance(this.data, true, getGsm8Charset());
             sb.append("MO case: ");
-            sb.append(tpdu.toString());
+            sb.append(tpdu);
             moExists = true;
         } catch (MAPException e) {
+            logger.error(e.getMessage());
         }
         try {
             if (moExists)
                 sb.append("\n");
             SmsTpdu tpdu = SmsTpduImpl.createInstance(this.data, false, getGsm8Charset());
             sb.append("MT case: ");
-            sb.append(tpdu.toString());
+            sb.append(tpdu);
         } catch (MAPException e) {
+            logger.error(e.getMessage());
         }
 
         sb.append("]");

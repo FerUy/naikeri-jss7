@@ -12,12 +12,19 @@ import org.restcomm.protocols.ss7.map.api.MAPMessageType;
 import org.restcomm.protocols.ss7.map.api.MAPOperationCode;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
+import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
+import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.NetworkNodeDiameterAddress;
+import org.restcomm.protocols.ss7.map.api.service.sms.CorrelationID;
 import org.restcomm.protocols.ss7.map.api.service.sms.MtForwardShortMessageRequest;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_DA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SM_RP_OA;
 import org.restcomm.protocols.ss7.map.api.service.sms.SmsSignalInfo;
+import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
+import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.NetworkNodeDiameterAddressImpl;
 
 /**
  *
@@ -26,24 +33,46 @@ import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
  */
 public class MtForwardShortMessageRequestImpl extends SmsMessageImpl implements MtForwardShortMessageRequest {
 
+    protected static final int _TAG_smsOverIPOnlyIndicator = 0;
+    protected static final int _TAG_correlationID = 1;
+    protected static final int _TAG_maximumRetransmissionTime = 2;
+    protected static final int _TAG_smsGmscAddress = 3;
+    protected static final int _TAG_smsGmscDiameterAddress = 4;
+
+    protected String _PrimitiveName = "MtForwardShortMessageRequest";
+
     private SM_RP_DA sM_RP_DA;
     private SM_RP_OA sM_RP_OA;
     private SmsSignalInfoImpl sM_RP_UI;
     private boolean moreMessagesToSend;
     private MAPExtensionContainer extensionContainer;
-
-    protected String _PrimitiveName = "MtForwardShortMessageRequest";
+    private Integer smDeliveryTimer;
+    private Time smDeliveryStartTime;
+    private boolean smsOverIPOnlyIndicator;
+    private CorrelationID correlationID;
+    private Time maximumRetransmissionTime;
+    private ISDNAddressString smsGmscAddress;
+    private NetworkNodeDiameterAddress smsGmscDiameterAddress;
 
     public MtForwardShortMessageRequestImpl() {
     }
 
     public MtForwardShortMessageRequestImpl(SM_RP_DA sM_RP_DA, SM_RP_OA sM_RP_OA, SmsSignalInfo sM_RP_UI,
-            boolean moreMessagesToSend, MAPExtensionContainer extensionContainer) {
+            boolean moreMessagesToSend, MAPExtensionContainer extensionContainer, Integer smDeliveryTimer,
+            Time smDeliveryStartTime, boolean smsOverIPOnlyIndicator, CorrelationID correlationID,
+            Time maximumRetransmissionTime, ISDNAddressString smsGmscAddress, NetworkNodeDiameterAddress smsGmscDiameterAddress) {
         this.sM_RP_DA = sM_RP_DA;
         this.sM_RP_OA = sM_RP_OA;
         this.sM_RP_UI = (SmsSignalInfoImpl) sM_RP_UI;
         this.moreMessagesToSend = moreMessagesToSend;
         this.extensionContainer = extensionContainer;
+        this.smDeliveryTimer = smDeliveryTimer;
+        this.smDeliveryStartTime = smDeliveryStartTime;
+        this.smsOverIPOnlyIndicator = smsOverIPOnlyIndicator;
+        this.correlationID = correlationID;
+        this.maximumRetransmissionTime = maximumRetransmissionTime;
+        this.smsGmscAddress = smsGmscAddress;
+        this.smsGmscDiameterAddress = smsGmscDiameterAddress;
     }
 
     public MAPMessageType getMessageType() {
@@ -72,6 +101,39 @@ public class MtForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
     public MAPExtensionContainer getExtensionContainer() {
         return this.extensionContainer;
+    }
+
+    public Integer getSmDeliveryTimer() {
+        return this.smDeliveryTimer;
+    }
+
+    @Override
+    public Time getSmDeliveryStartTime() {
+        return this.smDeliveryStartTime;
+    }
+
+    public boolean getSmsOverIPOnlyIndicator() {
+        return this.smsOverIPOnlyIndicator;
+    }
+
+    @Override
+    public CorrelationID getCorrelationID() {
+        return this.correlationID;
+    }
+
+    @Override
+    public Time getMaximumRetransmissionTime() {
+        return this.maximumRetransmissionTime;
+    }
+
+    @Override
+    public ISDNAddressString getSmsGmscAddress() {
+        return this.smsGmscAddress;
+    }
+
+    @Override
+    public NetworkNodeDiameterAddress getSmsGmscDiameterAddress() {
+        return this.smsGmscDiameterAddress;
     }
 
     public int getTag() throws MAPException {
@@ -117,6 +179,13 @@ public class MtForwardShortMessageRequestImpl extends SmsMessageImpl implements 
         this.sM_RP_UI = null;
         this.moreMessagesToSend = false;
         this.extensionContainer = null;
+        this.smDeliveryTimer = null;
+        this.smDeliveryStartTime = null;
+        this.smsOverIPOnlyIndicator = false;
+        this.correlationID = null;
+        this.maximumRetransmissionTime = null;
+        this.smsGmscAddress = null;
+        this.smsGmscDiameterAddress = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
         int num = 0;
@@ -163,23 +232,75 @@ public class MtForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
                 default:
                     if (tag == Tag.SEQUENCE && ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
-
                         if (ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter extensionContainer is primitive",
+                                    + ".extensionContainer: Parameter is primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         this.extensionContainer = new MAPExtensionContainerImpl();
                         ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
                     } else if (tag == Tag.NULL && ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
-
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter moreMessagesToSend is not primitive",
+                                    + ".moreMessagesToSend: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         ais.readNull();
                         this.moreMessagesToSend = true;
+                    } else if (tag == Tag.INTEGER && ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
+                        if (!ais.isTagPrimitive()) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".smDeliveryTimer: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        this.smDeliveryTimer = (int) ais.readInteger();
+                    } else if (ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".smDeliveryStartTime: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        smDeliveryStartTime = new TimeImpl();
+                        ((TimeImpl) smDeliveryStartTime).decodeAll(ais);
+                    } else if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
+                        if (tag == _TAG_smsOverIPOnlyIndicator) {
+                            // smsOverIP-OnlyIndicator   [0] NULL   OPTIONAL
+                            if (!ais.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".smsOverIPOnlyIndicator: Parameter is not primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            ais.readNull();
+                            this.smsOverIPOnlyIndicator = true;
+                        } else if (tag == _TAG_correlationID) {
+                            // correlationID   [1] CorrelationID   OPTIONAL
+                            if (ais.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".correlationID: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            this.correlationID = new CorrelationIDImpl();
+                            ((CorrelationIDImpl) this.correlationID).decodeAll(ais);
+                        } else if (tag == _TAG_maximumRetransmissionTime) {
+                            // maximumRetransmissionTime  [2] Time  OPTIONAL
+                            if (!ais.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".maximumRetransmissionTime: Parameter is not primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            this.maximumRetransmissionTime = new TimeImpl();
+                            ((TimeImpl) this.maximumRetransmissionTime).decodeAll(ais);
+                        } else if (tag == _TAG_smsGmscAddress) {
+                            // smsGmscAddress   [3] ISDN-AddressString   OPTIONAL
+                            if (!ais.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".smsGmscAddress: Parameter is not primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            this.smsGmscAddress = new ISDNAddressStringImpl();
+                            ((ISDNAddressStringImpl) this.smsGmscAddress).decodeAll(ais);
+                        } else if (tag == _TAG_smsGmscDiameterAddress) {
+                            if (ais.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".smsGmscDiameterAddress: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                            this.smsGmscDiameterAddress = new NetworkNodeDiameterAddressImpl();
+                            ((NetworkNodeDiameterAddressImpl) this.smsGmscDiameterAddress).decodeAll(ais);
+                        }
                     } else {
-
                         ais.advanceElement();
                     }
                     break;
@@ -220,8 +341,31 @@ public class MtForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
             if (this.moreMessagesToSend)
                 asnOutputStream.writeNull();
+
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
+
+            if (this.smDeliveryTimer != null)
+                asnOutputStream.writeInteger(smDeliveryTimer);
+
+            if (smDeliveryStartTime != null)
+                ((TimeImpl) this.smDeliveryStartTime).encodeAll(asnOutputStream);
+
+            if (smsOverIPOnlyIndicator)
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smsOverIPOnlyIndicator);
+
+            if (correlationID != null)
+                ((CorrelationIDImpl) this.correlationID).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_correlationID);
+
+            if (this.maximumRetransmissionTime != null)
+                ((TimeImpl) this.maximumRetransmissionTime).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_maximumRetransmissionTime);
+
+            if (smsGmscAddress != null)
+                ((ISDNAddressStringImpl) this.smsGmscAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smsGmscAddress);
+
+            if (smsGmscDiameterAddress != null)
+                ((NetworkNodeDiameterAddressImpl) this.smsGmscDiameterAddress).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smsGmscDiameterAddress);
+
         } catch (IOException e) {
             throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (AsnException e) {
@@ -241,23 +385,50 @@ public class MtForwardShortMessageRequestImpl extends SmsMessageImpl implements 
 
         if (this.sM_RP_DA != null) {
             sb.append(", sm_RP_DA=");
-            sb.append(this.sM_RP_DA.toString());
+            sb.append(this.sM_RP_DA);
         }
         if (this.sM_RP_OA != null) {
             sb.append(", sm_RP_OA=");
-            sb.append(this.sM_RP_OA.toString());
+            sb.append(this.sM_RP_OA);
         }
         if (this.sM_RP_UI != null) {
             sb.append(", sm_RP_UI=[");
-            sb.append(this.sM_RP_UI.toString());
+            sb.append(this.sM_RP_UI);
             sb.append("]");
         }
         if (this.extensionContainer != null) {
             sb.append(", extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
         }
         if (this.moreMessagesToSend) {
             sb.append(", moreMessagesToSend");
+        }
+        if (smDeliveryTimer != null) {
+            sb.append(", smDeliveryTimer=");
+            sb.append(this.smDeliveryTimer);
+        }
+        if (smDeliveryStartTime != null) {
+            sb.append(", smDeliveryStartTime=");
+            sb.append(this.smDeliveryStartTime);
+        }
+        if (smsOverIPOnlyIndicator) {
+            sb.append(", smsOverIPOnlyIndicator=");
+        }
+        if (correlationID != null) {
+            sb.append(", correlationID=");
+            sb.append(this.correlationID);
+        }
+        if (maximumRetransmissionTime != null) {
+            sb.append(", maximumRetransmissionTime=");
+            sb.append(this.maximumRetransmissionTime);
+        }
+        if (smsGmscAddress != null) {
+            sb.append(", smsGmscAddress=");
+            sb.append(this.smsGmscAddress);
+        }
+        if (smsGmscDiameterAddress != null) {
+            sb.append(", smsGmscDiameterAddress=");
+            sb.append(this.smsGmscDiameterAddress);
         }
 
         sb.append("]");

@@ -18,7 +18,7 @@ import org.restcomm.protocols.ss7.map.primitives.SequenceBase;
 /**
 *
 * @author kostiantyn nosach
-*
+* @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
 */
 
 public class CorrelationIDImpl extends SequenceBase implements CorrelationID {
@@ -78,7 +78,7 @@ public class CorrelationIDImpl extends SequenceBase implements CorrelationID {
                         case _TAG_HlrId:
                             if (!ais.isTagPrimitive()) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".hlr-id: is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                                        + ".hlrId: is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
                             }
                             this.hlrId = new IMSIImpl();
                             ((IMSIImpl) this.hlrId).decodeAll(ais);
@@ -123,8 +123,11 @@ public class CorrelationIDImpl extends SequenceBase implements CorrelationID {
         if (this.sipUriA != null)
             ((SipUriImpl) this.sipUriA).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SipUriA);
 
-        if (this.sipUriB != null)
+        if (this.sipUriB != null) {
             ((SipUriImpl) this.sipUriB).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SipUriB);
+        } else {
+            throw new MAPException("sipUriB must not be null in " + _PrimitiveName);
+        }
     }
 
     @Override
@@ -139,7 +142,7 @@ public class CorrelationIDImpl extends SequenceBase implements CorrelationID {
             sb.append(", ");
         }
         if(this.sipUriA!=null) {
-            sb.append("sipUriA=");
+            sb.append(", sipUriA=");
             sb.append(this.sipUriA);
             sb.append(", ");
         }

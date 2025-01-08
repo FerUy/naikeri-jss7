@@ -30,7 +30,6 @@ maxAdd-GeographicalInformation INTEGER ::= 91
 -- the maximum length allows support for all the shapes currently defined in 3GPP TS 23.032
 </code>
  *
- *
  * @author sergey vetyutnev
  *
  */
@@ -38,6 +37,9 @@ public interface AddGeographicalInformation extends Serializable {
 
     byte[] getData();
 
+    /**
+     * @return type of shape (all the shapes defined in 3GPP TS 23.032 are allowed)
+     */
     TypeOfShape getTypeOfShape();
 
     /**

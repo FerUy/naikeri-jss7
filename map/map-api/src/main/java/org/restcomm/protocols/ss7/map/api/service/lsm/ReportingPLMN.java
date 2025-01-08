@@ -7,10 +7,13 @@ import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 
 /**
  *
- ReportingPLMN::= SEQUENCE { plmn-Id [0] PLMN-Id, ran-Technology [1] RAN-Technology OPTIONAL, ran-PeriodicLocationSupport [2]
- * NULL OPTIONAL, ...}
- *
- *
+ <code>
+  ReportingPLMN::= SEQUENCE {
+   plmn-Id                        [0] PLMN-Id,
+   ran-Technology                 [1] RAN-Technology  OPTIONAL,
+   ran-PeriodicLocationSupport    [2] NULL            OPTIONAL,
+   ...}
+ </code>
  * @author sergey vetyutnev
  *
  */

@@ -611,7 +611,7 @@ public class Client extends EventTestHarness {
         IMSI imsi2 = this.mapParameterFactory.createIMSI("25007123456789");
 
         clientDialogSms.addMoForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI,
-                MAPExtensionContainerTest.GetTestExtensionContainer(), imsi2);
+                MAPExtensionContainerTest.GetTestExtensionContainer(), imsi2, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.MoForwardShortMessageIndication, null, sequence++));
         clientDialogSms.send();
@@ -643,7 +643,7 @@ public class Client extends EventTestHarness {
         SM_RP_OA sm_RP_OA = this.mapParameterFactory.createSM_RP_OA_ServiceCentreAddressOA(msisdn1);
         SmsSignalInfo sm_RP_UI = new SmsSignalInfoImpl(new byte[] { 21, 22, 23, 24, 25 }, null);
         clientDialogSms.addMtForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI, true,
-                MAPExtensionContainerTest.GetTestExtensionContainer());
+                MAPExtensionContainerTest.GetTestExtensionContainer(), null, null, false, null, null, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.MtForwardShortMessageIndication, null, sequence++));
         clientDialogSms.send();
@@ -1341,11 +1341,11 @@ public class Client extends EventTestHarness {
         ISDNAddressString networkNodeNumber = this.mapParameterFactory.createISDNAddressString(
                 AddressNature.international_number, NumberingPlan.ISDN, "11113333");
         LCSLocationInfo lcsLocationInfo = this.mapParameterFactory.createLCSLocationInfo(networkNodeNumber, null, null, false,
-                null, null, null, null, null);
+                null, null, null, null, null, null, null);
 
         clientDialogLsm.addSubscriberLocationReportRequest(LCSEvent.emergencyCallOrigination, lcsClientID, lcsLocationInfo,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, false,
-                null, null, null, null, false, null, null, null);
+                null, null, null, null, false, null, null, null, null, null, null);
 
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.SubscriberLocationReport, null, sequence++));
         clientDialogLsm.send();
@@ -1679,7 +1679,7 @@ public class Client extends EventTestHarness {
         ssList.add(ssCode);
 
         clientDialogMobility.addDeleteSubscriberDataRequest(imsi, basicServiceList, ssList, false, null, false, false, false, null, null, false, null, false,
-                false, null, false, false, null, false, false);
+                false, null, false, false, null, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.DeleteSubscriberData, null, sequence++));
         clientDialogMobility.send();
 
@@ -1699,7 +1699,7 @@ public class Client extends EventTestHarness {
         ZoneCode egionalSubscriptionIdentifier = this.mapParameterFactory.createZoneCode(10);
 
         clientDialogMobility.addDeleteSubscriberDataRequest(imsi, null, null, true, egionalSubscriptionIdentifier, false, false, false, null, null, false,
-                null, false, false, null, false, false, null, false, false);
+                null, false, false, null, false, false, null, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
         this.observerdEvents.add(TestEvent.createSentEvent(EventType.DeleteSubscriberData, null, sequence++));
         clientDialogMobility.send();
 

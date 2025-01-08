@@ -1,8 +1,18 @@
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 /**
- * AreaType ::= ENUMERATED { countryCode (0), plmnId (1), locationAreaId (2), routingAreaId (3), cellGlobalId (4), ... ,
- * utranCellId (5) }
+ <code>
+ AreaType ::= ENUMERATED {
+   countryCode (0),
+   plmnId (1),
+   locationAreaId (2),
+   routingAreaId (3),
+   cellGlobalId (4),
+   ...,
+   utranCellId (5)
+ }
+ </code>
+
  *
  * @author amit bhayani
  *

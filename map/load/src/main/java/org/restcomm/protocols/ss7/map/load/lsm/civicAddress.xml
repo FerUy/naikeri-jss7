@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<presence xmlns="urn:ietf:params:xml:ns:pidf"
+          xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
+          xmlns:cl="urn:ietf:params:xml:ns:pidf:geopriv10:civicLoc"
+          entity="pres:geotarget@example.com">
+    <tuple id="sg89ae">
+        <status>
+            <gp:geopriv>
+                <gp:location-info>
+                    <cl:civicAddress>
+                        <cl:country>US</cl:country>
+                        <cl:A1>New York</cl:A1>
+                        <cl:A3>New York</cl:A3>
+                        <cl:A6>Broadway</cl:A6>
+                        <cl:HNO>123</cl:HNO>
+                        <cl:LOC>Suite 75</cl:LOC>
+                        <cl:PC>10027-0401</cl:PC>
+                    </cl:civicAddress>
+                </gp:location-info>
+            </gp:geopriv>
+        </status>
+    </tuple>
+</presence>

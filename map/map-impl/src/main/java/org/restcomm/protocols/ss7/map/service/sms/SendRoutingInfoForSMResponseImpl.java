@@ -251,12 +251,8 @@ public class SendRoutingInfoForSMResponseImpl extends SmsMessageImpl implements 
         StringBuilder sb = new StringBuilder();
         sb.append("SendRoutingInfoForSMResponse [");
 
-        if (this.getMAPDialog() != null) {
-            sb.append("DialogId=").append(this.getMAPDialog().getLocalDialogId());
-        }
-
         if (this.imsi != null) {
-            sb.append(", imsi=");
+            sb.append("imsi=");
             sb.append(this.imsi);
         }
         if (this.locationInfoWithLMSI != null) {

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.locationManagement;
 
 import static org.testng.Assert.assertEquals;
@@ -15,7 +14,6 @@ import org.restcomm.protocols.ss7.map.MAPParameterFactoryImpl;
 import org.restcomm.protocols.ss7.map.api.MAPParameterFactory;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPPrivateExtension;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.CancelLocationResponseImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -33,14 +31,12 @@ public class CancelLocationResponseTest {
     public static MAPExtensionContainer GetTestExtensionContainer() {
         MAPParameterFactory mapServiceFactory = new MAPParameterFactoryImpl();
 
-        ArrayList<MAPPrivateExtension> al = new ArrayList<MAPPrivateExtension>();
+        ArrayList<MAPPrivateExtension> al = new ArrayList<>();
         al.add(mapServiceFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 4 }, new byte[] { 11, 12, 13, 14, 15 }));
         al.add(mapServiceFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 6 }, null));
         al.add(mapServiceFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 5 }, new byte[] { 21, 22, 23, 24, 25, 26 }));
 
-        MAPExtensionContainer cnt = mapServiceFactory.createMAPExtensionContainer(al, new byte[] { 31, 32, 33 });
-
-        return cnt;
+        return mapServiceFactory.createMAPExtensionContainer(al, new byte[] { 31, 32, 33 });
     }
 
     @Test(groups = { "functional.decode" })

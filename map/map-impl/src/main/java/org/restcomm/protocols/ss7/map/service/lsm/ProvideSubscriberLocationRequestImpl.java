@@ -58,9 +58,9 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
     private static final int _TAG_LCS_PRIVACY_CHECK = 13;
     private static final int _TAG_AREA_EVENT_INFO = 14;
     private static final int _TAG_H_GMLC_ADDRESS = 15;
-    private static final int _TAG_mo_lrShortCircuitIndicator = 16;
-    private static final int _TAG_periodicLDRInfo = 17;
-    private static final int _TAG_reportingPLMNList = 18;
+    private static final int _TAG_MO_LR_SHORT_CIRCUIT_INDICATOR = 16;
+    private static final int _TAG_PERIODIC_LDR_INFO = 17;
+    private static final int _TAG_REPORTING_PLMN_LIST = 18;
 
     public static final String _PrimitiveName = "ProvideSubscriberLocationRequest";
 
@@ -94,24 +94,27 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
     }
 
     /**
-     * @param locationType
-     * @param mlcNumber
-     * @param lcsClientID
-     * @param privacyOverride
-     * @param imsi
-     * @param msisdn
-     * @param lmsi
-     * @param imei
-     * @param lcsPriority
-     * @param lcsQoS
-     * @param extensionContainer
-     * @param supportedGADShapes
-     * @param lcsReferenceNumber
-     * @param lcsServiceTypeID
-     * @param lcsCodeword
-     * @param lcsPrivacyCheck
-     * @param areaEventInfo
-     * @param hgmlcAddress
+     * @param locationType mandatory LocationType
+     * @param mlcNumber mandatory ISDN-AddressString
+     * @param lcsClientID [0] LCS-ClientID OPTIONAL
+     * @param privacyOverride [1] NULL
+     * @param imsi [2] IMSI OPTIONAL
+     * @param msisdn [3] ISDN-AddressString OPTIONAL
+     * @param lmsi [4] LMSI OPTIONAL
+     * @param imei [5] IMEI
+     * @param lcsPriority [6] LCS-Priority OPTIONAL
+     * @param lcsQoS [7] LCS-QoS OPTIONAL
+     * @param extensionContainer [8] ExtensionContainer OPTIONAL
+     * @param supportedGADShapes [9] SupportedGADShapes OPTIONAL
+     * @param lcsReferenceNumber [10] LCS-ReferenceNumber OPTIONAL
+     * @param lcsServiceTypeID [11] LCSServiceTypeID OPTIONAL
+     * @param lcsCodeword [12] LCSCodeword OPTIONAL
+     * @param lcsPrivacyCheck [13] LCS-PrivacyCheck OPTIONAL
+     * @param areaEventInfo [14] AreaEventInfo OPTIONAL
+     * @param hgmlcAddress [15] GSN-Address OPTIONAL
+     * @param moLrShortCircuitIndicator [16] NULL OPTIONAL
+     * @param periodicLDRInfo [17] PeriodicLDRInfo OPTIONAL
+     * @param reportingPLMNList [18] ReportingPLMNList OPTIONAL
      */
     public ProvideSubscriberLocationRequestImpl(LocationType locationType, ISDNAddressString mlcNumber,
             LCSClientID lcsClientID, boolean privacyOverride, IMSI imsi, ISDNAddressString msisdn, LMSI lmsi, IMEI imei,
@@ -512,7 +515,7 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
                                             + ": Parameter [lcs-Priority [6] LCS-Priority ] is not primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 }
-                                this.lcsPriority = LCSPriority.getInstance((int) ais.readOctetString()[0]);
+                                this.lcsPriority = LCSPriority.getInstance(ais.readOctetString()[0]);
                                 break;
                             case _TAG_LCS_QOS:
                                 // lcs-QoS [7] LCS-QoS OPTIONAL,
@@ -602,7 +605,7 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
                                 this.hgmlcAddress = new GSNAddressImpl();
                                 ((GSNAddressImpl) this.hgmlcAddress).decodeAll(ais);
                                 break;
-                            case _TAG_mo_lrShortCircuitIndicator:
+                            case _TAG_MO_LR_SHORT_CIRCUIT_INDICATOR:
                                 // mo_lrShortCircuitIndicator
                                 if (!ais.isTagPrimitive()) {
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -612,7 +615,7 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
                                 ais.readNull();
                                 this.moLrShortCircuitIndicator = true;
                                 break;
-                            case _TAG_periodicLDRInfo:
+                            case _TAG_PERIODIC_LDR_INFO:
                                 // periodicLDRInfo
                                 if (ais.isTagPrimitive()) {
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -622,7 +625,7 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
                                 this.periodicLDRInfo = new PeriodicLDRInfoImpl();
                                 ((PeriodicLDRInfoImpl) this.periodicLDRInfo).decodeAll(ais);
                                 break;
-                            case _TAG_reportingPLMNList:
+                            case _TAG_REPORTING_PLMN_LIST:
                                 // reportingPLMNList
                                 if (ais.isTagPrimitive()) {
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
@@ -811,7 +814,7 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
         if (this.moLrShortCircuitIndicator) {
             // moLrShortCircuitIndicator
             try {
-                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_mo_lrShortCircuitIndicator);
+                asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_MO_LR_SHORT_CIRCUIT_INDICATOR);
             } catch (IOException e) {
                 throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter moLrShortCircuitIndicator",
                         e);
@@ -822,12 +825,12 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
         }
 
         if (this.periodicLDRInfo != null) {
-            ((PeriodicLDRInfoImpl) this.periodicLDRInfo).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_periodicLDRInfo);
+            ((PeriodicLDRInfoImpl) this.periodicLDRInfo).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_PERIODIC_LDR_INFO);
         }
 
         if (this.reportingPLMNList != null) {
             ((ReportingPLMNListImpl) this.reportingPLMNList).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_reportingPLMNList);
+                    _TAG_REPORTING_PLMN_LIST);
         }
     }
 
@@ -839,85 +842,85 @@ public class ProvideSubscriberLocationRequestImpl extends LsmMessageImpl impleme
 
         if (this.locationType != null) {
             sb.append("locationType=");
-            sb.append(locationType.toString());
+            sb.append(locationType);
         }
         if (this.mlcNumber != null) {
             sb.append(", mlcNumber=");
-            sb.append(mlcNumber.toString());
+            sb.append(mlcNumber);
         }
         if (this.lcsClientID != null) {
             sb.append(", lcsClientID=");
-            sb.append(lcsClientID.toString());
+            sb.append(lcsClientID);
         }
         if (this.privacyOverride) {
             sb.append(", privacyOverride");
         }
         if (this.imsi != null) {
             sb.append(", imsi=");
-            sb.append(imsi.toString());
+            sb.append(imsi);
         }
         if (this.msisdn != null) {
             sb.append(", msisdn=");
-            sb.append(msisdn.toString());
+            sb.append(msisdn);
         }
         if (this.lmsi != null) {
             sb.append(", lmsi=");
-            sb.append(lmsi.toString());
+            sb.append(lmsi);
         }
         if (this.imei != null) {
             sb.append(", imei=");
-            sb.append(imei.toString());
+            sb.append(imei);
         }
         if (this.lcsPriority != null) {
             sb.append(", lcsPriority=");
-            sb.append(lcsPriority.toString());
+            sb.append(lcsPriority);
         }
         if (this.lcsQoS != null) {
             sb.append(", lcsQoS=");
-            sb.append(lcsQoS.toString());
+            sb.append(lcsQoS);
         }
         if (this.extensionContainer != null) {
             sb.append(", extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
         }
         if (this.supportedGADShapes != null) {
             sb.append(", supportedGADShapes=");
-            sb.append(supportedGADShapes.toString());
+            sb.append(supportedGADShapes);
         }
         if (this.lcsReferenceNumber != null) {
             sb.append(", lcsReferenceNumber=");
-            sb.append(lcsReferenceNumber.toString());
+            sb.append(lcsReferenceNumber);
         }
         if (this.lcsServiceTypeID != null) {
             sb.append(", lcsServiceTypeID=");
-            sb.append(lcsServiceTypeID.toString());
+            sb.append(lcsServiceTypeID);
         }
         if (this.lcsCodeword != null) {
             sb.append(", lcsCodeword=");
-            sb.append(lcsCodeword.toString());
+            sb.append(lcsCodeword);
         }
         if (this.lcsPrivacyCheck != null) {
             sb.append(", lcsPrivacyCheck=");
-            sb.append(lcsPrivacyCheck.toString());
+            sb.append(lcsPrivacyCheck);
         }
         if (this.areaEventInfo != null) {
             sb.append(", areaEventInfo=");
-            sb.append(areaEventInfo.toString());
+            sb.append(areaEventInfo);
         }
         if (this.hgmlcAddress != null) {
             sb.append(", hgmlcAddress=");
-            sb.append(hgmlcAddress.toString());
+            sb.append(hgmlcAddress);
         }
         if (this.moLrShortCircuitIndicator) {
             sb.append(", moLrShortCircuitIndicator");
         }
         if (this.periodicLDRInfo != null) {
             sb.append(", periodicLDRInfo=");
-            sb.append(periodicLDRInfo.toString());
+            sb.append(periodicLDRInfo);
         }
         if (this.reportingPLMNList != null) {
             sb.append(", reportingPLMNList=");
-            sb.append(reportingPLMNList.toString());
+            sb.append(reportingPLMNList);
         }
 
         sb.append("]");

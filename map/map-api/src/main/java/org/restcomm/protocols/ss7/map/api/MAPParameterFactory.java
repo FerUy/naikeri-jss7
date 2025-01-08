@@ -69,6 +69,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.LCSFormatIndicator;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSPrivacyCheck;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoS;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoSClass;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSRequestorID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LocationEstimateType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LocationType;
@@ -77,6 +78,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.PeriodicLDRInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PrivacyCheckRelatedAction;
 import org.restcomm.protocols.ss7.map.api.service.lsm.RANTechnology;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMN;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ResponseTime;
@@ -477,7 +479,7 @@ public interface MAPParameterFactory {
     /**
      * Creates a new instance of {@link AddressString}
      *
-     * @param extension
+     * @param extension extension
      * @param addNature The nature of this AddressString. See
      * {@link AddressNature}.
      * @param numPlan The {@link NumberingPlan} of this AddressString
@@ -513,8 +515,8 @@ public interface MAPParameterFactory {
     /**
      * Creates a new instance of {@link SM_RP_DA} with imsi parameter
      *
-     * @param imsi
-     * @return
+     * @param imsi IMSI
+     * @return SM_RP_DA
      */
     SM_RP_DA createSM_RP_DA(IMSI imsi);
 
@@ -522,45 +524,45 @@ public interface MAPParameterFactory {
      * Creates a new instance of {@link SM_RP_DA} with lmsi parameter
      *
      * @param lmsi
-     * @return
+     * @return SM_RP_DA
      */
     SM_RP_DA createSM_RP_DA(LMSI lmsi);
 
     /**
      * Creates a new instance of {@link SM_RP_DA} with serviceCentreAddressDA parameter
      *
-     * @param serviceCentreAddressDA
-     * @return
+     * @param serviceCentreAddressDA SC destination address
+     * @return SM_RP_DA
      */
     SM_RP_DA createSM_RP_DA(AddressString serviceCentreAddressDA);
 
     /**
      * Creates a new instance of {@link SM_RP_DA} with noSM_RP_DA parameter
      *
-     * @return
+     * @return SM_RP_DA
      */
     SM_RP_DA createSM_RP_DA();
 
     /**
      * Creates a new instance of {@link SM_RP_OA} with msisdn parameter
      *
-     * @param msisdn
-     * @return
+     * @param msisdn MSISDN
+     * @return SM_RP_OA
      */
     SM_RP_OA createSM_RP_OA_Msisdn(ISDNAddressString msisdn);
 
     /**
      * Creates a new instance of {@link SM_RP_OA} with serviceCentreAddressOA parameter
      *
-     * @param serviceCentreAddressOA
-     * @return
+     * @param serviceCentreAddressOA SC destination address
+     * @return SM_RP_OA
      */
     SM_RP_OA createSM_RP_OA_ServiceCentreAddressOA(AddressString serviceCentreAddressOA);
 
     /**
      * Creates a new instance of {@link SM_RP_OA} with noSM_RP_OA parameter
      *
-     * @return
+     * @return SM_RP_OA
      */
     SM_RP_OA createSM_RP_OA();
 
@@ -575,7 +577,7 @@ public interface MAPParameterFactory {
     /**
      * Creates a new instance of {@link MAPUserAbortChoice}
      *
-     * @return
+     * @return MAPUserAbortChoice
      */
     MAPUserAbortChoice createMAPUserAbortChoice();
 
@@ -593,14 +595,14 @@ public interface MAPParameterFactory {
      *
      * @param oId PrivateExtension ObjectIdentifier
      * @param data PrivateExtension data (ASN.1 encoded byte array with tag bytes)
-     * @return
+     * @return MAPPrivateExtension
      */
     MAPPrivateExtension createMAPPrivateExtension(long[] oId, byte[] data);
 
     /**
      * @param privateExtensionList List of PrivateExtensions
      * @param pcsExtensions pcsExtensions value (ASN.1 encoded byte array without tag byte)
-     * @return
+     * @return MAPExtensionContainer
      */
     MAPExtensionContainer createMAPExtensionContainer(ArrayList<MAPPrivateExtension> privateExtensionList, byte[] pcsExtensions);
 
@@ -919,13 +921,13 @@ public interface MAPParameterFactory {
     LCSLocationInfo createLCSLocationInfo(ISDNAddressString networkNodeNumber, LMSI lmsi,
             MAPExtensionContainer extensionContainer, boolean gprsNodeIndicator, AdditionalNumber additionalNumber,
             SupportedLCSCapabilitySets supportedLCSCapabilitySets, SupportedLCSCapabilitySets additionalLCSCapabilitySets,
-            DiameterIdentity mmeName, DiameterIdentity aaaServerName);
+            DiameterIdentity mmeName, DiameterIdentity aaaServerName, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm);
 
     LCSPrivacyCheck createLCSPrivacyCheck(PrivacyCheckRelatedAction callSessionUnrelated,
             PrivacyCheckRelatedAction callSessionRelated);
 
     LCSQoS createLCSQoS(Integer horizontalAccuracy, Integer verticalAccuracy, boolean verticalCoordinateRequest,
-            ResponseTime responseTime, MAPExtensionContainer extensionContainer);
+            ResponseTime responseTime, MAPExtensionContainer extensionContainer, boolean velocityRequest, LCSQoSClass lcsQosClass);
 
     LCSRequestorID createLCSRequestorID(CBSDataCodingScheme dataCodingScheme, USSDString requestorIDString,
             LCSFormatIndicator lcsFormatIndicator);
@@ -933,7 +935,7 @@ public interface MAPParameterFactory {
     LocationType createLocationType(final LocationEstimateType locationEstimateType,
             final DeferredLocationEventType deferredLocationEventType);
 
-    PeriodicLDRInfo createPeriodicLDRInfo(int reportingAmount, int reportingInterval);
+    PeriodicLDRInfo createPeriodicLDRInfo(int reportingAmount, int reportingInterval, ReportingOptionMilliseconds reportingOptionMilliseconds);
 
     PositioningDataInformation createPositioningDataInformation(byte[] data);
 

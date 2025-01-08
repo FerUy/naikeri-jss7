@@ -4,10 +4,9 @@ package org.restcomm.protocols.ss7.map.api.primitives;
 /**
 *
 <code>
-Address Type 0 and Address Length 4 are used when Address is an IPv4 address.
-Address Type 1 and Address Length 16 are used when Address is an IPv6 address.
+ Address Type 0 and Address Length 4 are used when Address is an IPv4 address.
+ Address Type 1 and Address Length 16 are used when Address is an IPv6 address.
 </code>
-*
 *
 * @author sergey vetyutnev
 *

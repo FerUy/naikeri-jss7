@@ -26,7 +26,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.Suppor
 /**
  *
  * @author amit bhayani
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo {
 
@@ -34,10 +34,12 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
     private static final int _TAG_EXTENSION_CONTAINER = 1;
     private static final int _TAG_GPRS_NODE_IND = 2;
     private static final int _TAG_ADDITIONAL_NUMBER = 3;
-    private static final int _TAG_SUPPORTED_LCS_CAPBILITY_SET = 4;
-    private static final int _TAG_ADDITIONAL_LCS_CAPBILITY_SET = 5;
-    private static final int _TAG_mme_Name = 6;
-    private static final int _TAG_aaa_Server_Name = 8;
+    private static final int _TAG_SUPPORTED_LCS_CAPABILITY_SETS = 4;
+    private static final int __TAG_ADDITIONAL_LCS_CAPABILITY_SETS = 5;
+    private static final int _TAG_MME_NAME = 6;
+    private static final int _TAG_AAA_SERVER_NAME = 8;
+    private static final int _TAG_SGSN_NAME = 9;
+    private static final int _TAG_SGSN_REALM = 10;
 
     private ISDNAddressString networkNodeNumber;
     private LMSI lmsi;
@@ -48,6 +50,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
     private SupportedLCSCapabilitySets additionalLCSCapabilitySets;
     private DiameterIdentity mmeName;
     private DiameterIdentity aaaServerName;
+    private DiameterIdentity sgsnName;
+    private DiameterIdentity sgsnRealm;
 
     /**
      *
@@ -57,18 +61,20 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
     }
 
     /**
-     * @param networkNodeNumber
-     * @param lmsi
-     * @param extensionContainer
-     * @param gprsNodeIndicator
-     * @param additionalNumber
-     * @param supportedLCSCapabilitySets
-     * @param additionalLCSCapabilitySets
+     * @param networkNodeNumber NetworkNode-number can be msc-number, sgsn-number or a dummy value of "0"
+     * @param lmsi optional
+     * @param extensionContainer optional
+     * @param gprsNodeIndicator optional
+     * @param additionalNumber optional
+     * @param supportedLCSCapabilitySets optional
+     * @param additionalLCSCapabilitySets optional
+     * @param mmeName optional
+     * @param aaaServerName optional
      */
     public LCSLocationInfoImpl(ISDNAddressString networkNodeNumber, LMSI lmsi, MAPExtensionContainer extensionContainer,
             boolean gprsNodeIndicator, AdditionalNumber additionalNumber,
             SupportedLCSCapabilitySets supportedLCSCapabilitySets, SupportedLCSCapabilitySets additionalLCSCapabilitySets,
-            DiameterIdentity mmeName, DiameterIdentity aaaServerName) {
+            DiameterIdentity mmeName, DiameterIdentity aaaServerName, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm) {
         super("LCSLocationInfo");
 
         this.networkNodeNumber = networkNodeNumber;
@@ -80,6 +86,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
         this.additionalLCSCapabilitySets = additionalLCSCapabilitySets;
         this.mmeName = mmeName;
         this.aaaServerName = aaaServerName;
+        this.sgsnName = sgsnName;
+        this.sgsnRealm = sgsnRealm;
     }
 
     /*
@@ -145,12 +153,40 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
         return this.additionalLCSCapabilitySets;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo#getMmeName()
+     */
     public DiameterIdentity getMmeName() {
         return mmeName;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo#getAaaServerName()
+     */
     public DiameterIdentity getAaaServerName() {
         return aaaServerName;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo#getSgsnName()
+     */
+    public DiameterIdentity getSgsnName() {
+        return sgsnName;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo#getSgsnRealm()
+     */
+    public DiameterIdentity getSgsnRealm() {
+        return sgsnRealm;
     }
 
     protected void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
@@ -163,6 +199,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
         this.additionalLCSCapabilitySets = null;
         this.mmeName = null;
         this.aaaServerName = null;
+        this.sgsnName = null;
+        this.sgsnRealm = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
 
@@ -226,9 +264,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                         ais2.readTag();
                         ((AdditionalNumberImpl) this.additionalNumber).decodeAll(ais2);
                         break;
-                    case _TAG_SUPPORTED_LCS_CAPBILITY_SET:
-                        // supportedLCS-CapabilitySets [4]
-                        // SupportedLCS-CapabilitySets
+                    case _TAG_SUPPORTED_LCS_CAPABILITY_SETS:
+                        // supportedLCS-CapabilitySets   [4] SupportedLCS-CapabilitySets OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException(
                                     "Error while decoding "
@@ -239,9 +276,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                         this.supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl();
                         ((SupportedLCSCapabilitySetsImpl) this.supportedLCSCapabilitySets).decodeAll(ais);
                         break;
-                    case _TAG_ADDITIONAL_LCS_CAPBILITY_SET:
-                        // additional-LCS-CapabilitySets [5]
-                        // SupportedLCS-CapabilitySets OPTIONAL
+                    case __TAG_ADDITIONAL_LCS_CAPABILITY_SETS:
+                        // additional-LCS-CapabilitySets [5] SupportedLCS-CapabilitySets OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException(
                                     "Error while decoding "
@@ -252,8 +288,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                         this.additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl();
                         ((SupportedLCSCapabilitySetsImpl) this.additionalLCSCapabilitySets).decodeAll(ais);
                         break;
-                    case _TAG_mme_Name:
-                        // mmeName
+                    case _TAG_MME_NAME:
+                        // mme-Name [6] DiameterIdentity OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter mmeName is not primitive",
@@ -262,8 +298,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                         this.mmeName = new DiameterIdentityImpl();
                         ((DiameterIdentityImpl) this.mmeName).decodeAll(ais);
                         break;
-                    case _TAG_aaa_Server_Name:
-                        // aaaServerName
+                    case _TAG_AAA_SERVER_NAME:
+                        // aaa-Server-Name [8] DiameterIdentity OPTIONAL
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter aaaServerName is not primitive",
@@ -271,6 +307,26 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                         }
                         this.aaaServerName = new DiameterIdentityImpl();
                         ((DiameterIdentityImpl) this.aaaServerName).decodeAll(ais);
+                        break;
+                    case _TAG_SGSN_NAME:
+                        // sgsn-Name [9] DiameterIdentity OPTIONAL
+                        if (!ais.isTagPrimitive()) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ": Parameter sgsnName is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        this.sgsnName = new DiameterIdentityImpl();
+                        ((DiameterIdentityImpl) this.sgsnName).decodeAll(ais);
+                        break;
+                    case _TAG_SGSN_REALM:
+                        // sgsn-Realm [10] DiameterIdentity OPTIONAL
+                        if (!ais.isTagPrimitive()) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ": Parameter sgsnRealm is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        this.sgsnRealm = new DiameterIdentityImpl();
+                        ((DiameterIdentityImpl) this.sgsnRealm).decodeAll(ais);
                         break;
                     default:
                         ais.advanceElement();
@@ -335,24 +391,35 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
         }
 
         if (this.supportedLCSCapabilitySets != null) {
-            // supportedLCS-CapabilitySets [4] SupportedLCS-CapabilitySets
-            // OPTIONAL,
+            // supportedLCS-CapabilitySets [4] SupportedLCS-CapabilitySets OPTIONAL
             ((SupportedLCSCapabilitySetsImpl) this.supportedLCSCapabilitySets).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_SUPPORTED_LCS_CAPBILITY_SET);
+                    _TAG_SUPPORTED_LCS_CAPABILITY_SETS);
         }
 
         if (this.additionalLCSCapabilitySets != null) {
-            // additional-LCS-CapabilitySets [5] SupportedLCS-CapabilitySets
-            // OPTIONAL
+            // additional-LCS-CapabilitySets [5] SupportedLCS-CapabilitySets OPTIONAL
             ((SupportedLCSCapabilitySetsImpl) this.additionalLCSCapabilitySets).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_ADDITIONAL_LCS_CAPBILITY_SET);
+                    __TAG_ADDITIONAL_LCS_CAPABILITY_SETS);
         }
 
         if (this.mmeName != null) {
-            ((DiameterIdentityImpl) this.mmeName).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_mme_Name);
+            // mme-Name [6] DiameterIdentity OPTIONAL
+            ((DiameterIdentityImpl) this.mmeName).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_MME_NAME);
         }
+
         if (this.aaaServerName != null) {
-            ((DiameterIdentityImpl) this.aaaServerName).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_aaa_Server_Name);
+            // aaa-Server-Name [8] DiameterIdentity OPTIONAL
+            ((DiameterIdentityImpl) this.aaaServerName).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_AAA_SERVER_NAME);
+        }
+
+        if (this.sgsnName != null) {
+            // sgsn-Name [9] DiameterIdentity OPTIONAL
+            ((DiameterIdentityImpl) this.sgsnName).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SGSN_NAME);
+        }
+
+        if (this.sgsnRealm != null) {
+            // sgsn-Realm [10] DiameterIdentity OPTIONAL
+            ((DiameterIdentityImpl) this.sgsnRealm).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_SGSN_REALM);
         }
     }
 
@@ -369,6 +436,8 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
         result = prime * result + ((supportedLCSCapabilitySets == null) ? 0 : supportedLCSCapabilitySets.hashCode());
         result = prime * result + ((mmeName == null) ? 0 : mmeName.hashCode());
         result = prime * result + ((aaaServerName == null) ? 0 : aaaServerName.hashCode());
+        result = prime * result + ((sgsnName == null) ? 0 : sgsnName.hashCode());
+        result = prime * result + ((sgsnRealm == null) ? 0 : sgsnRealm.hashCode());
         return result;
     }
 
@@ -424,6 +493,16 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
                 return false;
         } else if (!aaaServerName.equals(other.aaaServerName))
             return false;
+        if (sgsnName == null) {
+            if (other.sgsnName != null)
+                return false;
+        } else if (!sgsnName.equals(other.sgsnName))
+            return false;
+        if (sgsnRealm == null) {
+            if (other.sgsnRealm != null)
+                return false;
+        } else if (!sgsnRealm.equals(other.sgsnRealm))
+            return false;
         return true;
     }
 
@@ -467,6 +546,14 @@ public class LCSLocationInfoImpl extends SequenceBase implements LCSLocationInfo
         if (this.aaaServerName != null) {
             sb.append(", aaaServerName=");
             sb.append(this.aaaServerName);
+        }
+        if (this.sgsnName != null) {
+            sb.append(", sgsnName=");
+            sb.append(this.sgsnName);
+        }
+        if (this.sgsnRealm != null) {
+            sb.append(", sgsnRealm=");
+            sb.append(this.sgsnRealm);
         }
 
         sb.append("]");

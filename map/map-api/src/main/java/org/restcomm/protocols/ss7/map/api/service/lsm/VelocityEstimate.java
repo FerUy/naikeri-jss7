@@ -5,18 +5,40 @@ import java.io.Serializable;
 
 /**
  *
- VelocityEstimate ::= OCTET STRING (SIZE (4..7)) -- Refers to Velocity description defined in 3GPP TS 23.032. -- This is
- * composed of 4 or more octets with an internal structure according to -- 3GPP TS 23.032 -- Octet 1: Type of velocity, only the
- * following types in 3GPP TS 23.032 are allowed: -- (a) Horizontal Velocity -- (b) Horizontal with Vertical Velocity -- (c)
- * Horizontal Velocity with Uncertainty -- (d) Horizontal with Vertical Velocity and Uncertainty -- For types Horizontal with
- * Vertical Velocity and Horizontal with Vertical Velocity -- and Uncertainty, the direction of the Vertical Speed is also
- * included in Octet 1 -- Any other value in octet 1 shall be treated as invalid -- Octets 2 to 4 for case (a) Horizontal
- * velocity: -- Bearing 1 octet -- Horizontal Speed 2 octets -- Octets 2 to 5 for case (b) Horizontal with Vertical Velocity: --
- * Bearing 1 octet -- Horizontal Speed 2 octets -- Vertical Speed 1 octet -- Octets 2 to 5 for case (c) Horizontal velocity with
- * Uncertainty: -- Bearing 1 octet -- Horizontal Speed 2 octets -- Uncertainty Speed 1 octet -- Octets 2 to 7 for case (d)
- * Horizontal with Vertical Velocity and Uncertainty: -- Bearing 1 octet -- Horizontal Speed 2 octets -- Vertical Speed 1 octet
- * -- Horizontal Uncertainty Speed 1 octet -- Vertical Uncertainty Speed 1 octet
- *
+ <code>
+ VelocityEstimate ::= OCTET STRING (SIZE (4..7))
+ -- Refers to Velocity description defined in 3GPP TS 23.032.
+ -- This is composed of 4 or more octets with an internal structure according to 3GPP TS 23.032
+ -- Octet 1: Type of velocity, only the following types in 3GPP TS 23.032 are allowed:
+ -- (a) Horizontal Velocity
+ -- (b) Horizontal with Vertical Velocity
+ -- (c) Horizontal Velocity with Uncertainty
+ -- (d) Horizontal with Vertical Velocity and Uncertainty
+ -- For types Horizontal with Vertical Velocity and Horizontal with Vertical Velocity
+ -- and Uncertainty, the direction of the Vertical Speed is also included in Octet 1
+ -- Any other value in octet 1 shall be treated as invalid
+
+ -- Octets 2 to 4 for case (a) Horizontal velocity:
+ -- Bearing             1 octet
+ -- Horizontal Speed    2 octets
+
+ -- Octets 2 to 5 for case (b) – Horizontal with Vertical Velocity:
+ -- Bearing             1 octet
+ -- Horizontal Speed    2 octets
+ -- Vertical Speed      1 octet
+
+ -- Octets 2 to 5 for case (c) – Horizontal velocity with Uncertainty:
+ -- Bearing             1 octet
+ -- Horizontal Speed    2 octets
+ -- Uncertainty Speed   1 octet
+
+ -- Octets 2 to 7 for case (d) – Horizontal with Vertical Velocity and Uncertainty:
+ -- Bearing                         1 octet
+ -- Horizontal Speed                2 octets
+ -- Vertical Speed                  1 octet
+ -- Horizontal Uncertainty Speed    1 octet
+ -- Vertical Uncertainty Speed      1 octet
+ </code>
  *
  * @author sergey vetyutnev
  *

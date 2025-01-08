@@ -139,7 +139,7 @@ public class GSNAddressImpl extends OctetStringBase implements GSNAddress {
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<GSNAddressImpl> GSN_ADDRESS_XML = new XMLFormat<GSNAddressImpl>(GSNAddressImpl.class) {
+    protected static final XMLFormat<GSNAddressImpl> GSN_ADDRESS_XML = new XMLFormat<>(GSNAddressImpl.class) {
 
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, GSNAddressImpl gsnAddress) throws XMLStreamException {
@@ -151,6 +151,7 @@ public class GSNAddressImpl extends OctetStringBase implements GSNAddress {
                     byte[] addressData = DatatypeConverter.parseHexBinary(s);
                     gsnAddress.fillData(addressType, addressData);
                 } catch (Exception e) {
+                    throw new XMLStreamException(e);
                 }
             }
         }

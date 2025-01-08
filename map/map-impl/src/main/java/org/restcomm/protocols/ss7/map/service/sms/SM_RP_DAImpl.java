@@ -186,15 +186,15 @@ public class SM_RP_DAImpl implements SM_RP_DA, MAPAsnPrimitive {
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(this.imsi.toString());
+            sb.append(this.imsi);
         }
         if (this.lmsi != null) {
             sb.append("lmsi=");
-            sb.append(this.lmsi.toString());
+            sb.append(this.lmsi);
         }
         if (this.serviceCentreAddressDA != null) {
             sb.append("serviceCentreAddressDA=");
-            sb.append(this.serviceCentreAddressDA.toString());
+            sb.append(this.serviceCentreAddressDA);
         }
 
         sb.append("]");

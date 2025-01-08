@@ -19,7 +19,7 @@ import org.restcomm.protocols.ss7.map.api.smstpdu.UserDataHeaderElement;
  */
 public class UserDataHeaderImpl implements UserDataHeader {
 
-    private Map<Integer, byte[]> data = new HashMap<Integer, byte[]>();
+    private Map<Integer, byte[]> data = new HashMap<>();
 
     public UserDataHeaderImpl() {
     }
@@ -46,7 +46,7 @@ public class UserDataHeaderImpl implements UserDataHeader {
 
     public byte[] getEncodedData() {
 
-        if (data.size() == 0)
+        if (data.isEmpty())
             return null;
 
         ByteArrayOutputStream stm = new ByteArrayOutputStream();

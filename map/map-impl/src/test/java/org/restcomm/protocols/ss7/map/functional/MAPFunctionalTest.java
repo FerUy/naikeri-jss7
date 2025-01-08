@@ -4215,7 +4215,7 @@ public class MAPFunctionalTest extends SccpHarness {
             SM_RP_OA sm_RP_OA = this.mapParameterFactory.createSM_RP_OA_Msisdn(msisdn1);
             IMSI imsi2 = this.mapParameterFactory.createIMSI("25007123456789");
 
-            Long invokeId = dlg.addMoForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, imsi2);
+            Long invokeId = dlg.addMoForwardShortMessageRequest(sm_RP_DA, sm_RP_OA, sm_RP_UI, null, imsi2, null, null);
 
             int maxMsgLen = dlg.getMaxUserDataLength();
             int curMsgLen = dlg.getMessageUserDataLengthOnSend();
@@ -5132,12 +5132,13 @@ public class MAPFunctionalTest extends SccpHarness {
 
                 Assert.assertEquals(ind.getLocationType().getLocationEstimateType(),
                         LocationEstimateType.cancelDeferredLocation);
-                Assert.assertTrue(ind.getMlcNumber().getAddress().equals("11112222"));
+                assertEquals(ind.getMlcNumber().getAddress(), "11112222");
 
                 try {
                     ExtGeographicalInformation locationEstimate = this.mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(-31, -53);
                     d.addProvideSubscriberLocationResponse(ind.getInvokeId(), locationEstimate, null, null, 6, null, null,
-                            false, null, false, null, null, false, null, null, null);
+                            false, null, false, null, null, false, null, null, null,
+                            null, null, null);
                 } catch (MAPException e) {
                     this.error("Error while adding ProvideSubscriberLocationResponse", e);
                     fail("Error while adding ProvideSubscriberLocationResponse");
@@ -5237,7 +5238,8 @@ public class MAPFunctionalTest extends SccpHarness {
                         NumberingPlan.ISDN, "11114444");
 
                 try {
-                    d.addSubscriberLocationReportResponse(ind.getInvokeId(), naEsrd, null, null);
+                    d.addSubscriberLocationReportResponse(ind.getInvokeId(), naEsrd, null, null,
+                            null, false, null, null);
                 } catch (MAPException e) {
                     this.error("Error while adding SubscriberLocationReportResponse", e);
                     fail("Error while adding SubscriberLocationReportResponse");
@@ -5337,7 +5339,7 @@ public class MAPFunctionalTest extends SccpHarness {
                         AddressNature.international_number, NumberingPlan.ISDN, "11114444");
                 ;
                 LCSLocationInfo lcsLocationInfo = this.mapParameterFactory.createLCSLocationInfo(networkNodeNumber, null, null,
-                        false, null, null, null, null, null);
+                        false, null, null, null, null, null, null, null);
 
                 try {
                     d.addSendRoutingInfoForLCSResponse(ind.getInvokeId(), targetMS, lcsLocationInfo, null, null, null, null,

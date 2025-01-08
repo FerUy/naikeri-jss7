@@ -222,7 +222,7 @@ public class TestSmsClientConfigurationData {
         this.continueDialog = val;
     }
 
-    protected static final XMLFormat<TestSmsClientConfigurationData> XML = new XMLFormat<TestSmsClientConfigurationData>(TestSmsClientConfigurationData.class) {
+    protected static final XMLFormat<TestSmsClientConfigurationData> XML = new XMLFormat<>(TestSmsClientConfigurationData.class) {
 
         public void write(TestSmsClientConfigurationData clt, OutputElement xml) throws XMLStreamException {
             xml.setAttribute(SMSC_SSN, clt.smscSsn);
@@ -271,30 +271,30 @@ public class TestSmsClientConfigurationData {
             if (chArr != null)
                 clt.continueDialog = chArr.toBoolean();
 
-            clt.serviceCenterAddress = (String) xml.get(SERVICE_CENTER_ADDRESS, String.class);
-            clt.sriResponseImsi = (String) xml.get(SRI_RESPONSE_IMSI, String.class);
-            clt.sriResponseVlr = (String) xml.get(SRI_RESPONSE_VLR, String.class);
+            clt.serviceCenterAddress = xml.get(SERVICE_CENTER_ADDRESS, String.class);
+            clt.sriResponseImsi = xml.get(SRI_RESPONSE_IMSI, String.class);
+            clt.sriResponseVlr = xml.get(SRI_RESPONSE_VLR, String.class);
 
-            String an = (String) xml.get(ADDRESS_NATURE, String.class);
+            String an = xml.get(ADDRESS_NATURE, String.class);
             clt.addressNature = AddressNature.valueOf(an);
-            String np = (String) xml.get(NUMBERING_PLAN, String.class);
+            String np = xml.get(NUMBERING_PLAN, String.class);
             clt.numberingPlan = NumberingPlan.valueOf(np);
-            String mpv = (String) xml.get(MAP_PROTOCOL_VERSION, String.class);
+            String mpv = xml.get(MAP_PROTOCOL_VERSION, String.class);
             clt.mapProtocolVersion = MapProtocolVersion.createInstance(mpv);
-            String ton = (String) xml.get(TYPE_OF_NUMBER, String.class);
+            String ton = xml.get(TYPE_OF_NUMBER, String.class);
             clt.typeOfNumber = TypeOfNumber.valueOf(ton);
-            String npi = (String) xml.get(NUMBERING_PLAN_IDENTIFICATION, String.class);
+            String npi = xml.get(NUMBERING_PLAN_IDENTIFICATION, String.class);
             clt.numberingPlanIdentification = NumberingPlanIdentification.valueOf(npi);
-            String sct = (String) xml.get(SMS_CODING_TYPE, String.class);
+            String sct = xml.get(SMS_CODING_TYPE, String.class);
             clt.smsCodingType = SmsCodingType.createInstance(sct);
 
-            String sriR = (String) xml.get(SRI_REACTION, String.class);
+            String sriR = xml.get(SRI_REACTION, String.class);
             clt.sriReaction = SRIReaction.createInstance(sriR);
-            String sriIsc = (String) xml.get(SRI_INFORM_SERVICE_CENTER, String.class);
+            String sriIsc = xml.get(SRI_INFORM_SERVICE_CENTER, String.class);
             clt.sriInformServiceCenter = SRIInformServiceCenter.createInstance(sriIsc);
-            String esmDelStat = (String) xml.get(ESM_DEL_STAT, String.class);
+            String esmDelStat = xml.get(ESM_DEL_STAT, String.class);
             clt.reportSMDeliveryStatusReaction = ReportSMDeliveryStatusReaction.createInstance(esmDelStat);
-            String mtFsmR = (String) xml.get(MT_FSM_REACTION, String.class);
+            String mtFsmR = xml.get(MT_FSM_REACTION, String.class);
             clt.mtFSMReaction = MtFSMReaction.createInstance(mtFsmR);
         }
     };

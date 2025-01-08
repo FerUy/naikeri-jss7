@@ -156,10 +156,10 @@ public class ExtBasicServiceCodeImpl implements ExtBasicServiceCode, MAPAsnPrimi
         sb.append("ExtBasicServiceCode [");
 
         if (this.extBearerService != null) {
-            sb.append(this.extBearerService.toString());
+            sb.append(extBearerService);
         }
         if (this.extTeleservice != null) {
-            sb.append(this.extTeleservice.toString());
+            sb.append(extTeleservice);
         }
 
         sb.append("]");
@@ -170,8 +170,7 @@ public class ExtBasicServiceCodeImpl implements ExtBasicServiceCode, MAPAsnPrimi
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<ExtBasicServiceCodeImpl> EXT_BASIC_SERVICE_CODE_XML = new XMLFormat<ExtBasicServiceCodeImpl>(
-            ExtBasicServiceCodeImpl.class) {
+    protected static final XMLFormat<ExtBasicServiceCodeImpl> EXT_BASIC_SERVICE_CODE_XML = new XMLFormat<>(ExtBasicServiceCodeImpl.class) {
 
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, ExtBasicServiceCodeImpl extBasicServiceCode)

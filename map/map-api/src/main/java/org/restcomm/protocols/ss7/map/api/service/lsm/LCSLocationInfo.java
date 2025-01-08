@@ -12,26 +12,28 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.locationManagement.Su
 /**
  *
 <code>
-LCSLocationInfo ::= SEQUENCE {
-  networkNode-Number       ISDN-AddressString,
-  -- NetworkNode-number can be msc-number, sgsn-number or a dummy value of "0"
-  lmsi                     [0] LMSI OPTIONAL,
-  extensionContainer       [1] ExtensionContainer OPTIONAL,
+ LCSLocationInfo ::= SEQUENCE {
+  networkNode-Number              ISDN-AddressString,
+   -- NetworkNode-number can be msc-number, sgsn-number or a dummy value of "0"
+  lmsi                           [0] LMSI OPTIONAL,
+  extensionContainer             [1] ExtensionContainer OPTIONAL,
   ... ,
-  gprsNodeIndicator        [2] NULL OPTIONAL,
-  -- gprsNodeIndicator is set only if the SGSN number is sent as the Network Node Number
-  additional-Number        [3] Additional-Number OPTIONAL,
+  gprsNodeIndicator              [2] NULL OPTIONAL,
+   -- gprsNodeIndicator is set only if the SGSN number is sent as the Network Node Number
+  additional-Number              [3] Additional-Number OPTIONAL,
   supportedLCS-CapabilitySets    [4] SupportedLCS-CapabilitySets OPTIONAL,
   additional-LCS-CapabilitySets  [5] SupportedLCS-CapabilitySets OPTIONAL,
   mme-Name                       [6] DiameterIdentity OPTIONAL,
-  aaa-Server-Name                [8] DiameterIdentity OPTIONAL
-}
+  aaa-Server-Name                [8] DiameterIdentity OPTIONAL,
+  sgsn-Name                      [9] DiameterIdentity OPTIONAL,
+  sgsn-Realm                    [10] DiameterIdentity OPTIONAL
+ }
 </code>
- *
+
  *
  * @author amit bhayani
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface LCSLocationInfo extends Serializable {
 
@@ -53,4 +55,7 @@ public interface LCSLocationInfo extends Serializable {
 
     DiameterIdentity getAaaServerName();
 
+    DiameterIdentity getSgsnName();
+
+    DiameterIdentity getSgsnRealm();
 }

@@ -107,7 +107,7 @@ public class AddressStringImpl implements AddressString, MAPAsnPrimitive {
 
     protected void _testLengthDecode(int length) throws MAPParsingComponentException {
         if (length > 20)
-            throw new MAPParsingComponentException("Error when decoding AddressString: mesage length must not exceed 20",
+            throw new MAPParsingComponentException("Error when decoding AddressString: message length must not exceed 20",
                     MAPParsingComponentExceptionReason.MistypedParameter);
     }
 
@@ -115,15 +115,10 @@ public class AddressStringImpl implements AddressString, MAPAsnPrimitive {
 
         this._testLengthDecode(length);
 
-        // The first byte has extension, nature of address indicator and
-        // numbering plan indicator
+        // The first byte has extension, nature of address indicator and numbering plan indicator
         int nature = asnInputStream.read();
 
-        if ((nature & NO_EXTENSION_MASK) == 0x80) {
-            this.isExtension = false;
-        } else {
-            this.isExtension = true;
-        }
+        this.isExtension = (nature & NO_EXTENSION_MASK) != 0x80;
 
         int natureOfAddInd = ((nature & NATURE_OF_ADD_IND_MASK) >> 4);
 
@@ -211,15 +206,13 @@ public class AddressStringImpl implements AddressString, MAPAsnPrimitive {
             return false;
         if (addressNature != other.addressNature)
             return false;
-        if (numberingPlan != other.numberingPlan)
-            return false;
-        return true;
+        return numberingPlan == other.numberingPlan;
     }
 
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<AddressStringImpl> ADDRESS_STRING_XML = new XMLFormat<AddressStringImpl>(
+    protected static final XMLFormat<AddressStringImpl> ADDRESS_STRING_XML = new XMLFormat<>(
             AddressStringImpl.class) {
 
         @Override

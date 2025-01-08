@@ -15,7 +15,7 @@ RoutingInfoForSM-Res ::= SEQUENCE {
   ip-sm-gwGuidance        [5] IP-SM-GW-Guidance OPTIONAL
 }
 
-MAP V2: RoutingInfoForSM-Res::= SEQUENCE {
+MAP V1: RoutingInfoForSM-Res::= SEQUENCE {
   imsi                    IMSI,
   locationInfoWithLMSI    [0] LocationInfoWithLMSI,
   mwd-Set                 [2] BOOLEAN OPTIONAL,

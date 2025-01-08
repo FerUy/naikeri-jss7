@@ -7,11 +7,6 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import org.restcomm.protocols.ss7.map.smstpdu.DataCodingSchemeImpl;
-import org.restcomm.protocols.ss7.map.smstpdu.FailureCauseImpl;
-import org.restcomm.protocols.ss7.map.smstpdu.ProtocolIdentifierImpl;
-import org.restcomm.protocols.ss7.map.smstpdu.SmsDeliverReportTpduImpl;
-import org.restcomm.protocols.ss7.map.smstpdu.UserDataImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -39,7 +34,7 @@ public class SmsDeliverReportTpduTest {
         assertNull(impl.getProtocolIdentifier());
         impl.getUserData().decode();
         assertEquals(impl.getDataCodingScheme().getCode(), 0);
-        assertTrue(impl.getUserData().getDecodedMessage().equals("Hello !!!!"));
+        assertEquals(impl.getUserData().getDecodedMessage(), "Hello !!!!");
 
         impl = new SmsDeliverReportTpduImpl(this.getData2(), null);
         assertFalse(impl.getUserDataHeaderIndicator());

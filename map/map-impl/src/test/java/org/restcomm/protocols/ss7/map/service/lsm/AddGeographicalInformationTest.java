@@ -43,10 +43,6 @@ public class AddGeographicalInformationTest {
 
         AddGeographicalInformationImpl impl = new AddGeographicalInformationImpl(
                 TypeOfShape.EllipsoidPointWithUncertaintyCircle, 65, -149, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        // TypeOfShape typeOfShape, double latitude, double longitude, double uncertainty, double uncertaintySemiMajorAxis,
-        // double uncertaintySemiMinorAxis, double angleOfMajorAxis, int confidence, int altitude, double uncertaintyAltitude,
-        // int innerRadius,
-        // double uncertaintyRadius, double offsetAngle, double includedAngle
         AsnOutputStream asnOS = new AsnOutputStream();
         impl.encodeAll(asnOS);
         byte[] encodedData = asnOS.toByteArray();

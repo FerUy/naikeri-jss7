@@ -141,6 +141,7 @@ import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.authentication.ReSynchronisationInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.imei.RequestedEquipmentInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.ExtSupportedFeaturesImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SuperChargerInfoImpl;
@@ -192,9 +193,7 @@ import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterfaceImpl;
 import org.restcomm.protocols.ss7.tcap.TCAPStackImpl;
 import org.restcomm.protocols.ss7.tcap.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
-import org.restcomm.protocols.ss7.tcap.asn.ReturnResultLastImpl;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
-import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -219,9 +218,6 @@ public class Client extends TestHarnessMobilityManagement {
     // SCCP
     SccpExtModuleImpl sccpExtModule;
     private SccpStackImpl sccpStack;
-    private Router router;
-    private RouterExt routerExt;
-    private SccpResource sccpResource;
 
     // M3UA
     private M3UAManagementImpl clientM3UAMgmt;
@@ -303,6 +299,7 @@ public class Client extends TestHarnessMobilityManagement {
 
         // Step3 : Assign ASP to AS
         Asp asp = this.clientM3UAMgmt.assignAspToAs("AS1", "ASP1");
+        logger.debug(asp);
 
         // Step 4: Add Route. Remote point code is 2
         clientM3UAMgmt.addRoute(SERVER_SPC, -1, -1, "AS1");
@@ -321,16 +318,16 @@ public class Client extends TestHarnessMobilityManagement {
         this.sccpStack.start();
         this.sccpStack.removeAllResources();
 
-        this.router = this.sccpStack.getRouter();
-        this.routerExt = sccpExtModule.getRouterExt();
-        this.sccpResource = this.sccpStack.getSccpResource();
+        Router router = this.sccpStack.getRouter();
+        RouterExt routerExt = sccpExtModule.getRouterExt();
+        SccpResource sccpResource = this.sccpStack.getSccpResource();
 
-        this.sccpResource.addRemoteSpc(0, SERVER_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, SERVER_SPC, HLR_SSN, 0, false);
+        sccpResource.addRemoteSpc(0, SERVER_SPC, 0, 0);
+        sccpResource.addRemoteSsn(0, SERVER_SPC, HLR_SSN, 0, false);
 
-        this.router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
-        this.router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
-        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
+        router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
+        router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
+        router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -339,30 +336,30 @@ public class Client extends TestHarnessMobilityManagement {
         GlobalTitle gt2 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress localAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt1, CLIENT_SPC, 0);
-        this.routerExt.addRoutingAddress(1, localAddress);
+        routerExt.addRoutingAddress(1, localAddress);
         SccpAddress remoteAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, SERVER_SPC, 0);
-        this.routerExt.addRoutingAddress(2, remoteAddress);
+        routerExt.addRoutingAddress(2, remoteAddress);
 
         GlobalTitle gt = fact.createGlobalTitle("*", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress pattern = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 0);
-        this.routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
+        routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
                 "K", 1, -1, null, 0, null);
-        this.routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern, "K",
+        routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern, "K",
                 2, -1, null, 0, null);
     }
 
     private void initTCAP() throws Exception {
-        this.tcapStack = new TCAPStackImpl("Test", this.sccpStack.getSccpProvider(), VLR_SSN);
-        this.tcapStack.start();
-        this.tcapStack.setDialogIdleTimeout(60000);
-        this.tcapStack.setInvokeTimeout(30000);
-        this.tcapStack.setMaxDialogs(MAX_DIALOGS);
+        tcapStack = new TCAPStackImpl("Test", this.sccpStack.getSccpProvider(), VLR_SSN);
+        tcapStack.start();
+        tcapStack.setDialogIdleTimeout(60000);
+        tcapStack.setInvokeTimeout(30000);
+        tcapStack.setMaxDialogs(MAX_DIALOGS);
     }
 
     private void initMAP() throws Exception {
         // this.mapStack = new MAPStackImpl(this.sccpStack.getSccpProvider(), VLR_SSN);
-        this.mapStack = new MAPStackImpl("TestClient", this.tcapStack.getProvider());
+        this.mapStack = new MAPStackImpl("TestClient", tcapStack.getProvider());
         mapProvider = this.mapStack.getMAPProvider();
         mapProvider.addMAPDialogListener(this);
         mapProvider.getMAPServiceMobility().addMAPServiceListener(this);
@@ -518,9 +515,7 @@ public class Client extends TestHarnessMobilityManagement {
 
         System.out.println("SENDING_MESSAGE_THREAD_COUNT=" + TestHarnessMobilityManagement.SENDING_MESSAGE_THREAD_COUNT);
 
-        // logger.info("Number of calls to be completed = " + noOfCalls +
-        // " Number of concurrent calls to be maintained = " +
-        // noOfConcurrentCalls);
+        // logger.info("Number of calls to be completed = " + noOfCalls + " Number of concurrent calls to be maintained = " + noOfConcurrentCalls);
 
         NDIALOGS = noOfCalls;
 
@@ -783,7 +778,7 @@ public class Client extends TestHarnessMobilityManagement {
                 long current = System.currentTimeMillis();
                 float sec = (float) (current - prev) / 1000f;
                 prev = current;
-                logger.warn("Completed 10000 Dialogs, dialogs per second: " + (float) (10000 / sec));
+                logger.warn("Completed 10000 Dialogs, dialogs per second: " + (10000 / sec));
             }
         } else {
             if (!endReportPrinted) {
@@ -794,7 +789,7 @@ public class Client extends TestHarnessMobilityManagement {
                 float sec = (float) (current - start) / 1000f;
 
                 logger.warn("Total time in sec = " + sec);
-                logger.warn("Throughput = " + (float) (NDIALOGS / sec));
+                logger.warn("Throughput = " + (NDIALOGS / sec));
             }
         }
     }
@@ -874,9 +869,6 @@ public class Client extends TestHarnessMobilityManagement {
                     .getMAPDialog().getLocalDialogId()));
         }
         try {
-            // ArrayList<AuthenticationQuintuplet> authenticationQuintuplets = sendAuthenticationInfoResponseIndication.getAuthenticationSetList().getQuintupletList().getAuthenticationQuintuplets();
-            // SccpAddress hlrAddress = sendAuthenticationInfoResponseIndication.getMAPDialog().getRemoteAddress();
-
             // Create Dialog
             AddressString originAddressString = mapProvider.getMAPParameterFactory()
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
@@ -906,32 +898,7 @@ public class Client extends TestHarnessMobilityManagement {
             ISDNAddressString vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460000");
             LMSI lmsi = null;
             MAPExtensionContainer mapExtensionContainer = null;
-            SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, false, false);
-            boolean solsaSupportIndicator = true;
-            ISTSupportIndicator istSupportIndicator = ISTSupportIndicator.istCommandSupported;
-            SuperChargerInfo superChargerSupportedInServingNetworkEntity = new SuperChargerInfoImpl(true);
-            boolean longFtnSupported = true;
-            SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, false);
-            boolean oCsi = false;
-            boolean dCsi = false;
-            boolean vtCsi = false;
-            boolean tCsi = false;
-            boolean mtSMSCsi = true;
-            boolean mgCsi = true;
-            boolean psiEnhancements = true;
-            OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(oCsi,dCsi,vtCsi,tCsi, mtSMSCsi, mgCsi, psiEnhancements);
-            boolean utran = true;
-            boolean geran = true;
-            boolean gan = false;
-            boolean i_hspa_evolution = true;
-            boolean e_utran = true;
-            boolean nb_iot = true;
-            SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
-            boolean longGroupIDSupported = true;
-            boolean mtRoamingForwardingSupported = true;
-            VLRCapability vlrCapability = new VLRCapabilityImpl(supportedCamelPhases, mapExtensionContainer, solsaSupportIndicator,
-                    istSupportIndicator, superChargerSupportedInServingNetworkEntity, longFtnSupported, supportedLCSCapabilitySets,
-                    offeredCamel4CSIs, supportedRATTypesIndicator, longGroupIDSupported, mtRoamingForwardingSupported);
+            VLRCapability vlrCapability = getVlrCapability();
             boolean informPreviousNetworkEntity = false;
             boolean csLCSNotSupportedByUE = false;
             GSNAddress vGmlcAddress = null;
@@ -944,15 +911,7 @@ public class Client extends TestHarnessMobilityManagement {
             PlmnId plmnId2 = new PlmnIdImpl(262,999);
             ePLMNList.add(plmnId1);
             ePLMNList.add(plmnId2);
-            //EquivalentPLMNList ePLMNList = new EquivalentPLMNListImpl(PLMNList);
-            byte[] mmeNameBytes = {0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
-                    0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
-                    0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
-            byte[] mmeRealmBytes = {0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34,
-                    0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
-            DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNameBytes);
-            DiameterIdentity mmeRealm = new DiameterIdentityImpl(mmeRealmBytes);
-            NetworkNodeDiameterAddress mmeDiameterAddress = new NetworkNodeDiameterAddressImpl(mmeName, mmeRealm);
+            NetworkNodeDiameterAddress mmeDiameterAddress = getNetworkNodeDiameterAddress();
 
             mapDialogMobility.addUpdateLocationRequest(imsi, mscNumber, roamingNumber, vlrNumber, lmsi, mapExtensionContainer,
                     vlrCapability, informPreviousNetworkEntity, csLCSNotSupportedByUE, vGmlcAddress, addInfo, pagingArea,
@@ -967,6 +926,46 @@ public class Client extends TestHarnessMobilityManagement {
         }
     }
 
+    private static NetworkNodeDiameterAddress getNetworkNodeDiameterAddress() {
+        byte[] mmeNameBytes = {0x6d, 0x6d, 0x65, 0x2e, 0x32, 0x30, 0x2e, 0x6d, 0x61, 0x67, 0x2e, 0x65, 0x70, 0x63, 0x2e, 0x6d,
+                0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34, 0x38, 0x2e, 0x33, 0x67, 0x70,
+                0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
+        byte[] mmeRealmBytes = {0x65, 0x70, 0x63, 0x2e, 0x6d, 0x6e, 0x63, 0x30, 0x30, 0x31, 0x2e, 0x6d, 0x63, 0x63, 0x37, 0x34,
+                0x38, 0x2e, 0x33, 0x67, 0x70, 0x70, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x6f, 0x72, 0x67};
+        DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNameBytes);
+        DiameterIdentity mmeRealm = new DiameterIdentityImpl(mmeRealmBytes);
+        return new NetworkNodeDiameterAddressImpl(mmeName, mmeRealm);
+    }
+
+    private static VLRCapability getVlrCapability() {
+        SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, false, false);
+        boolean solsaSupportIndicator = true;
+        ISTSupportIndicator istSupportIndicator = ISTSupportIndicator.istCommandSupported;
+        SuperChargerInfo superChargerSupportedInServingNetworkEntity = new SuperChargerInfoImpl(true);
+        boolean longFtnSupported = true;
+        SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true, true, true, false);
+        boolean oCsi = false;
+        boolean dCsi = false;
+        boolean vtCsi = false;
+        boolean tCsi = false;
+        boolean mtSMSCsi = true;
+        boolean mgCsi = true;
+        boolean psiEnhancements = true;
+        OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(oCsi,dCsi,vtCsi,tCsi, mtSMSCsi, mgCsi, psiEnhancements);
+        boolean utran = true;
+        boolean geran = true;
+        boolean gan = false;
+        boolean i_hspa_evolution = true;
+        boolean e_utran = true;
+        boolean nb_iot = true;
+        SupportedRATTypes supportedRATTypesIndicator = new SupportedRATTypesImpl(utran, geran, gan, i_hspa_evolution, e_utran, nb_iot);
+        boolean longGroupIDSupported = true;
+        boolean mtRoamingForwardingSupported = true;
+        return new VLRCapabilityImpl(supportedCamelPhases, null, solsaSupportIndicator,
+                istSupportIndicator, superChargerSupportedInServingNetworkEntity, longFtnSupported, supportedLCSCapabilitySets,
+                offeredCamel4CSIs, supportedRATTypesIndicator, longGroupIDSupported, mtRoamingForwardingSupported);
+    }
+
     @Override
     public void onInsertSubscriberDataRequest(InsertSubscriberDataRequest insertSubscriberDataRequest) {
         if (logger.isDebugEnabled()) {
@@ -977,55 +976,19 @@ public class Client extends TestHarnessMobilityManagement {
             long invokeId = insertSubscriberDataRequest.getInvokeId();
             MAPDialogMobility mapDialogMobility = insertSubscriberDataRequest.getMAPDialog();
             ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<>();
-            ExtBearerServiceCode extBearerServiceCode = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allBearerServices);
+            BearerServiceCodeValue bearerServiceCodeValue = getBearerServiceCodeValue();
+            ExtBearerServiceCode extBearerServiceCode = new ExtBearerServiceCodeImpl(bearerServiceCodeValue);
             bearerServiceList.add(extBearerServiceCode);
             ArrayList<SSCode> ssList = new ArrayList<>();
-            SSCode clir = new SSCodeImpl(SupplementaryCodeValue.clir);
+            SupplementaryCodeValue supplementaryCodeValue = getSupplementaryCodeValue();
+            SSCode clir = new SSCodeImpl(supplementaryCodeValue);
             ssList.add(clir);
             ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
             ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
             ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
             teleserviceList.add(shortMessageMT_PP);
             teleserviceList.add(shortMessageMO_PP);
-            boolean allOGCallsBarred= true;
-            boolean internationalOGCallsBarred = true;
-            boolean internationalOGCallsNotToHPLMNCountryBarred= true;
-            boolean premiumRateInformationOGCallsBarred = false;
-            boolean premiumRateEntertainmentOGCallsBarred= true;
-            boolean ssAccessBarred= true;
-            boolean interzonalOGCallsBarred = true;
-            boolean interzonalOGCallsNotToHPLMNCountryBarred= true;
-            boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = true;
-            boolean allECTBarred= true;
-            boolean chargeableECTBarred= true;
-            boolean internationalECTBarred = true;
-            boolean interzonalECTBarred= true;
-            boolean doublyChargeableECTBarred= true;
-            boolean multipleECTBarred = true;
-            boolean allPacketOrientedServicesBarred= true;
-            boolean roamerAccessToHPLMNAPBarred= false;
-            boolean roamerAccessToVPLMNAPBarred = false;
-            boolean roamingOutsidePLMNOGCallsBarred= false;
-            boolean allICCallsBarred= true;
-            boolean roamingOutsidePLMNICCallsBarred = true;
-            boolean roamingOutsidePLMNICountryICCallsBarred= true;
-            boolean roamingOutsidePLMNBarred = false;
-            boolean roamingOutsidePLMNCountryBarred= false;
-            boolean registrationAllCFBarred= true;
-            boolean registrationCFNotToHPLMNBarred = true;
-            boolean registrationInterzonalCFBarred= true;
-            boolean registrationInterzonalCFNotToHPLMNBarred = false;
-            boolean registrationInternationalCFBarred = true;
-            ODBGeneralData odbGeneralData = new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred,
-                    internationalOGCallsNotToHPLMNCountryBarred, premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred,
-                    ssAccessBarred, interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred,
-                    interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, allECTBarred, chargeableECTBarred,
-                    internationalECTBarred, interzonalECTBarred, doublyChargeableECTBarred, multipleECTBarred,
-                    allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
-                    roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
-                    roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred,
-                    roamingOutsidePLMNCountryBarred, registrationAllCFBarred, registrationCFNotToHPLMNBarred,
-                    registrationInterzonalCFBarred, registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
+            ODBGeneralData odbGeneralData = getOdbGeneralData();
             RegionalSubscriptionResponse regionalSubscriptionResponse = RegionalSubscriptionResponse.networkNodeAreaRestricted;
             SupportedCamelPhases supportedCamelPhases = new SupportedCamelPhasesImpl(true, true, true, true);
             MAPExtensionContainer extensionContainer = null;
@@ -1037,55 +1000,7 @@ public class Client extends TestHarnessMobilityManagement {
             boolean mgCsi = true;
             boolean psiEnhancements = true;
             OfferedCamel4CSIs offeredCamel4CSIs = new OfferedCamel4CSIsImpl(oCsi,dCsi,vtCsi,tCsi, mtSMSCsi, mgCsi, psiEnhancements);
-            boolean odbAllApn = false;
-            boolean odbHPLMNApn = false;
-            boolean odbVPLMNApn = false;
-            boolean odbAllOg = false;
-            boolean odbAllInternationalOg = false;
-            boolean odbAllIntOgNotToHPLMNCountry = false;
-            boolean odbAllInterzonalOg = false;
-            boolean odbAllInterzonalOgNotToHPLMNCountry = false;
-            boolean odbAllInterzonalOgandInternatOgNotToHPLMNCountry = false;
-            boolean regSub = false;
-            boolean trace = false;
-            boolean lcsAllPrivExcep = true;
-            boolean lcsUniversal = true;
-            boolean lcsCallSessionRelated = true;
-            boolean lcsCallSessionUnrelated = true;
-            boolean lcsPLMNOperator = true;
-            boolean lcsServiceType = true;
-            boolean lcsAllMOLRSS = true;
-            boolean lcsBasicSelfLocation = true;
-            boolean lcsAutonomousSelfLocation = true;
-            boolean lcsTransferToThirdParty = true;
-            boolean smMoPp = true;
-            boolean barringOutgoingCalls = true;
-            boolean baoc = true;
-            boolean boic = true;
-            boolean boicExHC = true;
-            boolean localTimeZoneRetrieval = true;
-            boolean additionalMsisdn = true;
-            boolean smsInMME = true;
-            boolean smsInSGSN = true;
-            boolean ueReachabilityNotification = true;
-            boolean stateLocationInformationRetrieval = true;
-            boolean partialPurge = true;
-            boolean gddInSGSN = true;
-            boolean sgsnCAMELCapability = true;
-            boolean pcscfRestoration = true;
-            boolean dedicatedCoreNetworks = true;
-            boolean nonIPPDNTypeAPNs = true;
-            boolean nonIPPDPTypeAPNs = true;
-            boolean nrAsSecondaryRAT = true;
-            SupportedFeatures supportedFeatures = new SupportedFeaturesImpl(odbAllApn, odbHPLMNApn, odbVPLMNApn, odbAllOg, odbAllInternationalOg,
-                    odbAllIntOgNotToHPLMNCountry, odbAllInterzonalOg, odbAllInterzonalOgNotToHPLMNCountry,
-                    odbAllInterzonalOgandInternatOgNotToHPLMNCountry, regSub, trace, lcsAllPrivExcep, lcsUniversal,
-                    lcsCallSessionRelated, lcsCallSessionUnrelated, lcsPLMNOperator, lcsServiceType, lcsAllMOLRSS,
-                    lcsBasicSelfLocation, lcsAutonomousSelfLocation, lcsTransferToThirdParty, smMoPp, barringOutgoingCalls, baoc,
-                    boic, boicExHC, localTimeZoneRetrieval, additionalMsisdn, smsInMME, smsInSGSN, ueReachabilityNotification,
-                    stateLocationInformationRetrieval, partialPurge, gddInSGSN, sgsnCAMELCapability,
-                    pcscfRestoration, dedicatedCoreNetworks, nonIPPDNTypeAPNs, nonIPPDPTypeAPNs,
-                    nrAsSecondaryRAT);
+            SupportedFeatures supportedFeatures = getSupportedFeatures();
             boolean unlicensedSpectrumAsSecondaryRAT = true;
             ExtSupportedFeatures extSupportedFeatures = new ExtSupportedFeaturesImpl(unlicensedSpectrumAsSecondaryRAT);
 
@@ -1098,6 +1013,100 @@ public class Client extends TestHarnessMobilityManagement {
         } catch (MAPException e) {
             logger.error("Error while processing InsertSubscriberDataRequest ", e);
         }
+    }
+
+    private static ODBGeneralData getOdbGeneralData() {
+        boolean allOGCallsBarred= true;
+        boolean internationalOGCallsBarred = true;
+        boolean internationalOGCallsNotToHPLMNCountryBarred= true;
+        boolean premiumRateInformationOGCallsBarred = false;
+        boolean premiumRateEntertainmentOGCallsBarred= true;
+        boolean ssAccessBarred= true;
+        boolean interzonalOGCallsBarred = true;
+        boolean interzonalOGCallsNotToHPLMNCountryBarred= true;
+        boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = true;
+        boolean allECTBarred= true;
+        boolean chargeableECTBarred= true;
+        boolean internationalECTBarred = true;
+        boolean interzonalECTBarred= true;
+        boolean doublyChargeableECTBarred= true;
+        boolean multipleECTBarred = true;
+        boolean allPacketOrientedServicesBarred= true;
+        boolean roamerAccessToHPLMNAPBarred= false;
+        boolean roamerAccessToVPLMNAPBarred = false;
+        boolean roamingOutsidePLMNOGCallsBarred= false;
+        boolean allICCallsBarred= true;
+        boolean roamingOutsidePLMNICCallsBarred = true;
+        boolean roamingOutsidePLMNICountryICCallsBarred= true;
+        boolean roamingOutsidePLMNBarred = false;
+        boolean roamingOutsidePLMNCountryBarred= false;
+        boolean registrationAllCFBarred= true;
+        boolean registrationCFNotToHPLMNBarred = true;
+        boolean registrationInterzonalCFBarred= true;
+        boolean registrationInterzonalCFNotToHPLMNBarred = false;
+        boolean registrationInternationalCFBarred = true;
+        return new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred,
+                internationalOGCallsNotToHPLMNCountryBarred, premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred,
+                ssAccessBarred, interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred,
+                interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, allECTBarred, chargeableECTBarred,
+                internationalECTBarred, interzonalECTBarred, doublyChargeableECTBarred, multipleECTBarred,
+                allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
+                roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
+                roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred,
+                roamingOutsidePLMNCountryBarred, registrationAllCFBarred, registrationCFNotToHPLMNBarred,
+                registrationInterzonalCFBarred, registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
+    }
+
+    private static SupportedFeatures getSupportedFeatures() {
+        boolean odbAllApn = false;
+        boolean odbHPLMNApn = false;
+        boolean odbVPLMNApn = false;
+        boolean odbAllOg = false;
+        boolean odbAllInternationalOg = false;
+        boolean odbAllIntOgNotToHPLMNCountry = false;
+        boolean odbAllInterzonalOg = false;
+        boolean odbAllInterzonalOgNotToHPLMNCountry = false;
+        boolean odbAllInterzonalOgandInternatOgNotToHPLMNCountry = false;
+        boolean regSub = false;
+        boolean trace = false;
+        boolean lcsAllPrivExcep = true;
+        boolean lcsUniversal = true;
+        boolean lcsCallSessionRelated = true;
+        boolean lcsCallSessionUnrelated = true;
+        boolean lcsPLMNOperator = true;
+        boolean lcsServiceType = true;
+        boolean lcsAllMOLRSS = true;
+        boolean lcsBasicSelfLocation = true;
+        boolean lcsAutonomousSelfLocation = true;
+        boolean lcsTransferToThirdParty = true;
+        boolean smMoPp = true;
+        boolean barringOutgoingCalls = true;
+        boolean baoc = true;
+        boolean boic = true;
+        boolean boicExHC = true;
+        boolean localTimeZoneRetrieval = true;
+        boolean additionalMsisdn = true;
+        boolean smsInMME = true;
+        boolean smsInSGSN = true;
+        boolean ueReachabilityNotification = true;
+        boolean stateLocationInformationRetrieval = true;
+        boolean partialPurge = true;
+        boolean gddInSGSN = true;
+        boolean sgsnCAMELCapability = true;
+        boolean pcscfRestoration = true;
+        boolean dedicatedCoreNetworks = true;
+        boolean nonIPPDNTypeAPNs = true;
+        boolean nonIPPDPTypeAPNs = true;
+        boolean nrAsSecondaryRAT = true;
+        return new SupportedFeaturesImpl(odbAllApn, odbHPLMNApn, odbVPLMNApn, odbAllOg, odbAllInternationalOg,
+                odbAllIntOgNotToHPLMNCountry, odbAllInterzonalOg, odbAllInterzonalOgNotToHPLMNCountry,
+                odbAllInterzonalOgandInternatOgNotToHPLMNCountry, regSub, trace, lcsAllPrivExcep, lcsUniversal,
+                lcsCallSessionRelated, lcsCallSessionUnrelated, lcsPLMNOperator, lcsServiceType, lcsAllMOLRSS,
+                lcsBasicSelfLocation, lcsAutonomousSelfLocation, lcsTransferToThirdParty, smMoPp, barringOutgoingCalls, baoc,
+                boic, boicExHC, localTimeZoneRetrieval, additionalMsisdn, smsInMME, smsInSGSN, ueReachabilityNotification,
+                stateLocationInformationRetrieval, partialPurge, gddInSGSN, sgsnCAMELCapability,
+                pcscfRestoration, dedicatedCoreNetworks, nonIPPDNTypeAPNs, nonIPPDPTypeAPNs,
+                nrAsSecondaryRAT);
     }
 
     @Override
@@ -1141,10 +1150,9 @@ public class Client extends TestHarnessMobilityManagement {
         try {
             long invokeId = cancelLocationRequest.getInvokeId();
             MAPDialogMobility cancelLocationRequestDialog = cancelLocationRequest.getMAPDialog();
-            ReturnResultLast returnResultLast = new ReturnResultLastImpl();
-            returnResultLast.setInvokeId(invokeId);
-            cancelLocationRequestDialog.sendReturnResultLastComponent(returnResultLast);
+            cancelLocationRequestDialog.addCancelLocationResponse(invokeId, null);
             cancelLocationRequestDialog.close(false);
+
             if (cancelLocationRequest.getCancellationType() == CancellationType.subscriptionWithdraw) {
                 if (cancelLocationRequest.isReattachRequired()) {
                     sendAuthenticationInfoRequest("901405105682021");
@@ -1249,10 +1257,10 @@ public class Client extends TestHarnessMobilityManagement {
         }
 
         try {
+            long invokeId = provideSubscriberInfoRequest.getInvokeId();
             MAPDialogMobility mapDialogMobility = provideSubscriberInfoRequest.getMAPDialog();
             RequestedInfo requestedInfo = provideSubscriberInfoRequest.getRequestedInfo();
 
-            long invokeTimeout = 30;
             SubscriberInfo subscriberInfo;
             LocationInformation locationInformation = null;
             SubscriberState subscriberState = null;
@@ -1261,14 +1269,14 @@ public class Client extends TestHarnessMobilityManagement {
             MNPInfoRes mnpInfoRes = null;
             int ageOfLocationInformation = 0;
             Boolean currentLocationRetrieved = null;
-            boolean saiPresent;
+            boolean saiPresent = false;
             int mcc, mnc, lac, cellId;
             CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
             CellGlobalIdOrServiceAreaIdFixedLength cgiOrSai = null;
             LocationNumber locationNumber;
             LocationNumberMap locationNumberMap;
-            String mscAddress = getVLRSCCPAddress("491710460000").getGlobalTitle().getDigits();
-            String vlrAddress = getMSCSCCPAddress("491710460000").getGlobalTitle().getDigits();
+            String mscAddress = getVLRSCCPAddress(SCCP_CLIENT_ADDRESS).getGlobalTitle().getDigits();
+            String vlrAddress = getMSCSCCPAddress(SCCP_CLIENT_ADDRESS).getGlobalTitle().getDigits();
             ISDNAddressString mscNumber, vlrNumber;
             GeographicalInformation geographicalInformation;
             GeodeticInformation geodeticInformation;
@@ -1283,7 +1291,7 @@ public class Client extends TestHarnessMobilityManagement {
             ArrayList<PDPContextInfo> pdpContextInfoList = null;
             NumberPortabilityStatus numberPortabilityStatus;
             MAPExtensionContainer extensionContainer = null;
-            UserCSGInformation userCSGInformation = null;
+            UserCSGInformation userCSGInformation;
             IMSVoiceOverPsSessionsIndication imsVoiceOverPsSessionsIndication;
             Time lastUEActivityTime;
             UsedRATType lastRATType;
@@ -1301,18 +1309,15 @@ public class Client extends TestHarnessMobilityManagement {
             Random rand = new Random();
 
             if (requestedInfo.getLocationInformation()) {
-                int sai = rand.nextInt(2) + 1;
-                switch(sai) {
+                switch(rand.nextInt(2) + 1) {
                     case 1:
                         saiPresent = true; // set saiPresent to false
                         break;
                     case 2:
-                    default:
-                        saiPresent = false; // set saiPresent to false
+                        // keep saiPresent to false
                         break;
                 }
-                int stateOption = rand.nextInt(10) + 1;
-                switch (stateOption) {
+                switch (rand.nextInt(10) + 1) {
                     case 1:
                     case 2:
                     case 3:
@@ -1362,8 +1367,7 @@ public class Client extends TestHarnessMobilityManagement {
                 double geodeticUncertainty;
                 int geodeticConfidence = 1;
                 int screeningAndPresentationIndicators = 3;
-                int randLoc = rand.nextInt(10) + 1;
-                switch(randLoc) {
+                switch(rand.nextInt(10) + 1) {
                     case 1:
                         mcc = 748;
                         mnc = 1;
@@ -1572,7 +1576,7 @@ public class Client extends TestHarnessMobilityManagement {
                                 vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, null, null, mscNumber, geodeticInformation,
                                 currentLocationRetrieved, saiPresent, locationInformationEPS, null);
                     } else {
-                        switch(randLoc) {
+                        switch(rand.nextInt(10) + 1) {
                             case 1:
                                 BitSetStrictLength csgIdBitSet = new BitSetStrictLength(27);
                                 csgIdBitSet.set(0);
@@ -1707,7 +1711,7 @@ public class Client extends TestHarnessMobilityManagement {
                     null, null, imei, msClassmark2, null, mnpInfoRes,
                     imsVoiceOverPsSessionsIndication, lastUEActivityTime, lastRATType, epsSubscriberState,
                     null, timeZone, daylightSavingTime, locationInformation5GS);
-            mapDialogMobility.addProvideSubscriberInfoResponse(invokeTimeout, subscriberInfo, null);
+            mapDialogMobility.addProvideSubscriberInfoResponse(invokeId, subscriberInfo, null);
 
             mapDialogMobility.close(false);
 
@@ -1723,7 +1727,39 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onDeleteSubscriberDataRequest(DeleteSubscriberDataRequest deleteSubscriberDataRequest) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onDeleteSubscriberDataRequest over DialogId=%d", deleteSubscriberDataRequest
+                    .getMAPDialog().getLocalDialogId()));
+        }
+        try {
+            long invokeId = deleteSubscriberDataRequest.getInvokeId();
+            MAPDialogMobility mapDialogMobility = deleteSubscriberDataRequest.getMAPDialog();
 
+            Random rand = new Random();
+            RegionalSubscriptionResponse regionalSubscriptionResponse = null;
+            switch (rand.nextInt(10 + 1)) {
+                case 1:
+                    regionalSubscriptionResponse = RegionalSubscriptionResponse.networkNodeAreaRestricted;
+                    break;
+                case 2:
+                    regionalSubscriptionResponse =  RegionalSubscriptionResponse.tooManyZoneCodes;
+                    break;
+                case 3:
+                    regionalSubscriptionResponse =  RegionalSubscriptionResponse.zoneCodesConflict;
+                    break;
+                case 4:
+                    regionalSubscriptionResponse =  RegionalSubscriptionResponse.regionalSubscNotSupported;
+                    break;
+                default:
+                    break;
+            }
+
+            mapDialogMobility.addDeleteSubscriberDataResponse(invokeId, regionalSubscriptionResponse, null);
+            mapDialogMobility.close(false);
+
+        } catch (MAPException e) {
+            logger.error("Error while processing MAP DSD request and sending MAP DSD response", e);
+        }
     }
 
     @Override
@@ -1738,7 +1774,10 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onCheckImeiResponse(CheckImeiResponse checkImeiResponse) {
-
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onCheckImeiResponse over DialogId=%d", checkImeiResponse
+                    .getMAPDialog().getLocalDialogId()));
+        }
     }
 
     @Override
@@ -1771,8 +1810,7 @@ public class Client extends TestHarnessMobilityManagement {
             int numberOfRequestedVectors = 5;
             boolean segmentationProhibited = false;
             boolean immediateResponsePreferred = false;
-            ReSynchronisationInfo reSynchronisationInfo = null;
-            MAPExtensionContainer mapExtensionContainer = null;
+            ReSynchronisationInfo reSynchronisationInfo = getReSynchronisationInfo();
             RequestingNodeType requestingNodeType = RequestingNodeType.vlr;
             byte[] mccMnc = new byte[] {0x47, (byte) 0xf8, 0x10};
             PlmnId requestingPlmnId = new PlmnIdImpl(mccMnc);
@@ -1781,7 +1819,7 @@ public class Client extends TestHarnessMobilityManagement {
             boolean ueUsageTypeRequestIndication = true;
 
             mapDialogMobility.addSendAuthenticationInfoRequest(imsi, numberOfRequestedVectors, segmentationProhibited,
-                    immediateResponsePreferred, reSynchronisationInfo, mapExtensionContainer, requestingNodeType, requestingPlmnId,
+                    immediateResponsePreferred, reSynchronisationInfo, null, requestingNodeType, requestingPlmnId,
                     numberOfRequestedAdditionalVectors, additionalVectorsAreForEPS, ueUsageTypeRequestIndication);
 
             mapDialogMobility.send();
@@ -1791,6 +1829,14 @@ public class Client extends TestHarnessMobilityManagement {
         } catch (MAPException e) {
             logger.error("Error while sending CancelLocationRequest ", e);
         }
+    }
+
+    private static ReSynchronisationInfo getReSynchronisationInfo() {
+        byte[] rand = new byte[] {(byte) 0xf6, (byte) 0xe2, (byte) 0xc3, (byte) 0xdc, (byte) 0xa4, (byte) 0xca,
+                (byte) 0xae, (byte) 0x9e, 0x4c, (byte) 0xba, 0x0f, (byte) 0xd3, 0x42, 0x72, (byte) 0xee, 0x46};
+        byte[] auts = new byte[] {(byte) 0xe9, 0x15, (byte) 0x97, (byte) 0x88, (byte) 0xbc, (byte) 0xeb, (byte) 0x80,
+                0x00, (byte) 0x81, 0x3f, (byte) 0xc0, 0x40, (byte) 0xff, 0x53};
+        return new ReSynchronisationInfoImpl(rand, auts);
     }
 
     private static class PurgeMSSender implements Runnable {
@@ -1812,7 +1858,7 @@ public class Client extends TestHarnessMobilityManagement {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ie) {
-                logger.error(ie.getMessage());
+                logger.error("Interrupted Exception on "+getClient()+", " +ie.getMessage());
             }
             try {
                 // Create Dialog
@@ -1832,7 +1878,6 @@ public class Client extends TestHarnessMobilityManagement {
 
                 IMSI imsi = new IMSIImpl(String.valueOf(imsiForPurge));
                 Random rand = new Random();
-                int randLoc = rand.nextInt(7) + 1;
                 int ageOfLocationInformation;
                 LocationInformation locationInformation = null;
                 LocationInformationEPS locationInformationEPS = null;
@@ -1872,10 +1917,9 @@ public class Client extends TestHarnessMobilityManagement {
                 } catch (MAPException e) {
                     logger.error(e.getMessage());
                 }
-                byte[] mme = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes();
-                DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
+                DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
 
-                switch(randLoc) {
+                switch(rand.nextInt(7) + 1) {
                     case 1:
                         ageOfLocationInformation = 0;
                         mcc = 748;
@@ -2010,9 +2054,7 @@ public class Client extends TestHarnessMobilityManagement {
                         break;
                 }
 
-                int customInvokeTimeout = 30;
-
-                mapDialogMobility.addPurgeMSRequest(customInvokeTimeout, imsi, vlrNumber, null, null, locationInformation,
+                mapDialogMobility.addPurgeMSRequest(imsi, vlrNumber, null, null, locationInformation,
                         null, locationInformationEPS);
                 mapDialogMobility.send();
 
@@ -2067,14 +2109,13 @@ public class Client extends TestHarnessMobilityManagement {
 
                 try {
                     Random rand = new Random();
-                    int randChi = rand.nextInt(4) + 1;
-                    switch (randChi) {
+                    switch (rand.nextInt(4) + 1) {
                         case 1:
                             mapAcnVersion = MAPApplicationContextVersion.version2;
                             mapAppContext = MAPApplicationContext.getInstance(mapAcn, mapAcnVersion);
                             mapDialogMobility = mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
                                     originAddressString, serverSccpAddress, destAddressString);
-                            mapDialogMobility.addCheckImeiRequest_Huawei(30, imei, null, null, null);
+                            mapDialogMobility.addCheckImeiRequest_Huawei(imei, null, null, null);
                             break;
                         case 2:
                             mapAcnVersion = MAPApplicationContextVersion.version2;
@@ -2082,16 +2123,16 @@ public class Client extends TestHarnessMobilityManagement {
                             mapDialogMobility = mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
                                     originAddressString, serverSccpAddress, destAddressString);
                             imsi = new IMSIImpl(String.valueOf(imsiForCheckImei_Huawei));
-                            mapDialogMobility.addCheckImeiRequest_Huawei(30, imei, null, null, imsi);
+                            mapDialogMobility.addCheckImeiRequest_Huawei(imei, null, null, imsi);
                             break;
                         case 3:
                             reqEquipmentInfo = new RequestedEquipmentInfoImpl(equipmentStatus, bmuef);
-                            mapDialogMobility.addCheckImeiRequest(30, imei, reqEquipmentInfo, null);
+                            mapDialogMobility.addCheckImeiRequest(imei, reqEquipmentInfo, null);
                             break;
                         case 4:
                             bmuef = true;
                             reqEquipmentInfo = new RequestedEquipmentInfoImpl(equipmentStatus, bmuef);
-                            mapDialogMobility.addCheckImeiRequest(30, imei, reqEquipmentInfo, null);
+                            mapDialogMobility.addCheckImeiRequest(imei, reqEquipmentInfo, null);
                             break;
                         default:
                             break;
@@ -2111,19 +2152,6 @@ public class Client extends TestHarnessMobilityManagement {
         }
     }
 
-
-    /*
-     * HLR SCCP Address creation
-     */
-    private SccpAddress getHLRSCCPAddress(String address) {
-        ParameterFactory sccpParam = new ParameterFactoryImpl();
-        int translationType = 0; // Translation Type = 0 : Unknown
-        EncodingScheme encodingScheme = null;
-        GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
-        int hlrSsn = 6;
-        return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, hlrSsn);
-    }
-
     /*
      * VLR SCCP Address creation
      */
@@ -2136,6 +2164,391 @@ public class Client extends TestHarnessMobilityManagement {
         return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, vlrSsn);
     }
 
+    private static BearerServiceCodeValue getBearerServiceCodeValue() {
+        BearerServiceCodeValue bearerServiceCodeValue;
+        Random rand = new Random();
+        switch (rand.nextInt(51 + 1)) {
+            case 2:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataCDAServices;
+                break;
+            case 3:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_300bps;
+                break;
+            case 4:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_1200bps;
+                break;
+            case 5:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_1200_75bps;
+                break;
+            case 6:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_2400bps;
+                break;
+            case 7:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_4800bps;
+                break;
+            case 8:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDA_9600bps;
+                break;
+            case 9:
+                bearerServiceCodeValue = BearerServiceCodeValue.general_dataCDA;
+                break;
+            case 10:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataCDS_Services;
+                break;
+            case 11:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDS_1200bps;
+                break;
+            case 12:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDS_2400bps;
+                break;
+            case 13:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDS_4800bps;
+                break;
+            case 14:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataCDS_9600bps;
+                break;
+            case 15:
+                bearerServiceCodeValue = BearerServiceCodeValue.general_dataCDS;
+                break;
+            case 16:
+                bearerServiceCodeValue = BearerServiceCodeValue.allPadAccessCA_Services;
+                break;
+            case 17:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_300bps;
+                break;
+            case 18:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_1200bps;
+                break;
+            case 19:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_1200_75bps;
+                break;
+            case 20:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_2400bps;
+                break;
+            case 21:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_4800bps;
+                break;
+            case 22:
+                bearerServiceCodeValue = BearerServiceCodeValue.padAccessCA_9600bps;
+                break;
+            case 23:
+                bearerServiceCodeValue = BearerServiceCodeValue.general_padAccessCA;
+                break;
+            case 24:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataPDS_Services;
+                break;
+            case 25:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataPDS_2400bps;
+                break;
+            case 26:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataPDS_4800bps;
+                break;
+            case 27:
+                bearerServiceCodeValue = BearerServiceCodeValue.dataPDS_9600bps;
+                break;
+            case 28:
+                bearerServiceCodeValue = BearerServiceCodeValue.allAlternateSpeech_DataCDA;
+                break;
+            case 29:
+                bearerServiceCodeValue = BearerServiceCodeValue.allAlternateSpeech_DataCDS;
+                break;
+            case 30:
+                bearerServiceCodeValue = BearerServiceCodeValue.allSpeechFollowedByDataCDA;
+                break;
+            case 31:
+                bearerServiceCodeValue = BearerServiceCodeValue.allSpeechFollowedByDataCDS;
+                break;
+            case 32:
+                bearerServiceCodeValue = BearerServiceCodeValue.general_dataPDS;
+                break;
+            case 33:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataCircuitAsynchronous;
+                break;
+            case 34:
+                bearerServiceCodeValue = BearerServiceCodeValue.allAsynchronousServices;
+                break;
+            case 35:
+                bearerServiceCodeValue = BearerServiceCodeValue.allDataCircuitSynchronous;
+                break;
+            case 36:
+                bearerServiceCodeValue = BearerServiceCodeValue.allSynchronousServices;
+                break;
+            case 37:
+                bearerServiceCodeValue = BearerServiceCodeValue.allPLMN_specificBS;
+                break;
+            case 38:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_1;
+                break;
+            case 39:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_2;
+                break;
+            case 40:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_3;
+                break;
+            case 41:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_4;
+                break;
+            case 42:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_5;
+                break;
+            case 43:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_6;
+                break;
+            case 44:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_7;
+                break;
+            case 45:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_8;
+                break;
+            case 46:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_9;
+                break;
+            case 47:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_A;
+                break;
+            case 48:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_B;
+                break;
+            case 49:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_C;
+                break;
+            case 50:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_E;
+                break;
+            case 51:
+                bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_F;
+                break;
+            default:
+                bearerServiceCodeValue = BearerServiceCodeValue.allBearerServices;
+                break;
+        }
+        return bearerServiceCodeValue;
+    }
+
+    private static SupplementaryCodeValue getSupplementaryCodeValue() {
+        SupplementaryCodeValue supplementaryCodeValue;
+        Random rand = new Random();
+        switch (rand.nextInt(72 + 1)) {
+            case 1:
+                supplementaryCodeValue = SupplementaryCodeValue.allLineIdentificationSS;
+                break;
+            case 2:
+                supplementaryCodeValue = SupplementaryCodeValue.clip;
+                break;
+            case 3:
+                supplementaryCodeValue = SupplementaryCodeValue.clir;
+                break;
+            case 4:
+                supplementaryCodeValue = SupplementaryCodeValue.colp;
+                break;
+            case 5:
+                supplementaryCodeValue = SupplementaryCodeValue.colr;
+                break;
+            case 6:
+                supplementaryCodeValue = SupplementaryCodeValue.mci;
+                break;
+            case 7:
+                supplementaryCodeValue = SupplementaryCodeValue.allNameIdentificationSS;
+                break;
+            case 8:
+                supplementaryCodeValue = SupplementaryCodeValue.cnap;
+                break;
+            case 9:
+                supplementaryCodeValue = SupplementaryCodeValue.allForwardingSS;
+                break;
+            case 10:
+                supplementaryCodeValue = SupplementaryCodeValue.cfu;
+                break;
+            case 11:
+                supplementaryCodeValue = SupplementaryCodeValue.allCondForwardingSS;
+                break;
+            case 12:
+                supplementaryCodeValue = SupplementaryCodeValue.cfb;
+                break;
+            case 13:
+                supplementaryCodeValue = SupplementaryCodeValue.cfnry;
+                break;
+            case 14:
+                supplementaryCodeValue = SupplementaryCodeValue.cfnrc;
+                break;
+            case 15:
+                supplementaryCodeValue = SupplementaryCodeValue.cd;
+                break;
+            case 16:
+                supplementaryCodeValue = SupplementaryCodeValue.allCallOfferingSS;
+                break;
+            case 17:
+                supplementaryCodeValue = SupplementaryCodeValue.ect;
+                break;
+            case 18:
+                supplementaryCodeValue = SupplementaryCodeValue.mah;
+                break;
+            case 19:
+                supplementaryCodeValue = SupplementaryCodeValue.allCallCompletionSS;
+                break;
+            case 20:
+                supplementaryCodeValue = SupplementaryCodeValue.cw;
+                break;
+            case 21:
+                supplementaryCodeValue = SupplementaryCodeValue.hold;
+                break;
+            case 22:
+                supplementaryCodeValue = SupplementaryCodeValue.ccbs_A;
+                break;
+            case 23:
+                supplementaryCodeValue = SupplementaryCodeValue.ccbs_B;
+                break;
+            case 24:
+                supplementaryCodeValue = SupplementaryCodeValue.mc;
+                break;
+            case 25:
+                supplementaryCodeValue = SupplementaryCodeValue.allMultiPartySS;
+                break;
+            case 26:
+                supplementaryCodeValue = SupplementaryCodeValue.multiPTY;
+                break;
+            case 27:
+                supplementaryCodeValue = SupplementaryCodeValue.allCommunityOfInterestSS;
+                break;
+            case 28:
+                supplementaryCodeValue = SupplementaryCodeValue.cug;
+                break;
+            case 29:
+                supplementaryCodeValue = SupplementaryCodeValue.allChargingSS;
+                break;
+            case 30:
+                supplementaryCodeValue = SupplementaryCodeValue.aoci;
+                break;
+            case 31:
+                supplementaryCodeValue = SupplementaryCodeValue.aocc;
+                break;
+            case 32:
+                supplementaryCodeValue = SupplementaryCodeValue.allAdditionalInfoTransferSS;
+                break;
+            case 33:
+                supplementaryCodeValue = SupplementaryCodeValue.uus1;
+                break;
+            case 34:
+                supplementaryCodeValue = SupplementaryCodeValue.uus2;
+                break;
+            case 35:
+                supplementaryCodeValue = SupplementaryCodeValue.uus3;
+                break;
+            case 36:
+                supplementaryCodeValue = SupplementaryCodeValue.allCallRestrictionSS;
+                break;
+            case 37:
+                supplementaryCodeValue = SupplementaryCodeValue.barringOfOutgoingCalls;
+                break;
+            case 38:
+                supplementaryCodeValue = SupplementaryCodeValue.baoc;
+                break;
+            case 39:
+                supplementaryCodeValue = SupplementaryCodeValue.boic;
+                break;
+            case 40:
+                supplementaryCodeValue = SupplementaryCodeValue.boicExHC;
+                break;
+            case 41:
+                supplementaryCodeValue = SupplementaryCodeValue.barringOfIncomingCalls;
+                break;
+            case 42:
+                supplementaryCodeValue = SupplementaryCodeValue.baic;
+                break;
+            case 43:
+                supplementaryCodeValue = SupplementaryCodeValue.bicRoam;
+                break;
+            case 44:
+                supplementaryCodeValue = SupplementaryCodeValue.allPLMN_specificSS;
+                break;
+            case 45:
+                supplementaryCodeValue = SupplementaryCodeValue.allCallPrioritySS;
+                break;
+            case 46:
+                supplementaryCodeValue = SupplementaryCodeValue.emlpp;
+                break;
+            case 47:
+                supplementaryCodeValue = SupplementaryCodeValue.allLCSPrivacyException;
+                break;
+            case 48:
+                supplementaryCodeValue = SupplementaryCodeValue.universal;
+                break;
+            case 49:
+                supplementaryCodeValue = SupplementaryCodeValue.callrelated;
+                break;
+            case 50:
+                supplementaryCodeValue = SupplementaryCodeValue.callunrelated;
+                break;
+            case 51:
+                supplementaryCodeValue = SupplementaryCodeValue.plmnoperator;
+                break;
+            case 52:
+                supplementaryCodeValue = SupplementaryCodeValue.serviceType;
+                break;
+            case 53:
+                supplementaryCodeValue = SupplementaryCodeValue.allMOLR_SS;
+                break;
+            case 54:
+                supplementaryCodeValue = SupplementaryCodeValue.basicSelfLocation;
+                break;
+            case 55:
+                supplementaryCodeValue = SupplementaryCodeValue.autonomousSelfLocation;
+                break;
+            case 56:
+                supplementaryCodeValue = SupplementaryCodeValue.transferToThirdParty;
+                break;
+            case 57:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_1;
+                break;
+            case 58:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_2;
+                break;
+            case 59:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_3;
+                break;
+            case 60:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_4;
+                break;
+            case 61:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_5;
+                break;
+            case 62:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_6;
+                break;
+            case 63:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_7;
+                break;
+            case 64:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_8;
+                break;
+            case 65:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_9;
+                break;
+            case 66:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_a;
+                break;
+            case 67:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_b;
+                break;
+            case 68:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_c;
+                break;
+            case 69:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_d;
+                break;
+            case 70:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_e;
+                break;
+            case 71:
+                supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_f;
+                break;
+            default:
+                supplementaryCodeValue = SupplementaryCodeValue.allSS;
+                break;
+        }
+        return supplementaryCodeValue;
+    }
+
     /*
      * MSC SCCP Address creation
      */
@@ -2146,18 +2559,6 @@ public class Client extends TestHarnessMobilityManagement {
         GlobalTitle gt = sccpParam.createGlobalTitle(mscAddress, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
         int mscSsn = 8;
         return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, mscSsn);
-    }
-
-    /*
-     * SGSN SCCP Address creation
-     */
-    private SccpAddress getSGSNSCCPAddress(String sgsnAddress) {
-        ParameterFactory sccpParam = new ParameterFactoryImpl();
-        int translationType = 0; // Translation Type = 0 : Unknown
-        EncodingScheme encodingScheme = null;
-        GlobalTitle gt = sccpParam.createGlobalTitle(sgsnAddress, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
-        int sgsnSsn = 149;
-        return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, sgsnSsn);
     }
 
     public static byte[] hexStringToByteArray(String s) {

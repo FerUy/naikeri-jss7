@@ -20,6 +20,7 @@ public class GeographicalInformationImpl extends OctetStringBase implements Geog
     private static double koef23 = Math.pow(2.0, 23) / 90;
     private static double koef24 = Math.pow(2.0, 24) / 360;
     private static double[] uncertaintyTable = initUncertaintyTable();
+    private static double[] uncertaintyAltitudeTable = initUncertaintyAltitudeTable();
 
     private static final String TYPE_OF_SHAPE = "typeOfShape";
     private static final String LATITUDE = "latitude";
@@ -34,6 +35,18 @@ public class GeographicalInformationImpl extends OctetStringBase implements Geog
 
         double c = 10;
         double x = 0.1;
+        for (int i = 1; i < 128; i++) {
+            res[i] = c * (Math.pow(1 + x, i) - 1);
+        }
+
+        return res;
+    }
+
+    private static double[] initUncertaintyAltitudeTable() {
+        double[] res = new double[128];
+
+        double c = 45;
+        double x = 0.025;
         for (int i = 1; i < 128; i++) {
             res[i] = c * (Math.pow(1 + x, i) - 1);
         }
@@ -85,7 +98,7 @@ public class GeographicalInformationImpl extends OctetStringBase implements Geog
         int i1 = ((data[begin] & 0xFF) << 16) | ((data[begin + 1] & 0xFF) << 8) | (data[begin + 2] & 0xFF);
 
         if ((i1 & 0x800000) != 0) {
-            i1 = i1 | ((int) 0xFF000000);
+            i1 = i1 | 0xFF000000;
         }
 
         return i1 / koef24;
@@ -94,8 +107,13 @@ public class GeographicalInformationImpl extends OctetStringBase implements Geog
     public static double decodeUncertainty(int data) {
         if (data < 0 || data > 127)
             data = 0;
-        double d = uncertaintyTable[data];
-        return d;
+        return uncertaintyTable[data];
+    }
+
+    public static double decodeUncertaintyAltitude(int data) {
+        if (data < 0 || data > 127)
+            data = 0;
+        return uncertaintyAltitudeTable[data];
     }
 
     public static void encodeLatitude(byte[] data, int begin, double val) {
@@ -137,7 +155,15 @@ public class GeographicalInformationImpl extends OctetStringBase implements Geog
                 return i;
             }
         }
+        return 127;
+    }
 
+    public static int encodeUncertaintyAltitude(double val) {
+        for (int i = 0; i < 127; i++) {
+            if (val < uncertaintyAltitudeTable[i + 1]) {
+                return i;
+            }
+        }
         return 127;
     }
 
@@ -203,7 +229,7 @@ public class GeographicalInformationImpl extends OctetStringBase implements Geog
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<GeographicalInformationImpl> GEOGRAPHICAL_INFORMATION_XML = new XMLFormat<GeographicalInformationImpl>(
+    protected static final XMLFormat<GeographicalInformationImpl> GEOGRAPHICAL_INFORMATION_XML = new XMLFormat<>(
             GeographicalInformationImpl.class) {
 
         @Override

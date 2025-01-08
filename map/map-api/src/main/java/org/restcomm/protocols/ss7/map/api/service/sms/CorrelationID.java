@@ -6,16 +6,16 @@ import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 
 /**
 <code>
-CorrelationID ::= SEQUENCE
-{
-    hlr-id [0] HLR-Id OPTIONAL,
-    sip-uri-A [1] SIP-URI OPTIONAL,
-    sip-uri-B [2] SIP-URI OPTIONAL
+CorrelationID ::= SEQUENCE {
+ hlr-id [0] HLR-Id OPTIONAL,
+ sip-uri-A [1] SIP-URI OPTIONAL,
+ sip-uri-B [2] SIP-URI
 }
 
-HLR-Id ::= IMSI
-SIP-URI ::= OCTET STRING
--- octets are coded as defined in IETF RFC 3261
+ HLR-Id ::= IMSI
+ -- leading digits of IMSI, i.e. (MCC, MNC, leading digits of MSIN) forming HLR Id defined in TS 3GPP TS 23.003.
+ SIP-URI ::= OCTET STRING
+ -- octets are coded as defined in IETF RFC 3261
 </code>
  *
  * @author kostiantyn nosach

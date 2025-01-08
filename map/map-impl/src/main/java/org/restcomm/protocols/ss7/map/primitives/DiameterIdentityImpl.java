@@ -36,7 +36,7 @@ public class DiameterIdentityImpl extends OctetStringBase implements DiameterIde
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<DiameterIdentityImpl> DIAMETER_IDENTITY_XML = new XMLFormat<DiameterIdentityImpl>(
+    protected static final XMLFormat<DiameterIdentityImpl> DIAMETER_IDENTITY_XML = new XMLFormat<>(
             DiameterIdentityImpl.class) {
 
         @Override

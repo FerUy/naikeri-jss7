@@ -46,8 +46,7 @@ public class PolygonImpl extends OctetStringBase implements Polygon {
     }
 
     public int getNumberOfPoints() {
-        int numberOfPoints = data[0] & 0x0F;
-        return numberOfPoints;
+        return data[0] & 0x0F;
     }
 
     @Override
@@ -77,7 +76,7 @@ public class PolygonImpl extends OctetStringBase implements Polygon {
         for (int position = 0; position < numberOfPoints; position++) {
             EllipsoidPoint ellipsoidPoint = getEllipsoidPoint(position);
             sb.append(String.format(", Point%d_lat=%f, ", position, ellipsoidPoint.getLatitude()));
-            sb.append(String.format("Point%d_lat=%f", position, ellipsoidPoint.getLongitude()));
+            sb.append(String.format("Point%d_long=%f", position, ellipsoidPoint.getLongitude()));
         }
         sb.append("]");
 
@@ -87,7 +86,7 @@ public class PolygonImpl extends OctetStringBase implements Polygon {
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<PolygonImpl> POLYGON_XML = new XMLFormat<PolygonImpl>(PolygonImpl.class) {
+    protected static final XMLFormat<PolygonImpl> POLYGON_XML = new XMLFormat<>(PolygonImpl.class) {
 
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, PolygonImpl polygon) throws XMLStreamException {

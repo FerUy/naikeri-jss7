@@ -15,8 +15,8 @@ public class NumberingPlanIdentificationType extends EnumeratedBase {
 
     private static final long serialVersionUID = 4016746411943985346L;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(NumberingPlanIdentification.Unknown.getCode(), NumberingPlanIdentification.Unknown.toString());

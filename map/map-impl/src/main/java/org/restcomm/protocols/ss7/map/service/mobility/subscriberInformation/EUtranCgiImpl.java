@@ -6,6 +6,7 @@ import jakarta.xml.bind.DatatypeConverter;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -32,11 +33,11 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
     private static final String ECI = "eci";
     private static final String ENB = "enb";
     private static final String CI = "cellId";
-
-    private static final int DEFAULT_INT_VALUE = 0;
     private static final String DATA = "data";
 
     private static final String DEFAULT_VALUE = null;
+
+    private static final Logger logger = Logger.getLogger(EUtranCgiImpl.class);
 
     public EUtranCgiImpl() {
         super(7, 7, "EUtranCgi");
@@ -196,8 +197,7 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
         if (data.length != 7)
             throw new MAPException("Data length must equal 7");
 
-        int ci = (data[6] & 0xFF);
-        return ci;
+        return (data[6] & 0xFF);
     }
 
     public long getEci() throws MAPException {
@@ -224,13 +224,14 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
                 mcc = this.getMCC();
                 mnc = this.getMNC();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Exception while retrieving MCC/MNC at the toString method of EUtranCgiImpl: " + e.getMessage());
             }
             eci = this.getEci();
             enb = this.getENodeBId();
             ci = this.getCi();
             correctData = true;
         } catch (MAPException e) {
+            logger.error("Exception while getting retrieving ECI/eNBId/CI at the toString method of EUtranCgiImpl: " + e.getMessage());
         }
 
         StringBuilder sb = new StringBuilder();

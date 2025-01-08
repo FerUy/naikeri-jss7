@@ -4,19 +4,24 @@ package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformatio
 /**
  *
  <code>
-The Type of Shape information field identifies the type which is being coded in the Shape Description.
-The Type of Shape is coded as shown in table 2a.
+ The Type of Shape information field identifies the type which is being coded in the Shape Description.
+ The Type of Shape is coded as shown in table 2a
 
-Bits 4 3 2 1
-0 0 0 0 Ellipsoid Point
-0 0 0 1 Ellipsoid point with uncertainty Circle
-0 0 1 1 Ellipsoid point with uncertainty Ellipse
-0 1 0 1 Polygon
-1 0 0 0 Ellipsoid point with altitude
-1 0 0 1 Ellipsoid point with altitude and uncertainty Ellipsoid
-1 0 1 0 Ellipsoid Arc other values reserved for future use
+   Bits
+ 4 3 2 1
+ 0 0 0 0 Ellipsoid Point
+ 0 0 0 1 Ellipsoid point with uncertainty Circle
+ 0 0 1 1 Ellipsoid point with uncertainty Ellipse
+ 0 1 0 1 Polygon
+ 1 0 0 0 Ellipsoid point with altitude
+ 1 0 0 1 Ellipsoid point with altitude and uncertainty Ellipsoid
+ 1 0 1 0 Ellipsoid Arc other values reserved for future use
+ 1 0 1 1 High Accuracy Ellipsoid point with uncertainty ellipse
+ 1 1 0 0 High Accuracy Ellipsoid point with altitude and uncertainty ellipsoid
+ 1 1 0 1 High Accuracy Ellipsoid point with scalable uncertainty ellipse
+ 1 1 1 0 High Accuracy Ellipsoid point with altitude and scalable uncertainty ellipsoid
+ other values reserved for further use
 </code>
- *
  *
  * @author sergey vetyutnev
  *
@@ -24,7 +29,9 @@ Bits 4 3 2 1
 public enum TypeOfShape {
 
     EllipsoidPoint(0), EllipsoidPointWithUncertaintyCircle(1), EllipsoidPointWithUncertaintyEllipse(3), Polygon(5),
-    EllipsoidPointWithAltitude(8), EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(9), EllipsoidArc(10);
+    EllipsoidPointWithAltitude(8), EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(9), EllipsoidArc(10),
+    HighAccuracyEllipsoidPointWithUncertaintyEllipse(11), HighAccuracyEllipsoidPointWithAltitudeAndUncertaintyEllipsoid(12),
+    HighAccuracyEllipsoidPointWithScalableUncertaintyEllipse(13), HighAccuracyEllipsoidPointWithAltitudeAndScalableUncertaintyEllipsoid(14);
 
     private final int type;
 
@@ -52,6 +59,14 @@ public enum TypeOfShape {
                 return EllipsoidPointWithAltitudeAndUncertaintyEllipsoid;
             case 10:
                 return EllipsoidArc;
+            case 11:
+                return HighAccuracyEllipsoidPointWithUncertaintyEllipse;
+            case 12:
+                return HighAccuracyEllipsoidPointWithAltitudeAndUncertaintyEllipsoid;
+            case 13:
+                return HighAccuracyEllipsoidPointWithScalableUncertaintyEllipse;
+            case 14:
+                return HighAccuracyEllipsoidPointWithAltitudeAndScalableUncertaintyEllipsoid;
             default:
                 return null;
         }

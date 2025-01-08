@@ -37,7 +37,7 @@ import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
 /**
  * @author amit bhayani
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class SubscriberInfoImpl implements SubscriberInfo, MAPAsnPrimitive {
 

@@ -406,8 +406,10 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
     }
 
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
-        if (msisdn == null || serviceCentreAddress == null)
+
+        if (msisdn == null || serviceCentreAddress == null) {
             throw new MAPException("msisdn, sm_RP_PRI and serviceCentreAddress must not be null");
+        }
 
         try {
             ((ISDNAddressStringImpl) this.msisdn).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_msisdn);
@@ -445,8 +447,12 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
             if (this.singleAttemptDelivery)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_singleAttemptDelivery);
 
-            if (this.correlationID != null)
+            if (this.correlationID != null) {
                 ((CorrelationIDImpl) this.correlationID).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_correlationID);
+                if (this.correlationID.getHlrId() != null || this.correlationID.getSipUriA() != null) {
+                    throw new MAPException("SIP-URI-A and HLR-ID shall be absent from correlationID at " + _PrimitiveName);
+                }
+            }
 
             if (this.smsfSupportIndicator)
                 asnOutputStream.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_smsf_supportIndicator);
@@ -467,12 +473,12 @@ public class SendRoutingInfoForSMRequestImpl extends SmsMessageImpl implements S
         StringBuilder sb = new StringBuilder();
         sb.append("SendRoutingInfoForSMRequest [");
 
-        if (this.getMAPDialog() != null) {
+        /*if (this.getMAPDialog() != null) {
             sb.append("DialogId=").append(this.getMAPDialog().getLocalDialogId());
-        }
+        }*/
 
         if (this.msisdn != null) {
-            sb.append(", msisdn=");
+            sb.append("msisdn=");
             sb.append(this.msisdn);
         }
         if (this.sm_RP_PRI)

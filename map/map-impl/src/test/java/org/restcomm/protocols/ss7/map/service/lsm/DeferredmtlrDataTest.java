@@ -85,7 +85,7 @@ public class DeferredmtlrDataTest {
         ISDNAddressStringImpl networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number,
                 NumberingPlan.ISDN, "330044005500");
         LCSLocationInfoImpl lcsLocationInfo = new LCSLocationInfoImpl(networkNodeNumber, null, null, false, null, null, null,
-                null, null);
+                null, null, null, null);
 
         DeferredmtlrDataImpl imp = new DeferredmtlrDataImpl(deferredLocationEventType, TerminationCause.mtlrRestart,
                 lcsLocationInfo);

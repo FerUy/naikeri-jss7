@@ -71,6 +71,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.LCSFormatIndicator;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSPrivacyCheck;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoS;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSQoSClass;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSRequestorID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LocationEstimateType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LocationType;
@@ -79,6 +80,7 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.PeriodicLDRInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PrivacyCheckRelatedAction;
 import org.restcomm.protocols.ss7.map.api.service.lsm.RANTechnology;
+import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingOptionMilliseconds;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMN;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ResponseTime;
@@ -1432,9 +1434,9 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
     public LCSLocationInfo createLCSLocationInfo(ISDNAddressString networkNodeNumber, LMSI lmsi,
             MAPExtensionContainer extensionContainer, boolean gprsNodeIndicator, AdditionalNumber additionalNumber,
             SupportedLCSCapabilitySets supportedLCSCapabilitySets, SupportedLCSCapabilitySets additionalLCSCapabilitySets,
-            DiameterIdentity mmeName, DiameterIdentity aaaServerName) {
+            DiameterIdentity mmeName, DiameterIdentity aaaServerName, DiameterIdentity sgsnName, DiameterIdentity sgsnRealm) {
         return new LCSLocationInfoImpl(networkNodeNumber, lmsi, extensionContainer, gprsNodeIndicator, additionalNumber,
-                supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName);
+                supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
     }
 
     public LCSPrivacyCheck createLCSPrivacyCheck(PrivacyCheckRelatedAction callSessionUnrelated,
@@ -1443,8 +1445,9 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
     }
 
     public LCSQoS createLCSQoS(Integer horizontalAccuracy, Integer verticalAccuracy, boolean verticalCoordinateRequest,
-            ResponseTime responseTime, MAPExtensionContainer extensionContainer) {
-        return new LCSQoSImpl(horizontalAccuracy, verticalAccuracy, verticalCoordinateRequest, responseTime, extensionContainer);
+            ResponseTime responseTime, MAPExtensionContainer extensionContainer, boolean velocityRequest, LCSQoSClass lcsQosClass) {
+        return new LCSQoSImpl(horizontalAccuracy, verticalAccuracy, verticalCoordinateRequest, responseTime, extensionContainer,
+                velocityRequest, lcsQosClass);
     }
 
     public LCSRequestorID createLCSRequestorID(CBSDataCodingScheme dataCodingScheme, USSDString requestorIDString,
@@ -1457,8 +1460,8 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
         return new LocationTypeImpl(locationEstimateType, deferredLocationEventType);
     }
 
-    public PeriodicLDRInfo createPeriodicLDRInfo(int reportingAmount, int reportingInterval) {
-        return new PeriodicLDRInfoImpl(reportingAmount, reportingInterval);
+    public PeriodicLDRInfo createPeriodicLDRInfo(int reportingAmount, int reportingInterval, ReportingOptionMilliseconds reportingOptionMilliseconds) {
+        return new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
     }
 
     public PositioningDataInformation createPositioningDataInformation(byte[] data) {

@@ -34,7 +34,7 @@ public interface AbsoluteTimeStamp extends Serializable {
     int getSecond();
 
     /**
-     * @return the timeZone in in quarters of an hour
+     * @return the timeZone in quarters of an hour
      */
     int getTimeZone();
 

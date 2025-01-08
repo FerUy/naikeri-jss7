@@ -66,8 +66,8 @@ public abstract class TestHarnessSmsMo implements MAPDialogListener, MAPServiceS
     // TCAP Details
     protected static final int MAX_DIALOGS = 500000;
 
-    protected static String SCCP_CLIENT_ADDRESS = null;
-    protected static String SCCP_SERVER_ADDRESS = null;
+    protected static String SCCP_CLIENT_ADDRESS = "598991900032";
+    protected static String SCCP_SERVER_ADDRESS = "598990012345";
 
     protected static RoutingIndicator ROUTING_INDICATOR = RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN;
 

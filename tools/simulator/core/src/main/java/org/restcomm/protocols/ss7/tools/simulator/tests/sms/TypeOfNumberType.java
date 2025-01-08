@@ -15,8 +15,8 @@ public class TypeOfNumberType extends EnumeratedBase {
 
     private static final long serialVersionUID = 3669919751669763439L;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(TypeOfNumber.Unknown.getCode(), TypeOfNumber.Unknown.toString());

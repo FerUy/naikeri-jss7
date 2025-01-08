@@ -31,7 +31,7 @@ public class ResponseTimeImpl implements ResponseTime, MAPAsnPrimitive {
     }
 
     /**
-     * @param responseTimeCategory
+     * @param responseTimeCategory mandatory (values between lowdelay (0) and delaytolerant (1))
      */
     public ResponseTimeImpl(ResponseTimeCategory responseTimeCategory) {
         super();

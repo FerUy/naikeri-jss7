@@ -1,10 +1,19 @@
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 /**
- * LCSClientType ::= ENUMERATED { emergencyServices (0), valueAddedServices (1), plmnOperatorServices (2),
- * lawfulInterceptServices (3), ... } -- exception handling: -- unrecognized values may be ignored if the LCS client uses the
- * privacy override -- otherwise, an unrecognized value shall be treated as unexpected data by a receiver -- a return error
- * shall then be returned if received in a MAP invoke
+ *
+ <code>
+  LCSClientType ::= ENUMERATED {
+   emergencyServices        (0),
+   valueAddedServices       (1),
+   plmnOperatorServices     (2),
+   lawfulInterceptServices  (3),
+ ... }
+  -- exception handling:
+  -- unrecognized values may be ignored if the LCS client uses the privacy override
+  -- otherwise, an unrecognized value shall be treated as unexpected data by a receiver
+  -- a return error shall then be returned if received in a MAP invoke
+ </code>
  *
  * @author amit bhayani
  *
