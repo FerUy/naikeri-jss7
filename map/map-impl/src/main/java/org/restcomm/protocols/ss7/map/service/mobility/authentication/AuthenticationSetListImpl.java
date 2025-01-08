@@ -180,12 +180,12 @@ public class AuthenticationSetListImpl implements AuthenticationSetList, MAPAsnP
         sb.append("AuthenticationSetList [");
 
         if (this.tripletList != null) {
-            sb.append(this.tripletList.toString());
+            sb.append(this.tripletList);
             sb.append(", ");
         }
 
         if (this.quintupletList != null) {
-            sb.append(this.quintupletList.toString());
+            sb.append(this.quintupletList);
             sb.append(", ");
         }
 

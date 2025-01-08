@@ -16,7 +16,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.ServingNodeAddressImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -58,7 +57,7 @@ public class ServingNodeAddressTest {
         ISDNAddressString isdnAdd = impl.getMscNumber();
         assertEquals(isdnAdd.getAddressNature(), AddressNature.international_number);
         assertEquals(isdnAdd.getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(isdnAdd.getAddress().equals("13579000"));
+        assertEquals(isdnAdd.getAddress(), "13579000");
         assertNull(impl.getSgsnNumber());
         assertNull(impl.getMmeNumber());
 
@@ -74,7 +73,7 @@ public class ServingNodeAddressTest {
         isdnAdd = impl.getSgsnNumber();
         assertEquals(isdnAdd.getAddressNature(), AddressNature.international_number);
         assertEquals(isdnAdd.getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(isdnAdd.getAddress().equals("13579000"));
+        assertEquals(isdnAdd.getAddress(), "13579000");
         assertNull(impl.getMscNumber());
         assertNull(impl.getMmeNumber());
 

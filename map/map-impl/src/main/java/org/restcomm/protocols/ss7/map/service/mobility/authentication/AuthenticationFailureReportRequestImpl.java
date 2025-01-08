@@ -239,8 +239,8 @@ public class AuthenticationFailureReportRequestImpl extends MobilityMessageImpl 
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".accessType: Parameter is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
-                        vali = (int) ais.readInteger();
-                        this.accessType = AccessType.getInstance(vali);
+                        int val = (int) ais.readInteger();
+                        this.accessType = AccessType.getInstance(val);
                         break;
                     case Tag.STRING_OCTET:
                         // rand
@@ -331,42 +331,43 @@ public class AuthenticationFailureReportRequestImpl extends MobilityMessageImpl 
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(imsi.toString());
+            sb.append(imsi);
             sb.append(", ");
         }
         if (this.failureCause != null) {
             sb.append("failureCause=");
-            sb.append(failureCause.toString());
+            sb.append(failureCause);
             sb.append(", ");
         }
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
         if (this.reAttempt != null) {
             sb.append("reAttempt=");
-            sb.append(reAttempt.toString());
+            sb.append(reAttempt);
             sb.append(", ");
         }
         if (this.accessType != null) {
             sb.append("accessType=");
-            sb.append(accessType.toString());
+            sb.append(accessType);
             sb.append(", ");
         }
         if (this.rand != null) {
             sb.append("rand=[");
-            ArrayToString(rand);
+            String r = ArrayToString(rand);
+            sb.append(r);
             sb.append("], ");
         }
         if (this.vlrNumber != null) {
             sb.append("vlrNumber=");
-            sb.append(vlrNumber.toString());
+            sb.append(vlrNumber);
             sb.append(", ");
         }
         if (this.sgsnNumber != null) {
             sb.append("sgsnNumber=");
-            sb.append(sgsnNumber.toString());
+            sb.append(sgsnNumber);
             sb.append(", ");
         }
 

@@ -15,14 +15,13 @@ import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
 import java.io.IOException;
 
 /**
- *
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class SendingNodeNumberImpl implements SendingNodeNumber, MAPAsnPrimitive {
 
     public static final int _TAG_CSS_NUMBER = 1;
 
-    public static final String _PrimitiveName = "SubscriberState";
+    public static final String _PrimitiveName = "SendingNodeNumber";
 
     private ISDNAddressString hlrNumber;
     private ISDNAddressString cssNumber;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NetworkResource;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;
 
@@ -61,7 +62,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;
  </code>
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
  */
 public interface ResetRequest extends MobilityMessage {
 
@@ -71,4 +72,13 @@ public interface ResetRequest extends MobilityMessage {
 
     ArrayList<IMSI> getHlrList();
 
+    SendingNodeNumber getSendingNodenumber();
+
+    MAPExtensionContainer getExtensionContainer();
+
+    ArrayList<ResetId> getResetIdList();
+
+    InsertSubscriberDataArgs getSubscriptionData();
+
+    DeleteSubscriberDataArgs getSubscriptionDataDeletion();
 }

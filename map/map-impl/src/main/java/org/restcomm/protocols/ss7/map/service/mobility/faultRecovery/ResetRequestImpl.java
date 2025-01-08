@@ -15,25 +15,43 @@ import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NetworkResource;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.DeleteSubscriberDataArgs;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.InsertSubscriberDataArgs;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.SendingNodeNumber;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
+import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
 
 /**
  *
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
  */
 public class ResetRequestImpl extends MobilityMessageImpl implements ResetRequest {
 
     public static final String _PrimitiveName = "ResetRequest";
+    public static final int _TAG_extensionContainer = 0;
+    private static final int _TAG_reset_Id_List = 1;
+    private static final int _TAG_subscriptionData = 2;
+    private static final int _TAG_subscriptionDataDeletion = 3;
 
     private NetworkResource networkResource;
     private ISDNAddressString hlrNumber;
     private ArrayList<IMSI> hlrList;
+    private SendingNodeNumber sendingNodenumber;
 
+    private MAPExtensionContainer extensionContainer;
+
+    private ArrayList<ResetId> resetIdList;
+
+    private InsertSubscriberDataArgs subscriptionData;
+
+    private DeleteSubscriberDataArgs subscriptionDataDeletion;
     private long mapProtocolVersion;
 
     public ResetRequestImpl(long mapProtocolVersion) {
@@ -46,6 +64,18 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
         this.hlrList = hlrList;
 
         this.mapProtocolVersion = mapProtocolVersion;
+    }
+
+    public ResetRequestImpl(SendingNodeNumber sendingNodenumber,  ArrayList<IMSI> hlrList, MAPExtensionContainer extensionContainer,
+            ArrayList<ResetId> resetIdList, InsertSubscriberDataArgs subscriptionData, DeleteSubscriberDataArgs subscriptionDataDeletion) {
+        this.sendingNodenumber = sendingNodenumber;
+        this.hlrList = hlrList;
+        this.extensionContainer = extensionContainer;
+        this.resetIdList = resetIdList;
+        this.subscriptionData = subscriptionData;
+        this.subscriptionDataDeletion = subscriptionDataDeletion;
+
+        this.mapProtocolVersion = 3;
     }
 
     public long getMapProtocolVersion() {
@@ -77,6 +107,30 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
         return hlrList;
     }
 
+    @Override
+    public SendingNodeNumber getSendingNodenumber() {
+        return sendingNodenumber;
+    }
+
+    @Override
+    public MAPExtensionContainer getExtensionContainer() {
+        return extensionContainer;
+    }
+
+    @Override
+    public ArrayList<ResetId> getResetIdList() {
+        return resetIdList;
+    }
+
+    @Override
+    public InsertSubscriberDataArgs getSubscriptionData() {
+        return subscriptionData;
+    }
+
+    @Override
+    public DeleteSubscriberDataArgs getSubscriptionDataDeletion() {
+        return subscriptionDataDeletion;
+    }
 
     @Override
     public int getTag() throws MAPException {
@@ -133,6 +187,18 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
 
             int tag = ais.readTag();
 
+            /*switch (num) {
+                case 0:
+                    // sendingNodenumber
+                    if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || (tag != Tag.STRING_OCTET && tag != Tag.SEQUENCE))
+                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                + ": Parameter 0 bad tag or tag class",
+                                MAPParsingComponentExceptionReason.MistypedParameter);
+                    this.sendingNodenumber = new SendingNodeNumberImpl();
+                    ((SendingNodeNumberImpl) this.sendingNodenumber).decodeAll(ais);
+                    break;
+            }*/
+
             switch (ais.getTagClass()) {
             case Tag.CLASS_UNIVERSAL:
                 switch (tag) {
@@ -154,9 +220,8 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
                     if (ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".hlrList: Parameter is primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
-
                     AsnInputStream ais2 = ais.readSequenceStream();
-                    this.hlrList = new ArrayList<IMSI>();
+                    this.hlrList = new ArrayList<>();
                     while (true) {
                         if (ais2.available() == 0)
                             break;
@@ -166,8 +231,8 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": bad hlrList element tag or tagClass or is not primitive ", MAPParsingComponentExceptionReason.MistypedParameter);
 
-                        IMSI imsi = new IMSIImpl();
-                        ((IMSIImpl) imsi).decodeAll(ais2);
+                        IMSIImpl imsi = new IMSIImpl();
+                        imsi.decodeAll(ais2);
                         this.hlrList.add(imsi);
                     }
                     if (this.hlrList.size() < 1 || this.hlrList.size() > 50) {
@@ -180,6 +245,66 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
                 default:
                     ais.advanceElement();
                     break;
+                }
+                break;
+
+            case Tag.CLASS_CONTEXT_SPECIFIC:
+                switch (tag) {
+                    case _TAG_extensionContainer:
+                        if (ais.isTagPrimitive()) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".extensionContainer: is primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        this.extensionContainer = new MAPExtensionContainerImpl();
+                        ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
+                        break;
+                    case _TAG_reset_Id_List:
+                        if (ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".resetIdList: Parameter is primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+
+                        AsnInputStream ais12 = ais.readSequenceStream();
+                        this.resetIdList = new ArrayList<>();
+                        while (true) {
+                            if (ais12.available() == 0)
+                                break;
+
+                            int tag12 = ais12.readTag();
+                            if (tag12 != Tag.STRING_OCTET || ais12.getTagClass() != Tag.CLASS_UNIVERSAL || !ais12.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ": bad resetIdList element tag or tagClass or is not primitive ",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+
+                            ResetIdImpl resetId = new ResetIdImpl();
+                            (resetId).decodeAll(ais12);
+                            resetIdList.add(resetId);
+                        }
+                        if (this.resetIdList.isEmpty() || this.resetIdList.size() > 50) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ": Parameter resetIdList size must be from 1 to 50, found: "
+                                    + this.resetIdList.size(),
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        break;
+                    case _TAG_subscriptionData:
+                        if (ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".subscriptionData: Parameter is primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.subscriptionData = new InsertSubscriberDataArgsImpl();
+                        ((InsertSubscriberDataArgsImpl) subscriptionData).decodeAll(ais);
+                        break;
+                    case _TAG_subscriptionDataDeletion:
+                        if (ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".subscriptionDataDeletion: Parameter is primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.subscriptionDataDeletion = new DeleteSubscriberDataArgsImpl();
+                        ((DeleteSubscriberDataArgsImpl) subscriptionDataDeletion).decodeAll(ais);
+                        break;
+
                 }
                 break;
 
@@ -231,7 +356,7 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
             } catch (IOException e) {
                 throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter hlrList", e);
             } catch (AsnException e) {
-                throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter hlrList", e);
+                throw new MAPException("AsnException while encoding " + _PrimitiveName + " parameter hlrList", e);
             }
         }
 
@@ -265,7 +390,7 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
 
         if (this.hlrNumber != null) {
             sb.append("hlrNumber=");
-            sb.append(this.hlrNumber.toString());
+            sb.append(this.hlrNumber);
             sb.append(", ");
         }
 
