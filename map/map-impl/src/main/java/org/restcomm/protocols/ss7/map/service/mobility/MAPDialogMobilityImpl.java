@@ -35,7 +35,10 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.Failur
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.DeleteSubscriberDataArgs;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.InsertSubscriberDataArgs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.SendingNodeNumber;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.EquipmentStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIu;
@@ -1762,7 +1765,8 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
     public Long addResetRequest(int customInvokeTimeout, NetworkResource networkResource, ISDNAddressString hlrNumber, ArrayList<IMSI> hlrList)
             throws MAPException {
         if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.resetContext)
-                || ((this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2) && (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version1)))
+                || ((this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2)
+                && (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version1)))
             throw new MAPException("Bad application context name for ResetRequest: must be resetContext_V1 or V2");
 
         Invoke invoke = this.mapProviderImpl.getTCAPProvider().getComponentPrimitiveFactory().createTCInvokeRequest(InvokeClass.Class4);
@@ -1777,6 +1781,58 @@ public class MAPDialogMobilityImpl extends MAPDialogImpl implements MAPDialogMob
 
         int version = this.mapApplicationContext.getApplicationContextVersion().getVersion();
         ResetRequestImpl resetRequest = new ResetRequestImpl(networkResource, hlrNumber, hlrList, version);
+
+        AsnOutputStream aos = new AsnOutputStream();
+        resetRequest.encodeData(aos);
+
+        Parameter parameter = this.mapProviderImpl.getTCAPProvider().getComponentPrimitiveFactory().createParameter();
+        parameter.setTagClass(resetRequest.getTagClass());
+        parameter.setPrimitive(resetRequest.getIsPrimitive());
+        parameter.setTag(resetRequest.getTag());
+        parameter.setData(aos.toByteArray());
+        invoke.setParameter(parameter);
+
+        Long invokeId;
+        try {
+            invokeId = this.tcapDialog.getNewInvokeId();
+            invoke.setInvokeId(invokeId);
+        } catch (TCAPException e) {
+            throw new MAPException(e.getMessage(), e);
+        }
+
+        this.sendInvokeComponent(invoke);
+
+        return invokeId;
+    }
+
+    @Override
+    public Long addResetRequest(SendingNodeNumber sendingNodenumber, ArrayList<IMSI> hlrList, MAPExtensionContainer extensionContainer,
+            ArrayList<ResetId> resetIdList, InsertSubscriberDataArgs subscriptionData, DeleteSubscriberDataArgs subscriptionDataDeletion)
+            throws MAPException {
+        return addResetRequest(_Timer_Default, sendingNodenumber, hlrList, extensionContainer, resetIdList, subscriptionData, subscriptionDataDeletion);
+    }
+
+    @Override
+    public Long addResetRequest(int customInvokeTimeout, SendingNodeNumber sendingNodenumber, ArrayList<IMSI> hlrList, MAPExtensionContainer extensionContainer,
+            ArrayList<ResetId> resetIdList, InsertSubscriberDataArgs subscriptionData, DeleteSubscriberDataArgs subscriptionDataDeletion)
+            throws MAPException {
+        if ((this.mapApplicationContext.getApplicationContextName() != MAPApplicationContextName.resetContext)
+                || ((this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version2)
+                && (this.mapApplicationContext.getApplicationContextVersion() != MAPApplicationContextVersion.version3)))
+            throw new MAPException("Bad application context name for ResetRequest: must be resetContext_V2 or V3");
+
+        Invoke invoke = this.mapProviderImpl.getTCAPProvider().getComponentPrimitiveFactory().createTCInvokeRequest(InvokeClass.Class4);
+        if (customInvokeTimeout == _Timer_Default)
+            invoke.setTimeout(getMediumTimer());
+        else
+            invoke.setTimeout(customInvokeTimeout);
+
+        OperationCode operationCode = this.mapProviderImpl.getTCAPProvider().getComponentPrimitiveFactory().createOperationCode();
+        operationCode.setLocalOperationCode((long) MAPOperationCode.reset);
+        invoke.setOperationCode(operationCode);
+
+        ResetRequestImpl resetRequest = new ResetRequestImpl(sendingNodenumber, hlrList, extensionContainer, resetIdList, subscriptionData,
+                subscriptionDataDeletion);
 
         AsnOutputStream aos = new AsnOutputStream();
         resetRequest.encodeData(aos);

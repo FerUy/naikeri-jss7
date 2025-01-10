@@ -83,7 +83,7 @@ public class ResetRequestTest {
         assertTrue(Arrays.equals(rawData, encodedData));
 
 
-        ArrayList<IMSI> hlrList = new ArrayList<IMSI>();
+        ArrayList<IMSI> hlrList = new ArrayList<>();
         IMSIImpl imsi = new IMSIImpl("1234001");
         hlrList.add(imsi);
         prim = new ResetRequestImpl(null, hlrNumber, hlrList, 2);

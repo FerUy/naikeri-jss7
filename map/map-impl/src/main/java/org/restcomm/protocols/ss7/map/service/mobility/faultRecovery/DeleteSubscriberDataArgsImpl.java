@@ -395,334 +395,320 @@ public class DeleteSubscriberDataArgsImpl implements DeleteSubscriberDataArgs, M
 
             int tag = ais.readTag();
 
-            switch (num) {
-                /*case 0:
-                    // imsi [0] IMSI
-                    if (ais.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC || !ais.isTagPrimitive() || tag != _TAG_imsi)
-                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                + ".imsi: Parameter 0 bad tag or tag class or not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                    this.imsi = new IMSIImpl();
-                    ((IMSIImpl) this.imsi).decodeAll(ais);
-                    break;*/
+            if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
+                switch (tag) {
+                    case _TAG_imsi:
+                        // imsi [0] IMSI
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".imsi: Parameter 0 bad tag or tag class or not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.imsi = new IMSIImpl();
+                        ((IMSIImpl) this.imsi).decodeAll(ais);
+                        break;
+                    case _TAG_basicServiceList:
+                        // basicServiceList [1] BasicServiceList OPTIONAL
+                        if (ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".basicServiceList: " +
+                                    "Parameter is primitive", MAPParsingComponentExceptionReason.MistypedParameter);
 
-                default:
-                    if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
-                        switch (tag) {
-                            case _TAG_imsi:
-                                // imsi [0] IMSI
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".imsi: Parameter 0 bad tag or tag class or not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                this.imsi = new IMSIImpl();
-                                ((IMSIImpl) this.imsi).decodeAll(ais);
-                                break;
-                            case _TAG_basicServiceList:
-                                // basicServiceList [1] BasicServiceList OPTIONAL
-                                if (ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".basicServiceList: " +
-                                            "Parameter is primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-
-                                AsnInputStream ais1 = ais.readSequenceStream();
-                                this.basicServiceList = new ArrayList<>();
-                                while (true) {
-                                    if (ais1.available() == 0)
-                                        break;
-
-                                    ais1.readTag();
-
-                                    ExtBasicServiceCodeImpl extBasicServiceCode = new ExtBasicServiceCodeImpl();
-                                    extBasicServiceCode.decodeAll(ais1);
-                                    this.basicServiceList.add(extBasicServiceCode);
-                                }
-                                if (this.basicServiceList.size() < 1 || this.basicServiceList.size() > 70) {
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ": Parameter basicServiceList size must be from 1 to 70, found: " + this.ssList.size(),
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                }
+                        AsnInputStream ais1 = ais.readSequenceStream();
+                        this.basicServiceList = new ArrayList<>();
+                        while (true) {
+                            if (ais1.available() == 0)
                                 break;
 
-                            case _TAG_ss_List:
-                                // ss-List [2] SS-List OPTIONAL
-                                if (ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".ssList: Parameter is primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                            ais1.readTag();
 
-                                AsnInputStream ais2 = ais.readSequenceStream();
-                                this.ssList = new ArrayList<>();
-                                while (true) {
-                                    if (ais2.available() == 0)
-                                        break;
-
-                                    int tag2 = ais2.readTag();
-                                    if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL || !ais2.isTagPrimitive())
-                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                + ": bad ssList element tag or tagClass or is not primitive ",
-                                                MAPParsingComponentExceptionReason.MistypedParameter);
-
-                                    SSCodeImpl ssCode = new SSCodeImpl();
-                                    ssCode.decodeAll(ais2);
-                                    this.ssList.add(ssCode);
-                                }
-                                if (this.ssList.size() < 1 || this.ssList.size() > 30) {
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ": Parameter ssList size must be from 1 to 30, found: " + this.ssList.size(),
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                }
-                                break;
-
-                            case _TAG_roamingRestrictionDueToUnsupportedFeature:
-                                // roamingRestrictionDueToUnsupportedFeature [4] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".roamingRestrictionDueToUnsupportedFeature: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.roamingRestrictionDueToUnsupportedFeature = true;
-                                break;
-                            case _TAG_regionalSubscriptionIdentifier:
-                                // regionalSubscriptionIdentifier [5] ZoneCode OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".regionalSubscriptionIdentifier: Parameter regionalSubscriptionIdentifier is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                this.regionalSubscriptionIdentifier = new ZoneCodeImpl();
-                                ((ZoneCodeImpl) this.regionalSubscriptionIdentifier).decodeAll(ais);
-                                break;
-                            case _TAG_vbsGroupIndication:
-                                // vbsGroupIndication [7] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException(
-                                            "Error while decoding " + _PrimitiveName + ".vbsGroupIndication: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.vbsGroupIndication = true;
-                                break;
-                            case _TAG_vgcsGroupIndication:
-                                // vgcsGroupIndication [8] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".vgcsGroupIndication: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.vgcsGroupIndication = true;
-                                break;
-                            case _TAG_camelSubscriptionInfoWithdraw:
-                                // camelSubscriptionInfoWithdraw [9] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".camelSubscriptionInfoWithdraw: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.camelSubscriptionInfoWithdraw = true;
-                                break;
-                            case _TAG_extensionContainer:
-                                // extensionContainer [6] ExtensionContainer OPTIONAL
-                                if (ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".extensionContainer: Parameter extensionContainer is primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                this.extensionContainer = new MAPExtensionContainerImpl();
-                                ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
-                                break;
-                            case _TAG_gprsSubscriptionDataWithdraw:
-                                // gprsSubscriptionDataWithdraw [10] GPRSSubscriptionDataWithdraw OPTIONAL
-                                AsnInputStream ais3 = ais.readSequenceStream();
-                                ais3.readTag();
-                                this.gprsSubscriptionDataWithdraw = new GPRSSubscriptionDataWithdrawImpl();
-                                ((GPRSSubscriptionDataWithdrawImpl) this.gprsSubscriptionDataWithdraw).decodeAll(ais3);
-                                break;
-                            case _TAG_roamingRestrictedInSgsnDueToUnsuppportedFeature:
-                                // roamingRestrictedInSgsnDueToUnsuppportedFeature [11] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".roamingRestrictedInSgsnDueToUnsuppportedFeature: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.roamingRestrictedInSgsnDueToUnsuppportedFeature = true;
-                                break;
-                            case _TAG_lsaInformationWithdraw:
-                                // lsaInformationWithdraw [12] LSAInformationWithdraw OPTIONAL
-                                AsnInputStream ais4 = ais.readSequenceStream();
-                                ais4.readTag();
-                                this.lsaInformationWithdraw = new LSAInformationWithdrawImpl();
-                                ((LSAInformationWithdrawImpl) this.lsaInformationWithdraw).decodeAll(ais4);
-                                break;
-                            case _TAG_gmlc_ListWithdraw:
-                                // gmlc-ListWithdraw [13] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".gmlcListWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.gmlcListWithdraw = true;
-                                break;
-                            case _TAG_istInformationWithdraw:
-                                // istInformationWithdraw [14] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".istInformationWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.istInformationWithdraw = true;
-                                break;
-                            case _TAG_specificCSI_Withdraw:
-                                // specificCSI-Withdraw [15] SpecificCSI-Withdraw OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".specificCSIWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                this.specificCSIWithdraw = new SpecificCSIWithdrawImpl();
-                                ((SpecificCSIWithdrawImpl) this.specificCSIWithdraw).decodeAll(ais);
-                                break;
-                            case _TAG_chargingCharacteristicsWithdraw:
-                                // chargingCharacteristicsWithdraw [16] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".chargingCharacteristicsWithdraw: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.chargingCharacteristicsWithdraw = true;
-                                break;
-                            case _TAG_stn_srWithdraw:
-                                // stn-srWithdraw [17] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".stnSrWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.stnSrWithdraw = true;
-                                break;
-                            case _TAG_epsSubscriptionDataWithdraw:
-                                // epsSubscriptionDataWithdraw [18] EPS-SubscriptionDataWithdraw OPTIONAL
-                                AsnInputStream ais5 = ais.readSequenceStream();
-                                ais5.readTag();
-                                this.epsSubscriptionDataWithdraw = new EPSSubscriptionDataWithdrawImpl();
-                                ((EPSSubscriptionDataWithdrawImpl) this.epsSubscriptionDataWithdraw).decodeAll(ais5);
-                                break;
-                            case _TAG_apn_oi_replacementWithdraw:
-                                // apn-oi-replacementWithdraw [19] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".apnOiReplacementWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.apnOiReplacementWithdraw = true;
-                                break;
-                            case _TAG_csg_SubscriptionDeleted:
-                                // csg-SubscriptionDeleted [20] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".csgSubscriptionDeleted: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.csgSubscriptionDeleted = true;
-                                break;
-                            case _TAG_subscribedPeriodicTAU_RAU_TimerWithdraw:
-                                // subscribedPeriodicTAU-RAU-TimerWithdraw [22] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".subscribedPeriodicTAURAUTimerWithdraw: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.subscribedPeriodicTAURAUTimerWithdraw = true;
-                                break;
-                            case _TAG_subscribedPeriodicLAUTimerWithdraw:
-                                // subscribedPeriodicLAU-TimerWithdraw [23] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".subscribedPeriodicLAUTimerWithdraw: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.subscribedPeriodicLAUTimerWithdraw = true;
-                                break;
-                            case _TAG_subscribed_vsrvccWithdraw:
-                                // subscribed-vsrvccWithdraw [21] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".subscribedVsrvccWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.subscribedVsrvccWithdraw = true;
-                                break;
-                            case _TAG_VPLMN_CSG_SubscriptionDeleted:
-                                // vplmn-Csg-SubscriptionDeleted [24] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".vplmnCsgSubscriptionDeleted: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.vplmnCsgSubscriptionDeleted = true;
-                                break;
-                            case _TAG_additionalMSISDN_Withdraw:
-                                // additionalMSISDN-Withdraw [25] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".additionalMSISDNWithdraw: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.additionalMSISDNWithdraw = true;
-                                break;
-                            case _TAG_CS_to_PS_SRVCC_Withdraw:
-                                // cs-to-ps-SRVCC-Withdraw [26] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".csToPsSRVCCWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.csToPsSRVCCWithdraw = true;
-                                break;
-                            case _TAG_imsiGroupIdList_Withdraw:
-                                // imsiGroupIdList-Withdraw [27] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".imsiGroupIdListWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.imsiGroupIdListWithdraw = true;
-                                break;
-                            case _TAG_userPlaneIntegrityProtectionWithdraw:
-                                // userPlaneIntegrityProtectionWithdraw [28] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".userPlaneIntegrityProtectionWithdraw: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.userPlaneIntegrityProtectionWithdraw = true;
-                                break;
-                            case _TAG_DL_Buffering_Suggested_Packet_Count_Withdraw:
-                                // dl-Buffering-Suggested-Packet-Count-Withdraw [29] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".dlBufferingSuggestedPacketCountWithdraw: Parameter is not primitive",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.dlBufferingSuggestedPacketCountWithdraw = true;
-                                break;
-                            case _TAG_UE_UsageTypeWithdraw:
-                                // ue-UsageTypeWithdraw [30] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".ueUsageTypeWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.ueUsageTypeWithdraw = true;
-                                break;
-                            case _TAG_reset_idsWithdraw:
-                                // reset-idsWithdraw [31] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".resetIdsWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.resetIdsWithdraw = true;
-                                break;
-                            case _TAG_iab_OperationWithdraw:
-                                // iab-OperationWithdraw [32] NULL OPTIONAL
-                                if (!ais.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ".iabOperationWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                                ais.readNull();
-                                this.iabOperationWithdraw = true;
-                                break;
-
-                            default:
-                                ais.advanceElement();
-                                break;
+                            ExtBasicServiceCodeImpl extBasicServiceCode = new ExtBasicServiceCodeImpl();
+                            extBasicServiceCode.decodeAll(ais1);
+                            this.basicServiceList.add(extBasicServiceCode);
                         }
-                    } else {
+                        if (this.basicServiceList.isEmpty() || this.basicServiceList.size() > 70) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ": Parameter basicServiceList size must be from 1 to 70, found: " + this.ssList.size(),
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        break;
 
+                    case _TAG_ss_List:
+                        // ss-List [2] SS-List OPTIONAL
+                        if (ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".ssList: Parameter is primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+
+                        AsnInputStream ais2 = ais.readSequenceStream();
+                        this.ssList = new ArrayList<>();
+                        while (true) {
+                            if (ais2.available() == 0)
+                                break;
+
+                            int tag2 = ais2.readTag();
+                            if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL || !ais2.isTagPrimitive())
+                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ": bad ssList element tag or tagClass or is not primitive ",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+
+                            SSCodeImpl ssCode = new SSCodeImpl();
+                            ssCode.decodeAll(ais2);
+                            this.ssList.add(ssCode);
+                        }
+                        if (this.ssList.isEmpty() || this.ssList.size() > 30) {
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ": Parameter ssList size must be from 1 to 30, found: " + this.ssList.size(),
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        }
+                        break;
+
+                    case _TAG_roamingRestrictionDueToUnsupportedFeature:
+                        // roamingRestrictionDueToUnsupportedFeature [4] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".roamingRestrictionDueToUnsupportedFeature: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.roamingRestrictionDueToUnsupportedFeature = true;
+                        break;
+                    case _TAG_regionalSubscriptionIdentifier:
+                        // regionalSubscriptionIdentifier [5] ZoneCode OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".regionalSubscriptionIdentifier: Parameter regionalSubscriptionIdentifier is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.regionalSubscriptionIdentifier = new ZoneCodeImpl();
+                        ((ZoneCodeImpl) this.regionalSubscriptionIdentifier).decodeAll(ais);
+                        break;
+                    case _TAG_vbsGroupIndication:
+                        // vbsGroupIndication [7] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException(
+                                    "Error while decoding " + _PrimitiveName + ".vbsGroupIndication: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.vbsGroupIndication = true;
+                        break;
+                    case _TAG_vgcsGroupIndication:
+                        // vgcsGroupIndication [8] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".vgcsGroupIndication: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.vgcsGroupIndication = true;
+                        break;
+                    case _TAG_camelSubscriptionInfoWithdraw:
+                        // camelSubscriptionInfoWithdraw [9] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".camelSubscriptionInfoWithdraw: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.camelSubscriptionInfoWithdraw = true;
+                        break;
+                    case _TAG_extensionContainer:
+                        // extensionContainer [6] ExtensionContainer OPTIONAL
+                        if (ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".extensionContainer: Parameter extensionContainer is primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.extensionContainer = new MAPExtensionContainerImpl();
+                        ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
+                        break;
+                    case _TAG_gprsSubscriptionDataWithdraw:
+                        // gprsSubscriptionDataWithdraw [10] GPRSSubscriptionDataWithdraw OPTIONAL
+                        AsnInputStream ais3 = ais.readSequenceStream();
+                        ais3.readTag();
+                        this.gprsSubscriptionDataWithdraw = new GPRSSubscriptionDataWithdrawImpl();
+                        ((GPRSSubscriptionDataWithdrawImpl) this.gprsSubscriptionDataWithdraw).decodeAll(ais3);
+                        break;
+                    case _TAG_roamingRestrictedInSgsnDueToUnsuppportedFeature:
+                        // roamingRestrictedInSgsnDueToUnsuppportedFeature [11] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".roamingRestrictedInSgsnDueToUnsuppportedFeature: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.roamingRestrictedInSgsnDueToUnsuppportedFeature = true;
+                        break;
+                    case _TAG_lsaInformationWithdraw:
+                        // lsaInformationWithdraw [12] LSAInformationWithdraw OPTIONAL
+                        AsnInputStream ais4 = ais.readSequenceStream();
+                        ais4.readTag();
+                        this.lsaInformationWithdraw = new LSAInformationWithdrawImpl();
+                        ((LSAInformationWithdrawImpl) this.lsaInformationWithdraw).decodeAll(ais4);
+                        break;
+                    case _TAG_gmlc_ListWithdraw:
+                        // gmlc-ListWithdraw [13] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".gmlcListWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.gmlcListWithdraw = true;
+                        break;
+                    case _TAG_istInformationWithdraw:
+                        // istInformationWithdraw [14] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".istInformationWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.istInformationWithdraw = true;
+                        break;
+                    case _TAG_specificCSI_Withdraw:
+                        // specificCSI-Withdraw [15] SpecificCSI-Withdraw OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".specificCSIWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.specificCSIWithdraw = new SpecificCSIWithdrawImpl();
+                        ((SpecificCSIWithdrawImpl) this.specificCSIWithdraw).decodeAll(ais);
+                        break;
+                    case _TAG_chargingCharacteristicsWithdraw:
+                        // chargingCharacteristicsWithdraw [16] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".chargingCharacteristicsWithdraw: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.chargingCharacteristicsWithdraw = true;
+                        break;
+                    case _TAG_stn_srWithdraw:
+                        // stn-srWithdraw [17] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".stnSrWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.stnSrWithdraw = true;
+                        break;
+                    case _TAG_epsSubscriptionDataWithdraw:
+                        // epsSubscriptionDataWithdraw [18] EPS-SubscriptionDataWithdraw OPTIONAL
+                        AsnInputStream ais5 = ais.readSequenceStream();
+                        ais5.readTag();
+                        this.epsSubscriptionDataWithdraw = new EPSSubscriptionDataWithdrawImpl();
+                        ((EPSSubscriptionDataWithdrawImpl) this.epsSubscriptionDataWithdraw).decodeAll(ais5);
+                        break;
+                    case _TAG_apn_oi_replacementWithdraw:
+                        // apn-oi-replacementWithdraw [19] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".apnOiReplacementWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.apnOiReplacementWithdraw = true;
+                        break;
+                    case _TAG_csg_SubscriptionDeleted:
+                        // csg-SubscriptionDeleted [20] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".csgSubscriptionDeleted: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.csgSubscriptionDeleted = true;
+                        break;
+                    case _TAG_subscribedPeriodicTAU_RAU_TimerWithdraw:
+                        // subscribedPeriodicTAU-RAU-TimerWithdraw [22] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".subscribedPeriodicTAURAUTimerWithdraw: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.subscribedPeriodicTAURAUTimerWithdraw = true;
+                        break;
+                    case _TAG_subscribedPeriodicLAUTimerWithdraw:
+                        // subscribedPeriodicLAU-TimerWithdraw [23] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".subscribedPeriodicLAUTimerWithdraw: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.subscribedPeriodicLAUTimerWithdraw = true;
+                        break;
+                    case _TAG_subscribed_vsrvccWithdraw:
+                        // subscribed-vsrvccWithdraw [21] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".subscribedVsrvccWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.subscribedVsrvccWithdraw = true;
+                        break;
+                    case _TAG_VPLMN_CSG_SubscriptionDeleted:
+                        // vplmn-Csg-SubscriptionDeleted [24] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".vplmnCsgSubscriptionDeleted: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.vplmnCsgSubscriptionDeleted = true;
+                        break;
+                    case _TAG_additionalMSISDN_Withdraw:
+                        // additionalMSISDN-Withdraw [25] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".additionalMSISDNWithdraw: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.additionalMSISDNWithdraw = true;
+                        break;
+                    case _TAG_CS_to_PS_SRVCC_Withdraw:
+                        // cs-to-ps-SRVCC-Withdraw [26] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".csToPsSRVCCWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.csToPsSRVCCWithdraw = true;
+                        break;
+                    case _TAG_imsiGroupIdList_Withdraw:
+                        // imsiGroupIdList-Withdraw [27] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".imsiGroupIdListWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.imsiGroupIdListWithdraw = true;
+                        break;
+                    case _TAG_userPlaneIntegrityProtectionWithdraw:
+                        // userPlaneIntegrityProtectionWithdraw [28] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".userPlaneIntegrityProtectionWithdraw: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.userPlaneIntegrityProtectionWithdraw = true;
+                        break;
+                    case _TAG_DL_Buffering_Suggested_Packet_Count_Withdraw:
+                        // dl-Buffering-Suggested-Packet-Count-Withdraw [29] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".dlBufferingSuggestedPacketCountWithdraw: Parameter is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.dlBufferingSuggestedPacketCountWithdraw = true;
+                        break;
+                    case _TAG_UE_UsageTypeWithdraw:
+                        // ue-UsageTypeWithdraw [30] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".ueUsageTypeWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.ueUsageTypeWithdraw = true;
+                        break;
+                    case _TAG_reset_idsWithdraw:
+                        // reset-idsWithdraw [31] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".resetIdsWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.resetIdsWithdraw = true;
+                        break;
+                    case _TAG_iab_OperationWithdraw:
+                        // iab-OperationWithdraw [32] NULL OPTIONAL
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                    + ".iabOperationWithdraw: Parameter is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                        ais.readNull();
+                        this.iabOperationWithdraw = true;
+                        break;
+
+                    default:
                         ais.advanceElement();
-                    }
-                    break;
+                        break;
+                }
+            } else {
+                ais.advanceElement();
             }
 
             num++;
@@ -753,8 +739,9 @@ public class DeleteSubscriberDataArgsImpl implements DeleteSubscriberDataArgs, M
     @Override
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
         try {
+
             if (this.imsi == null)
-                throw new MAPException("Error when encoding " + _PrimitiveName + ", IMSI parameter must not be null for MAP Version3");
+                throw new MAPException("Error when encoding " + _PrimitiveName + ", IMSI parameter must not be null within DeleteSubscriberDataArgs");
 
             ((IMSIImpl) this.imsi).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_imsi);
 
