@@ -1220,7 +1220,9 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onResetRequest(ResetRequest resetRequestIndication) {
-
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onResetRequest over DialogId=%d", resetRequestIndication.getMAPDialog().getLocalDialogId()));
+        }
     }
 
     @Override

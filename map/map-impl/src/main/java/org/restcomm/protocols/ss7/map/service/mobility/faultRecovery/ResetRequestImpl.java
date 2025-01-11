@@ -54,6 +54,8 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
     private DeleteSubscriberDataArgs subscriptionDataDeletion;
     private long mapProtocolVersion;
 
+    private boolean rel18Update;
+
     public ResetRequestImpl(long mapProtocolVersion) {
         this.mapProtocolVersion = mapProtocolVersion;
     }
@@ -62,6 +64,8 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
         this.networkResource = networkResource;
         this.hlrNumber = hlrNumber;
         this.hlrList = hlrList;
+
+        this.rel18Update = false;
 
         if (mapProtocolVersion == 1 || mapProtocolVersion == 2)
             this.mapProtocolVersion = mapProtocolVersion;
@@ -76,7 +80,8 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
         this.subscriptionData = subscriptionData;
         this.subscriptionDataDeletion = subscriptionDataDeletion;
 
-        this.mapProtocolVersion = 3; // FIXME (this is a temporal hack)
+        this.mapProtocolVersion = 2;
+        this.rel18Update = true;// FIXME (this is a temporal hack)
     }
 
     public long getMapProtocolVersion() {
@@ -260,27 +265,30 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
                         case _TAG_reset_Id_List:
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".resetIdList: Parameter is primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                            AsnInputStream ais12 = ais.readSequenceStream();
+                                        + ".resetIdList: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+
+                            AsnInputStream ais1 = ais.readSequenceStream();
                             this.resetIdList = new ArrayList<>();
                             while (true) {
-                                if (ais12.available() == 0)
+                                if (ais1.available() == 0)
                                     break;
 
-                                int tag12 = ais12.readTag();
-                                if (tag12 != Tag.STRING_OCTET || ais12.getTagClass() != Tag.CLASS_UNIVERSAL || !ais12.isTagPrimitive())
+                                int tag1 = ais1.readTag();
+                                if (tag1 != Tag.STRING_OCTET || ais1.getTagClass() != Tag.CLASS_UNIVERSAL || !ais1.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad resetIdList element tag or tagClass or is not primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 ResetIdImpl resetId = new ResetIdImpl();
-                                (resetId).decodeAll(ais12);
+                                (resetId).decodeAll(ais1);
                                 resetIdList.add(resetId);
                             }
                             if (this.resetIdList.isEmpty() || this.resetIdList.size() > 50) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter resetIdList size must be from 1 to 50, found: "
-                                        + this.resetIdList.size(), MAPParsingComponentExceptionReason.MistypedParameter);
+                                        + this.resetIdList.size(),
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
                             }
                             break;
                         case _TAG_subscriptionData:
@@ -298,6 +306,10 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             this.subscriptionDataDeletion = new DeleteSubscriberDataArgsImpl();
                             ((DeleteSubscriberDataArgsImpl) subscriptionDataDeletion).decodeAll(ais);
+                            break;
+
+                        default:
+                            ais.advanceElement();
                             break;
                     }
                     break;
@@ -335,23 +347,13 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
     @Override
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
 
-        if (this.mapProtocolVersion != 3) { // TODO (to be reviewed, as this is a temporal hack)
+        if (!this.rel18Update) { // TODO (to be reviewed, as this is a temporal hack)
 
             if (this.mapProtocolVersion == 1) {
 
                 if (this.networkResource == null)
                     throw new MAPException("For MAP version 1 networkResource must be present in " + _PrimitiveName + ", but it is empty");
 
-                try {
-                    asnOutputStream.writeInteger(Tag.CLASS_UNIVERSAL, Tag.ENUMERATED, this.networkResource.getCode());
-                } catch (IOException e) {
-                    throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter hlrList", e);
-                } catch (AsnException e) {
-                    throw new MAPException("AsnException while encoding " + _PrimitiveName + " parameter hlrList", e);
-                }
-            }
-
-            if (this.networkResource != null) {
                 try {
                     asnOutputStream.writeInteger(Tag.CLASS_UNIVERSAL, Tag.ENUMERATED, this.networkResource.getCode());
                 } catch (IOException e) {

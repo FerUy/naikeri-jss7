@@ -1897,212 +1897,72 @@ public class Server extends TestHarnessMobilityManagement {
                 MAPDialogMobility mapDialogMobility = mapProvider.getMAPServiceMobility().createNewDialog(mapApplicationContext,
                         rstClientSccpAddress, rstOriginRef, rstServerSccpAddress, rstDestinationRef);
 
-                ISDNAddressString hlrNumber;
-                IMSI imsi;
-                ArrayList<IMSI> hlrList;
-
-                // MAP v18.0.0 MAP RST params
-                SendingNodeNumber sendingNodenumber;
-                ArrayList<ResetId> resetIdList;
-                ResetId resetId;
-                InsertSubscriberDataArgs subscriptionData;
-                DeleteSubscriberDataArgs subscriptionDataDeletion;
-
                 Random rand = new Random();
                 switch (rand.nextInt(6 + 1)) {
                     case 1:
-                        hlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        mapDialogMobility.addResetRequest(null, hlrNumber, null);
+                        ISDNAddressString hlrNumber1 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                        mapDialogMobility.addResetRequest(null, hlrNumber1, null);
                         break;
                     case 2:
-                        hlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        imsi = new IMSIImpl("748026800000000");
-                        IMSI imsi2 = new IMSIImpl("748026900000000");
-                        IMSI imsi3 = new IMSIImpl("748027000000000");
-                        hlrList = new ArrayList<>();
-                        hlrList.add(imsi);
-                        hlrList.add(imsi2);
-                        hlrList.add(imsi3);
-                        mapDialogMobility.addResetRequest(null, hlrNumber, null);
+                        ISDNAddressString hlrNumber2 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                        IMSI imsi21 = new IMSIImpl("748026800000000");
+                        IMSI imsi22 = new IMSIImpl("748026900000000");
+                        IMSI imsi23 = new IMSIImpl("748027000000000");
+                        ArrayList<IMSI> hlrList2 = new ArrayList<>();
+                        hlrList2.add(imsi21);
+                        hlrList2.add(imsi22);
+                        hlrList2.add(imsi23);
+                        mapDialogMobility.addResetRequest(null, hlrNumber2, hlrList2);
                         break;
                     case 3:
                         // sendingNodeNumber
-                        ISDNAddressString cssNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        sendingNodenumber = new SendingNodeNumberImpl(null, cssNumber);
+                        ISDNAddressString cssNumber3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                        SendingNodeNumber sendingNodenumber3 = new SendingNodeNumberImpl(null, cssNumber3);
                         // hlrList
-                        imsi = new IMSIImpl("748026800000000");
-                        IMSI imsi1 = new IMSIImpl("748026900000000");
-                        hlrList = new ArrayList<>();
-                        hlrList.add(imsi);
-                        hlrList.add(imsi1);
-                        mapDialogMobility.addResetRequest(sendingNodenumber, hlrList, null, null, null, null);
+                        IMSI imsi31 = new IMSIImpl("748026800000000");
+                        IMSI imsi32 = new IMSIImpl("748026900000000");
+                        ArrayList<IMSI> hlrList3 = new ArrayList<>();
+                        hlrList3.add(imsi31);
+                        hlrList3.add(imsi32);
+                        mapDialogMobility.addResetRequest(sendingNodenumber3, hlrList3, null, null, null, null);
                         break;
                     case 4:
                         // sendingNodeNumber
                         ISDNAddressString hlrNumber4 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        sendingNodenumber = new SendingNodeNumberImpl(hlrNumber4, null);
+                        SendingNodeNumber sendingNodenumber4 = new SendingNodeNumberImpl(hlrNumber4, null);
                         // resetIdList
-                        resetIdList = new ArrayList<>();
-                        ResetId resetId1 = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x81});
-                        ResetId resetId2 = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x82});
-                        resetIdList.add(resetId1);
-                        resetIdList.add(resetId2);
-                        mapDialogMobility.addResetRequest(sendingNodenumber, null, null, resetIdList, null, null);
+                        ArrayList<ResetId> resetIdList4 = new ArrayList<>();
+                        ResetId resetId41 = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x81});
+                        ResetId resetId42 = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x82});
+                        resetIdList4.add(resetId41);
+                        resetIdList4.add(resetId42);
+                        mapDialogMobility.addResetRequest(sendingNodenumber4, null, null, resetIdList4, null, null);
                         break;
                     case 5:
                         // sendingNodeNumber
                         ISDNAddressString hlrNumber3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        sendingNodenumber = new SendingNodeNumberImpl(hlrNumber3, null);
+                        SendingNodeNumber sendingNodenumber5 = new SendingNodeNumberImpl(hlrNumber3, null);
                         // resetIdList
-                        resetIdList = new ArrayList<>();
-                        resetId = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x80});
-                        resetIdList.add(resetId);
+                        ArrayList<ResetId> resetIdList5 = new ArrayList<>();
+                        ResetId resetId51 = new ResetIdImpl(new byte[] {(byte) 0x81});
+                        resetIdList5.add(resetId51);
                         // subscriptionData
-                        imsi = new IMSIImpl("748026800000000");
-                        ArrayList<ExtBearerServiceCode> bearerServiceList = new ArrayList<>();
-                        BearerServiceCodeValue bearerServiceCodeValue = getBearerServiceCodeValue();
-                        ExtBearerServiceCode extBearerServiceCode = new ExtBearerServiceCodeImpl(bearerServiceCodeValue);
-                        bearerServiceList.add(extBearerServiceCode);
-                        ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
-                        TeleserviceCodeValue teleserviceCodeValue = getTeleserviceCodeValue();
-                        ExtTeleserviceCode extTeleserviceCode = new ExtTeleserviceCodeImpl(teleserviceCodeValue);
-                        teleserviceList.add(extTeleserviceCode);
-                        ArrayList<ExtSSInfo> provisionedSS = new ArrayList<>();
-                        SSCode ssCode1 = new SSCodeImpl(getSupplementaryCodeValue());
-                        ExtSSStatus ssCode1ExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
-                        SSSubscriptionOption ssCode1SubscriptionOption = new SSSubscriptionOptionImpl(OverrideCategory.overrideDisabled);
-                        ArrayList<ExtBasicServiceCode> basicServiceGroupList = null;
-                        ExtSSData extSSDataSsCode1 = new ExtSSDataImpl(ssCode1, ssCode1ExtSSStatus, ssCode1SubscriptionOption, basicServiceGroupList, null);
-                        SSCode clir = new SSCodeImpl(SupplementaryCodeValue.clir);
-                        ExtSSStatus clirExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
-                        SSSubscriptionOption clirSubscriptionOption = new SSSubscriptionOptionImpl(CliRestrictionOption.temporaryDefaultAllowed);
-                        ExtSSData extSSDataClir = new ExtSSDataImpl(clir, clirExtSSStatus, clirSubscriptionOption, basicServiceGroupList, null);
-                        ExtSSInfo ssInfoClip = new ExtSSInfoImpl(extSSDataSsCode1);
-                        ExtSSInfo ssInfoClir = new ExtSSInfoImpl(extSSDataClir);
-                        provisionedSS.add(ssInfoClip);
-                        provisionedSS.add(ssInfoClir);
-                        NetworkAccessMode networkAccessMode = NetworkAccessMode.packetAndCircuit;
-                        Integer istAlertTimer = 30;
-                        CSAllocationRetentionPriority csAllocationRetentionPriority = new CSAllocationRetentionPriorityImpl(4);
-                        boolean isNormalCharging = false;
-                        boolean isPrepaidCharging = false;
-                        boolean isFlatRateCharging = true;
-                        boolean isChargingByHotBillingCharging = false;
-                        ChargingCharacteristics chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging,
-                                isFlatRateCharging, isChargingByHotBillingCharging);
-                        boolean utranNotAllowed = false;
-                        boolean geranNotAllowed = false;
-                        boolean ganNotAllowed = true;
-                        boolean eUtranNotAllowed = false;
-                        boolean iHspaEvolutionNotAllowed = false;
-                        boolean hoToNon3GppAccessNotAllowed = true;
-                        AccessRestrictionData accessRestrictionData = new AccessRestrictionDataImpl(utranNotAllowed, geranNotAllowed, ganNotAllowed,
-                                iHspaEvolutionNotAllowed, eUtranNotAllowed, hoToNon3GppAccessNotAllowed);
-                        Boolean icsIndicator = false;
-                        EPSSubscriptionData epsSubscriptionData = getEpsSubscriptionData(chargingCharacteristics);
-                        DiameterIdentity mmeName = new DiameterIdentityImpl("mmec20.mmegi800.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-                        Long subscribedPeriodicRAUTAUtimer = 300L;
-                        Boolean mdtUserConsent = false;
-                        Long subscribedPeriodicLAUtimer = 360L;
-                        UEUsageType ueUsageType = new UEUsageTypeImpl(new byte[] {0, 0, 0, (byte) 0x87});
-                        UsedRATType usedRATType = UsedRATType.nbIoT;
-                        byte[] edrCycleLengthVal = new byte[] {0x02};
-                        EDRXCycleLengthValue eDRXCycleLengthValue = new EDRXCycleLengthValueImpl(edrCycleLengthVal);
-                        EDRXCycleLength edrxCycleLength = new EDRXCycleLengthImpl(usedRATType, eDRXCycleLengthValue);
-                        ArrayList<EDRXCycleLength> eDRXCycleLengthList = new ArrayList<>();
-                        eDRXCycleLengthList.add(edrxCycleLength);
-                        subscriptionData = new InsertSubscriberDataArgsImpl(imsi, null, null, null, bearerServiceList, teleserviceList, provisionedSS,
-                                null, true, null, null, null, null, null, null, null, true, networkAccessMode, null, true, null, istAlertTimer, null,
-                                null, csAllocationRetentionPriority, null, chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, null, true, null, mmeName, subscribedPeriodicRAUTAUtimer, true, mdtUserConsent,
-                                subscribedPeriodicLAUtimer, null, null, false, true, true, true, null, null, ueUsageType, true, null, resetIdList,
-                                eDRXCycleLengthList, null, true);
-                        mapDialogMobility.addResetRequest(sendingNodenumber, null, null, resetIdList, subscriptionData, null);
+                        InsertSubscriberDataArgs subscriptionData = getSubscritionDataForReset();
+                        mapDialogMobility.addResetRequest(sendingNodenumber5, null, null, resetIdList5, subscriptionData, null);
                         break;
                     case 6:
                         // sendingNodeNumber
                         ISDNAddressString cssNumber6 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        sendingNodenumber = new SendingNodeNumberImpl(null, cssNumber6);
+                        SendingNodeNumber sendingNodenumber6 = new SendingNodeNumberImpl(null, cssNumber6);
                         // resetIdList
-                        resetIdList = new ArrayList<>();
-                        resetId = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x81});
-                        resetIdList.add(resetId);
-                        // subscriptionData
-                        imsi = new IMSIImpl("748026800000000");
-                        ArrayList<ExtBasicServiceCode> basicServiceList = new ArrayList<>();
-                        BearerServiceCodeValue bearerServiceCodeValue4 = getBearerServiceCodeValue();
-                        ExtBearerServiceCode extBearerServiceCode4 = new ExtBearerServiceCodeImpl(bearerServiceCodeValue4);
-                        ExtBasicServiceCode extBasicServiceCode1 = new ExtBasicServiceCodeImpl(extBearerServiceCode4);
-                        TeleserviceCodeValue teleserviceCodeValue4 = getTeleserviceCodeValue();
-                        ExtTeleserviceCode extTeleserviceCode4 = new ExtTeleserviceCodeImpl(teleserviceCodeValue4);
-                        ExtBasicServiceCode extBasicServiceCode2 = new ExtBasicServiceCodeImpl(extTeleserviceCode4);
-                        basicServiceList.add(extBasicServiceCode1);
-                        basicServiceList.add(extBasicServiceCode2);
-                        ArrayList<SSCode> ssList = new ArrayList<>();
-                        SupplementaryCodeValue supplementaryCodeValue = getSupplementaryCodeValue();
-                        SSCode ssCode = new SSCodeImpl(supplementaryCodeValue);
-                        ssList.add(ssCode);
-                        boolean roamingRestrictionDueToUnsupportedFeature = false;
-                        ZoneCode regionalSubscriptionIdentifier = new ZoneCodeImpl(new byte[] {0x21, 0x0F});
-                        boolean vbsGroupIndication = true;
-                        boolean vgcsGroupIndication = true;
-                        boolean camelSubscriptionInfoWithdraw = true;
-                        GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw = null;
-                        boolean roamingRestrictedInSgsnDueToUnsuppportedFeature = true;
-                        LSAInformationWithdraw lsaInformationWithdraw = null;
-                        switch (rand.nextInt(2 + 1)) {
-                            case 1:
-                                ArrayList<LSAIdentity> lsaIdentityList = new ArrayList<>();
-                                LSAIdentity lsaIdentity1 = new LSAIdentityImpl(new byte[]{12, 10, 1});
-                                LSAIdentity lsaIdentity2 = new LSAIdentityImpl(new byte[]{12, 12, 2});
-                                lsaIdentityList.add(lsaIdentity1);
-                                lsaIdentityList.add(lsaIdentity2);
-                                lsaInformationWithdraw = new LSAInformationWithdrawImpl(lsaIdentityList);
-                                break;
-                            case 2:
-                                lsaInformationWithdraw = new LSAInformationWithdrawImpl(true);
-                                break;
-                        }
-                        boolean gmlcListWithdraw = true;
-                        boolean istInformationWithdraw = true;
-                        SpecificCSIWithdraw specificCSIWithdraw = new SpecificCSIWithdrawImpl(true, false, false, true, false, false, false, false, false, false,
-                                false, false, false, false);
-                        boolean chargingCharacteristicsWithdraw = true;
-                        boolean stnSrWithdraw = true;
-                        EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw = null;
-                        switch (rand.nextInt(3 + 1)) {
-                            case 1:
-                                ArrayList<Integer> contextIdList = new ArrayList<>();
-                                contextIdList.add(1);
-                                contextIdList.add(2);
-                                epsSubscriptionDataWithdraw = new EPSSubscriptionDataWithdrawImpl(contextIdList);
-                                break;
-                            case 2:
-                                epsSubscriptionDataWithdraw = new EPSSubscriptionDataWithdrawImpl(true);
-                                break;
-                        }
-                        boolean apnOiReplacementWithdraw = true;
-                        boolean csgSubscriptionDeleted = true;
-                        boolean subscribedPeriodicTAURAUTimerWithdraw = true;
-                        boolean subscribedPeriodicLAUTimerWithdraw = true;
-                        boolean subscribedVsrvccWithdraw = true;
-                        boolean vplmnCsgSubscriptionDeleted = true;
-                        boolean additionalMSISDNWithdraw = true;
-                        boolean csToPsSRVCCWithdraw = true;
-                        boolean imsiGroupIdListWithdraw = true;
-                        boolean userPlaneIntegrityProtectionWithdraw = true;
-                        boolean dlBufferingSuggestedPacketCountWithdraw = true;
-                        boolean ueUsageTypeWithdraw = true;
-                        boolean resetIdsWithdraw = true;
-                        boolean iabOperationWithdraw = true;
-                        subscriptionDataDeletion = new DeleteSubscriberDataArgsImpl(imsi, basicServiceList, ssList,
-                                roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionIdentifier, vbsGroupIndication, vgcsGroupIndication,
-                                camelSubscriptionInfoWithdraw, null, gprsSubscriptionDataWithdraw, roamingRestrictedInSgsnDueToUnsuppportedFeature,
-                                lsaInformationWithdraw, gmlcListWithdraw, istInformationWithdraw, specificCSIWithdraw, chargingCharacteristicsWithdraw, stnSrWithdraw,
-                                epsSubscriptionDataWithdraw, apnOiReplacementWithdraw, csgSubscriptionDeleted, subscribedPeriodicTAURAUTimerWithdraw,
-                                subscribedPeriodicLAUTimerWithdraw, subscribedVsrvccWithdraw, vplmnCsgSubscriptionDeleted, additionalMSISDNWithdraw, csToPsSRVCCWithdraw,
-                                imsiGroupIdListWithdraw, userPlaneIntegrityProtectionWithdraw, dlBufferingSuggestedPacketCountWithdraw, ueUsageTypeWithdraw, resetIdsWithdraw,
-                                iabOperationWithdraw);
-                        mapDialogMobility.addResetRequest(sendingNodenumber, null, null, resetIdList, null, subscriptionDataDeletion);
+                        ArrayList<ResetId> resetIdList6 = new ArrayList<>();
+                        ResetId resetId61 = new ResetIdImpl(new byte[] {(byte) 0x82});
+                        ResetId resetId62 = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x82});
+                        resetIdList6.add(resetId61);
+                        resetIdList6.add(resetId62);
+                        // subscriptionDataDeletion
+                        DeleteSubscriberDataArgs subscriptionDataDeletion = getSubscriptionDataDeletionForReset();
+                        mapDialogMobility.addResetRequest(sendingNodenumber6, null, null, resetIdList6, null, subscriptionDataDeletion);
                         break;
                 }
 
@@ -2116,44 +1976,310 @@ public class Server extends TestHarnessMobilityManagement {
         }
     }
 
-    private static EPSSubscriptionData getEpsSubscriptionData(ChargingCharacteristics chargingCharacteristics) throws MAPException {
-        int defaultContext = 1;
-        boolean completeDataListIncluded = true;
-        PDNType pDNType = new PDNTypeImpl(PDNTypeValue.IPv4v6);
-        PDPAddress servedPartyIPIPv4Address = null;
+    private static InsertSubscriberDataArgs getSubscritionDataForReset() throws MAPException {
+        // imsi
+        IMSI imsi = new IMSIImpl("748026800000000");
+        // msisdn doesn't make sense in MAP RST
+        // category
+        Category category = new CategoryImpl(CategoryValue.ordinaryCallingSubscriber);
+        // subscriberStatus
+        SubscriberStatus subscriberStatus = SubscriberStatus.serviceGranted;
+        // bearerServiceList
+        ArrayList<ExtBearerServiceCode> bearerServiceList = null;
+        // teleserviceList
+        ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
+        ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
+        ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
+        teleserviceList.add(shortMessageMT_PP);
+        teleserviceList.add(shortMessageMO_PP);
+        // provisionedSS
+        ArrayList<ExtSSInfo> provisionedSS = new ArrayList<>();
+        SSCode ssCode1 = new SSCodeImpl(getSupplementaryCodeValue());
+        ExtSSStatus ssCode1ExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
+        SSSubscriptionOption ssCode1SubscriptionOption = new SSSubscriptionOptionImpl(OverrideCategory.overrideDisabled);
+        ArrayList<ExtBasicServiceCode> basicServiceList = new ArrayList<>();
+        BearerServiceCodeValue bearerServiceCodeValue = getBearerServiceCodeValue();
+        ExtBearerServiceCode extBearerServiceCode = new ExtBearerServiceCodeImpl(bearerServiceCodeValue);
+        ExtBasicServiceCode extBasicServiceCode1 = new ExtBasicServiceCodeImpl(extBearerServiceCode);
+        TeleserviceCodeValue teleserviceCodeValue = getTeleserviceCodeValue();
+        ExtTeleserviceCode extTeleserviceCode = new ExtTeleserviceCodeImpl(teleserviceCodeValue);
+        ExtBasicServiceCode extBasicServiceCode2 = new ExtBasicServiceCodeImpl(extTeleserviceCode);
+        basicServiceList.add(extBasicServiceCode1);
+        basicServiceList.add(extBasicServiceCode2);
+        ExtSSData extSSData1 = new ExtSSDataImpl(ssCode1, ssCode1ExtSSStatus, ssCode1SubscriptionOption, basicServiceList, null);
+        SSCode ssCode2 = new SSCodeImpl(getSupplementaryCodeValue());
+        ExtSSStatus ssCode2ExtSSStatus = new ExtSSStatusImpl(false, true, false, true);
+        SSSubscriptionOption ssCode2SubscriptionOption = new SSSubscriptionOptionImpl(CliRestrictionOption.temporaryDefaultAllowed);
+        ExtSSData extSSData2 = new ExtSSDataImpl(ssCode2, ssCode2ExtSSStatus, ssCode2SubscriptionOption, basicServiceList, null);
+        ExtSSInfo extSSInfo1= new ExtSSInfoImpl(extSSData1);
+        ExtSSInfo extSSInfo2 = new ExtSSInfoImpl(extSSData2);
+        provisionedSS.add(extSSInfo1);
+        provisionedSS.add(extSSInfo2);
+        // odbData
+        ODBGeneralData oDBGeneralData = getOdbGeneralData();
+        boolean plmnSpecificBarringType1 = true;
+        boolean plmnSpecificBarringType2 = false;
+        boolean plmnSpecificBarringType3 = false;
+        boolean plmnSpecificBarringType4 = false;
+        ODBHPLMNData odbHplmnData = new ODBHPLMNDataImpl(plmnSpecificBarringType1, plmnSpecificBarringType2, plmnSpecificBarringType3, plmnSpecificBarringType4);
+        ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, null);
+        // roamingRestrictionDueToUnsupportedFeature
+        boolean roamingRestrictionDueToUnsupportedFeature = true;
+        // regionalSubscriptionData
+        ArrayList<ZoneCode> regionalSubscriptionData = null;
+        // vbsSubscriptionData
+        ArrayList<VoiceBroadcastData> vbsSubscriptionData = new ArrayList<>();
+        GroupId gId = new GroupIdImpl("1");
+        boolean broadcastInitEntitlement = true;
+        LongGroupId lGId = new LongGroupIdImpl("5");
+        VoiceBroadcastData voiceBroadcastData = new VoiceBroadcastDataImpl(gId, broadcastInitEntitlement, null, lGId);
+        vbsSubscriptionData.add(voiceBroadcastData);
+        // vgcsSubscriptionData
+        ArrayList<VoiceGroupCallData> vgcsSubscriptionData = new ArrayList<>();
+        boolean privilegedUplinkRequest = true;
+        boolean emergencyUplinkRequest = true;
+        boolean emergencyReset = true;
+        AdditionalSubscriptions addSubscriptions = new AdditionalSubscriptionsImpl(privilegedUplinkRequest, emergencyUplinkRequest, emergencyReset);
+        BitSetStrictLength addInfoBitset = new BitSetStrictLength(136);
+        addInfoBitset.set(0);
+        addInfoBitset.set(1);
+        addInfoBitset.set(24);
+        AdditionalInfo addInfo = new AdditionalInfoImpl(addInfoBitset);
+        VoiceGroupCallData voiceGroupCallData = new VoiceGroupCallDataImpl(gId, null, addSubscriptions, addInfo, lGId);
+        vgcsSubscriptionData.add(voiceGroupCallData);
+        // vlrCamelSubscriptionInfo
+        VlrCamelSubscriptionInfo vlrCamelSubscriptionInfo = getVLRCAMELSubscriptionInfo(basicServiceList, ssCode1, ssCode2);
+        // naeaPreferredCI
+        String carrierCode = "458";
+        NetworkIdentificationPlanValue networkIdentificationPlanValue = NetworkIdentificationPlanValue.spare_1;
+        NetworkIdentificationTypeValue networkIdentificationTypeValue = NetworkIdentificationTypeValue.nationalNetworkIdentification;
+        NAEACIC naeaPreferredCIC = new NAEACICImpl(carrierCode, networkIdentificationPlanValue, networkIdentificationTypeValue);
+        NAEAPreferredCI naeaPreferredCI = new NAEAPreferredCIImpl(naeaPreferredCIC, null);
+        // gprsSubscriptionData does not apply for CS domain
+        // roamingRestrictedInSgsnDueToUnsupportedFeature
+        boolean roamingRestrictedInSgsnDueToUnsupportedFeature = false;
+        // networkAccessMode
+        NetworkAccessMode networkAccessMode = NetworkAccessMode.packetAndCircuit;
+        // lsaInformation
+        LSAInformation lsaInformation = null;
+        // lmuIndicator
+        boolean lmuIndicator = false;
+        // lcsInformation
+        LCSInformation lcsInformation = null;
+        // istAlertTimer
+        Integer istAlertTimer = 200;
+        // superChargerSupportedInHLR
+        AgeIndicator superChargerSupportedInHLR = null;
+        // mcSsInfo
+        SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.cfu);
+        ExtSSStatus ssStatus = new ExtSSStatusImpl(true, false, true, false);
+        int nbrSB = 2;
+        int nbrUser = 4;
+        MCSSInfo mcSsInfo = new MCSSInfoImpl(ssCode, ssStatus, nbrSB, nbrUser, null);
+        // csAllocationRetentionPriority
+        CSAllocationRetentionPriority csAllocationRetentionPriority = new CSAllocationRetentionPriorityImpl(4);
+        // sgsnCamelSubscriptionInfo
+        SGSNCAMELSubscriptionInfo sgsnCamelSubscriptionInfo = null;
+        // chargingCharacteristics
+        boolean isNormalCharging = false;
+        boolean isPrepaidCharging = false;
+        boolean isFlatRateCharging = true;
+        boolean isChargingByHotBillingCharging = false;
+        ChargingCharacteristics chargingCharacteristics = new ChargingCharacteristicsImpl(isNormalCharging, isPrepaidCharging, isFlatRateCharging, isChargingByHotBillingCharging);
+        // accessRestrictionData
+        boolean utranNotAllowed = false;
+        boolean geranNotAllowed = false;
+        boolean ganNotAllowed = true;
+        boolean eUtranNotAllowed = false;
+        boolean iHspaEvolutionNotAllowed = false;
+        boolean hoToNon3GppAccessNotAllowed = true;
+        AccessRestrictionData accessRestrictionData = new AccessRestrictionDataImpl(utranNotAllowed, geranNotAllowed, ganNotAllowed, iHspaEvolutionNotAllowed, eUtranNotAllowed, hoToNon3GppAccessNotAllowed);
+        // icsIndicator
+        Boolean icsIndicator = Boolean.TRUE;
+        // epsSubscriptionData
+        EPSSubscriptionData epsSubscriptionData = getEpsSubscriptionData(chargingCharacteristics);
+        // csgSubscriptionDataList
+        BitSetStrictLength csgIdBitSet = new BitSetStrictLength(27);
+        csgIdBitSet.set(0);
+        csgIdBitSet.set(1);
+        csgIdBitSet.set(25);
+        csgIdBitSet.set(26);
+        CSGId csgId = new CSGIdImpl(csgIdBitSet);
+        int year = 2024;
+        int month = 7;
+        int day = 4;
+        int hour = 19;
+        int minute = 20;
+        int second = 10;
+        Time expirationDate = new TimeImpl(year, month, day, hour, minute, second);
+        ArrayList<APN> lipaAllowedAPNList = new ArrayList<>();
         APN apn = new APNImpl("internet");
-        QoSClassIdentifier qci = QoSClassIdentifier.QCI_5;
-        int priorityLevel = 9;
-        Boolean preEmptionCapability = true;
-        Boolean preEmptionVulnerability = false;
-        AllocationRetentionPriority arp = new AllocationRetentionPriorityImpl(priorityLevel, preEmptionCapability, preEmptionVulnerability, null);
-        EPSQoSSubscribed ePSQoSSubscribed = new EPSQoSSubscribedImpl(qci, arp, null);
-        PDNGWIdentity pdnGwIdentity = null;
-        PDNGWAllocationType pdnGwAllocationType = null;
-        boolean vplmnAddressAllowed = true;
-        int maxRequestedBandwidthUL = 2048;
-        int maxRequestedBandwidthDL = 4096;
-        AMBR ambr = new AMBRImpl(maxRequestedBandwidthUL, maxRequestedBandwidthDL, null);
-        ArrayList<SpecificAPNInfo> specificAPNInfoList = null;
-        APNOIReplacement apnOiReplacement = new APNOIReplacementImpl(new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
-        SIPTOPermission sipToPermission = SIPTOPermission.siptoAllowed;
-        LIPAPermission lipaPermission = LIPAPermission.lipaConditional;
-        int contextId = 1;
-        PDPAddress servedPartyIPIPv6Address = new PDPAddressImpl(new byte[] { 21 });
-        APNConfiguration apnConfiguration = new APNConfigurationImpl(contextId, pDNType, servedPartyIPIPv4Address, apn,
-                ePSQoSSubscribed, pdnGwIdentity, pdnGwAllocationType, vplmnAddressAllowed, chargingCharacteristics, ambr,
-                specificAPNInfoList, null, servedPartyIPIPv6Address, apnOiReplacement, sipToPermission, lipaPermission);
-        ArrayList<APNConfiguration> ePSDataList = new ArrayList<>();
-        ePSDataList.add(apnConfiguration);
-        APNConfigurationProfile apnConfigurationProfile = new APNConfigurationProfileImpl(defaultContext, completeDataListIncluded,
-                ePSDataList, null);
-        Integer rfspId = 0;
-        ISDNAddressString stnSr = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                "491710490000");
-        boolean mpsCSPriority = true;
-        boolean mpsEPSPriority = true;
-        return new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
-                stnSr, null, mpsCSPriority, mpsEPSPriority);
+        lipaAllowedAPNList.add(apn);
+        CSGSubscriptionData csgSubscriptionData = new CSGSubscriptionDataImpl(csgId, expirationDate, null, lipaAllowedAPNList);
+        ArrayList<CSGSubscriptionData> csgSubscriptionDataList = new ArrayList<>();
+        csgSubscriptionDataList.add(csgSubscriptionData);
+        // ueReachabilityRequestIndicator
+        boolean ueReachabilityRequestIndicator = true;
+        // sgsnNumber
+        ISDNAddressString sgsnNumber = null;
+        // mmeName
+        DiameterIdentity mmeName = new DiameterIdentityImpl("mmec20.mmegi800.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+        // subscribedPeriodicRAUTAUtimer
+        Long subscribedPeriodicRAUTAUtimer = 300L;
+        // vplmnLIPAAllowed
+        boolean vplmnLIPAAllowed = true;
+        // mdtUserConsent
+        boolean mdtUserConsent = false;
+        // subscribedPeriodicLAUtimer
+        Long subscribedPeriodicLAUtimer = 360L;
+        // vplmnCSGSubscriptionDataList
+        ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList = new ArrayList<>();
+        vplmnCSGSubscriptionDataList.add(csgSubscriptionData);
+        // additionalMSISDN
+        ISDNAddressString additionalMSISDN =
+                new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "4917105682451");
+        // psAndSMSOnlyServiceProvision
+        boolean psAndSMSOnlyServiceProvision = false;
+        // smsInSGSNAllowed
+        boolean smsInSGSNAllowed = true;
+        // csToPsSRVCCAllowedIndicator
+        boolean csToPsSRVCCAllowedIndicator = true;
+        // pcscfRestorationRequest
+        boolean pcscfRestorationRequest = true;
+        // adjacentAccessRestrictionDataList
+        int mcc = 262;
+        int mnc = 999;
+        PlmnId plmnId = new PlmnIdImpl(mcc, mnc);
+        boolean nrAsSecondaryRATNotAllowed = true;
+        boolean unlicensedSpectrumAsSecondaryRATNotAllowed = false;
+        ExtAccessRestrictionData extAccessRestrictionData =
+                new ExtAccessRestrictionDataImpl(nrAsSecondaryRATNotAllowed, unlicensedSpectrumAsSecondaryRATNotAllowed); // extAccessRestrictionData
+        AdjacentAccessRestrictionData adjacentAccessRestrictionData =
+                new AdjacentAccessRestrictionDataImpl(plmnId, accessRestrictionData, extAccessRestrictionData);
+        ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList = new ArrayList<>();
+        adjacentAccessRestrictionDataList.add(adjacentAccessRestrictionData);
+        // imsiGroupIdList
+        Long groupServiceId = 1L;
+        LocalGroupId localGroupId = new LocalGroupIdImpl("120".getBytes(StandardCharsets.UTF_8));
+        IMSIGroupId imsiGroupId = new IMSIGroupIdImpl(groupServiceId, plmnId, localGroupId);
+        ArrayList<IMSIGroupId> imsiGroupIdList = new ArrayList<>();
+        imsiGroupIdList.add(imsiGroupId);
+        // ueUsageType
+        UEUsageType ueUsageType = new UEUsageTypeImpl(new byte[] {0, 0, 0, (byte) 0x87});
+        // userPlaneIntegrityProtectionIndicator
+        boolean userPlaneIntegrityProtectionIndicator = true;
+        // dlBufferingSuggestedPacketCount
+        Long dlBufferingSuggestedPacketCount = 0L;
+        // resetIdList does not apply for subscriptionData inside MAP RST
+        // eDRXCycleLengthList
+        UsedRATType usedRATType = UsedRATType.nbIoT;
+        byte[] edrCycleLengthVal = new byte[] { 0x02 };
+        EDRXCycleLengthValue eDRXCycleLengthValue = new EDRXCycleLengthValueImpl(edrCycleLengthVal);
+        EDRXCycleLength edrxCycleLength = new EDRXCycleLengthImpl(usedRATType, eDRXCycleLengthValue);
+        ArrayList<EDRXCycleLength> eDRXCycleLengthList = new ArrayList<>();
+        eDRXCycleLengthList.add(edrxCycleLength);
+        // iabOperationAllowedIndicator
+        boolean iabOperationAllowedIndicator = true;
+
+        return new InsertSubscriberDataArgsImpl(imsi, null, category, subscriberStatus, bearerServiceList, teleserviceList,
+                provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionData, vbsSubscriptionData,
+                vgcsSubscriptionData, vlrCamelSubscriptionInfo, null, naeaPreferredCI, null,
+                roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode, lsaInformation, lmuIndicator, lcsInformation,
+                istAlertTimer, superChargerSupportedInHLR, mcSsInfo, csAllocationRetentionPriority, sgsnCamelSubscriptionInfo,
+                chargingCharacteristics, accessRestrictionData, icsIndicator, epsSubscriptionData, csgSubscriptionDataList,
+                ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent,
+                subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision, smsInSGSNAllowed,
+                csToPsSRVCCAllowedIndicator, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList, ueUsageType,
+                userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, null, eDRXCycleLengthList,
+                extAccessRestrictionData, iabOperationAllowedIndicator);
+    }
+    private static DeleteSubscriberDataArgs getSubscriptionDataDeletionForReset() {
+        // imsi
+        IMSI imsi = new IMSIImpl("748026800000000");
+        // basicServiceList
+        ArrayList<ExtBasicServiceCode> basicServiceList = new ArrayList<>();
+        BearerServiceCodeValue bearerServiceCodeValue4 = getBearerServiceCodeValue();
+        ExtBearerServiceCode extBearerServiceCode4 = new ExtBearerServiceCodeImpl(bearerServiceCodeValue4);
+        ExtBasicServiceCode extBasicServiceCode1 = new ExtBasicServiceCodeImpl(extBearerServiceCode4);
+        TeleserviceCodeValue teleserviceCodeValue4 = getTeleserviceCodeValue();
+        ExtTeleserviceCode extTeleserviceCode4 = new ExtTeleserviceCodeImpl(teleserviceCodeValue4);
+        ExtBasicServiceCode extBasicServiceCode2 = new ExtBasicServiceCodeImpl(extTeleserviceCode4);
+        basicServiceList.add(extBasicServiceCode1);
+        basicServiceList.add(extBasicServiceCode2);
+        // ssList
+        ArrayList<SSCode> ssList = new ArrayList<>();
+        SupplementaryCodeValue supplementaryCodeValue = getSupplementaryCodeValue();
+        SSCode ssCode = new SSCodeImpl(supplementaryCodeValue);
+        ssList.add(ssCode);
+        // roamingRestrictionDueToUnsupportedFeature
+        boolean roamingRestrictionDueToUnsupportedFeature = false;
+        // regionalSubscriptionIdentifier
+        ZoneCode regionalSubscriptionIdentifier = new ZoneCodeImpl(new byte[] {0x21, 0x0F});
+        boolean vbsGroupIndication = true;
+        boolean vgcsGroupIndication = true;
+        boolean camelSubscriptionInfoWithdraw = true;
+        GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw = null; // doesn't apply for CS domain
+        boolean roamingRestrictedInSgsnDueToUnsuppportedFeature = true;
+        // lsaInformationWithdraw
+        LSAInformationWithdraw lsaInformationWithdraw = null;
+        Random rand = new Random();
+        switch (rand.nextInt(2 + 1)) {
+            case 1:
+                ArrayList<LSAIdentity> lsaIdentityList = new ArrayList<>();
+                LSAIdentity lsaIdentity1 = new LSAIdentityImpl(new byte[]{12, 10, 1});
+                LSAIdentity lsaIdentity2 = new LSAIdentityImpl(new byte[]{12, 12, 2});
+                lsaIdentityList.add(lsaIdentity1);
+                lsaIdentityList.add(lsaIdentity2);
+                lsaInformationWithdraw = new LSAInformationWithdrawImpl(lsaIdentityList);
+                break;
+            case 2:
+                lsaInformationWithdraw = new LSAInformationWithdrawImpl(true);
+                break;
+        }
+        boolean gmlcListWithdraw = true;
+        boolean istInformationWithdraw = true;
+        // specificCSIWithdraw
+        SpecificCSIWithdraw specificCSIWithdraw = new SpecificCSIWithdrawImpl(true, false, false, true, false, false, false, false, false, false,
+                false, false, false, false);
+        boolean chargingCharacteristicsWithdraw = true;
+        boolean stnSrWithdraw = true;
+        // epsSubscriptionDataWithdraw
+        EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw = null;
+        switch (rand.nextInt(2 + 1)) {
+            case 1:
+                ArrayList<Integer> contextIdList = new ArrayList<>();
+                contextIdList.add(1);
+                contextIdList.add(2);
+                epsSubscriptionDataWithdraw = new EPSSubscriptionDataWithdrawImpl(contextIdList);
+                break;
+            case 2:
+                epsSubscriptionDataWithdraw = new EPSSubscriptionDataWithdrawImpl(true);
+                break;
+        }
+        // boolean values including new MAP v18.0.0 params
+        boolean apnOiReplacementWithdraw = true;
+        boolean csgSubscriptionDeleted = true;
+        boolean subscribedPeriodicTAURAUTimerWithdraw = true;
+        boolean subscribedPeriodicLAUTimerWithdraw = true;
+        boolean subscribedVsrvccWithdraw = true;
+        boolean vplmnCsgSubscriptionDeleted = true;
+        boolean additionalMSISDNWithdraw = true;
+        boolean csToPsSRVCCWithdraw = true;
+        boolean imsiGroupIdListWithdraw = true;
+        boolean userPlaneIntegrityProtectionWithdraw = true;
+        boolean dlBufferingSuggestedPacketCountWithdraw = true;
+        boolean ueUsageTypeWithdraw = true;
+        boolean resetIdsWithdraw = true;
+        boolean iabOperationWithdraw = true;
+
+        return new DeleteSubscriberDataArgsImpl(imsi, basicServiceList, ssList,
+                roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionIdentifier, vbsGroupIndication, vgcsGroupIndication,
+                camelSubscriptionInfoWithdraw, null, gprsSubscriptionDataWithdraw, roamingRestrictedInSgsnDueToUnsuppportedFeature,
+                lsaInformationWithdraw, gmlcListWithdraw, istInformationWithdraw, specificCSIWithdraw, chargingCharacteristicsWithdraw, stnSrWithdraw,
+                epsSubscriptionDataWithdraw, apnOiReplacementWithdraw, csgSubscriptionDeleted, subscribedPeriodicTAURAUTimerWithdraw,
+                subscribedPeriodicLAUTimerWithdraw, subscribedVsrvccWithdraw, vplmnCsgSubscriptionDeleted, additionalMSISDNWithdraw, csToPsSRVCCWithdraw,
+                imsiGroupIdListWithdraw, userPlaneIntegrityProtectionWithdraw, dlBufferingSuggestedPacketCountWithdraw, ueUsageTypeWithdraw, resetIdsWithdraw,
+                iabOperationWithdraw);
     }
 
     private static BearerServiceCodeValue getBearerServiceCodeValue() {
@@ -2646,6 +2772,157 @@ public class Server extends TestHarnessMobilityManagement {
                 break;
         }
         return supplementaryCodeValue;
+    }
+
+    private static ODBGeneralData getOdbGeneralData() {
+        boolean allOGCallsBarred= true;
+        boolean internationalOGCallsBarred = true;
+        boolean internationalOGCallsNotToHPLMNCountryBarred= true;
+        boolean premiumRateInformationOGCallsBarred = false;
+        boolean premiumRateEntertainmentOGCallsBarred= true;
+        boolean ssAccessBarred= true;
+        boolean interzonalOGCallsBarred = true;
+        boolean interzonalOGCallsNotToHPLMNCountryBarred= true;
+        boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = true;
+        boolean allECTBarred= true;
+        boolean chargeableECTBarred= true;
+        boolean internationalECTBarred = true;
+        boolean interzonalECTBarred= true;
+        boolean doublyChargeableECTBarred= true;
+        boolean multipleECTBarred = true;
+        boolean allPacketOrientedServicesBarred= true;
+        boolean roamerAccessToHPLMNAPBarred= false;
+        boolean roamerAccessToVPLMNAPBarred = false;
+        boolean roamingOutsidePLMNOGCallsBarred= false;
+        boolean allICCallsBarred= true;
+        boolean roamingOutsidePLMNICCallsBarred = true;
+        boolean roamingOutsidePLMNICountryICCallsBarred= true;
+        boolean roamingOutsidePLMNBarred = false;
+        boolean roamingOutsidePLMNCountryBarred= false;
+        boolean registrationAllCFBarred= true;
+        boolean registrationCFNotToHPLMNBarred = true;
+        boolean registrationInterzonalCFBarred= true;
+        boolean registrationInterzonalCFNotToHPLMNBarred = false;
+        boolean registrationInternationalCFBarred = true;
+        return new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred,
+                internationalOGCallsNotToHPLMNCountryBarred, premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred,
+                ssAccessBarred, interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred,
+                interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred, allECTBarred, chargeableECTBarred,
+                internationalECTBarred, interzonalECTBarred, doublyChargeableECTBarred, multipleECTBarred,
+                allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
+                roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
+                roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred,
+                roamingOutsidePLMNCountryBarred, registrationAllCFBarred, registrationCFNotToHPLMNBarred,
+                registrationInterzonalCFBarred, registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
+    }
+
+    public static VlrCamelSubscriptionInfo getVLRCAMELSubscriptionInfo(ArrayList<ExtBasicServiceCode> basicServiceList, SSCode ssCode1, SSCode ssCode2) {
+        OBcsmTriggerDetectionPoint oBcsmTDP = OBcsmTriggerDetectionPoint.routeSelectFailure;
+        long serviceKey = 7L;
+        ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
+        DefaultCallHandling defaultCallHandling = DefaultCallHandling.continueCall;
+        OBcsmCamelTDPData oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(oBcsmTDP, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+        ArrayList<OBcsmCamelTDPData> oBcsmCamelTDPDataList = new ArrayList<>();
+        oBcsmCamelTDPDataList.add(oBcsmCamelTDPData);
+        Integer camelCapabilityHandling = 2;
+        boolean notificationToCSE = true;
+        boolean csiActive = true;
+        OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, null, camelCapabilityHandling, notificationToCSE, csiActive);
+        ArrayList<SSCode> ssEventList = new ArrayList<>();
+        ssEventList.add(ssCode1);
+        ssEventList.add(ssCode2);
+        SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddress, null);
+        SSCSI ssCsi = new SSCSIImpl(ssCamelData, null, notificationToCSE, csiActive);
+        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = getoBcsmCamelTdpCriteria(oBcsmTDP, basicServiceList, null);
+        boolean tifCsi = true;
+        ArrayList<MMCode> mobilityTriggers = new ArrayList<>();
+        MMCode mmCode1 = new MMCodeImpl(MMCodeValue.IMSIAttach);
+        MMCode mmCode2 = new MMCodeImpl(MMCodeValue.LocationUpdateInSameVLR);
+        mobilityTriggers.add(mmCode1);
+        mobilityTriggers.add(mmCode2);
+        MCSI mcsi = new MCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, null, notificationToCSE, csiActive);
+        ArrayList<SMSCAMELTDPData> smsCamelTdpDataList = new ArrayList<>();
+        SMSTriggerDetectionPoint smsTDP = SMSTriggerDetectionPoint.smsDeliveryRequest;
+        DefaultSMSHandling defaultSMSHandling = DefaultSMSHandling.continueTransaction;
+        SMSCAMELTDPData smscameltdpData = new SMSCAMELTDPDataImpl(smsTDP, serviceKey, gsmSCFAddress, defaultSMSHandling, null);
+        smsCamelTdpDataList.add(smscameltdpData);
+        SMSCSI smsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, null, notificationToCSE, csiActive);
+        ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDataList = new ArrayList<>();
+        TBcsmTriggerDetectionPoint tBcsmTDP1 = TBcsmTriggerDetectionPoint.tNoAnswer;
+        TBcsmTriggerDetectionPoint tBcsmTDP2 = TBcsmTriggerDetectionPoint.tBusy;
+        TBcsmCamelTDPData tBcsmCamelTDPData1 = new TBcsmCamelTDPDataImpl(tBcsmTDP1, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+        TBcsmCamelTDPData tBcsmCamelTDPData2 = new TBcsmCamelTDPDataImpl(tBcsmTDP2, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+        tBcsmCamelTDPDataList.add(tBcsmCamelTDPData1);
+        tBcsmCamelTDPDataList.add(tBcsmCamelTDPData2);
+        TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDataList, null, camelCapabilityHandling, notificationToCSE, csiActive);
+        TBcsmTriggerDetectionPoint tBcsmTriggerDetectionPoint = TBcsmTriggerDetectionPoint.tNoAnswer;
+        ArrayList<CauseValue> tCauseValueCriteria = new ArrayList<>();
+        CauseValue tcv1 = new CauseValueImpl(CauseValueCodeValue.CallRejected);
+        CauseValue tcv2 = new CauseValueImpl(CauseValueCodeValue.BearerCapabilityNotAuthorized);
+        tCauseValueCriteria.add(tcv1);
+        tCauseValueCriteria.add(tcv2);
+        TBcsmCamelTdpCriteria tBcsmCamelTdpCriteria = new TBcsmCamelTdpCriteriaImpl(tBcsmTriggerDetectionPoint, basicServiceList, tCauseValueCriteria);
+        ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = new ArrayList<>();
+        tBcsmCamelTdpCriteriaList.add(tBcsmCamelTdpCriteria);
+        ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = new ArrayList<>();
+        ISDNAddressString dialledNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491714780432");
+        DPAnalysedInfoCriterium dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+        dpAnalysedInfoCriteriaList.add(dpAnalysedInfoCriterium);
+        DCSI dCSI = new DCSIImpl(dpAnalysedInfoCriteriaList, camelCapabilityHandling, null, notificationToCSE, csiActive);
+        SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, null, notificationToCSE, csiActive);
+        ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = new ArrayList<>();
+        ArrayList<MTSMSTPDUType> mtsmstpduTypeArrayList = new ArrayList<>();
+        MTSMSTPDUType mtsmstpduType1 = MTSMSTPDUType.smsDELIVER;
+        MTSMSTPDUType mtsmstpduType2 = MTSMSTPDUType.smsSUBMITREPORT;
+        MTSMSTPDUType mtsmstpduType3 = MTSMSTPDUType.smsSTATUSREPORT;
+        mtsmstpduTypeArrayList.add(mtsmstpduType1);
+        mtsmstpduTypeArrayList.add(mtsmstpduType2);
+        mtsmstpduTypeArrayList.add(mtsmstpduType3);
+        MTsmsCAMELTDPCriteria mTsmsCAMELTDPCriteria = new MTsmsCAMELTDPCriteriaImpl(smsTDP, mtsmstpduTypeArrayList);
+        mtSmsCamelTdpCriteriaList.add(mTsmsCAMELTDPCriteria);
+        return new VlrCamelSubscriptionInfoImpl(oCSI, null,
+                ssCsi, oBcsmCamelTDPCriteriaList, tifCsi, mcsi, smsCsi, vtCsi, tBcsmCamelTdpCriteriaList, dCSI, mtSmsCSI,
+                mtSmsCamelTdpCriteriaList);
+    }
+
+    private static EPSSubscriptionData getEpsSubscriptionData(ChargingCharacteristics chargingCharacteristics) throws MAPException {
+        int defaultContext = 1;
+        boolean completeDataListIncluded = true;
+        PDNType pDNType = new PDNTypeImpl(PDNTypeValue.IPv4v6);
+        PDPAddress servedPartyIPIPv4Address = null;
+        APN apn = new APNImpl("internet");
+        QoSClassIdentifier qci = QoSClassIdentifier.QCI_5;
+        int priorityLevel = 9;
+        Boolean preEmptionCapability = true;
+        Boolean preEmptionVulnerability = false;
+        AllocationRetentionPriority arp = new AllocationRetentionPriorityImpl(priorityLevel, preEmptionCapability, preEmptionVulnerability, null);
+        EPSQoSSubscribed ePSQoSSubscribed = new EPSQoSSubscribedImpl(qci, arp, null);
+        PDNGWIdentity pdnGwIdentity = null;
+        PDNGWAllocationType pdnGwAllocationType = null;
+        boolean vplmnAddressAllowed = true;
+        int maxRequestedBandwidthUL = 2048;
+        int maxRequestedBandwidthDL = 4096;
+        AMBR ambr = new AMBRImpl(maxRequestedBandwidthUL, maxRequestedBandwidthDL, null);
+        ArrayList<SpecificAPNInfo> specificAPNInfoList = null;
+        APNOIReplacement apnOiReplacement = new APNOIReplacementImpl(new byte[] { 81, 92, 83, 84, 85, 86, 87, 88, 89 });
+        SIPTOPermission sipToPermission = SIPTOPermission.siptoAllowed;
+        LIPAPermission lipaPermission = LIPAPermission.lipaConditional;
+        int contextId = 1;
+        PDPAddress servedPartyIPIPv6Address = new PDPAddressImpl(new byte[] { 21 });
+        APNConfiguration apnConfiguration = new APNConfigurationImpl(contextId, pDNType, servedPartyIPIPv4Address, apn,
+                ePSQoSSubscribed, pdnGwIdentity, pdnGwAllocationType, vplmnAddressAllowed, chargingCharacteristics, ambr,
+                specificAPNInfoList, null, servedPartyIPIPv6Address, apnOiReplacement, sipToPermission, lipaPermission);
+        ArrayList<APNConfiguration> ePSDataList = new ArrayList<>();
+        ePSDataList.add(apnConfiguration);
+        APNConfigurationProfile apnConfigurationProfile = new APNConfigurationProfileImpl(defaultContext, completeDataListIncluded,
+                ePSDataList, null);
+        Integer rfspId = 0;
+        ISDNAddressString stnSr = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                "491710490000");
+        boolean mpsCSPriority = true;
+        boolean mpsEPSPriority = true;
+        return new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
+                stnSr, null, mpsCSPriority, mpsEPSPriority);
     }
 
     private static SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {

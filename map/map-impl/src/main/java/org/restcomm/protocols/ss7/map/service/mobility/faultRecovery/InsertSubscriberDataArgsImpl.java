@@ -47,6 +47,7 @@ import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 import org.restcomm.protocols.ss7.map.primitives.NAEAPreferredCIImpl;
+import org.restcomm.protocols.ss7.map.primitives.SequenceBase;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.UEUsageTypeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AccessRestrictionDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AdjacentAccessRestrictionDataImpl;
@@ -79,7 +80,7 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
  */
-public class InsertSubscriberDataArgsImpl implements InsertSubscriberDataArgs, MAPAsnPrimitive {
+public class InsertSubscriberDataArgsImpl extends SequenceBase implements InsertSubscriberDataArgs, MAPAsnPrimitive {
 
     public static final String _PrimitiveName = "InsertSubscriberDataArgs";
 
@@ -197,24 +198,26 @@ public class InsertSubscriberDataArgsImpl implements InsertSubscriberDataArgs, M
     private boolean iabOperationAllowedIndicator = false;
 
     public InsertSubscriberDataArgsImpl() {
+        super(_PrimitiveName);
     }
 
     public InsertSubscriberDataArgsImpl(IMSI imsi, ISDNAddressString msisdn, Category category, SubscriberStatus subscriberStatus,
-            ArrayList<ExtBearerServiceCode> bearerServiceList, ArrayList<ExtTeleserviceCode> teleserviceList, ArrayList<ExtSSInfo> provisionedSS,
-            ODBData odbData, boolean roamingRestrictionDueToUnsupportedFeature, ArrayList<ZoneCode> regionalSubscriptionData,
-            ArrayList<VoiceBroadcastData> vbsSubscriptionData, ArrayList<VoiceGroupCallData> vgcsSubscriptionData,
-            VlrCamelSubscriptionInfo vlrCamelSubscriptionInfo, MAPExtensionContainer extensionContainer, NAEAPreferredCI naeaPreferredCI,
-            GPRSSubscriptionData gprsSubscriptionData, boolean roamingRestrictedInSgsnDueToUnsupportedFeature, NetworkAccessMode networkAccessMode,
-            LSAInformation lsaInformation, boolean lmuIndicator, LCSInformation lcsInformation, Integer istAlertTimer, AgeIndicator superChargerSupportedInHLR,
-            MCSSInfo mcSsInfo, CSAllocationRetentionPriority csAllocationRetentionPriority, SGSNCAMELSubscriptionInfo sgsnCamelSubscriptionInfo,
-            ChargingCharacteristics chargingCharacteristics, AccessRestrictionData accessRestrictionData, Boolean icsIndicator,
-            EPSSubscriptionData epsSubscriptionData, ArrayList<CSGSubscriptionData> csgSubscriptionDataList, boolean ueReachabilityRequestIndicator,
-            ISDNAddressString sgsnNumber, DiameterIdentity mmeName, Long subscribedPeriodicRAUTAUtimer, boolean vplmnLIPAAllowed,
-            Boolean mdtUserConsent, Long subscribedPeriodicLAUtimer, ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList,
-            ISDNAddressString additionalMSISDN, boolean psAndSMSOnlyServiceProvision, boolean smsInSGSNAllowed, boolean csToPsSRVCCAllowedIndicator,
-            boolean pcscfRestorationRequest, ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList, ArrayList<IMSIGroupId> imsiGroupIdList,
-            UEUsageType ueUsageType, boolean userPlaneIntegrityProtectionIndicator, Long dlBufferingSuggestedPacketCount, ArrayList<ResetId> resetIdList,
-            ArrayList<EDRXCycleLength> eDRXCycleLengthList, ExtAccessRestrictionData extAccessRestrictionData, boolean iabOperationAllowedIndicator) {
+                                        ArrayList<ExtBearerServiceCode> bearerServiceList, ArrayList<ExtTeleserviceCode> teleserviceList, ArrayList<ExtSSInfo> provisionedSS,
+                                        ODBData odbData, boolean roamingRestrictionDueToUnsupportedFeature, ArrayList<ZoneCode> regionalSubscriptionData,
+                                        ArrayList<VoiceBroadcastData> vbsSubscriptionData, ArrayList<VoiceGroupCallData> vgcsSubscriptionData,
+                                        VlrCamelSubscriptionInfo vlrCamelSubscriptionInfo, MAPExtensionContainer extensionContainer, NAEAPreferredCI naeaPreferredCI,
+                                        GPRSSubscriptionData gprsSubscriptionData, boolean roamingRestrictedInSgsnDueToUnsupportedFeature, NetworkAccessMode networkAccessMode,
+                                        LSAInformation lsaInformation, boolean lmuIndicator, LCSInformation lcsInformation, Integer istAlertTimer, AgeIndicator superChargerSupportedInHLR,
+                                        MCSSInfo mcSsInfo, CSAllocationRetentionPriority csAllocationRetentionPriority, SGSNCAMELSubscriptionInfo sgsnCamelSubscriptionInfo,
+                                        ChargingCharacteristics chargingCharacteristics, AccessRestrictionData accessRestrictionData, Boolean icsIndicator,
+                                        EPSSubscriptionData epsSubscriptionData, ArrayList<CSGSubscriptionData> csgSubscriptionDataList, boolean ueReachabilityRequestIndicator,
+                                        ISDNAddressString sgsnNumber, DiameterIdentity mmeName, Long subscribedPeriodicRAUTAUtimer, boolean vplmnLIPAAllowed,
+                                        Boolean mdtUserConsent, Long subscribedPeriodicLAUtimer, ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList,
+                                        ISDNAddressString additionalMSISDN, boolean psAndSMSOnlyServiceProvision, boolean smsInSGSNAllowed, boolean csToPsSRVCCAllowedIndicator,
+                                        boolean pcscfRestorationRequest, ArrayList<AdjacentAccessRestrictionData> adjacentAccessRestrictionDataList, ArrayList<IMSIGroupId> imsiGroupIdList,
+                                        UEUsageType ueUsageType, boolean userPlaneIntegrityProtectionIndicator, Long dlBufferingSuggestedPacketCount, ArrayList<ResetId> resetIdList,
+                                        ArrayList<EDRXCycleLength> eDRXCycleLengthList, ExtAccessRestrictionData extAccessRestrictionData, boolean iabOperationAllowedIndicator) {
+        super(_PrimitiveName);
         this.imsi = imsi;
         this.msisdn = msisdn;
         this.category = category;
@@ -536,47 +539,7 @@ public class InsertSubscriberDataArgsImpl implements InsertSubscriberDataArgs, M
     }
 
     @Override
-    public int getTag() throws MAPException {
-        return Tag.SEQUENCE;
-    }
-
-    @Override
-    public int getTagClass() {
-        return Tag.CLASS_UNIVERSAL;
-    }
-
-    @Override
-    public boolean getIsPrimitive() {
-        return false;
-    }
-
-    @Override
-    public void decodeAll(AsnInputStream asnInputStream) throws MAPParsingComponentException {
-        try {
-            int length = asnInputStream.readLength();
-            this._decode(asnInputStream, length);
-        } catch (IOException e) {
-            throw new MAPParsingComponentException("IOException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
-                    MAPParsingComponentExceptionReason.MistypedParameter);
-        } catch (AsnException e) {
-            throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
-                    MAPParsingComponentExceptionReason.MistypedParameter);
-        }
-    }
-
-    public void decodeData(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException {
-        try {
-            this._decode(asnInputStream, length);
-        } catch (IOException e) {
-            throw new MAPParsingComponentException("IOException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
-                    MAPParsingComponentExceptionReason.MistypedParameter);
-        } catch (AsnException e) {
-            throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
-                    MAPParsingComponentExceptionReason.MistypedParameter);
-        }
-    }
-
-    private void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
+    protected void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
         ExtBearerServiceCodeImpl bearerItem;
         ExtTeleserviceCodeImpl teleserviceItem;
         ExtSSInfoImpl serviceItem;
@@ -653,7 +616,7 @@ public class InsertSubscriberDataArgsImpl implements InsertSubscriberDataArgs, M
                             this.imsi = new IMSIImpl();
                             ((IMSIImpl) this.imsi).decodeAll(ais);
                             break;
-                        case _TAG_msisdn:
+                        case _TAG_msisdn: // does not make sense in MAP RST
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".msisdn: is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
@@ -1253,7 +1216,7 @@ public class InsertSubscriberDataArgsImpl implements InsertSubscriberDataArgs, M
                             }
                             this.dlBufferingSuggestedPacketCount = ais.readInteger();
                             break;
-                        case _TAG_Reset_Id_List:
+                        case _TAG_Reset_Id_List: // does not apply to MAP RST
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".resetIdList: Parameter is primitive",
@@ -1347,23 +1310,6 @@ public class InsertSubscriberDataArgsImpl implements InsertSubscriberDataArgs, M
         if (num == 0)
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                     + ": Needs at least 1 parameter, found " + num, MAPParsingComponentExceptionReason.MistypedParameter);
-    }
-
-    @Override
-    public void encodeAll(AsnOutputStream asnOutputStream) throws MAPException {
-        this.encodeAll(asnOutputStream, this.getTagClass(), this.getTag());
-    }
-
-    @Override
-    public void encodeAll(AsnOutputStream asnOutputStream, int tagClass, int tag) throws MAPException {
-        try {
-            asnOutputStream.writeTag(tagClass, this.getIsPrimitive(), tag);
-            int pos = asnOutputStream.StartContentDefiniteLength();
-            this.encodeData(asnOutputStream);
-            asnOutputStream.FinalizeContent(pos);
-        } catch (AsnException e) {
-            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
-        }
     }
 
     @Override
@@ -1867,6 +1813,402 @@ public class InsertSubscriberDataArgsImpl implements InsertSubscriberDataArgs, M
                         + " parameter iabOperationAllowedIndicator: " + e.getMessage(), e);
             }
         }
+    }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(_PrimitiveName);
+        sb.append(" [");
+
+        if (this.imsi != null) {
+            sb.append("imsi=");
+            sb.append(this.imsi);
+            sb.append(", ");
+        }
+
+        if (this.msisdn != null) {
+            sb.append("msisdn=");
+            sb.append(this.msisdn);
+            sb.append(", ");
+        }
+
+        if (this.category != null) {
+            sb.append("category=");
+            sb.append(this.category);
+            sb.append(", ");
+        }
+
+        if (this.subscriberStatus != null) {
+            sb.append("subscriberStatus=");
+            sb.append(this.subscriberStatus);
+            sb.append(", ");
+        }
+
+        if (this.bearerServiceList != null) {
+            sb.append("bearerServiceList=[");
+            boolean firstItem = true;
+            for (ExtBearerServiceCode be : this.bearerServiceList) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.teleserviceList != null) {
+            sb.append("teleserviceList=[");
+            boolean firstItem = true;
+            for (ExtTeleserviceCode be : this.teleserviceList) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.provisionedSS != null) {
+            sb.append("provisionedSS=[");
+            boolean firstItem = true;
+            for (ExtSSInfo be : this.provisionedSS) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.odbData != null) {
+            sb.append("odbData=");
+            sb.append(this.odbData);
+            sb.append(", ");
+        }
+
+        if (this.roamingRestrictionDueToUnsupportedFeature) {
+            sb.append("roamingRestrictionDueToUnsupportedFeature, ");
+        }
+
+        if (this.regionalSubscriptionData != null) {
+            sb.append("regionalSubscriptionData=[");
+            boolean firstItem = true;
+            for (ZoneCode be : this.regionalSubscriptionData) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.vbsSubscriptionData != null) {
+            sb.append("vbsSubscriptionData=[");
+            boolean firstItem = true;
+            for (VoiceBroadcastData be : this.vbsSubscriptionData) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.vgcsSubscriptionData != null) {
+            sb.append("vgcsSubscriptionData=[");
+            boolean firstItem = true;
+            for (VoiceGroupCallData be : this.vgcsSubscriptionData) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.vlrCamelSubscriptionInfo != null) {
+            sb.append("vlrCamelSubscriptionInfo=");
+            sb.append(this.vlrCamelSubscriptionInfo);
+            sb.append(", ");
+        }
+
+        if (this.extensionContainer != null) {
+            sb.append("extensionContainer=");
+            sb.append(this.extensionContainer);
+            sb.append(", ");
+        }
+
+        if (this.naeaPreferredCI != null) {
+            sb.append("naeaPreferredCI=");
+            sb.append(this.naeaPreferredCI);
+            sb.append(", ");
+        }
+
+        if (this.gprsSubscriptionData != null) {
+            sb.append("gprsSubscriptionData=");
+            sb.append(this.gprsSubscriptionData);
+            sb.append(", ");
+        }
+
+        if (this.roamingRestrictedInSgsnDueToUnsupportedFeature) {
+            sb.append("roamingRestrictedInSgsnDueToUnsupportedFeature, ");
+        }
+
+        if (this.networkAccessMode != null) {
+            sb.append("networkAccessMode=");
+            sb.append(this.networkAccessMode);
+            sb.append(", ");
+        }
+
+        if (this.lsaInformation != null) {
+            sb.append("lsaInformation=");
+            sb.append(this.lsaInformation);
+            sb.append(", ");
+        }
+
+        if (this.lmuIndicator) {
+            sb.append("lmuIndicator, ");
+        }
+
+        if (this.lcsInformation != null) {
+            sb.append("lcsInformation=");
+            sb.append(this.lcsInformation);
+            sb.append(", ");
+        }
+
+        if (this.lcsInformation != null) {
+            sb.append("lcsInformation=");
+            sb.append(this.lcsInformation);
+            sb.append(", ");
+        }
+
+        if (this.istAlertTimer != null) {
+            sb.append("istAlertTimer=");
+            sb.append(this.istAlertTimer);
+            sb.append(", ");
+        }
+
+        if (this.superChargerSupportedInHLR != null) {
+            sb.append("superChargerSupportedInHLR=");
+            sb.append(this.superChargerSupportedInHLR);
+            sb.append(", ");
+        }
+
+        if (this.mcSsInfo != null) {
+            sb.append("mcSsInfo=");
+            sb.append(this.mcSsInfo);
+            sb.append(", ");
+        }
+
+        if (this.csAllocationRetentionPriority != null) {
+            sb.append("csAllocationRetentionPriority=");
+            sb.append(this.csAllocationRetentionPriority);
+            sb.append(", ");
+        }
+
+        if (this.sgsnCamelSubscriptionInfo != null) {
+            sb.append("sgsnCamelSubscriptionInfo=");
+            sb.append(this.sgsnCamelSubscriptionInfo);
+            sb.append(", ");
+        }
+
+        if (this.chargingCharacteristics != null) {
+            sb.append("chargingCharacteristics=");
+            sb.append(this.chargingCharacteristics);
+            sb.append(", ");
+        }
+
+        if (this.accessRestrictionData != null) {
+            sb.append("accessRestrictionData=");
+            sb.append(this.accessRestrictionData);
+            sb.append(", ");
+        }
+
+        if (this.icsIndicator != null) {
+            sb.append("icsIndicator=");
+            sb.append(this.icsIndicator);
+            sb.append(", ");
+        }
+
+        if (this.epsSubscriptionData != null) {
+            sb.append("epsSubscriptionData=");
+            sb.append(this.epsSubscriptionData);
+            sb.append(", ");
+        }
+
+        if (this.csgSubscriptionDataList != null) {
+            sb.append("csgSubscriptionDataList=[");
+            boolean firstItem = true;
+            for (CSGSubscriptionData be : this.csgSubscriptionDataList) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.ueReachabilityRequestIndicator) {
+            sb.append("ueReachabilityRequestIndicator, ");
+        }
+
+        if (this.sgsnNumber != null) {
+            sb.append("sgsnNumber=");
+            sb.append(this.sgsnNumber);
+            sb.append(", ");
+        }
+
+        if (this.mmeName != null) {
+            sb.append("mmeName=");
+            sb.append(this.mmeName);
+            sb.append(", ");
+        }
+
+        if (this.subscribedPeriodicRAUTAUtimer != null) {
+            sb.append("subscribedPeriodicRAUTAUtimer=");
+            sb.append(this.subscribedPeriodicRAUTAUtimer);
+            sb.append(", ");
+        }
+
+        if (this.vplmnLIPAAllowed) {
+            sb.append("vplmnLIPAAllowed, ");
+        }
+
+        if (this.mdtUserConsent != null) {
+            sb.append("mdtUserConsent=");
+            sb.append(this.mdtUserConsent);
+            sb.append(", ");
+        }
+
+        if (this.subscribedPeriodicLAUtimer != null) {
+            sb.append("subscribedPeriodicLAUtimer=");
+            sb.append(this.subscribedPeriodicLAUtimer);
+            sb.append(", ");
+        }
+
+        if (this.vplmnCSGSubscriptionDataList != null) {
+            sb.append("vplmnCSGSubscriptionDataList=[");
+            boolean firstItem = true;
+            for (CSGSubscriptionData be : this.vplmnCSGSubscriptionDataList) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.additionalMSISDN != null) {
+            sb.append("additionalMSISDN=");
+            sb.append(this.additionalMSISDN);
+            sb.append(", ");
+        }
+
+        if (this.psAndSMSOnlyServiceProvision) {
+            sb.append("psAndSMSOnlyServiceProvision, ");
+        }
+
+        if (this.smsInSGSNAllowed) {
+            sb.append("smsInSGSNAllowed, ");
+        }
+
+        if (csToPsSRVCCAllowedIndicator) {
+            sb.append("csToPsSRVCCAllowedIndicator, ");
+        }
+
+        if (this.pcscfRestorationRequest) {
+            sb.append("pcscfRestorationRequest, ");
+        }
+
+        if (this.adjacentAccessRestrictionDataList != null) {
+            sb.append("adjacentAccessRestrictionDataList=[");
+            boolean firstItem = true;
+            for (AdjacentAccessRestrictionData be : this.adjacentAccessRestrictionDataList) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.imsiGroupIdList != null) {
+            sb.append("imsiGroupIdList=[");
+            boolean firstItem = true;
+            for (IMSIGroupId be : this.imsiGroupIdList) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.ueUsageType != null) {
+            sb.append("ueUsageType=");
+            sb.append(this.ueUsageType);
+            sb.append(", ");
+        }
+
+        if (this.userPlaneIntegrityProtectionIndicator) {
+            sb.append("userPlaneIntegrityProtectionIndicator, ");
+        }
+
+        if (this.dlBufferingSuggestedPacketCount != null) {
+            sb.append("dlBufferingSuggestedPacketCount=");
+            sb.append(this.dlBufferingSuggestedPacketCount);
+            sb.append(", ");
+        }
+
+        if (this.resetIdList != null) {
+            sb.append("resetIdList=[");
+            boolean firstItem = true;
+            for (ResetId be : this.resetIdList) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.eDRXCycleLengthList != null) {
+            sb.append("eDRXCycleLengthList=[");
+            boolean firstItem = true;
+            for (EDRXCycleLength be : this.eDRXCycleLengthList) {
+                if (firstItem)
+                    firstItem = false;
+                else
+                    sb.append(", ");
+                sb.append(be);
+            }
+            sb.append("], ");
+        }
+
+        if (this.extAccessRestrictionData != null) {
+            sb.append("extAccessRestrictionData=");
+            sb.append(this.extAccessRestrictionData);
+            sb.append(", ");
+        }
+
+        if (this.iabOperationAllowedIndicator) {
+            sb.append("iabOperationAllowedIndicator, ");
+        }
+
+        sb.append("]");
+
+        return sb.toString();
     }
 }

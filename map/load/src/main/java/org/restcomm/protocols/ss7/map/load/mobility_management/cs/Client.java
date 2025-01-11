@@ -193,9 +193,7 @@ import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterfaceImpl;
 import org.restcomm.protocols.ss7.tcap.TCAPStackImpl;
 import org.restcomm.protocols.ss7.tcap.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
-import org.restcomm.protocols.ss7.tcap.asn.ReturnResultLastImpl;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
-import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1216,30 +1214,6 @@ public class Client extends TestHarnessMobilityManagement {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("onResetRequest over DialogId=%d", resetRequestIndication.getMAPDialog().getLocalDialogId()));
         }
-        try {
-            long invokeId = resetRequestIndication.getInvokeId();
-            MAPDialogMobility mapDialogMobility = resetRequestIndication.getMAPDialog();
-
-            if (resetRequestIndication.getSendingNodenumber() != null)
-                logger.warn("onResetRequest, sendingNodeNumber="+resetRequestIndication.getSendingNodenumber());
-            if (resetRequestIndication.getHlrNumber() != null)
-                logger.warn("onResetRequest, hlrNumber="+resetRequestIndication.getHlrNumber());
-            if (resetRequestIndication.getHlrList() != null)
-                logger.warn("onResetRequest, hlrList="+resetRequestIndication.getHlrList());
-            if (resetRequestIndication.getResetIdList() != null)
-                logger.warn("onResetRequest, resetIdList="+resetRequestIndication.getResetIdList());
-            if (resetRequestIndication.getSubscriptionData() != null)
-                logger.warn("onResetRequest, subscriptionData="+resetRequestIndication.getSubscriptionData());
-            if (resetRequestIndication.getSubscriptionDataDeletion() != null)
-                logger.warn("onResetRequest, subscriptionDataDeletion="+resetRequestIndication.getSubscriptionDataDeletion());
-
-            ReturnResultLast returnResultLast = new ReturnResultLastImpl();
-            returnResultLast.setInvokeId(invokeId);
-            mapDialogMobility.sendReturnResultLastComponent(returnResultLast);
-
-        } catch (MAPException e) {
-            logger.error("Error while processing onResetRequest ", e);
-        }
 
     }
 
@@ -2112,7 +2086,7 @@ public class Client extends TestHarnessMobilityManagement {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ie) {
-                logger.error(ie.getMessage());
+                logger.error("Interrupted Exception for "+getClient()+"." +ie.getMessage());
             }
             try {
                 // Create Dialog
