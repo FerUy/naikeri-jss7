@@ -38,8 +38,7 @@ public class ISDNAddressStringImpl extends AddressStringImpl implements ISDNAddr
 
     @Override
     protected void _testLengthEncode() throws MAPException {
-
-        if (this.address == null && this.address.length() > 16)
+        if (this.address != null && this.address.length() > 16)
             throw new MAPException("Error when encoding ISDNAddressString: address length must not exceed 16 digits");
     }
 
@@ -52,7 +51,7 @@ public class ISDNAddressStringImpl extends AddressStringImpl implements ISDNAddr
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<ISDNAddressStringImpl> ISDN_ADDRESS_STRING_XML = new XMLFormat<ISDNAddressStringImpl>(
+    protected static final XMLFormat<ISDNAddressStringImpl> ISDN_ADDRESS_STRING_XML = new XMLFormat<>(
             ISDNAddressStringImpl.class) {
 
         @Override

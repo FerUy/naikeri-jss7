@@ -63,8 +63,7 @@ public class SendingNodeNumberImpl implements SendingNodeNumber, MAPAsnPrimitive
     public int getTagClass() {
         if (hlrNumber != null)
             return Tag.CLASS_UNIVERSAL;
-        else
-            return Tag.CLASS_CONTEXT_SPECIFIC;
+        return Tag.CLASS_CONTEXT_SPECIFIC;
     }
 
     @Override

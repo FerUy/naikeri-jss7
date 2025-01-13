@@ -198,114 +198,134 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
 
             int tag = ais.readTag();
 
-            switch (ais.getTagClass()) {
-                case Tag.CLASS_UNIVERSAL:
-                    switch (tag) {
-                        case Tag.ENUMERATED:
-                            if (!ais.isTagPrimitive())
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".networkResource: is not primitive",
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
-                            int i1 = (int) ais.readInteger();
-                            this.networkResource = NetworkResource.getInstance(i1);
-                            break;
-                        case Tag.STRING_OCTET:
-                            if (!ais.isTagPrimitive())
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".hlrNumber: is not primitive",
+            switch (num) {
+                case 0:
+                    if (tag != Tag.ENUMERATED && tag != Tag.STRING_OCTET) {
+                        this.sendingNodenumber = new SendingNodeNumberImpl();
+                        ((SendingNodeNumberImpl) this.sendingNodenumber).decodeAll(ais);
+                    } else if (tag == Tag.ENUMERATED) {
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".networkResource: is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
-                            this.hlrNumber = new ISDNAddressStringImpl();
-                            ((ISDNAddressStringImpl) this.hlrNumber).decodeAll(ais);
-                            break;
-                        case Tag.SEQUENCE:
-                            if (ais.isTagPrimitive())
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".hlrList: Parameter is primitive",
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
-                            if (num == 0) {
-                                this.sendingNodenumber = new SendingNodeNumberImpl();
-                                ((SendingNodeNumberImpl) this.sendingNodenumber).decodeAll(ais);
-                                num++;
-                            } else {
-                                AsnInputStream ais2 = ais.readSequenceStream();
-                                this.hlrList = new ArrayList<>();
-                                while (true) {
-                                    if (ais2.available() == 0)
-                                        break;
-
-                                    int tag2 = ais2.readTag();
-                                    if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL || !ais2.isTagPrimitive())
-                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                + ": bad hlrList element tag or tagClass or is not primitive ", MAPParsingComponentExceptionReason.MistypedParameter);
-
-                                    IMSIImpl imsi = new IMSIImpl();
-                                    imsi.decodeAll(ais2);
-                                    this.hlrList.add(imsi);
-                                }
-                                if (this.hlrList.isEmpty() || this.hlrList.size() > 50) {
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ": Parameter hlrList size must be from 1 to 50, found: " + this.hlrList.size(),
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
-                                }
-                            }
-                            break;
-
-                        default:
-                            ais.advanceElement();
-                            break;
+                        int i1 = (int) ais.readInteger();
+                        this.networkResource = NetworkResource.getInstance(i1);
+                    } else if (ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
+                        if (!ais.isTagPrimitive())
+                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".hlrNumber: is not primitive",
+                                    MAPParsingComponentExceptionReason.MistypedParameter);
+                        this.hlrNumber = new ISDNAddressStringImpl();
+                        ((ISDNAddressStringImpl) this.hlrNumber).decodeAll(ais);
                     }
                     break;
+                default:
+                    switch (ais.getTagClass()) {
+                        case Tag.CLASS_UNIVERSAL:
+                            switch (tag) {
+                                /*case Tag.ENUMERATED:
+                                    if (!ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".networkResource: is not primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    int i1 = (int) ais.readInteger();
+                                    this.networkResource = NetworkResource.getInstance(i1);
+                                    break;*/
+                                case Tag.STRING_OCTET:
+                                    if (!ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".hlrNumber: is not primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    this.hlrNumber = new ISDNAddressStringImpl();
+                                    ((ISDNAddressStringImpl) this.hlrNumber).decodeAll(ais);
+                                    break;
+                                case Tag.SEQUENCE:
+                                    if (ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".hlrList: Parameter is primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    AsnInputStream ais2 = ais.readSequenceStream();
+                                    this.hlrList = new ArrayList<>();
+                                    while (true) {
+                                        if (ais2.available() == 0)
+                                            break;
 
-                case Tag.CLASS_CONTEXT_SPECIFIC:
-                    switch (tag) {
-                        case _TAG_extensionContainer:
-                            if (ais.isTagPrimitive())
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".extensionContainer: is primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                            this.extensionContainer = new MAPExtensionContainerImpl();
-                            ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
-                            break;
-                        case _TAG_reset_Id_List:
-                            if (ais.isTagPrimitive())
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".resetIdList: Parameter is primitive",
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                                        int tag2 = ais2.readTag();
+                                        if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL || !ais2.isTagPrimitive())
+                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                    + ": bad hlrList element tag or tagClass or is not primitive ", MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            AsnInputStream ais1 = ais.readSequenceStream();
-                            this.resetIdList = new ArrayList<>();
-                            while (true) {
-                                if (ais1.available() == 0)
+                                        IMSIImpl imsi = new IMSIImpl();
+                                        imsi.decodeAll(ais2);
+                                        this.hlrList.add(imsi);
+                                    }
+                                    if (this.hlrList.isEmpty() || this.hlrList.size() > 50) {
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ": Parameter hlrList size must be from 1 to 50, found: " + this.hlrList.size(),
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    }
                                     break;
 
-                                int tag1 = ais1.readTag();
-                                if (tag1 != Tag.STRING_OCTET || ais1.getTagClass() != Tag.CLASS_UNIVERSAL || !ais1.isTagPrimitive())
-                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                            + ": bad resetIdList element tag or tagClass or is not primitive ",
-                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                default:
+                                    ais.advanceElement();
+                                    break;
+                            }
+                            break;
 
-                                ResetIdImpl resetId = new ResetIdImpl();
-                                (resetId).decodeAll(ais1);
-                                resetIdList.add(resetId);
+                        case Tag.CLASS_CONTEXT_SPECIFIC:
+                            switch (tag) {
+                                case _TAG_extensionContainer:
+                                    if (ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ".extensionContainer: is primitive", MAPParsingComponentExceptionReason.MistypedParameter);
+                                    this.extensionContainer = new MAPExtensionContainerImpl();
+                                    ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
+                                    break;
+                                case _TAG_reset_Id_List:
+                                    if (ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ".resetIdList: Parameter is primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+
+                                    AsnInputStream ais1 = ais.readSequenceStream();
+                                    this.resetIdList = new ArrayList<>();
+                                    while (true) {
+                                        if (ais1.available() == 0)
+                                            break;
+
+                                        int tag1 = ais1.readTag();
+                                        if (tag1 != Tag.STRING_OCTET || ais1.getTagClass() != Tag.CLASS_UNIVERSAL || !ais1.isTagPrimitive())
+                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                    + ": bad resetIdList element tag or tagClass or is not primitive ",
+                                                    MAPParsingComponentExceptionReason.MistypedParameter);
+
+                                        ResetIdImpl resetId = new ResetIdImpl();
+                                        (resetId).decodeAll(ais1);
+                                        resetIdList.add(resetId);
+                                    }
+                                    if (this.resetIdList.isEmpty() || this.resetIdList.size() > 50) {
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ": Parameter resetIdList size must be from 1 to 50, found: "
+                                                + this.resetIdList.size(),
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    }
+                                    break;
+                                case _TAG_subscriptionData:
+                                    if (ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ".subscriptionData: Parameter is primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    this.subscriptionData = new InsertSubscriberDataArgsImpl();
+                                    ((InsertSubscriberDataArgsImpl) subscriptionData).decodeAll(ais);
+                                    break;
+                                case _TAG_subscriptionDataDeletion:
+                                    if (ais.isTagPrimitive())
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                                + ".subscriptionDataDeletion: Parameter is primitive",
+                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                    this.subscriptionDataDeletion = new DeleteSubscriberDataArgsImpl();
+                                    ((DeleteSubscriberDataArgsImpl) subscriptionDataDeletion).decodeAll(ais);
+                                    break;
+
+                                default:
+                                    ais.advanceElement();
+                                    break;
                             }
-                            if (this.resetIdList.isEmpty() || this.resetIdList.size() > 50) {
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ": Parameter resetIdList size must be from 1 to 50, found: "
-                                        + this.resetIdList.size(),
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
-                            }
-                            break;
-                        case _TAG_subscriptionData:
-                            if (ais.isTagPrimitive())
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".subscriptionData: Parameter is primitive",
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
-                            this.subscriptionData = new InsertSubscriberDataArgsImpl();
-                            ((InsertSubscriberDataArgsImpl) subscriptionData).decodeAll(ais);
-                            break;
-                        case _TAG_subscriptionDataDeletion:
-                            if (ais.isTagPrimitive())
-                                throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".subscriptionDataDeletion: Parameter is primitive",
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
-                            this.subscriptionDataDeletion = new DeleteSubscriberDataArgsImpl();
-                            ((DeleteSubscriberDataArgsImpl) subscriptionDataDeletion).decodeAll(ais);
                             break;
 
                         default:
@@ -313,12 +333,7 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
                             break;
                     }
                     break;
-
-                default:
-                    ais.advanceElement();
-                    break;
             }
-
             num++;
         }
 

@@ -616,7 +616,7 @@ public class InsertSubscriberDataArgsImpl extends SequenceBase implements Insert
                             this.imsi = new IMSIImpl();
                             ((IMSIImpl) this.imsi).decodeAll(ais);
                             break;
-                        case _TAG_msisdn: // does not make sense in MAP RST
+                        case _TAG_msisdn:
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".msisdn: is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
@@ -1216,7 +1216,7 @@ public class InsertSubscriberDataArgsImpl extends SequenceBase implements Insert
                             }
                             this.dlBufferingSuggestedPacketCount = ais.readInteger();
                             break;
-                        case _TAG_Reset_Id_List: // does not apply to MAP RST
+                        case _TAG_Reset_Id_List:
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".resetIdList: Parameter is primitive",

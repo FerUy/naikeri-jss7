@@ -1917,7 +1917,7 @@ public class Server extends TestHarnessMobilityManagement {
                     case 3:
                         // sendingNodeNumber
                         ISDNAddressString cssNumber3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        SendingNodeNumber sendingNodenumber3 = new SendingNodeNumberImpl(null, cssNumber3);
+                        SendingNodeNumber sendingNodenumber3 = new SendingNodeNumberImpl(null, cssNumber3);// FIXME
                         // hlrList
                         IMSI imsi31 = new IMSIImpl("748026800000000");
                         IMSI imsi32 = new IMSIImpl("748026900000000");
@@ -1953,7 +1953,7 @@ public class Server extends TestHarnessMobilityManagement {
                     case 6:
                         // sendingNodeNumber
                         ISDNAddressString cssNumber6 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        SendingNodeNumber sendingNodenumber6 = new SendingNodeNumberImpl(null, cssNumber6);
+                        SendingNodeNumber sendingNodenumber6 = new SendingNodeNumberImpl(cssNumber6, null);
                         // resetIdList
                         ArrayList<ResetId> resetIdList6 = new ArrayList<>();
                         ResetId resetId61 = new ResetIdImpl(new byte[] {(byte) 0x82});

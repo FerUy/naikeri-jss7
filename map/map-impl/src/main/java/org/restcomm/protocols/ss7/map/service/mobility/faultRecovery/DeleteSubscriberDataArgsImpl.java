@@ -358,14 +358,6 @@ public class DeleteSubscriberDataArgsImpl extends SequenceBase implements Delete
             int tag = ais.readTag();
 
             switch (num) {
-                /*case 0:
-                    // imsi [0] IMSI
-                    if (ais.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC || !ais.isTagPrimitive() || tag != _TAG_imsi)
-                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                + ".imsi: Parameter 0 bad tag or tag class or not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                    this.imsi = new IMSIImpl();
-                    ((IMSIImpl) this.imsi).decodeAll(ais);
-                    break;*/
 
                 default:
                     if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
