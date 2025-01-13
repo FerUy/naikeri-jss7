@@ -1216,10 +1216,10 @@ public class Client extends TestHarnessMobilityManagement {
         }
         try {
 
-            if (resetRequestIndication.getSendingNodenumber() != null)
-                logger.warn("onResetRequest, sendingNodeNumber="+resetRequestIndication.getSendingNodenumber());
             if (resetRequestIndication.getHlrNumber() != null)
                 logger.warn("onResetRequest, hlrNumber="+resetRequestIndication.getHlrNumber());
+            if (resetRequestIndication.getSendingNodenumber() != null)
+                logger.warn("onResetRequest, sendingNodeNumber="+resetRequestIndication.getSendingNodenumber());
             if (resetRequestIndication.getHlrList() != null)
                 logger.warn("onResetRequest, hlrList="+resetRequestIndication.getHlrList());
             if (resetRequestIndication.getResetIdList() != null)

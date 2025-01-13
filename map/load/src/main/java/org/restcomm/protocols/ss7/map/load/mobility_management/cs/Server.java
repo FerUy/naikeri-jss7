@@ -46,6 +46,8 @@ import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
+import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientInternalID;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportRequest;
@@ -139,6 +141,8 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExternalClient;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GMLCRestriction;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionDataWithdraw;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GroupId;
@@ -146,6 +150,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LCSInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LCSPrivacyClass;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAInformation;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAInformationWithdraw;
@@ -155,10 +160,12 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MCSSInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MMCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MMCodeValue;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MOLRClass;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MTSMSTPDUType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MTsmsCAMELTDPCriteria;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MatchType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.NetworkAccessMode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.NotificationToMSUser;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OBcsmCamelTDPData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OBcsmCamelTdpCriteria;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OBcsmTriggerDetectionPoint;
@@ -178,6 +185,7 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SMSTriggerDetectionPoint;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SSCSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SSCamelData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ServiceType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SpecificAPNInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SpecificCSIWithdraw;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SubscriberStatus;
@@ -203,6 +211,7 @@ import org.restcomm.protocols.ss7.map.primitives.NAEACICImpl;
 import org.restcomm.protocols.ss7.map.primitives.NAEAPreferredCIImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.LCSClientExternalIDImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationQuintupletImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.AuthenticationSetListImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.EpcAvImpl;
@@ -248,8 +257,11 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtS
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSStatusImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExternalClientImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GroupIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.IMSIGroupIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LCSInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LCSPrivacyClassImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAInformationWithdrawImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LocalGroupIdImpl;
@@ -257,6 +269,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.Long
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MCSIImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MCSSInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MMCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MOLRClassImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MTsmsCAMELTDPCriteriaImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OBcsmCamelTDPDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OBcsmCamelTdpCriteriaImpl;
@@ -270,6 +283,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSC
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCSIImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCSIImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCamelDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ServiceTypeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SpecificCSIWithdrawImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTDPDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTdpCriteriaImpl;
@@ -1062,7 +1076,7 @@ public class Server extends TestHarnessMobilityManagement {
             // lmuIndicator
             boolean lmuIndicator = false;
             // lcsInformation
-            LCSInformation lcsInformation = null;
+            LCSInformation lcsInformation = getLcsInformation();
             // istAlertTimer
             Integer istAlertTimer = 200;
             // superChargerSupportedInHLR
@@ -1900,11 +1914,11 @@ public class Server extends TestHarnessMobilityManagement {
                 Random rand = new Random();
                 switch (rand.nextInt(6 + 1)) {
                     case 1:
-                        ISDNAddressString hlrNumber1 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                        ISDNAddressString hlrNumber1 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490001");
                         mapDialogMobility.addResetRequest(null, hlrNumber1, null);
                         break;
                     case 2:
-                        ISDNAddressString hlrNumber2 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                        ISDNAddressString hlrNumber2 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490002");
                         IMSI imsi21 = new IMSIImpl("748026800000000");
                         IMSI imsi22 = new IMSIImpl("748026900000000");
                         IMSI imsi23 = new IMSIImpl("748027000000000");
@@ -1916,8 +1930,8 @@ public class Server extends TestHarnessMobilityManagement {
                         break;
                     case 3:
                         // sendingNodeNumber
-                        ISDNAddressString cssNumber3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        SendingNodeNumber sendingNodenumber3 = new SendingNodeNumberImpl(null, cssNumber3);// FIXME
+                        ISDNAddressString cssNumber3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490013");
+                        SendingNodeNumber sendingNodenumber3 = new SendingNodeNumberImpl(null, cssNumber3);
                         // hlrList
                         IMSI imsi31 = new IMSIImpl("748026800000000");
                         IMSI imsi32 = new IMSIImpl("748026900000000");
@@ -1928,7 +1942,7 @@ public class Server extends TestHarnessMobilityManagement {
                         break;
                     case 4:
                         // sendingNodeNumber
-                        ISDNAddressString hlrNumber4 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                        ISDNAddressString hlrNumber4 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490004");
                         SendingNodeNumber sendingNodenumber4 = new SendingNodeNumberImpl(hlrNumber4, null);
                         // resetIdList
                         ArrayList<ResetId> resetIdList4 = new ArrayList<>();
@@ -1940,20 +1954,22 @@ public class Server extends TestHarnessMobilityManagement {
                         break;
                     case 5:
                         // sendingNodeNumber
-                        ISDNAddressString hlrNumber3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        SendingNodeNumber sendingNodenumber5 = new SendingNodeNumberImpl(hlrNumber3, null);
+                        ISDNAddressString hlrNumber5 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490005");
+                        SendingNodeNumber sendingNodenumber5 = new SendingNodeNumberImpl(hlrNumber5, null);
                         // resetIdList
                         ArrayList<ResetId> resetIdList5 = new ArrayList<>();
                         ResetId resetId51 = new ResetIdImpl(new byte[] {(byte) 0x81});
+                        ResetId resetId52 = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x82});
                         resetIdList5.add(resetId51);
+                        resetIdList5.add(resetId52);
                         // subscriptionData
                         InsertSubscriberDataArgs subscriptionData = getSubscritionDataForReset();
                         mapDialogMobility.addResetRequest(sendingNodenumber5, null, null, resetIdList5, subscriptionData, null);
                         break;
                     case 6:
                         // sendingNodeNumber
-                        ISDNAddressString cssNumber6 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
-                        SendingNodeNumber sendingNodenumber6 = new SendingNodeNumberImpl(cssNumber6, null);
+                        ISDNAddressString cssNumber6 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710490016");
+                        SendingNodeNumber sendingNodenumber6 = new SendingNodeNumberImpl(null, cssNumber6);
                         // resetIdList
                         ArrayList<ResetId> resetIdList6 = new ArrayList<>();
                         ResetId resetId61 = new ResetIdImpl(new byte[] {(byte) 0x82});
@@ -1979,7 +1995,8 @@ public class Server extends TestHarnessMobilityManagement {
     private static InsertSubscriberDataArgs getSubscritionDataForReset() throws MAPException {
         // imsi
         IMSI imsi = new IMSIImpl("748026800000000");
-        // msisdn doesn't make sense in MAP RST
+        // msisdn
+        ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
         // category
         Category category = new CategoryImpl(CategoryValue.ordinaryCallingSubscriber);
         // subscriberStatus
@@ -2065,7 +2082,7 @@ public class Server extends TestHarnessMobilityManagement {
         // lmuIndicator
         boolean lmuIndicator = false;
         // lcsInformation
-        LCSInformation lcsInformation = null;
+        LCSInformation lcsInformation = getLcsInformation();
         // istAlertTimer
         Integer istAlertTimer = 200;
         // superChargerSupportedInHLR
@@ -2170,7 +2187,12 @@ public class Server extends TestHarnessMobilityManagement {
         boolean userPlaneIntegrityProtectionIndicator = true;
         // dlBufferingSuggestedPacketCount
         Long dlBufferingSuggestedPacketCount = 0L;
-        // resetIdList does not apply for subscriptionData inside MAP RST
+        // resetIdList
+        ArrayList<ResetId> resetIdList = new ArrayList<>();
+        ResetId resetId1 = new ResetIdImpl(new byte[] {(byte) 0x81});
+        ResetId resetId2 = new ResetIdImpl(new byte[] {1, 2, 4, (byte) 0x82});
+        resetIdList.add(resetId1);
+        resetIdList.add(resetId2);
         // eDRXCycleLengthList
         UsedRATType usedRATType = UsedRATType.nbIoT;
         byte[] edrCycleLengthVal = new byte[] { 0x02 };
@@ -2181,7 +2203,7 @@ public class Server extends TestHarnessMobilityManagement {
         // iabOperationAllowedIndicator
         boolean iabOperationAllowedIndicator = true;
 
-        return new InsertSubscriberDataArgsImpl(imsi, null, category, subscriberStatus, bearerServiceList, teleserviceList,
+        return new InsertSubscriberDataArgsImpl(imsi, msisdn, category, subscriberStatus, bearerServiceList, teleserviceList,
                 provisionedSS, odbData, roamingRestrictionDueToUnsupportedFeature, regionalSubscriptionData, vbsSubscriptionData,
                 vgcsSubscriptionData, vlrCamelSubscriptionInfo, null, naeaPreferredCI, null,
                 roamingRestrictedInSgsnDueToUnsupportedFeature, networkAccessMode, lsaInformation, lmuIndicator, lcsInformation,
@@ -2190,7 +2212,7 @@ public class Server extends TestHarnessMobilityManagement {
                 ueReachabilityRequestIndicator, sgsnNumber, mmeName, subscribedPeriodicRAUTAUtimer, vplmnLIPAAllowed, mdtUserConsent,
                 subscribedPeriodicLAUtimer, vplmnCSGSubscriptionDataList, additionalMSISDN, psAndSMSOnlyServiceProvision, smsInSGSNAllowed,
                 csToPsSRVCCAllowedIndicator, pcscfRestorationRequest, adjacentAccessRestrictionDataList, imsiGroupIdList, ueUsageType,
-                userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, null, eDRXCycleLengthList,
+                userPlaneIntegrityProtectionIndicator, dlBufferingSuggestedPacketCount, resetIdList, eDRXCycleLengthList,
                 extAccessRestrictionData, iabOperationAllowedIndicator);
     }
     private static DeleteSubscriberDataArgs getSubscriptionDataDeletionForReset() {
@@ -2923,6 +2945,130 @@ public class Server extends TestHarnessMobilityManagement {
         boolean mpsEPSPriority = true;
         return new EPSSubscriptionDataImpl(apnOiReplacement, rfspId, ambr, apnConfigurationProfile,
                 stnSr, null, mpsCSPriority, mpsEPSPriority);
+    }
+
+    private static LCSInformation getLcsInformation() {
+        ArrayList<ISDNAddressString> gmlcList = new ArrayList<>();
+        ISDNAddressString gmlcAddress =
+                new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "4917104600321");
+        gmlcList.add(gmlcAddress);
+        // lcsInformation (lcsPrivacyExceptionList)
+        SSCode ssCode1 = new SSCodeImpl(SupplementaryCodeValue.allMOLR_SS);
+        SSCode ssCode2 = new SSCodeImpl(SupplementaryCodeValue.autonomousSelfLocation);
+        SSCode ssCode3 = new SSCodeImpl(SupplementaryCodeValue.allLCSPrivacyException);
+        SSCode ssCode4 = new SSCodeImpl(SupplementaryCodeValue.allPLMN_specificSS);
+        ExtSSStatus extSSStatus1 = new ExtSSStatusImpl(true, false, false, false);
+        ExtSSStatus extSSStatus2 = new ExtSSStatusImpl(false, true, false, false);
+        ExtSSStatus extSSStatus3 = new ExtSSStatusImpl(false, false, true, false);
+        ExtSSStatus extSSStatus4 = new ExtSSStatusImpl(false, false, false, true);
+        LCSClientInternalID lcsClientInternalID1 = LCSClientInternalID.broadcastService;
+        LCSClientInternalID lcsClientInternalID2 = LCSClientInternalID.oandMHPLMN;
+        LCSClientInternalID lcsClientInternalID3 = LCSClientInternalID.targetMSsubscribedService;
+        LCSClientInternalID lcsClientInternalID4 = LCSClientInternalID.anonymousLocation;
+        ArrayList<LCSClientInternalID> plmnClientList1 = new ArrayList<>();
+        plmnClientList1.add(lcsClientInternalID1);
+        plmnClientList1.add(lcsClientInternalID2);
+        ArrayList<LCSClientInternalID> plmnClientList2 = new ArrayList<>();
+        plmnClientList2.add(lcsClientInternalID2);
+        ArrayList<LCSClientInternalID> plmnClientList3 = new ArrayList<>();
+        plmnClientList3.add(lcsClientInternalID3);
+        ArrayList<LCSClientInternalID> plmnClientList4 = new ArrayList<>();
+        plmnClientList4.add(lcsClientInternalID4);
+        ArrayList<ExternalClient> externalClientList1 = new ArrayList<>();
+        ISDNAddressString externalAddress1 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "874927492");
+        LCSClientExternalID clientIdentity1 = new LCSClientExternalIDImpl(externalAddress1, null);
+        GMLCRestriction gmlcRestriction1 = GMLCRestriction.homeCountry;
+        NotificationToMSUser notificationToMSUser1 = NotificationToMSUser.notifyLocationAllowed;
+        ExternalClient externalClient1 = new ExternalClientImpl(clientIdentity1, gmlcRestriction1, notificationToMSUser1, null);
+        externalClientList1.add(externalClient1);
+        ArrayList<ExternalClient> externalClientList2 = new ArrayList<>();
+        ISDNAddressString externalAddress2 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "398279222");
+        LCSClientExternalID clientIdentity2 = new LCSClientExternalIDImpl(externalAddress2, null);
+        GMLCRestriction gmlcRestriction2 = GMLCRestriction.gmlcList;
+        NotificationToMSUser notificationToMSUser2 = NotificationToMSUser.notifyAndVerifyLocationAllowedIfNoResponse;
+        ExternalClient externalClient2 = new ExternalClientImpl(clientIdentity2, gmlcRestriction2, notificationToMSUser2, null);
+        externalClientList2.add(externalClient2);
+        ArrayList<ExternalClient> externalClientList3 = new ArrayList<>();
+        ISDNAddressString externalAddress3 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "23543252234");
+        LCSClientExternalID clientIdentity3 = new LCSClientExternalIDImpl(externalAddress3, null);
+        GMLCRestriction gmlcRestriction3 = GMLCRestriction.homeCountry;
+        NotificationToMSUser notificationToMSUser3 = NotificationToMSUser.locationNotAllowed;
+        ExternalClient externalClient3 = new ExternalClientImpl(clientIdentity3, gmlcRestriction3, notificationToMSUser3, null);
+        externalClientList3.add(externalClient3);
+        ArrayList<ExternalClient> externalClientList4 = new ArrayList<>();
+        ISDNAddressString externalAddress4 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "598990298245");
+        LCSClientExternalID clientIdentity4 = new LCSClientExternalIDImpl(externalAddress4, null);
+        GMLCRestriction gmlcRestriction4 = GMLCRestriction.gmlcList;
+        NotificationToMSUser notificationToMSUser4 = NotificationToMSUser.notifyAndVerifyLocationNotAllowedIfNoResponse;
+        ExternalClient externalClient4 = new ExternalClientImpl(clientIdentity4, gmlcRestriction4, notificationToMSUser4, null);
+        externalClientList4.add(externalClient4);
+        ArrayList<ServiceType> serviceTypeList1 = new ArrayList<>();
+        int serviceTypeIdentity1 = 1;
+        ServiceType serviceType1 = new ServiceTypeImpl(serviceTypeIdentity1, gmlcRestriction1, notificationToMSUser1, null);
+        serviceTypeList1.add(serviceType1);
+        ArrayList<ServiceType> serviceTypeList2 = new ArrayList<>();
+        int serviceTypeIdentity2 = 2;
+        ServiceType serviceType2 = new ServiceTypeImpl(serviceTypeIdentity2, gmlcRestriction2, notificationToMSUser2, null);
+        serviceTypeList2.add(serviceType2);
+        ArrayList<ServiceType> serviceTypeList3 = new ArrayList<>();
+        int serviceTypeIdentity3 = 3;
+        ServiceType serviceType3 = new ServiceTypeImpl(serviceTypeIdentity3, gmlcRestriction3, notificationToMSUser3, null);
+        serviceTypeList3.add(serviceType3);
+        ArrayList<ServiceType> serviceTypeList4 = new ArrayList<>();
+        int serviceTypeIdentity4 = 4;
+        ServiceType serviceType4 = new ServiceTypeImpl(serviceTypeIdentity4, gmlcRestriction4, notificationToMSUser4, null);
+        serviceTypeList4.add(serviceType4);
+        LCSPrivacyClass lcsPrivacyClass1 = new LCSPrivacyClassImpl(ssCode1, extSSStatus1, notificationToMSUser1, externalClientList1,
+                plmnClientList1, null, externalClientList1, serviceTypeList1);
+        LCSPrivacyClass lcsPrivacyClass2 = new LCSPrivacyClassImpl(ssCode2, extSSStatus2, notificationToMSUser2, externalClientList2,
+                plmnClientList2, null, externalClientList2, serviceTypeList2);
+        LCSPrivacyClass lcsPrivacyClass3 = new LCSPrivacyClassImpl(ssCode3, extSSStatus3, notificationToMSUser3, externalClientList3,
+                plmnClientList3, null, externalClientList3, serviceTypeList3);
+        LCSPrivacyClass lcsPrivacyClass4 = new LCSPrivacyClassImpl(ssCode4, extSSStatus4, notificationToMSUser4, externalClientList4,
+                plmnClientList4, null, externalClientList4, serviceTypeList4);
+        ArrayList<LCSPrivacyClass> lcsPrivacyExceptionList = new ArrayList<>();
+        lcsPrivacyExceptionList.add(lcsPrivacyClass1);
+        lcsPrivacyExceptionList.add(lcsPrivacyClass2);
+        lcsPrivacyExceptionList.add(lcsPrivacyClass3);
+        lcsPrivacyExceptionList.add(lcsPrivacyClass4);
+        // lcsInformation (molrList)
+        ArrayList<MOLRClass> molrList = new ArrayList<>();
+        MOLRClass molrClass1 = new MOLRClassImpl(ssCode1, extSSStatus1, null);
+        MOLRClass molrClass2 = new MOLRClassImpl(ssCode2, extSSStatus2, null);
+        MOLRClass molrClass3 = new MOLRClassImpl(ssCode3, extSSStatus3, null);
+        molrList.add(molrClass1);
+        molrList.add(molrClass2);
+        molrList.add(molrClass3);
+        // lcsInformation (addLcsPrivacyExceptionList)
+        // add-lcs-PrivacyExceptionList may be sent only if lcs-PrivacyExceptionList is
+        // present and contains four instances of LCS-PrivacyClass. If the mentioned condition
+        // is not satisfied the receiving node shall discard add-lcs-PrivacyExceptionList.
+        // If an LCS-PrivacyClass is received both in lcs-PrivacyExceptionList and in
+        // add-lcs-PrivacyExceptionList with the same SS-Code, then the error unexpected
+        // data value shall be returned.
+        SSCode addSsCode = new SSCodeImpl(SupplementaryCodeValue.plmn_specificSS_1);
+        ExtSSStatus addExtSSStatus = new ExtSSStatusImpl(true, true, false, true);
+        ArrayList<LCSClientInternalID> addPlmnClientList = new ArrayList<>();
+        addPlmnClientList.add(lcsClientInternalID1);
+        addPlmnClientList.add(lcsClientInternalID2);
+        addPlmnClientList.add(lcsClientInternalID3);
+        addPlmnClientList.add(lcsClientInternalID4);
+        ArrayList<ExternalClient> addExternalClientList = new ArrayList<>();
+        ISDNAddressString addExternalAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.reserved, "874927492");
+        LCSClientExternalID addClientIdentity = new LCSClientExternalIDImpl(addExternalAddress, null);
+        GMLCRestriction addGmlcRestriction = GMLCRestriction.homeCountry;
+        NotificationToMSUser addMNtificationToMSUser = NotificationToMSUser.notifyLocationAllowed;
+        ExternalClient addExternalClient = new ExternalClientImpl(addClientIdentity, addGmlcRestriction, addMNtificationToMSUser, null);
+        addExternalClientList.add(addExternalClient);
+        ArrayList<ServiceType> addServiceTypeList = new ArrayList<>();
+        int addServiceTypeIdentity = 5;
+        ServiceType addServiceType4 = new ServiceTypeImpl(addServiceTypeIdentity, addGmlcRestriction, addMNtificationToMSUser, null);
+        addServiceTypeList.add(addServiceType4);
+        LCSPrivacyClass addLcsPrivacyClass = new LCSPrivacyClassImpl(addSsCode, addExtSSStatus, addMNtificationToMSUser, addExternalClientList,
+                addPlmnClientList, null, addExternalClientList, addServiceTypeList);
+        ArrayList<LCSPrivacyClass> addLcsPrivacyExceptionList = new ArrayList<>();
+        addLcsPrivacyExceptionList.add(addLcsPrivacyClass);
+        return new LCSInformationImpl(gmlcList, lcsPrivacyExceptionList, molrList, addLcsPrivacyExceptionList);
     }
 
     private static SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {

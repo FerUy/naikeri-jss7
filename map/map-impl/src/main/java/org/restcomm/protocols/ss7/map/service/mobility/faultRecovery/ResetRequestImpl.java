@@ -100,42 +100,46 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
 
     @Override
     public NetworkResource getNetworkResource() {
-        return networkResource;
+        return this.networkResource;
     }
 
     @Override
     public ISDNAddressString getHlrNumber() {
-        return hlrNumber;
+        if (this.sendingNodenumber != null) {
+            if (this.sendingNodenumber.getHlrNumber() != null)
+                this.hlrNumber = this.sendingNodenumber.getHlrNumber();
+        }
+        return this.hlrNumber;
     }
 
     @Override
     public ArrayList<IMSI> getHlrList() {
-        return hlrList;
+        return this.hlrList;
     }
 
     @Override
     public SendingNodeNumber getSendingNodenumber() {
-        return sendingNodenumber;
+        return this.sendingNodenumber;
     }
 
     @Override
     public MAPExtensionContainer getExtensionContainer() {
-        return extensionContainer;
+        return this.extensionContainer;
     }
 
     @Override
     public ArrayList<ResetId> getResetIdList() {
-        return resetIdList;
+        return this.resetIdList;
     }
 
     @Override
     public InsertSubscriberDataArgs getSubscriptionData() {
-        return subscriptionData;
+        return this.subscriptionData;
     }
 
     @Override
     public DeleteSubscriberDataArgs getSubscriptionDataDeletion() {
-        return subscriptionDataDeletion;
+        return this.subscriptionDataDeletion;
     }
 
     @Override
@@ -209,25 +213,18 @@ public class ResetRequestImpl extends MobilityMessageImpl implements ResetReques
                                     MAPParsingComponentExceptionReason.MistypedParameter);
                         int i1 = (int) ais.readInteger();
                         this.networkResource = NetworkResource.getInstance(i1);
-                    } else if (ais.getTagClass() == Tag.CLASS_UNIVERSAL) {
+                    } else {
                         if (!ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".hlrNumber: is not primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
-                        this.hlrNumber = new ISDNAddressStringImpl();
-                        ((ISDNAddressStringImpl) this.hlrNumber).decodeAll(ais);
+                        this.sendingNodenumber = new SendingNodeNumberImpl();
+                        ((SendingNodeNumberImpl) this.sendingNodenumber).decodeAll(ais);
                     }
                     break;
                 default:
                     switch (ais.getTagClass()) {
                         case Tag.CLASS_UNIVERSAL:
                             switch (tag) {
-                                /*case Tag.ENUMERATED:
-                                    if (!ais.isTagPrimitive())
-                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".networkResource: is not primitive",
-                                                MAPParsingComponentExceptionReason.MistypedParameter);
-                                    int i1 = (int) ais.readInteger();
-                                    this.networkResource = NetworkResource.getInstance(i1);
-                                    break;*/
                                 case Tag.STRING_OCTET:
                                     if (!ais.isTagPrimitive())
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName + ".hlrNumber: is not primitive",
