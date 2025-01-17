@@ -67,10 +67,7 @@ public class LSAInformationWithdrawImpl implements LSAInformationWithdraw, MAPAs
 
     @Override
     public boolean getIsPrimitive() {
-        if (allLSAData)
-            return true;
-        else
-            return false;
+        return allLSAData;
     }
 
     @Override
@@ -172,9 +169,9 @@ public class LSAInformationWithdrawImpl implements LSAInformationWithdraw, MAPAs
     @Override
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
 
-        if (this.allLSAData == false && this.lsaIdentityList == null)
+        if (!this.allLSAData && this.lsaIdentityList == null)
             throw new MAPException("Error while encoding the " + _PrimitiveName + ": no choice is defined");
-        if (this.allLSAData == true && this.lsaIdentityList != null)
+        if (this.allLSAData && this.lsaIdentityList != null)
             throw new MAPException("Error while encoding the " + _PrimitiveName + ": both choice is defined");
         if (this.lsaIdentityList != null && (this.lsaIdentityList.size() < 1 || this.lsaIdentityList.size() > 20))
             throw new MAPException("Error while encoding the " + _PrimitiveName + "Parameter lsaIdentityList size must be from 1 to 20, found: "

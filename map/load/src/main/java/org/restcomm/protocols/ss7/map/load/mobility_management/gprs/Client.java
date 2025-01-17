@@ -1220,7 +1220,26 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onResetRequest(ResetRequest resetRequestIndication) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onResetRequest over DialogId=%d", resetRequestIndication.getMAPDialog().getLocalDialogId()));
+            try {
+                if (resetRequestIndication.getHlrNumber() != null)
+                    logger.debug("onResetRequest, hlrNumber="+resetRequestIndication.getHlrNumber());
+                if (resetRequestIndication.getSendingNodenumber() != null)
+                    logger.debug("onResetRequest, sendingNodeNumber="+resetRequestIndication.getSendingNodenumber());
+                if (resetRequestIndication.getHlrList() != null)
+                    logger.debug("onResetRequest, hlrList="+resetRequestIndication.getHlrList());
+                if (resetRequestIndication.getResetIdList() != null)
+                    logger.debug("onResetRequest, resetIdList="+resetRequestIndication.getResetIdList());
+                if (resetRequestIndication.getSubscriptionData() != null)
+                    logger.debug("onResetRequest, subscriptionData="+resetRequestIndication.getSubscriptionData());
+                if (resetRequestIndication.getSubscriptionDataDeletion() != null)
+                    logger.debug("onResetRequest, subscriptionDataDeletion="+resetRequestIndication.getSubscriptionDataDeletion());
 
+            } catch (Exception e) {
+                logger.error("Error while processing onResetRequest ", e);
+            }
+        }
     }
 
     @Override

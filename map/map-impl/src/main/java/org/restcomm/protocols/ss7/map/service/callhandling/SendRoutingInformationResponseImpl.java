@@ -496,8 +496,8 @@ public class SendRoutingInformationResponseImpl extends CallHandlingMessageImpl 
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".ssList: is primitive", MAPParsingComponentExceptionReason.MistypedParameter);
                             AsnInputStream aissSCd = ais.readSequenceStream();
-                            SSCode sSCd = null;
-                            this.ssList = new ArrayList<SSCode>();
+                            SSCode sSCd;
+                            this.ssList = new ArrayList<>();
                             while (true) {
                                 if (aissSCd.available() == 0)
                                     break;

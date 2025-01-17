@@ -981,8 +981,8 @@ public class Client extends TestHarnessMobilityManagement {
             bearerServiceList.add(extBearerServiceCode);
             ArrayList<SSCode> ssList = new ArrayList<>();
             SupplementaryCodeValue supplementaryCodeValue = getSupplementaryCodeValue();
-            SSCode clir = new SSCodeImpl(supplementaryCodeValue);
-            ssList.add(clir);
+            SSCode ssCode = new SSCodeImpl(supplementaryCodeValue);
+            ssList.add(ssCode);
             ArrayList<ExtTeleserviceCode> teleserviceList = new ArrayList<>();
             ExtTeleserviceCode shortMessageMT_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMT_PP);
             ExtTeleserviceCode shortMessageMO_PP = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.shortMessageMO_PP);
@@ -1211,6 +1211,26 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onResetRequest(ResetRequest resetRequestIndication) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("onResetRequest over DialogId=%d", resetRequestIndication.getMAPDialog().getLocalDialogId()));
+            try {
+                if (resetRequestIndication.getHlrNumber() != null)
+                    logger.debug("onResetRequest, hlrNumber="+resetRequestIndication.getHlrNumber());
+                if (resetRequestIndication.getSendingNodenumber() != null)
+                    logger.debug("onResetRequest, sendingNodeNumber="+resetRequestIndication.getSendingNodenumber());
+                if (resetRequestIndication.getHlrList() != null)
+                    logger.debug("onResetRequest, hlrList="+resetRequestIndication.getHlrList());
+                if (resetRequestIndication.getResetIdList() != null)
+                    logger.debug("onResetRequest, resetIdList="+resetRequestIndication.getResetIdList());
+                if (resetRequestIndication.getSubscriptionData() != null)
+                    logger.debug("onResetRequest, subscriptionData="+resetRequestIndication.getSubscriptionData());
+                if (resetRequestIndication.getSubscriptionDataDeletion() != null)
+                    logger.debug("onResetRequest, subscriptionDataDeletion="+resetRequestIndication.getSubscriptionDataDeletion());
+
+            } catch (Exception e) {
+                logger.error("Error while processing onResetRequest ", e);
+            }
+        }
 
     }
 
@@ -1853,7 +1873,7 @@ public class Client extends TestHarnessMobilityManagement {
 
         @Override
         public void run() {
-            ++imsiForPurge;
+            imsiForPurge++;
 
             try {
                 Thread.sleep(500);
@@ -2064,7 +2084,7 @@ public class Client extends TestHarnessMobilityManagement {
         }
     }
 
-    protected static class CHISender implements Runnable {
+    private static class CHISender implements Runnable {
 
         private final Client client4ChiSender;
 
@@ -2078,12 +2098,12 @@ public class Client extends TestHarnessMobilityManagement {
 
         @Override
         public void run() {
-            ++imsiForCheckImei_Huawei;
+            imsiForCheckImei_Huawei++;
 
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ie) {
-                logger.error(ie.getMessage());
+                logger.error("Interrupted Exception for "+getClient()+"." +ie.getMessage());
             }
             try {
                 // Create Dialog
@@ -2142,8 +2162,6 @@ public class Client extends TestHarnessMobilityManagement {
 
                 } catch (MAPException e) {
                     logger.error("MAPException while adding MAP CHI to MAP dialog", e);
-                } catch (Exception e) {
-                    logger.error("Exception while adding MAP CHI to MAP dialog", e);
                 }
 
             } catch (Exception e) {

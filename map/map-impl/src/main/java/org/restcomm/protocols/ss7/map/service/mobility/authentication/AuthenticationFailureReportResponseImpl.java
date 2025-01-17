@@ -169,7 +169,7 @@ public class AuthenticationFailureReportResponseImpl extends MobilityMessageImpl
         sb.append(" [");
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
 

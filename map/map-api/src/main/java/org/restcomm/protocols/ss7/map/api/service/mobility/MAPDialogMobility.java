@@ -27,7 +27,10 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.Failur
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.RequestingNodeType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.UEUsageType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.DeleteSubscriberDataArgs;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.InsertSubscriberDataArgs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.ResetId;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.SendingNodeNumber;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.EquipmentStatus;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.RequestedEquipmentInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.imei.UESBIIu;
@@ -228,6 +231,12 @@ public interface MAPDialogMobility extends MAPDialog {
     Long addResetRequest(NetworkResource networkResource, ISDNAddressString hlrNumber, ArrayList<IMSI> hlrList) throws MAPException;
 
     Long addResetRequest(int customInvokeTimeout, NetworkResource networkResource, ISDNAddressString hlrNumber, ArrayList<IMSI> hlrList) throws MAPException;
+
+    Long addResetRequest(SendingNodeNumber sendingNodenumber, ArrayList<IMSI> hlrList, MAPExtensionContainer extensionContainer,
+            ArrayList<ResetId> resetIdList, InsertSubscriberDataArgs subscriptionData, DeleteSubscriberDataArgs subscriptionDataDeletion) throws MAPException;
+
+    Long addResetRequest(int customInvokeTimeout, SendingNodeNumber sendingNodenumber,  ArrayList<IMSI> hlrList, MAPExtensionContainer extensionContainer,
+            ArrayList<ResetId> resetIdList, InsertSubscriberDataArgs subscriptionData, DeleteSubscriberDataArgs subscriptionDataDeletion) throws MAPException;
 
     Long addForwardCheckSSIndicationRequest() throws MAPException;
 

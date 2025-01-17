@@ -1,21 +1,15 @@
-
-package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
-
-import java.io.IOException;
-import java.util.ArrayList;
+package org.restcomm.protocols.ss7.map.service.mobility.faultRecovery;
 
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.MAPException;
-import org.restcomm.protocols.ss7.map.api.MAPMessageType;
-import org.restcomm.protocols.ss7.map.api.MAPOperationCode;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentException;
 import org.restcomm.protocols.ss7.map.api.MAPParsingComponentExceptionReason;
 import org.restcomm.protocols.ss7.map.api.primitives.IMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.faultRecovery.DeleteSubscriberDataArgs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.EPSSubscriptionDataWithdraw;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.GPRSSubscriptionDataWithdraw;
@@ -24,16 +18,26 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ZoneCode;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
+import org.restcomm.protocols.ss7.map.primitives.MAPAsnPrimitive;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.MobilityMessageImpl;
+import org.restcomm.protocols.ss7.map.primitives.SequenceBase;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.EPSSubscriptionDataWithdrawImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBasicServiceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.GPRSSubscriptionDataWithdrawImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAInformationWithdrawImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SpecificCSIWithdrawImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ZoneCodeImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 /**
-*
-* @author sergey vetyutnev
-* @author <a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
-*/
-public class DeleteSubscriberDataRequestImpl extends MobilityMessageImpl implements DeleteSubscriberDataRequest {
+ * @author <a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
+ */
+public class DeleteSubscriberDataArgsImpl extends SequenceBase implements DeleteSubscriberDataArgs, MAPAsnPrimitive {
+
+    public static final String _PrimitiveName = "DeleteSubscriberDataArgs";
 
     protected static final int _TAG_imsi = 0;
     protected static final int _TAG_basicServiceList = 1;
@@ -68,8 +72,6 @@ public class DeleteSubscriberDataRequestImpl extends MobilityMessageImpl impleme
     protected static final int _TAG_reset_idsWithdraw = 31;
     protected static final int _TAG_iab_OperationWithdraw = 32;
 
-    public static final String _PrimitiveName = "DeleteSubscriberDataRequest";
-
     private IMSI imsi;
     private ArrayList<ExtBasicServiceCode> basicServiceList;
     private ArrayList<SSCode> ssList;
@@ -103,19 +105,21 @@ public class DeleteSubscriberDataRequestImpl extends MobilityMessageImpl impleme
     private boolean resetIdsWithdraw;
     private boolean iabOperationWithdraw;
 
-    public DeleteSubscriberDataRequestImpl() {
+    public DeleteSubscriberDataArgsImpl() {
+        super(_PrimitiveName);
     }
 
-    public DeleteSubscriberDataRequestImpl(IMSI imsi, ArrayList<ExtBasicServiceCode> basicServiceList, ArrayList<SSCode> ssList,
-            boolean roamingRestrictionDueToUnsupportedFeature, ZoneCode regionalSubscriptionIdentifier, boolean vbsGroupIndication,
-            boolean vgcsGroupIndication, boolean camelSubscriptionInfoWithdraw, MAPExtensionContainer extensionContainer,
-            GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw, boolean roamingRestrictedInSgsnDueToUnsuppportedFeature,
-            LSAInformationWithdraw lsaInformationWithdraw, boolean gmlcListWithdraw, boolean istInformationWithdraw, SpecificCSIWithdraw specificCSIWithdraw,
-            boolean chargingCharacteristicsWithdraw, boolean stnSrWithdraw, EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw,
-            boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted, boolean subscribedPeriodicTAURAUTimerWithdraw,
-            boolean subscribedPeriodicLAUTimerWithdraw, boolean subscribedVsrvccWithdraw, boolean vplmnCsgSubscriptionDeleted,
-            boolean additionalMSISDNWithdraw, boolean csToPsSRVCCWithdraw, boolean imsiGroupIdListWithdraw, boolean userPlaneIntegrityProtectionWithdraw,
-            boolean dlBufferingSuggestedPacketCountWithdraw, boolean ueUsageTypeWithdraw, boolean resetIdsWithdraw, boolean iabOperationWithdraw) {
+    public DeleteSubscriberDataArgsImpl(IMSI imsi, ArrayList<ExtBasicServiceCode> basicServiceList, ArrayList<SSCode> ssList,
+                                        boolean roamingRestrictionDueToUnsupportedFeature, ZoneCode regionalSubscriptionIdentifier, boolean vbsGroupIndication,
+                                        boolean vgcsGroupIndication, boolean camelSubscriptionInfoWithdraw, MAPExtensionContainer extensionContainer,
+                                        GPRSSubscriptionDataWithdraw gprsSubscriptionDataWithdraw, boolean roamingRestrictedInSgsnDueToUnsuppportedFeature,
+                                        LSAInformationWithdraw lsaInformationWithdraw, boolean gmlcListWithdraw, boolean istInformationWithdraw, SpecificCSIWithdraw specificCSIWithdraw,
+                                        boolean chargingCharacteristicsWithdraw, boolean stnSrWithdraw, EPSSubscriptionDataWithdraw epsSubscriptionDataWithdraw,
+                                        boolean apnOiReplacementWithdraw, boolean csgSubscriptionDeleted, boolean subscribedPeriodicTAURAUTimerWithdraw,
+                                        boolean subscribedPeriodicLAUTimerWithdraw, boolean subscribedVsrvccWithdraw, boolean vplmnCsgSubscriptionDeleted,
+                                        boolean additionalMSISDNWithdraw, boolean csToPsSRVCCWithdraw, boolean imsiGroupIdListWithdraw, boolean userPlaneIntegrityProtectionWithdraw,
+                                        boolean dlBufferingSuggestedPacketCountWithdraw, boolean ueUsageTypeWithdraw, boolean resetIdsWithdraw, boolean iabOperationWithdraw) {
+        super(_PrimitiveName);
         this.imsi = imsi;
         this.basicServiceList = basicServiceList;
         this.ssList = ssList;
@@ -148,14 +152,6 @@ public class DeleteSubscriberDataRequestImpl extends MobilityMessageImpl impleme
         this.ueUsageTypeWithdraw = ueUsageTypeWithdraw;
         this.resetIdsWithdraw = resetIdsWithdraw;
         this.iabOperationWithdraw = iabOperationWithdraw;
-    }
-
-    public MAPMessageType getMessageType() {
-        return MAPMessageType.deleteSubscriberData_Request;
-    }
-
-    public int getOperationCode() {
-        return MAPOperationCode.deleteSubscriberData;
     }
 
     @Override
@@ -319,48 +315,7 @@ public class DeleteSubscriberDataRequestImpl extends MobilityMessageImpl impleme
     }
 
     @Override
-    public int getTag() throws MAPException {
-        return Tag.SEQUENCE;
-    }
-
-    @Override
-    public int getTagClass() {
-        return Tag.CLASS_UNIVERSAL;
-    }
-
-    @Override
-    public boolean getIsPrimitive() {
-        return false;
-    }
-
-    @Override
-    public void decodeAll(AsnInputStream asnInputStream) throws MAPParsingComponentException {
-        try {
-            int length = asnInputStream.readLength();
-            this._decode(asnInputStream, length);
-        } catch (IOException e) {
-            throw new MAPParsingComponentException("IOException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
-                    MAPParsingComponentExceptionReason.MistypedParameter);
-        } catch (AsnException e) {
-            throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
-                    MAPParsingComponentExceptionReason.MistypedParameter);
-        }
-    }
-
-    @Override
-    public void decodeData(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException {
-        try {
-            this._decode(asnInputStream, length);
-        } catch (IOException e) {
-            throw new MAPParsingComponentException("IOException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
-                    MAPParsingComponentExceptionReason.MistypedParameter);
-        } catch (AsnException e) {
-            throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
-                    MAPParsingComponentExceptionReason.MistypedParameter);
-        }
-    }
-
-    private void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
+    protected void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
         this.imsi = null;
         this.basicServiceList = null;
         this.ssList = null;
@@ -403,14 +358,6 @@ public class DeleteSubscriberDataRequestImpl extends MobilityMessageImpl impleme
             int tag = ais.readTag();
 
             switch (num) {
-                /*case 0:
-                    // imsi [0] IMSI
-                    if (ais.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC || !ais.isTagPrimitive() || tag != _TAG_imsi)
-                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                + ".imsi: Parameter 0 bad tag or tag class or not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
-                    this.imsi = new IMSIImpl();
-                    ((IMSIImpl) this.imsi).decodeAll(ais);
-                    break;*/
 
                 default:
                     if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
@@ -741,27 +688,10 @@ public class DeleteSubscriberDataRequestImpl extends MobilityMessageImpl impleme
     }
 
     @Override
-    public void encodeAll(AsnOutputStream asnOutputStream) throws MAPException {
-        this.encodeAll(asnOutputStream, this.getTagClass(), this.getTag());
-    }
-
-    @Override
-    public void encodeAll(AsnOutputStream asnOutputStream, int tagClass, int tag) throws MAPException {
-        try {
-            asnOutputStream.writeTag(tagClass, this.getIsPrimitive(), tag);
-            int pos = asnOutputStream.StartContentDefiniteLength();
-            this.encodeData(asnOutputStream);
-            asnOutputStream.FinalizeContent(pos);
-        } catch (AsnException e) {
-            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
-        }
-    }
-
-    @Override
     public void encodeData(AsnOutputStream asnOutputStream) throws MAPException {
         try {
             if (this.imsi == null)
-                throw new MAPException("Error when encoding " + _PrimitiveName + ", IMSI parameter must not be null for MAP Version3");
+                throw new MAPException("Error when encoding " + _PrimitiveName + ", IMSI parameter must not be null within DeleteSubscriberDataArgs");
 
             ((IMSIImpl) this.imsi).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_imsi);
 

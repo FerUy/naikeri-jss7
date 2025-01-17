@@ -2250,7 +2250,6 @@ public class InsertSubscriberDataRequestTest {
 
         // lcsInformation
         lcsInformation = isd.getLCSInformation();
-        // LCSInformationImpl(gmlcList, lcsPrivacyExceptionList, molrList, addLcsPrivacyExceptionList);
         assertEquals(lcsInformation.getGmlcList().get(0).getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(lcsInformation.getGmlcList().get(0).getAddressNature(), AddressNature.international_number);
         assertEquals(lcsInformation.getGmlcList().get(0).getAddress(), "4917104600321");
