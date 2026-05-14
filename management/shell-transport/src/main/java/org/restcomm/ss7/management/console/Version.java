@@ -1,4 +1,3 @@
-
 package org.restcomm.ss7.management.console;
 
 import java.io.InputStream;
