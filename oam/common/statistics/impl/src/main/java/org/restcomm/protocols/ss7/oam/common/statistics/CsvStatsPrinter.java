@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.oam.common.statistics;
 
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.oam.common.statistics.api.ComplexValue;
 import org.restcomm.protocols.ss7.oam.common.statistics.api.CounterCampaign;
 import org.restcomm.protocols.ss7.oam.common.statistics.api.CounterDef;
@@ -28,7 +27,7 @@ public class CsvStatsPrinter {
     private static final String COLON = ":";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    protected final Logger logger = Logger.getLogger(CsvStatsPrinter.class);
+    protected final Logger logger = LogManager.getLogger(CsvStatsPrinter.class);
 
     /**
      * Prints csv stats to log file as debug

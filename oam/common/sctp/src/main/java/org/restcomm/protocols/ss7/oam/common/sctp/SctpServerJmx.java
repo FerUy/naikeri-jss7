@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.oam.common.sctp;
 
 import java.util.List;
@@ -35,8 +34,8 @@ public class SctpServerJmx implements SctpServerJmxMBean {
     }
 
     @Override
-    public int getHostport() {
-        return this.wrappedServer.getHostport();
+    public int getHostPort() {
+        return this.wrappedServer.getHostPort();
     }
 
     @Override
@@ -61,7 +60,7 @@ public class SctpServerJmx implements SctpServerJmxMBean {
     }
 
     @Override
-    public List<Association> getAnonymAssociations() {
+    public List<Association> getAnonymousAssociations() {
         // TODO Auto-generated method stub
         return null;
     }

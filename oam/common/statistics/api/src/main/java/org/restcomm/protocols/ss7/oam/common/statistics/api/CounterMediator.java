@@ -1,6 +1,4 @@
-
 package org.restcomm.protocols.ss7.oam.common.statistics.api;
-
 
 /**
 * This interface must provide the class who want to export statistic data - for example TCAPStackStat

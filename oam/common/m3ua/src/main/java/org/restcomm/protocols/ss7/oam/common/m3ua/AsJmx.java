@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.oam.common.m3ua;
 
 import java.util.List;

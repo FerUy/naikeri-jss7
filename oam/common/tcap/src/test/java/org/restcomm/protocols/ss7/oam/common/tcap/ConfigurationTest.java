@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.oam.common.tcap;
 
 import static org.testng.Assert.*;

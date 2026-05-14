@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.oam.common.m3ua;
 
 import java.util.Calendar;
@@ -7,8 +6,8 @@ import java.util.Map;
 
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.m3ua.As;
 import org.restcomm.protocols.ss7.m3ua.Asp;
 import org.restcomm.protocols.ss7.m3ua.AspFactory;
@@ -76,7 +75,7 @@ public class M3uaManagementJmx implements M3uaManagementJmxMBean, M3UAManagement
     public M3uaManagementJmx(MBeanHost ss7Management, M3UAManagement wrappedM3UAManagement) {
         this.ss7Management = ss7Management;
         this.wrappedM3UAManagement = wrappedM3UAManagement;
-        this.logger = Logger.getLogger(M3uaManagementJmx.class.getCanonicalName() + "-" + wrappedM3UAManagement.getName());
+        this.logger = LogManager.getLogger(M3uaManagementJmx.class.getCanonicalName() + "-" + wrappedM3UAManagement.getName());
     }
 
     /**

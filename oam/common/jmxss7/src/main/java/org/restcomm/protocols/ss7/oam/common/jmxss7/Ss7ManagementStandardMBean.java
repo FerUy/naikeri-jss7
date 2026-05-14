@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.oam.common.jmxss7;
 
 import javax.management.MBeanAttributeInfo;

@@ -1,11 +1,11 @@
-
 package org.restcomm.protocols.ss7.oam.common.tcap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.oam.common.alarm.AlarmProvider;
 import org.restcomm.protocols.ss7.oam.common.jmxss7.Ss7Management;
 import org.restcomm.protocols.ss7.oam.common.statistics.CounterProviderManagement;
-import org.restcomm.protocols.ss7.oam.common.tcap.TcapManagementJmx;
 import org.restcomm.protocols.ss7.sccp.impl.SccpHarness;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
 import org.restcomm.protocols.ss7.tcap.TCAPStackImpl;
@@ -31,17 +31,15 @@ import org.testng.annotations.Test;
 *
 */
 public class StatisticsTest extends SccpHarness {
+
+    private static final Logger logger = LogManager.getLogger(StatisticsTest.class.getName());
     public static final long WAIT_TIME = 500;
     private static final int _WAIT_TIMEOUT = 90000;
     private static final int _WAIT_REMOVE = 30000;
     public static final long[] _ACN_ = new long[] { 0, 4, 0, 0, 1, 0, 19, 2 };
     private TCAPStackImpl tcapStack1;
     private TCAPStackImpl tcapStack2;
-    private SccpAddress peer1Address;
-    private SccpAddress peer2Address;
     private Client client;
-    private Server server;
-    private TCAPListenerWrapper tcapListenerWrapper;
 
     private Ss7Management ss7Man;
     private CounterProviderManagement counterProvider;
@@ -56,12 +54,12 @@ public class StatisticsTest extends SccpHarness {
     public void setUpClass() {
         this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
         this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
-        System.out.println("setUpClass");
+        logger.info("setUpClass");
     }
 
     @AfterClass
     public void tearDownClass() throws Exception {
-        System.out.println("tearDownClass");
+        logger.info("tearDownClass");
     }
 
     /*
@@ -71,16 +69,16 @@ public class StatisticsTest extends SccpHarness {
      */
     @BeforeMethod
     public void setUp() throws Exception {
-        System.out.println("setUp");
+        logger.info("setUp");
         super.setUp();
 
-        peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
-        peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
+        SccpAddress peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
+        SccpAddress peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
 
         this.tcapStack1 = new TCAPStackImpl("Test", this.sccpProvider1, 8);
         this.tcapStack2 = new TCAPStackImpl("Test", this.sccpProvider2, 8);
 
-        this.tcapListenerWrapper = new TCAPListenerWrapper();
+        TCAPListenerWrapper tcapListenerWrapper = new TCAPListenerWrapper();
         this.tcapStack1.getProvider().addTCListener(tcapListenerWrapper);
 
         this.tcapStack1.start();
@@ -92,7 +90,7 @@ public class StatisticsTest extends SccpHarness {
 
         // create test classes
         this.client = new Client(this.tcapStack1, peer1Address, peer2Address);
-        this.server = new Server(this.tcapStack2, peer2Address, peer1Address);
+        Server server = new Server(this.tcapStack2, peer2Address, peer1Address);
 
         ss7Man = new Ss7Management();
         ss7Man.setRmiPort(9998);
@@ -154,7 +152,7 @@ public class StatisticsTest extends SccpHarness {
 
     }
 
-    private class TCAPListenerWrapper implements TCListener {
+    private static class TCAPListenerWrapper implements TCListener {
 
         @Override
         public void onTCUni(TCUniIndication ind) {

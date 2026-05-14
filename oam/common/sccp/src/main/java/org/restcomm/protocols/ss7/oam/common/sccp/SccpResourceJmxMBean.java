@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.oam.common.sccp;
 
 import org.restcomm.protocols.ss7.sccp.SccpResource;
