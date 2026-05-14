@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.common;
 
 import javolution.xml.XMLFormat;
@@ -15,6 +14,9 @@ import org.restcomm.protocols.ss7.tools.simulator.management.Instance_L3;
 import org.restcomm.protocols.ss7.tools.simulator.management.Instance_TestTask;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiClientConfigurationData;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiServerConfigurationData;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestATIServerConfigurationData;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestPSIServerConfigurationData;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestLSMServerConfigurationData;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapScfConfigurationData;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapSsfConfigurationData;
 import org.restcomm.protocols.ss7.tools.simulator.tests.checkimei.TestCheckImeiClientConfigurationData;
@@ -30,7 +32,7 @@ import org.restcomm.protocols.ss7.tools.simulator.tests.ussd.TestUssdServerConfi
 /**
  *
  * @author <a href="mailto:serg.vetyutnev@gmail.com"> Sergey Vetyutnev </a>
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class ConfigurationData {
 
@@ -57,6 +59,8 @@ public class ConfigurationData {
     public static final String TEST_MAP_LCS_CLIENT = "testMapLcsClient";
     public static final String TEST_MAP_LCS_SERVER = "testMapLcsServer";
     public static final String TEST_MAP_PSI_SERVER = "testMapPsiServer";
+    public static final String TEST_MAP_SERVER = "testMapServer";
+
 
     private Instance_L1 instance_L1 = new Instance_L1(Instance_L1.VAL_NO);
     private Instance_L2 instance_L2 = new Instance_L2(Instance_L2.VAL_NO);
@@ -82,6 +86,9 @@ public class ConfigurationData {
     private TestLcsClientConfigurationData testLcsClientConfigurationData = new TestLcsClientConfigurationData();
     private TestLcsServerConfigurationData testLcsServerConfigurationData = new TestLcsServerConfigurationData();
     private TestPsiServerConfigurationData testPsiServerConfigurationData = new TestPsiServerConfigurationData();
+    private TestLSMServerConfigurationData testLSMServerConfigurationData = new TestLSMServerConfigurationData();
+    private TestATIServerConfigurationData testATIServerConfigurationData = new TestATIServerConfigurationData();
+    private TestPSIServerConfigurationData testPSIServerConfigurationData = new TestPSIServerConfigurationData();
 
 
     public Instance_L1 getInstance_L1() {
@@ -263,6 +270,30 @@ public class ConfigurationData {
         this.testPsiServerConfigurationData = testPsiServerConfigurationData;
     }
 
+    public TestLSMServerConfigurationData getTestLSMServerConfigurationData() {
+        return testLSMServerConfigurationData;
+    }
+
+    public void setTestLSMServerConfigurationData(TestLSMServerConfigurationData testLSMServerConfigurationData) {
+        this.testLSMServerConfigurationData = testLSMServerConfigurationData;
+    }
+
+    public TestATIServerConfigurationData getTestATIServerConfigurationData() {
+        return testATIServerConfigurationData;
+    }
+
+    public void setTestATIServerConfigurationData(TestATIServerConfigurationData testATIServerConfigurationData) {
+        this.testATIServerConfigurationData = testATIServerConfigurationData;
+    }
+
+    public TestPSIServerConfigurationData getTestPSIServerConfigurationData() {
+        return testPSIServerConfigurationData;
+    }
+
+    public void setTestPSIServerConfigurationData(TestPSIServerConfigurationData testPSIServerConfigurationData) {
+        this.testPSIServerConfigurationData = testPSIServerConfigurationData;
+    }
+
     /**
      * XML Serialization/Deserialization
      */
@@ -270,7 +301,7 @@ public class ConfigurationData {
             ConfigurationData.class) {
 
         @Override
-        public void read(javolution.xml.XMLFormat.InputElement xml, ConfigurationData data) throws XMLStreamException {
+        public void read(InputElement xml, ConfigurationData data) throws XMLStreamException {
             data.instance_L1 = Instance_L1.createInstance(xml.get(INSTANCE_L1, String.class));
             data.instance_L2 = Instance_L2.createInstance(xml.get(INSTANCE_L2, String.class));
             data.instance_L3 = Instance_L3.createInstance(xml.get(INSTANCE_L3, String.class));
@@ -348,13 +379,25 @@ public class ConfigurationData {
             if (mapPsiServer != null)
                 data.setTestPsiServerConfigurationData(mapPsiServer);
 
+            TestATIServerConfigurationData mapATIServer = xml.get(TEST_MAP_SERVER, TestATIServerConfigurationData.class);
+            if (mapATIServer != null)
+                data.setTestATIServerConfigurationData(mapATIServer);
+
+            TestPSIServerConfigurationData mapPSIServer = xml.get(TEST_MAP_SERVER, TestPSIServerConfigurationData.class);
+            if (mapPSIServer != null)
+                data.setTestPSIServerConfigurationData(mapPSIServer);
+
+            TestLSMServerConfigurationData mapLSMServer = xml.get(TEST_MAP_SERVER, TestLSMServerConfigurationData.class);
+            if (mapLSMServer != null)
+                data.setTestLSMServerConfigurationData(mapLSMServer);
+
             // while (xml.hasNext()) {
             // Object o = xml.getNext();
             // }
         }
 
         @Override
-        public void write(ConfigurationData data, javolution.xml.XMLFormat.OutputElement xml) throws XMLStreamException {
+        public void write(ConfigurationData data, OutputElement xml) throws XMLStreamException {
             xml.add(data.instance_L1.toString(), INSTANCE_L1, String.class);
             xml.add(data.instance_L2.toString(), INSTANCE_L2, String.class);
             xml.add(data.instance_L3.toString(), INSTANCE_L3, String.class);
@@ -379,6 +422,9 @@ public class ConfigurationData {
             xml.add(data.getTestLcsClientConfigurationData(), TEST_MAP_LCS_CLIENT, TestLcsClientConfigurationData.class);
             xml.add(data.getTestLcsServerConfigurationData(), TEST_MAP_LCS_SERVER, TestLcsServerConfigurationData.class);
             xml.add(data.getTestPsiServerConfigurationData(), TEST_MAP_PSI_SERVER, TestPsiServerConfigurationData.class);
+            xml.add(data.getTestATIServerConfigurationData(), TEST_MAP_SERVER, TestATIServerConfigurationData.class);
+            xml.add(data.getTestPSIServerConfigurationData(), TEST_MAP_SERVER, TestPSIServerConfigurationData.class);
+            xml.add(data.getTestLSMServerConfigurationData(), TEST_MAP_SERVER, TestLSMServerConfigurationData.class);
         }
     };
 

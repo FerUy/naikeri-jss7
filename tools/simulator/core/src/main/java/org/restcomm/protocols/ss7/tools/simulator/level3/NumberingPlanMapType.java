@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level3;
 
 import java.util.Hashtable;
@@ -47,15 +46,15 @@ public class NumberingPlanMapType extends EnumeratedBase {
     public NumberingPlanMapType() {
     }
 
-    public NumberingPlanMapType(int val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanMapType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public NumberingPlanMapType(Integer val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanMapType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public NumberingPlanMapType(String val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanMapType(String val) throws IllegalArgumentException {
         super(val);
     }
 

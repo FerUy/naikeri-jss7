@@ -1,11 +1,8 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.management;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.Properties;
 
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
@@ -15,10 +12,10 @@ import javolution.xml.XMLBinding;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.restcomm.protocols.ss7.mtp.Mtp3UserPart;
 import org.restcomm.protocols.ss7.sccp.SccpStack;
 import org.restcomm.protocols.ss7.tools.simulator.Stoppable;
@@ -38,6 +35,9 @@ import org.restcomm.protocols.ss7.tools.simulator.level3.MapMan;
 import org.restcomm.protocols.ss7.tools.simulator.level3.NumberingPlanMapType;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiClientMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiServerMan;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestLSMServerConfigurationData;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestPSIServerConfigurationData;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestServerMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapScfMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapSsfMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.checkimei.TestCheckImeiClientConfigurationData;
@@ -66,7 +66,7 @@ import org.restcomm.protocols.ss7.tools.simulator.tests.ussd.TestUssdServerMan;
  *
  */
 public class TesterHostImpl extends NotificationBroadcasterSupport implements TesterHostInterface, Stoppable {
-    private static final Logger logger = Logger.getLogger(TesterHostImpl.class);
+    private static Logger logger = LogManager.getLogger(TesterHostImpl.class);
 
     private static final String TESTER_HOST_PERSIST_DIR_KEY = "testerhost.persist.dir";
     private static final String USER_DIR_KEY = "user.dir";
@@ -80,7 +80,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
     private static final String CONFIGURATION_DATA = "configurationData";
 
     private final String appName;
-    private String persistDir = null;
+    private String persistDir;
     private final TextBuilder persistFile = TextBuilder.newInstance();
     private static final XMLBinding binding = new XMLBinding();
 
@@ -116,6 +116,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
     TestLcsClientMan testLcsClientMan;
     TestLcsServerMan testLcsServerMan;
     TestPsiServerMan testPsiServerMan;
+    TestServerMan testServerMan;
 
     // testers
 
@@ -194,6 +195,9 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
         this.testPsiServerMan = new TestPsiServerMan(appName);
         this.testPsiServerMan.setTesterHost(this);
 
+        this.testServerMan = new TestServerMan(appName);
+        this.testServerMan.setTesterHost(this);
+
         this.setupLog4j(appName);
 
         binding.setClassAttribute(CLASS_ATTRIBUTE);
@@ -203,14 +207,14 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
 
         if (persistDir != null) {
             persistFileOld.append(persistDir).append(File.separator).append(this.appName).append("_")
-                    .append(PERSIST_FILE_NAME_OLD);
+                .append(PERSIST_FILE_NAME_OLD);
             this.persistFile.append(persistDir).append(File.separator).append(this.appName).append("_")
-                    .append(PERSIST_FILE_NAME);
+                .append(PERSIST_FILE_NAME);
         } else {
             persistFileOld.append(System.getProperty(TESTER_HOST_PERSIST_DIR_KEY, System.getProperty(USER_DIR_KEY)))
-                    .append(File.separator).append(this.appName).append("_").append(PERSIST_FILE_NAME_OLD);
+                .append(File.separator).append(this.appName).append("_").append(PERSIST_FILE_NAME_OLD);
             this.persistFile.append(System.getProperty(TESTER_HOST_PERSIST_DIR_KEY, System.getProperty(USER_DIR_KEY)))
-                    .append(File.separator).append(this.appName).append("_").append(PERSIST_FILE_NAME);
+                .append(File.separator).append(this.appName).append("_").append(PERSIST_FILE_NAME);
         }
 
         File fnOld = new File(persistFileOld.toString());
@@ -300,29 +304,18 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
 
     public TestPsiServerMan getTestPsiServerMan() { return this.testPsiServerMan; }
 
+    public TestServerMan getTestServerMan() {
+        return testServerMan;
+    }
+
     private void setupLog4j(String appName) {
-
-        // InputStream inStreamLog4j = getClass().getResourceAsStream("/log4j.properties");
-
-        String propFileName = appName + ".log4j.properties";
+        String propFileName = appName + ".log4j2.properties";
         File f = new File("./" + propFileName);
         if (f.exists()) {
-
-            try {
-                InputStream inStreamLog4j = new FileInputStream(f);
-                Properties propertiesLog4j = new Properties();
-
-                propertiesLog4j.load(inStreamLog4j);
-                PropertyConfigurator.configure(propertiesLog4j);
-            } catch (Exception e) {
-                e.printStackTrace();
-                BasicConfigurator.configure();
-            }
+            ConfigurationFactory.getInstance().getConfiguration(null, null, f.toURI());
         } else {
-            BasicConfigurator.configure();
+            logger = LogManager.getLogger(appName);
         }
-
-        // logger.setLevel(Level.TRACE);
         logger.debug("log4j configured");
 
     }
@@ -334,14 +327,9 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
                 sb.append("\n");
             sb.append(st.toString());
         }
-        this.doSendNotif(source, msg + " - " + e.toString(), sb.toString());
+        this.doSendNotif(source, msg + " - " + e, sb.toString());
 
         logger.log(logLevel, msg, e);
-        // if (showInConsole) {
-        // logger.error(msg, e);
-        // } else {
-        // logger.debug(msg, e);
-        // }
     }
 
     public void sendNotif(String source, String msg, String userData, Level logLevel) {
@@ -349,18 +337,11 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
         this.doSendNotif(source, msg, userData);
 
         logger.log(Level.INFO, msg + "\n" + userData);
-//        logger.log(logLevel, msg + "\n" + userData);
-
-        // if (showInConsole) {
-        // logger.warn(msg);
-        // } else {
-        // logger.debug(msg);
-        // }
     }
 
     private synchronized void doSendNotif(String source, String msg, String userData) {
         Notification notif = new Notification(SS7_EVENT + "-" + source, "TesterHost", ++sequenceNumber,
-                System.currentTimeMillis(), msg);
+            System.currentTimeMillis(), msg);
         notif.setUserData(userData);
         this.sendNotification(notif);
     }
@@ -499,7 +480,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             default:
                 // TODO: implement others test tasks ...
                 this.sendNotif(TesterHostImpl.SOURCE_NAME, "Instance_L1." + this.configurationData.getInstance_L1().toString()
-                        + " has not been implemented yet", "", Level.WARN);
+                    + " has not been implemented yet", "", Level.WARN);
                 break;
         }
         if (!started) {
@@ -515,7 +496,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_L2.VAL_SCCP:
                 if (mtp3UserPart == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing SCCP: No Mtp3UserPart is defined at L1", "",
-                            Level.WARN);
+                        Level.WARN);
                 } else {
                     this.instance_L2_B = this.sccp;
                     this.sccp.setMtp3UserPart(mtp3UserPart);
@@ -531,7 +512,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             default:
                 // TODO: implement others test tasks ...
                 this.sendNotif(TesterHostImpl.SOURCE_NAME, "Instance_L2." + this.configurationData.getInstance_L2().toString()
-                        + " has not been implemented yet", "", Level.WARN);
+                    + " has not been implemented yet", "", Level.WARN);
                 break;
         }
         if (!started) {
@@ -548,7 +529,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_L3.VAL_MAP:
                 if (sccpStack == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing TCAP+MAP: No SccpStack is defined at L2", "",
-                            Level.WARN);
+                        Level.WARN);
                 } else {
                     this.instance_L3_B = this.map;
                     this.map.setSccpStack(sccpStack);
@@ -559,7 +540,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_L3.VAL_CAP:
                 if (sccpStack == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing TCAP+CAP: No SccpStack is defined at L2", "",
-                            Level.WARN);
+                        Level.WARN);
                 } else {
                     this.instance_L3_B = this.cap;
                     this.cap.setSccpStack(sccpStack);
@@ -575,7 +556,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             default:
                 // TODO: implement others test tasks ...
                 this.sendNotif(TesterHostImpl.SOURCE_NAME, "Instance_L3." + this.configurationData.getInstance_L3().toString()
-                        + " has not been implemented yet", "", Level.WARN);
+                    + " has not been implemented yet", "", Level.WARN);
                 break;
         }
         if (!started) {
@@ -590,7 +571,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_USSD_TEST_CLIENT:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME,
-                            "Error initializing USSD_TEST_CLIENT: No MAP stack is defined at L3", "", Level.WARN);
+                        "Error initializing USSD_TEST_CLIENT: No MAP stack is defined at L3", "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testUssdClientMan;
                     this.testUssdClientMan.setMapMan(curMap);
@@ -601,7 +582,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_USSD_TEST_SERVER:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME,
-                            "Error initializing USSD_TEST_SERVER: No MAP stack is defined at L3", "", Level.WARN);
+                        "Error initializing USSD_TEST_SERVER: No MAP stack is defined at L3", "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testUssdServerMan;
                     this.testUssdServerMan.setMapMan(curMap);
@@ -612,7 +593,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_SMS_TEST_CLIENT:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing SMS_TEST_CLIENT: No MAP stack is defined at L3",
-                            "", Level.WARN);
+                        "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testSmsClientMan;
                     this.testSmsClientMan.setMapMan(curMap);
@@ -623,7 +604,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_SMS_TEST_SERVER:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing SMS_TEST_SERVER: No MAP stack is defined at L3",
-                            "", Level.WARN);
+                        "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testSmsServerMan;
                     this.testSmsServerMan.setMapMan(curMap);
@@ -634,7 +615,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_CAP_TEST_SCF:
                 if (curCap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME,
-                            "Error initializing VAL_CAP_TEST_SCF: No CAP stack is defined at L3", "", Level.WARN);
+                        "Error initializing VAL_CAP_TEST_SCF: No CAP stack is defined at L3", "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testCapScfMan;
                     this.testCapScfMan.setCapMan(curCap);
@@ -645,7 +626,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_CAP_TEST_SSF:
                 if (curCap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME,
-                            "Error initializing VAL_CAP_TEST_SSF: No CAP stack is defined at L3", "", Level.WARN);
+                        "Error initializing VAL_CAP_TEST_SSF: No CAP stack is defined at L3", "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testCapSsfMan;
                     this.testCapSsfMan.setCapMan(curCap);
@@ -656,7 +637,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_ATI_TEST_CLIENT:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing ATI_TEST_CLIENT: No MAP stack is defined at L3",
-                            "", Level.WARN);
+                        "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testAtiClientMan;
                     this.testAtiClientMan.setMapMan(curMap);
@@ -667,7 +648,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_ATI_TEST_SERVER:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing ATI_TEST_SERVER: No MAP stack is defined at L3",
-                            "", Level.WARN);
+                        "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testAtiServerMan;
                     this.testAtiServerMan.setMapMan(curMap);
@@ -678,7 +659,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_CHECK_IMEI_TEST_CLIENT:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing CHECK_IMEI_TEST_CLIENT: No MAP stack is defined at L3",
-                            "", Level.WARN);
+                        "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testCheckImeiClientMan;
                     this.testCheckImeiClientMan.setMapMan(curMap);
@@ -689,7 +670,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_CHECK_IMEI_TEST_SERVER:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing CHECK_IMEI_TEST_SERVER: No MAP stack is defined at L3",
-                            "", Level.WARN);
+                        "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testCheckImeiServerMan;
                     this.testCheckImeiServerMan.setMapMan(curMap);
@@ -700,7 +681,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_MAP_LCS_TEST_CLIENT:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing MAP_LCS_TEST_SERVER: No MAP stack is defined at L3",
-                            "", Level.WARN);
+                        "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testLcsClientMan;
                     this.testLcsClientMan.setMapMan(curMap);
@@ -711,7 +692,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             case Instance_TestTask.VAL_MAP_LCS_TEST_SERVER:
                 if (curMap == null) {
                     this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing MAP_LCS_TEST_CLIENT: No MAP stack is defined at L3",
-                            "", Level.WARN);
+                        "", Level.WARN);
                 } else {
                     this.instance_TestTask_B = this.testLcsServerMan;
                     this.testLcsServerMan.setMapMan(curMap);
@@ -730,11 +711,23 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
                 }
                 break;
 
+            case Instance_TestTask.VAL_ATI_PSI_LSM_TEST_SERVER:
+                if (curMap == null) {
+                    this.sendNotif(TesterHostImpl.SOURCE_NAME, "Error initializing ATI_PSI_LSM_TEST_SERVER: No MAP stack is defined at L3",
+                            "", Level.WARN);
+                } else {
+                    this.instance_TestTask_B = this.testServerMan;
+                    this.testServerMan.setMapMan(curMap);
+                    started = this.testServerMan.start();
+                }
+                break;
+
+
             default:
                 // TODO: implement others test tasks ...
                 this.sendNotif(TesterHostImpl.SOURCE_NAME, "Instance_TestTask."
                         + this.configurationData.getInstance_TestTask().toString() + " has not been implemented yet", "",
-                        Level.WARN);
+                    Level.WARN);
                 break;
         }
         if (!started) {
@@ -802,29 +795,25 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
     @Override
     public void putInstance_L1Value(String val) {
         Instance_L1 x = Instance_L1.createInstance(val);
-        if (x != null)
-            this.setInstance_L1(x);
+        this.setInstance_L1(x);
     }
 
     @Override
     public void putInstance_L2Value(String val) {
         Instance_L2 x = Instance_L2.createInstance(val);
-        if (x != null)
-            this.setInstance_L2(x);
+        this.setInstance_L2(x);
     }
 
     @Override
     public void putInstance_L3Value(String val) {
         Instance_L3 x = Instance_L3.createInstance(val);
-        if (x != null)
-            this.setInstance_L3(x);
+        this.setInstance_L3(x);
     }
 
     @Override
     public void putInstance_TestTaskValue(String val) {
         Instance_TestTask x = Instance_TestTask.createInstance(val);
-        if (x != null)
-            this.setInstance_TestTask(x);
+        this.setInstance_TestTask(x);
     }
 
     public String getName() {
@@ -868,11 +857,11 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
 
     private boolean load(File fn) {
 
-        XMLObjectReader reader = null;
+        XMLObjectReader reader;
         try {
             if (!fn.exists()) {
                 this.sendNotif(SOURCE_NAME, "Error while reading the Host state from file: file not found: " + persistFile, "",
-                        Level.WARN);
+                    Level.WARN);
                 return false;
             }
 
@@ -894,7 +883,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
 
     private boolean loadOld(File fn) {
 
-        XMLObjectReader reader = null;
+        XMLObjectReader reader;
         try {
             if (!fn.exists()) {
                 // this.sendNotif(SOURCE_NAME, "Error while reading the Host state from file: file not found: " + persistFile,
@@ -906,13 +895,13 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
 
             reader.setBinding(binding);
             this.configurationData.setInstance_L1(Instance_L1.createInstance(reader.read(ConfigurationData.INSTANCE_L1,
-                    String.class)));
+                String.class)));
             this.configurationData.setInstance_L2(Instance_L2.createInstance(reader.read(ConfigurationData.INSTANCE_L2,
-                    String.class)));
+                String.class)));
             this.configurationData.setInstance_L3(Instance_L3.createInstance(reader.read(ConfigurationData.INSTANCE_L3,
-                    String.class)));
+                String.class)));
             this.configurationData.setInstance_TestTask(Instance_TestTask.createInstance(reader.read(
-                    ConfigurationData.INSTANCE_TESTTASK, String.class)));
+                ConfigurationData.INSTANCE_TESTTASK, String.class)));
 
             M3uaConfigurationData_OldFormat _m3ua = reader.read(ConfigurationData.M3UA, M3uaConfigurationData_OldFormat.class);
             this.m3ua.setSctpLocalHost(_m3ua.getLocalHost());
@@ -930,7 +919,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             this.m3ua.setM3uaSi(_m3ua.getSi());
 
             DialogicConfigurationData_OldFormat _dial = reader.read(ConfigurationData.DIALOGIC,
-                    DialogicConfigurationData_OldFormat.class);
+                DialogicConfigurationData_OldFormat.class);
             this.dialogic.setSourceModuleId(_dial.getSourceModuleId());
             this.dialogic.setDestinationModuleId(_dial.getDestinationModuleId());
 
@@ -960,12 +949,12 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             this.map.setDestReferenceNumberingPlan(new NumberingPlanMapType(_map.getDestReferenceNumberingPlan().getIndicator()));
 
             TestUssdClientConfigurationData_OldFormat _TestUssdClientMan = reader.read(ConfigurationData.TEST_USSD_CLIENT,
-                    TestUssdClientConfigurationData_OldFormat.class);
+                TestUssdClientConfigurationData_OldFormat.class);
             this.testUssdClientMan.setMsisdnAddress(_TestUssdClientMan.getMsisdnAddress());
             this.testUssdClientMan.setMsisdnAddressNature(new AddressNatureType(_TestUssdClientMan.getMsisdnAddressNature()
-                    .getIndicator()));
+                .getIndicator()));
             this.testUssdClientMan.setMsisdnNumberingPlan(new NumberingPlanMapType(_TestUssdClientMan.getMsisdnNumberingPlan()
-                    .getIndicator()));
+                .getIndicator()));
             this.testUssdClientMan.setDataCodingScheme(_TestUssdClientMan.getDataCodingScheme());
             this.testUssdClientMan.setAlertingPattern(_TestUssdClientMan.getAlertingPattern());
             this.testUssdClientMan.setUssdClientAction(_TestUssdClientMan.getUssdClientAction());
@@ -976,25 +965,25 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             this.testUssdClientMan.setAutoResponseOnUnstructuredSSRequests(_TestUssdClientMan.isAutoResponseOnUnstructuredSSRequests());
 
             TestUssdServerConfigurationData_OldFormat _TestUssdServerMan = reader.read(ConfigurationData.TEST_USSD_SERVER,
-                    TestUssdServerConfigurationData_OldFormat.class);
+                TestUssdServerConfigurationData_OldFormat.class);
             this.testUssdServerMan.setMsisdnAddress(_TestUssdServerMan.getMsisdnAddress());
             this.testUssdServerMan.setMsisdnAddressNature(new AddressNatureType(_TestUssdServerMan.getMsisdnAddressNature()
-                    .getIndicator()));
+                .getIndicator()));
             this.testUssdServerMan.setMsisdnNumberingPlan(new NumberingPlanMapType(_TestUssdServerMan.getMsisdnNumberingPlan()
-                    .getIndicator()));
+                .getIndicator()));
             this.testUssdServerMan.setDataCodingScheme(_TestUssdServerMan.getDataCodingScheme());
             this.testUssdServerMan.setAlertingPattern(_TestUssdServerMan.getAlertingPattern());
             this.testUssdServerMan.setProcessSsRequestAction(_TestUssdServerMan.getProcessSsRequestAction());
             this.testUssdServerMan.setAutoResponseString(_TestUssdServerMan.getAutoResponseString());
             this.testUssdServerMan.setAutoUnstructured_SS_RequestString(_TestUssdServerMan
-                    .getAutoUnstructured_SS_RequestString());
+                .getAutoUnstructured_SS_RequestString());
             this.testUssdServerMan.setOneNotificationFor100Dialogs(_TestUssdServerMan.isOneNotificationFor100Dialogs());
 
             TestSmsClientConfigurationData_OldFormat _TestSmsClientMan = reader.read(ConfigurationData.TEST_SMS_CLIENT,
-                    TestSmsClientConfigurationData_OldFormat.class);
+                TestSmsClientConfigurationData_OldFormat.class);
             this.testSmsClientMan.setAddressNature(new AddressNatureType(_TestSmsClientMan.getAddressNature().getIndicator()));
             this.testSmsClientMan
-                    .setNumberingPlan(new NumberingPlanMapType(_TestSmsClientMan.getNumberingPlan().getIndicator()));
+                .setNumberingPlan(new NumberingPlanMapType(_TestSmsClientMan.getNumberingPlan().getIndicator()));
             this.testSmsClientMan.setServiceCenterAddress(_TestSmsClientMan.getServiceCenterAddress());
             this.testSmsClientMan.setMapProtocolVersion(_TestSmsClientMan.getMapProtocolVersion());
             this.testSmsClientMan.setSRIResponseImsi(_TestSmsClientMan.getSriResponseImsi());
@@ -1002,26 +991,26 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             this.testSmsClientMan.setSmscSsn(_TestSmsClientMan.getSmscSsn());
             this.testSmsClientMan.setTypeOfNumber(new TypeOfNumberType(_TestSmsClientMan.getTypeOfNumber().getCode()));
             this.testSmsClientMan.setNumberingPlanIdentification(new NumberingPlanIdentificationType(_TestSmsClientMan
-                    .getNumberingPlanIdentification().getCode()));
+                .getNumberingPlanIdentification().getCode()));
             this.testSmsClientMan.setSmsCodingType(_TestSmsClientMan.getSmsCodingType());
 
             TestSmsServerConfigurationData_OldFormat _TestSmsServerMan = reader.read(ConfigurationData.TEST_SMS_SERVER,
-                    TestSmsServerConfigurationData_OldFormat.class);
+                TestSmsServerConfigurationData_OldFormat.class);
             this.testSmsServerMan.setAddressNature(new AddressNatureType(_TestSmsServerMan.getAddressNature().getIndicator()));
             this.testSmsServerMan
-                    .setNumberingPlan(new NumberingPlanMapType(_TestSmsServerMan.getNumberingPlan().getIndicator()));
+                .setNumberingPlan(new NumberingPlanMapType(_TestSmsServerMan.getNumberingPlan().getIndicator()));
             this.testSmsServerMan.setServiceCenterAddress(_TestSmsServerMan.getServiceCenterAddress());
             this.testSmsServerMan.setMapProtocolVersion(_TestSmsServerMan.getMapProtocolVersion());
             this.testSmsServerMan.setHlrSsn(_TestSmsServerMan.getHlrSsn());
             this.testSmsServerMan.setVlrSsn(_TestSmsServerMan.getVlrSsn());
             this.testSmsServerMan.setTypeOfNumber(new TypeOfNumberType(_TestSmsServerMan.getTypeOfNumber().getCode()));
             this.testSmsServerMan.setNumberingPlanIdentification(new NumberingPlanIdentificationType(_TestSmsServerMan
-                    .getNumberingPlanIdentification().getCode()));
+                .getNumberingPlanIdentification().getCode()));
             this.testSmsServerMan.setSmsCodingType(_TestSmsServerMan.getSmsCodingType());
 
 
             TestCheckImeiClientConfigurationData _TestCheckImeiClientMan = reader.read(ConfigurationData.TEST_CHECK_IMEI_CLIENT,
-                    TestCheckImeiClientConfigurationData.class);
+                TestCheckImeiClientConfigurationData.class);
             this.testCheckImeiClientMan.setImei(_TestCheckImeiClientMan.getImei());
             this.testCheckImeiClientMan.setCheckImeiClientAction(_TestCheckImeiClientMan.getCheckImeiClientAction());
             this.testCheckImeiClientMan.setMapProtocolVersion(_TestCheckImeiClientMan.getMapProtocolVersion());
@@ -1033,8 +1022,8 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
                     TestCheckImeiServerConfigurationData.class);
              */
 
-            TestLcsServerConfigurationData _TestLcsClientMan = reader.read(ConfigurationData.TEST_MAP_LCS_SERVER,
-                    TestLcsServerConfigurationData.class);
+            TestLcsServerConfigurationData _TestLcsClientMan = reader.read(ConfigurationData.TEST_MAP_LCS_CLIENT,
+                TestLcsServerConfigurationData.class);
             this.testLcsServerMan.setAddressNature(new AddressNatureType(_TestLcsClientMan.getAddressNature().getIndicator()));
             this.testLcsServerMan.setNumberingPlanType(new NumberingPlanMapType(_TestLcsClientMan.getNumberingPlanType().getIndicator()));
             this.testLcsServerMan.setNumberingPlan(_TestLcsClientMan.getNumberingPlan());
@@ -1059,7 +1048,7 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             this.testLcsServerMan.setNaESRDAddress(_TestLcsClientMan.getNaESRDAddress());
 
             TestLcsClientConfigurationData _TestLcsServerMan = reader.read(ConfigurationData.TEST_MAP_LCS_SERVER,
-                    TestLcsClientConfigurationData.class);
+                TestLcsClientConfigurationData.class);
             this.testLcsClientMan.setAddressNature(new AddressNatureType(_TestLcsServerMan.getAddressNature().getIndicator()));
             this.testLcsClientMan.setNumberingPlanType(new NumberingPlanMapType(_TestLcsServerMan.getNumberingPlanType().getIndicator()));
             this.testLcsClientMan.setMSISDN(_TestLcsServerMan.getMSISDN());
@@ -1079,10 +1068,10 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
                 TestPsiServerConfigurationData.class);
             this.testPsiServerMan.setAddressNature(new AddressNatureType(_TestPsiServerMan.getAddressNature().getIndicator()));
             this.testPsiServerMan.setNumberingPlanType(new NumberingPlanMapType(_TestPsiServerMan.getNumberingPlanType().getIndicator()));
-            this.testPsiServerMan.setNumberingPlan(_TestPsiServerMan.getNumberingPlan());
-            this.testPsiServerMan.setImsi(_TestPsiServerMan.getIMSI());
-            this.testPsiServerMan.setLmsi(_TestPsiServerMan.getLMSI());
-            this.testPsiServerMan.setImei(_TestPsiServerMan.getIMEI());
+            this.testPsiServerMan.setNumberingPlan(TestPsiServerConfigurationData.getNumberingPlan());
+            this.testPsiServerMan.setImsi(TestPsiServerConfigurationData.getIMSI());
+            this.testPsiServerMan.setLmsi(TestPsiServerConfigurationData.getLMSI());
+            this.testPsiServerMan.setImei(TestPsiServerConfigurationData.getIMEI());
             this.testPsiServerMan.setMcc(_TestPsiServerMan.getMcc());
             this.testPsiServerMan.setMnc(_TestPsiServerMan.getMnc());
             this.testPsiServerMan.setLac(_TestPsiServerMan.getLac());
@@ -1099,6 +1088,49 @@ public class TesterHostImpl extends NotificationBroadcasterSupport implements Te
             this.testPsiServerMan.setScreeningAndPresentationIndicators(_TestPsiServerMan.getScreeningAndPresentationIndicators());
             this.testPsiServerMan.setSaiPresent(_TestPsiServerMan.isSaiPresent());
             this.testPsiServerMan.setCurrentLocationRetrieved(_TestPsiServerMan.isCurrentLocationRetrieved());
+
+            TestLSMServerConfigurationData _TestLSMServerMan = reader.read(ConfigurationData.TEST_MAP_SERVER, TestLSMServerConfigurationData.class);
+            this.testServerMan.setAddressNature(new AddressNatureType(_TestLSMServerMan.getAddressNature().getIndicator()));
+            this.testServerMan.setNumberingPlanType(new NumberingPlanMapType(_TestLSMServerMan.getNumberingPlanType().getIndicator()));
+            this.testServerMan.setNumberingPlan(_TestLSMServerMan.getNumberingPlan());
+            this.testServerMan.setMlcNumber(_TestLSMServerMan.getMlcNumber());
+            this.testServerMan.setMSISDN(_TestLSMServerMan.getMSISDN());
+            this.testServerMan.setIMSI(_TestLSMServerMan.getIMSI());
+            this.testServerMan.setLMSI(_TestLSMServerMan.getLMSI());
+            this.testServerMan.setHGMLCAddress(_TestLSMServerMan.getHGMLCAddress());
+            this.testServerMan.setNetworkNodeNumber(_TestLSMServerMan.getNetworkNodeNumber());
+            this.testServerMan.setLocationEstimateLatitude(_TestLSMServerMan.getLatitude());
+            this.testServerMan.setLocationEstimateLongitude(_TestLSMServerMan.getLongitude());
+            this.testServerMan.setAgeOfLocationEstimate(_TestLSMServerMan.getAgeOfLocationEstimate());
+            this.testServerMan.setIMEI(_TestLSMServerMan.getIMEI());
+            this.testServerMan.setLCSReferenceNumber(_TestLSMServerMan.getLcsReferenceNumber());
+            this.testServerMan.setLcsServiceTypeID(_TestLSMServerMan.getLcsServiceTypeID());
+            this.testServerMan.setMCC(_TestLSMServerMan.getMCC());
+            this.testServerMan.setMNC(_TestLSMServerMan.getMNC());
+            this.testServerMan.setLAC(_TestLSMServerMan.getLAC());
+            this.testServerMan.setCellId(_TestLSMServerMan.getCellId());
+            this.testServerMan.setReportingInterval(_TestLSMServerMan.getReportingInterval());
+            this.testServerMan.setDataCodingScheme(_TestLSMServerMan.getDataCodingScheme());
+            this.testServerMan.setNaESRDAddress(_TestLSMServerMan.getNaESRDAddress());
+            TestPSIServerConfigurationData _TestPSIServerMan = reader.read(ConfigurationData.TEST_MAP_SERVER, TestPSIServerConfigurationData.class);
+            this.testServerMan.setImsi(TestPsiServerConfigurationData.getIMSI());
+            this.testServerMan.setLmsi(TestPsiServerConfigurationData.getLMSI());
+            this.testServerMan.setImei(TestPsiServerConfigurationData.getIMEI());
+            this.testServerMan.setMcc(_TestPSIServerMan.getMcc());
+            this.testServerMan.setMnc(_TestPSIServerMan.getMnc());
+            this.testServerMan.setLac(_TestPSIServerMan.getLac());
+            this.testServerMan.setCi(_TestPSIServerMan.getCi());
+            this.testServerMan.setAol(_TestPSIServerMan.getAol());
+            this.testServerMan.setGeographicalLatitude(_TestPSIServerMan.getGeographicalLatitude());
+            this.testServerMan.setGeographicalLongitude(_TestPSIServerMan.getGeographicalLongitude());
+            this.testServerMan.setGeographicalUncertainty(_TestPSIServerMan.getGeographicalUncertainty());
+            this.testServerMan.setGeodeticLatitude(_TestPSIServerMan.getGeodeticLatitude());
+            this.testServerMan.setGeodeticLongitude(_TestPSIServerMan.getGeodeticLongitude());
+            this.testServerMan.setGeodeticUncertainty(_TestPSIServerMan.getGeodeticUncertainty());
+            this.testServerMan.setGeodeticConfidence(_TestPSIServerMan.getGeodeticConfidence());
+            this.testServerMan.setScreeningAndPresentationIndicators(_TestPSIServerMan.getScreeningAndPresentationIndicators());
+            this.testPsiServerMan.setSaiPresent(_TestPSIServerMan.isSaiPresent());
+            this.testPsiServerMan.setCurrentLocationRetrieved(_TestPSIServerMan.isCurrentLocationRetrieved());
 
             reader.close();
 

@@ -32,15 +32,15 @@ public class AtiDomainType extends EnumeratedBase {
     public AtiDomainType() {
     }
 
-    public AtiDomainType(int val) throws java.lang.IllegalArgumentException {
+    public AtiDomainType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public AtiDomainType(Integer val) throws java.lang.IllegalArgumentException {
+    public AtiDomainType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public AtiDomainType(String val) throws java.lang.IllegalArgumentException {
+    public AtiDomainType(String val) throws IllegalArgumentException {
         super(val);
     }
 

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulatorgui.tests.ussd;
 
 import java.awt.BorderLayout;

@@ -1,6 +1,5 @@
 package org.restcomm.protocols.ss7.tools.traceparser;
 
-
 /**
  *
  * @author sergey vetyutnev

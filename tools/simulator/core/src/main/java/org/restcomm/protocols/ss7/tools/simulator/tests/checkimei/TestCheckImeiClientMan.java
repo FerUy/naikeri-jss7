@@ -1,9 +1,9 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.checkimei;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
@@ -49,13 +49,14 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationResponse;
 import org.restcomm.protocols.ss7.map.dialog.MAPUserAbortChoiceImpl;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 import org.restcomm.protocols.ss7.tools.simulator.Stoppable;
 import org.restcomm.protocols.ss7.tools.simulator.common.TesterBase;
 import org.restcomm.protocols.ss7.tools.simulator.level3.MapMan;
 import org.restcomm.protocols.ss7.tools.simulator.level3.MapProtocolVersion;
-import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface;
 
 /**
  * @author mnowa
@@ -90,10 +91,6 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
         this.name = name;
     }
 
-    public void setTesterHost(TesterHostInterface testerHost) {
-        this.testerHost = testerHost;
-    }
-
     public void setMapMan(MapMan val) {
         this.mapMan = val;
     }
@@ -115,7 +112,7 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
                 return "The current dialog has been closed";
             } catch (MAPException e) {
                 this.doRemoveDialog();
-                return "Exception when closing the current dialog: " + e.toString();
+                return "Exception when closing the current dialog: " + e;
             }
         } else {
             return "No current dialog";
@@ -137,7 +134,7 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
 
         MAPDialogMobility curDialog = currentDialog;
         if (curDialog != null)
-            return "The current dialog exists. Finish it previousely";
+            return "The current dialog exists. Finish it previously";
 
         if (imei == null || imei.equals(""))
             return "Imei is empty";
@@ -201,21 +198,19 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
             }
             return "checkImeiRequest has been sent";
         } catch (MAPException ex) {
-            return "Exception when sending CheckImeiRequest: " + ex.toString();
+            return "Exception when sending CheckImeiRequest: " + ex;
         }
     }
 
     private String createCheckImeiReqData(Long dialogId, String imei) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", imei=\"");
-        sb.append(imei);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", imei=\"" +
+            imei +
+            "\"";
     }
 
-    // Dialog messgaes
+    // Dialog messages
 
     @Override
     public void onRejectComponent(MAPDialog mapDialog, Long invokeId, Problem problem, boolean isLocalOriginated) {
@@ -240,11 +235,9 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
             if (needSendClose) {
                 needSendClose = false;
                 mapDialog.close(false);
-                return;
             }
         } catch (Exception e) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking close() : " + e.getMessage(), e, Level.ERROR);
-            return;
         }
     }
 
@@ -404,8 +397,7 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
     @Override
     public void putMapProtocolVersion(String val) {
         MapProtocolVersion x = MapProtocolVersion.createInstance(val);
-        if (x != null)
-            this.setMapProtocolVersion(x);
+        this.setMapProtocolVersion(x);
     }
 
     @Override
@@ -427,8 +419,7 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
     @Override
     public void putCheckImeiClientAction(String val) {
         CheckImeiClientAction x = CheckImeiClientAction.createInstance(val);
-        if (x != null)
-            this.setCheckImeiClientAction(x);
+        this.setCheckImeiClientAction(x);
     }
 
 
@@ -499,13 +490,11 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
     }
 
     private String createCheckImeiRespData(long dialogId, CheckImeiResponse response) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", response=\"");
-        sb.append(response);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", response=\"" +
+            response +
+            "\"";
     }
 
     @Override
@@ -641,6 +630,16 @@ public class TestCheckImeiClientMan extends TesterBase implements TestCheckImeiC
     }
 
     public void onAnyTimeSubscriptionInterrogationResponse(AnyTimeSubscriptionInterrogationResponse response) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationRequest(AnyTimeModificationRequest anyTimeModificationRequest) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationResponse(AnyTimeModificationResponse anyTimeModificationResponse) {
 
     }
 

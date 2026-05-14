@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level1;
 
 import javolution.xml.XMLFormat;

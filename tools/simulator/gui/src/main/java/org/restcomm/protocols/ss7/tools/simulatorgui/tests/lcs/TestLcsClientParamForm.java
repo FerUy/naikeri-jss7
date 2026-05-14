@@ -15,8 +15,8 @@ import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent;
@@ -34,7 +34,7 @@ public class TestLcsClientParamForm extends JDialog {
 
     private static final long serialVersionUID = 5428271328162943202L;
 
-    private static Logger logger = Logger.getLogger(TestLcsClientParamForm.class);
+    private static Logger logger = LogManager.getLogger(TestLcsClientParamForm.class);
 
     private TestLcsClientManMBean mapLcsClient;
     private JTextField cbNaEsrdAddress;

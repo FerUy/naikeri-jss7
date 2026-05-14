@@ -1,9 +1,9 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level3;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.map.MAPStackImpl;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.map.MAPStackImpl;
 import org.restcomm.protocols.ss7.map.api.MAPProvider;
 import org.restcomm.protocols.ss7.map.api.MAPStack;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
@@ -183,36 +183,30 @@ public class MapMan implements MapManMBean, Stoppable {
     @Override
     public void putOrigReferenceAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setOrigReferenceAddressNature(x);
+        this.setOrigReferenceAddressNature(x);
     }
 
     @Override
     public void putOrigReferenceNumberingPlan(String val) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-        if (x != null)
-            this.setOrigReferenceNumberingPlan(x);
+        this.setOrigReferenceNumberingPlan(x);
     }
 
     @Override
     public void putDestReferenceAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setDestReferenceAddressNature(x);
+        this.setDestReferenceAddressNature(x);
     }
 
     @Override
     public void putDestReferenceNumberingPlan(String val) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-        if (x != null)
-            this.setDestReferenceNumberingPlan(x);
+        this.setDestReferenceNumberingPlan(x);
     }
 
     @Override
     public String getState() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("TCAP+MAP: Started");
-        return sb.toString();
+        return "TCAP+MAP: Started";
     }
 
     public boolean start() {
@@ -245,7 +239,7 @@ public class MapMan implements MapManMBean, Stoppable {
         this.mapStack = new MAPStackImpl("Simulator", sccpStack.getSccpProvider(), ssn);
 
         if (extraSsn > 0) {
-            FastList<Integer> extraSsnsNew = new FastList<Integer>();
+            FastList<Integer> extraSsnsNew = new FastList<>();
             extraSsnsNew.add(extraSsn);
             this.mapStack.getTCAPStack().setExtraSsns(extraSsnsNew);
         }

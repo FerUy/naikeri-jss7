@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.ussd;
 
 import java.util.Hashtable;
@@ -35,15 +34,15 @@ public class ProcessSsRequestAction extends EnumeratedBase {
     public ProcessSsRequestAction() {
     }
 
-    public ProcessSsRequestAction(int val) throws java.lang.IllegalArgumentException {
+    public ProcessSsRequestAction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public ProcessSsRequestAction(Integer val) throws java.lang.IllegalArgumentException {
+    public ProcessSsRequestAction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public ProcessSsRequestAction(String val) throws java.lang.IllegalArgumentException {
+    public ProcessSsRequestAction(String val) throws IllegalArgumentException {
         super(val);
     }
 

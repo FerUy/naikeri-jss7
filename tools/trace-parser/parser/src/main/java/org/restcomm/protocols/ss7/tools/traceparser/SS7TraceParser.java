@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.traceparser;
 
 import javolution.util.FastMap;
@@ -144,6 +143,8 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
@@ -2202,6 +2203,16 @@ public class SS7TraceParser implements TraceReaderListener, MAPDialogListener, C
     }
 
     public void onAnyTimeSubscriptionInterrogationResponse(AnyTimeSubscriptionInterrogationResponse response) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationRequest(AnyTimeModificationRequest anyTimeModificationRequest) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationResponse(AnyTimeModificationResponse anyTimeModificationResponse) {
 
     }
 

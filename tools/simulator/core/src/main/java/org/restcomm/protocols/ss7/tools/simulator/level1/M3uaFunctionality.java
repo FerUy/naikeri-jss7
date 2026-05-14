@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level1;
 
 import java.util.Hashtable;
@@ -33,15 +32,15 @@ public class M3uaFunctionality extends EnumeratedBase {
     public M3uaFunctionality() {
     }
 
-    public M3uaFunctionality(int val) throws java.lang.IllegalArgumentException {
+    public M3uaFunctionality(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public M3uaFunctionality(Integer val) throws java.lang.IllegalArgumentException {
+    public M3uaFunctionality(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public M3uaFunctionality(String val) throws java.lang.IllegalArgumentException {
+    public M3uaFunctionality(String val) throws IllegalArgumentException {
         super(val);
     }
 

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level1;
 
 import java.util.Hashtable;
@@ -33,15 +32,15 @@ public class M3uaTrafficModeType extends EnumeratedBase {
     public M3uaTrafficModeType() {
     }
 
-    public M3uaTrafficModeType(int val) throws java.lang.IllegalArgumentException {
+    public M3uaTrafficModeType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public M3uaTrafficModeType(Integer val) throws java.lang.IllegalArgumentException {
+    public M3uaTrafficModeType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public M3uaTrafficModeType(String val) throws java.lang.IllegalArgumentException {
+    public M3uaTrafficModeType(String val) throws IllegalArgumentException {
         super(val);
     }
 

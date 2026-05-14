@@ -47,15 +47,15 @@ public class SRIforLCSReaction extends EnumeratedBase {
     public SRIforLCSReaction() {
     }
 
-    public SRIforLCSReaction(int val) throws java.lang.IllegalArgumentException {
+    public SRIforLCSReaction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SRIforLCSReaction(Integer val) throws java.lang.IllegalArgumentException {
+    public SRIforLCSReaction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SRIforLCSReaction(String val) throws java.lang.IllegalArgumentException {
+    public SRIforLCSReaction(String val) throws IllegalArgumentException {
         super(val);
     }
 

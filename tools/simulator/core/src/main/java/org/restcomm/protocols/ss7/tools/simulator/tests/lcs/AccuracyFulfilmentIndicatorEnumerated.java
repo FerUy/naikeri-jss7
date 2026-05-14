@@ -24,15 +24,15 @@ public class AccuracyFulfilmentIndicatorEnumerated extends EnumeratedBase {
     public AccuracyFulfilmentIndicatorEnumerated() {
     }
 
-    public AccuracyFulfilmentIndicatorEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public AccuracyFulfilmentIndicatorEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public AccuracyFulfilmentIndicatorEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public AccuracyFulfilmentIndicatorEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public AccuracyFulfilmentIndicatorEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public AccuracyFulfilmentIndicatorEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

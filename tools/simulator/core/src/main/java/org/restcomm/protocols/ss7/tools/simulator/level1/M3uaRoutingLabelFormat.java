@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level1;
 
 import java.util.Hashtable;
@@ -42,15 +41,15 @@ public class M3uaRoutingLabelFormat extends EnumeratedBase {
     public M3uaRoutingLabelFormat() {
     }
 
-    public M3uaRoutingLabelFormat(int val) throws java.lang.IllegalArgumentException {
+    public M3uaRoutingLabelFormat(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public M3uaRoutingLabelFormat(Integer val) throws java.lang.IllegalArgumentException {
+    public M3uaRoutingLabelFormat(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public M3uaRoutingLabelFormat(String val) throws java.lang.IllegalArgumentException {
+    public M3uaRoutingLabelFormat(String val) throws IllegalArgumentException {
         super(val);
     }
 

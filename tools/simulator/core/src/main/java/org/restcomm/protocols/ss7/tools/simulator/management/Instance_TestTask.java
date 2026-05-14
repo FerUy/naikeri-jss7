@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.management;
 
 import java.util.Hashtable;
@@ -27,9 +26,10 @@ public class Instance_TestTask extends EnumeratedBase {
     public static final int VAL_MAP_LCS_TEST_CLIENT = 11;
     public static final int VAL_MAP_LCS_TEST_SERVER = 12;
     public static final int VAL_PSI_TEST_SERVER = 13;
+    public static final int VAL_ATI_PSI_LSM_TEST_SERVER = 14;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(VAL_NO, "NO");
@@ -46,6 +46,7 @@ public class Instance_TestTask extends EnumeratedBase {
         intMap.put(VAL_MAP_LCS_TEST_CLIENT, "MAP_LCS_TEST_CLIENT");
         intMap.put(VAL_MAP_LCS_TEST_SERVER, "MAP_LCS_TEST_SERVER");
         intMap.put(VAL_PSI_TEST_SERVER, "MAP_PSI_TEST_SERVER");
+        intMap.put(VAL_ATI_PSI_LSM_TEST_SERVER, "MAP_LSM_PSI_ATI_TEST_SERVER");
 
         stringMap.put("NO", VAL_NO);
         stringMap.put("USSD_TEST_CLIENT", VAL_USSD_TEST_CLIENT);
@@ -61,20 +62,21 @@ public class Instance_TestTask extends EnumeratedBase {
         stringMap.put("MAP_LCS_TEST_CLIENT",VAL_MAP_LCS_TEST_CLIENT);
         stringMap.put("MAP_LCS_TEST_SERVER",VAL_MAP_LCS_TEST_SERVER);
         stringMap.put("MAP_PSI_TEST_SERVER",VAL_PSI_TEST_SERVER);
+        stringMap.put("MAP_LSM_PSI_ATI_TEST_SERVER", VAL_ATI_PSI_LSM_TEST_SERVER);
     }
 
     public Instance_TestTask() {
     }
 
-    public Instance_TestTask(int val) throws java.lang.IllegalArgumentException {
+    public Instance_TestTask(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public Instance_TestTask(Integer val) throws java.lang.IllegalArgumentException {
+    public Instance_TestTask(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public Instance_TestTask(String val) throws java.lang.IllegalArgumentException {
+    public Instance_TestTask(String val) throws IllegalArgumentException {
         super(val);
     }
 

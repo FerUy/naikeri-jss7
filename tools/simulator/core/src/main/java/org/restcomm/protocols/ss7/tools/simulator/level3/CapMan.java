@@ -1,9 +1,9 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level3;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.cap.CAPStackImpl;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.cap.CAPStackImpl;
 import org.restcomm.protocols.ss7.cap.api.CAPProvider;
 import org.restcomm.protocols.ss7.cap.api.CAPStack;
 import org.restcomm.protocols.ss7.sccp.SccpStack;
@@ -79,9 +79,7 @@ public class CapMan implements CapManMBean, Stoppable {
 
     @Override
     public String getState() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("TCAP+CAP: Started");
-        return sb.toString();
+        return "TCAP+CAP: Started";
     }
 
     public boolean start() {
@@ -114,7 +112,7 @@ public class CapMan implements CapManMBean, Stoppable {
         this.capStack = new CAPStackImpl("Simulator", sccpStack.getSccpProvider(), ssn);
 
         if (extraSsn > 0) {
-            FastList<Integer> extraSsnsNew = new FastList<Integer>();
+            FastList<Integer> extraSsnsNew = new FastList<>();
             extraSsnsNew.add(extraSsn);
             this.capStack.getTCAPStack().setExtraSsns(extraSsnsNew);
         }

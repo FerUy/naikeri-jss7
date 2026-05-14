@@ -1,8 +1,7 @@
-
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.checkimei;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.map.api.MAPDialog;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.map.api.MAPDialog;
 import org.restcomm.protocols.ss7.map.api.MAPDialogListener;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.MAPProvider;
@@ -40,6 +39,8 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
@@ -99,7 +100,7 @@ public class TestCheckImeiServerMan extends TesterBase implements TestCheckImeiS
                 return "The current dialog has been closed";
             } catch (MAPException e) {
                 this.doRemoveDialog();
-                return "Exception when closing the current dialog: " + e.toString();
+                return "Exception when closing the current dialog: " + e;
             }
         } else {
             return "No current dialog";
@@ -136,11 +137,9 @@ public class TestCheckImeiServerMan extends TesterBase implements TestCheckImeiS
             if (needSendClose) {
                 needSendClose = false;
                 mapDialog.close(false);
-                return;
             }
         } catch (Exception e) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking close() : " + e.getMessage(), e, Level.ERROR);
-            return;
         }
     }
 
@@ -224,8 +223,7 @@ public class TestCheckImeiServerMan extends TesterBase implements TestCheckImeiS
     @Override
     public void putAutoEquipmentStatus(String val) {
         EquipmentStatusType x = EquipmentStatusType.createInstance(val);
-        if (x != null)
-            this.setAutoEquipmentStatus(x);
+        this.setAutoEquipmentStatus(x);
     }
 
     @Override
@@ -299,26 +297,20 @@ public class TestCheckImeiServerMan extends TesterBase implements TestCheckImeiS
     }
 
     private String createCheckImeiReqData(CheckImeiRequest request) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(request.getMAPDialog().getLocalDialogId());
-        sb.append(", request=\"");
-        sb.append(request);
-        sb.append("\"");
-
-        sb.append(",\nRemoteAddress=");
-        sb.append(request.getMAPDialog().getRemoteAddress());
-        sb.append(",\nLocalAddress=");
-        sb.append(request.getMAPDialog().getLocalAddress());
-
-        return sb.toString();
+        return "dialogId=" +
+            request.getMAPDialog().getLocalDialogId() +
+            ", request=\"" +
+            request +
+            "\"" +
+            ",\nRemoteAddress=" +
+            request.getMAPDialog().getRemoteAddress() +
+            ",\nLocalAddress=" +
+            request.getMAPDialog().getLocalAddress();
     }
 
     private String createCheckImeiRespData(long dialogId) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        return sb.toString();
+        return "dialogId=" +
+            dialogId;
     }
 
     @Override
@@ -453,6 +445,16 @@ public class TestCheckImeiServerMan extends TesterBase implements TestCheckImeiS
     }
 
     public void onAnyTimeSubscriptionInterrogationResponse(AnyTimeSubscriptionInterrogationResponse response) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationRequest(AnyTimeModificationRequest anyTimeModificationRequest) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationResponse(AnyTimeModificationResponse anyTimeModificationResponse) {
 
     }
 

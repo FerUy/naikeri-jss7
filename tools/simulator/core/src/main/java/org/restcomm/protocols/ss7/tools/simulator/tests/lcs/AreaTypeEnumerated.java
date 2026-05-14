@@ -31,15 +31,15 @@ public class AreaTypeEnumerated extends EnumeratedBase {
     public AreaTypeEnumerated() {
     }
 
-    public AreaTypeEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public AreaTypeEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public AreaTypeEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public AreaTypeEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public AreaTypeEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public AreaTypeEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

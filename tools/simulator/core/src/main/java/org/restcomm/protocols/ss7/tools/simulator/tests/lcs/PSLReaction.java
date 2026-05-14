@@ -59,15 +59,15 @@ public class PSLReaction extends EnumeratedBase {
     public PSLReaction() {
     }
 
-    public PSLReaction(int val) throws java.lang.IllegalArgumentException {
+    public PSLReaction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public PSLReaction(Integer val) throws java.lang.IllegalArgumentException {
+    public PSLReaction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public PSLReaction(String val) throws java.lang.IllegalArgumentException {
+    public PSLReaction(String val) throws IllegalArgumentException {
         super(val);
     }
 

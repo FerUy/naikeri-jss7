@@ -29,15 +29,15 @@ public class LCSClientTypeEnumerated extends EnumeratedBase {
     public LCSClientTypeEnumerated() {
     }
 
-    public LCSClientTypeEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public LCSClientTypeEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LCSClientTypeEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public LCSClientTypeEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LCSClientTypeEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public LCSClientTypeEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

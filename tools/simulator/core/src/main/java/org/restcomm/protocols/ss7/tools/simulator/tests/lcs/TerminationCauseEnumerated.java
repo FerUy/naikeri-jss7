@@ -32,15 +32,15 @@ public class TerminationCauseEnumerated extends EnumeratedBase {
     public TerminationCauseEnumerated() {
     }
 
-    public TerminationCauseEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public TerminationCauseEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public TerminationCauseEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public TerminationCauseEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public TerminationCauseEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public TerminationCauseEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

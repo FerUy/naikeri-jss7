@@ -1,10 +1,10 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.ussd;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
@@ -272,22 +272,19 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
     @Override
     public void putMsisdnAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setMsisdnAddressNature(x);
+        this.setMsisdnAddressNature(x);
     }
 
     @Override
     public void putMsisdnNumberingPlan(String val) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-        if (x != null)
-            this.setMsisdnNumberingPlan(x);
+        this.setMsisdnNumberingPlan(x);
     }
 
     @Override
     public void putUssdClientAction(String val) {
         UssdClientAction x = UssdClientAction.createInstance(val);
-        if (x != null)
-            this.setUssdClientAction(x);
+        this.setUssdClientAction(x);
     }
     @Override
     public String getSRIResponseImsi() {
@@ -341,8 +338,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
     @Override
     public void putSRIReaction(String val) {
         SRIReaction x = SRIReaction.createInstance(val);
-        if (x != null)
-            this.setSRIReaction(x);
+        this.setSRIReaction(x);
     }
 
     @Override
@@ -387,14 +383,12 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
     public boolean start() {
         this.countSriReq = 0;
         this.countSriResp = 0;
-        this.countErrSent = 0;
         this.countProcUnstReq = 0;
         this.countProcUnstResp = 0;
         this.countProcUnstReqNot = 0;
         this.countUnstReq = 0;
         this.countUnstResp = 0;
         this.countUnstNotifReq = 0;
-        this.countErrSent = 0;
         this.countErrSent = 0;
 
         MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
@@ -462,7 +456,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
                 return "The current dialog has been closed";
             } catch (MAPException e) {
                 this.doRemoveDialog();
-                return "Exception when closing the current dialog: " + e.toString();
+                return "Exception when closing the current dialog: " + e;
             }
         } else {
             return "No current dialog";
@@ -564,7 +558,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
             return "ProcessUnstructuredSSRequest has been sent";
         } catch (MAPException ex) {
-            return "Exception when sending ProcessUnstructuredSSRequest: " + ex.toString();
+            return "Exception when sending ProcessUnstructuredSSRequest: " + ex;
         }
     }
 
@@ -577,11 +571,11 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
         sb.append(dataCodingScheme);
         sb.append(" ");
         if (msisdn != null) {
-            sb.append(msisdn.toString());
+            sb.append(msisdn);
             sb.append(" ");
         }
         if (alPattern != null) {
-            sb.append(alPattern.toString());
+            sb.append(alPattern);
             sb.append(" ");
         }
         return sb.toString();
@@ -631,7 +625,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
             return "UnstructuredSSResponse has been sent";
         } catch (MAPException ex) {
-            return "Exception when sending UnstructuredSSResponse: " + ex.toString();
+            return "Exception when sending UnstructuredSSResponse: " + ex;
         }
     }
 
@@ -656,7 +650,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 //            curDialog.abort(mapUserAbortChoice);
 
             MAPErrorMessage mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageExtensionContainer(
-                    (Long) (long) MAPErrorCode.ussdBusy, null);
+                (long) MAPErrorCode.ussdBusy, null);
             curDialog.sendErrorComponent(invokeId, mapErrorMessage);
 
             curDialog.close(false);
@@ -665,16 +659,14 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
             currentRequestDef += "Sent ussdBusyResp;";
             this.countErrSent++;
-            StringBuilder sb = new StringBuilder();
-            sb.append("dialogId=");
-            sb.append(curDialog.getLocalDialogId());
-            sb.append(" unstrSsResp");
-            String uData = sb.toString();
+            String uData = "dialogId=" +
+                curDialog.getLocalDialogId() +
+                " unstrSsResp";
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: ussdBusyResp", uData, Level.DEBUG);
 
             return "UssdBusyResponse has been sent";
         } catch (MAPException ex) {
-            return "Exception when sending UssdBusyResponse: " + ex.toString();
+            return "Exception when sending UssdBusyResponse: " + ex;
         }
     }
 
@@ -1048,7 +1040,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
                 this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getMsisdnAddressNature(),
                 this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getMsisdnNumberingPlan(),
                 this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getSriResponseVlr());
-        LocationInfoWithLMSI li = null;
+        LocationInfoWithLMSI li;
 
         try {
             SRIReaction sriReaction = this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getSRIReaction();
@@ -1113,7 +1105,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
             case SRIReaction.VAL_ERROR_SYSTEM_FAILURE:
                 mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageSystemFailure(
-                        (long) curDialog.getApplicationContext().getApplicationContextVersion().getVersion(), NetworkResource.hlr, null, null);
+                    curDialog.getApplicationContext().getApplicationContextVersion().getVersion(), NetworkResource.hlr, null, null);
                 curDialog.sendErrorComponent(invokeId, mapErrorMessage);
 
                 this.countErrSent++;
@@ -1130,42 +1122,34 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
     }
 
     private String createSriData(SendRoutingInfoForSMRequest ind) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(ind.getMAPDialog().getLocalDialogId());
-        sb.append(",\nsriReq=");
-        sb.append(ind);
-
-        sb.append(",\nRemoteAddress=");
-        sb.append(ind.getMAPDialog().getRemoteAddress());
-        sb.append(",\nLocalAddress=");
-        sb.append(ind.getMAPDialog().getLocalAddress());
-
-        return sb.toString();
+        return "dialogId=" +
+            ind.getMAPDialog().getLocalDialogId() +
+            ",\nsriReq=" +
+            ind +
+            ",\nRemoteAddress=" +
+            ind.getMAPDialog().getRemoteAddress() +
+            ",\nLocalAddress=" +
+            ind.getMAPDialog().getLocalAddress();
     }
 
     private String createSriRespData(long dialogId, IMSI imsi, LocationInfoWithLMSI li) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(",\n imsi=");
-        sb.append(imsi);
-        sb.append(",\n locationInfo=");
-        sb.append(li);
-        sb.append(",\n");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ",\n imsi=" +
+            imsi +
+            ",\n locationInfo=" +
+            li +
+            ",\n";
     }
 
     private String createErrorData(long dialogId, int invokeId, MAPErrorMessage mapErrorMessage) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(",\n invokeId=");
-        sb.append(invokeId);
-        sb.append(",\n mapErrorMessage=");
-        sb.append(mapErrorMessage);
-        sb.append(",\n");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ",\n invokeId=" +
+            invokeId +
+            ",\n mapErrorMessage=" +
+            mapErrorMessage +
+            ",\n";
     }
 
     @Override

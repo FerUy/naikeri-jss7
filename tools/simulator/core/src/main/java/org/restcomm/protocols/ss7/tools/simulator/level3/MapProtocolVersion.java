@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level3;
 
 import java.util.Hashtable;
@@ -34,15 +33,15 @@ public class MapProtocolVersion extends EnumeratedBase {
     public MapProtocolVersion() {
     }
 
-    public MapProtocolVersion(int val) throws java.lang.IllegalArgumentException {
+    public MapProtocolVersion(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public MapProtocolVersion(Integer val) throws java.lang.IllegalArgumentException {
+    public MapProtocolVersion(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public MapProtocolVersion(String val) throws java.lang.IllegalArgumentException {
+    public MapProtocolVersion(String val) throws IllegalArgumentException {
         super(val);
     }
 

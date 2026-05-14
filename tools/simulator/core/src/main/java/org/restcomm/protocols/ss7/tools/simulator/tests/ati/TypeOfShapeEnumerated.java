@@ -34,15 +34,15 @@ public class TypeOfShapeEnumerated extends EnumeratedBase {
   public TypeOfShapeEnumerated() {
   }
 
-  public TypeOfShapeEnumerated(int val) throws java.lang.IllegalArgumentException {
+  public TypeOfShapeEnumerated(int val) throws IllegalArgumentException {
     super(val);
   }
 
-  public TypeOfShapeEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+  public TypeOfShapeEnumerated(Integer val) throws IllegalArgumentException {
     super(val);
   }
 
-  public TypeOfShapeEnumerated(String val) throws java.lang.IllegalArgumentException {
+  public TypeOfShapeEnumerated(String val) throws IllegalArgumentException {
     super(val);
   }
 

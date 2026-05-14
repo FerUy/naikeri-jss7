@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.cap;
 
 import org.restcomm.protocols.ss7.tools.simulator.common.AddressNatureType;

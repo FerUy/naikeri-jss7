@@ -5,15 +5,11 @@ import gnu.getopt.LongOpt;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.util.Properties;
 
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.restcomm.protocols.ss7.tools.simulator.MainCore;
 import org.restcomm.protocols.ss7.tools.simulatorgui.MainGui;
 
@@ -25,13 +21,13 @@ public class Main {
     private static final String APP_NAME = "SS7 Simulator";
 
     private static final String HOME_DIR = "SIMULATOR_HOME";
-    private static final String LOG4J_URL = "/conf/log4j.properties";
+    private static final String LOG4J_URL = "/conf/log4j2.properties";
     private static final String LOG4J_URL_XML = "/conf/log4j.xml";
     public static final String SIMULATOR_HOME = "simulator.home.dir";
     public static final String SIMULATOR_DATA = "simulator.data.dir";
     private static int index = 0;
 
-    protected static Logger logger = Logger.getLogger(Main.class);
+    protected static Logger logger = LogManager.getLogger(Main.class);
 
     protected String command = null;
     protected String appName = "main";
@@ -190,14 +186,9 @@ public class Main {
         String Log4jURL = homeDir + LOG4J_URL;
 
         try {
-            URL log4jurl = getURL(Log4jURL);
-            InputStream inStreamLog4j = log4jurl.openStream();
-            Properties propertiesLog4j = new Properties();
-            try {
-                propertiesLog4j.load(inStreamLog4j);
-                PropertyConfigurator.configure(propertiesLog4j);
-            } catch (IOException e) {
-                e.printStackTrace();
+            URL resourcePropertiesUrl = Main.class.getClassLoader().getResource(Log4jURL);
+            if (resourcePropertiesUrl != null) {
+                ConfigurationFactory.getInstance().getConfiguration(null, null, resourcePropertiesUrl.toURI());
             }
         } catch (Exception e) {
             // e.printStackTrace();
@@ -211,8 +202,10 @@ public class Main {
         String Log4jURL = homeDir + LOG4J_URL_XML;
 
         try {
-            URL log4jurl = getURL(Log4jURL);
-            DOMConfigurator.configure(log4jurl);
+            URL resourcePropertiesUrl = Main.class.getClassLoader().getResource(Log4jURL);
+            if (resourcePropertiesUrl != null) {
+                ConfigurationFactory.getInstance().getConfiguration(null, null, resourcePropertiesUrl.toURI());
+            }
         } catch (Exception e) {
             // e.printStackTrace();
             logger.info("Failed to initialize LOG4J with xml file.");
@@ -254,7 +247,7 @@ public class Main {
 
     public static URL getURL(String url) throws Exception {
         File file = new File(url);
-        if (file.exists() == false) {
+        if (!file.exists()) {
             throw new IllegalArgumentException("No such file: " + url);
         }
         return file.toURI().toURL();

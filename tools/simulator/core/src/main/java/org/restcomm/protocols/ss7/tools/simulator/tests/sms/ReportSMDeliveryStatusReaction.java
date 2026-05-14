@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.sms;
 
 import java.util.Hashtable;
@@ -31,15 +30,15 @@ public class ReportSMDeliveryStatusReaction extends EnumeratedBase {
     public ReportSMDeliveryStatusReaction() {
     }
 
-    public ReportSMDeliveryStatusReaction(int val) throws java.lang.IllegalArgumentException {
+    public ReportSMDeliveryStatusReaction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public ReportSMDeliveryStatusReaction(Integer val) throws java.lang.IllegalArgumentException {
+    public ReportSMDeliveryStatusReaction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public ReportSMDeliveryStatusReaction(String val) throws java.lang.IllegalArgumentException {
+    public ReportSMDeliveryStatusReaction(String val) throws IllegalArgumentException {
         super(val);
     }
 

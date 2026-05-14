@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.sms;
 
 import java.util.Hashtable;
@@ -34,15 +33,15 @@ public class SmsCodingType extends EnumeratedBase {
     public SmsCodingType() {
     }
 
-    public SmsCodingType(int val) throws java.lang.IllegalArgumentException {
+    public SmsCodingType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SmsCodingType(Integer val) throws java.lang.IllegalArgumentException {
+    public SmsCodingType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SmsCodingType(String val) throws java.lang.IllegalArgumentException {
+    public SmsCodingType(String val) throws IllegalArgumentException {
         super(val);
     }
 

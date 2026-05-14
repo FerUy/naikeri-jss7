@@ -29,15 +29,15 @@ public class SubscriberIdentityType extends EnumeratedBase {
     public SubscriberIdentityType() {
     }
 
-    public SubscriberIdentityType(int val) throws java.lang.IllegalArgumentException {
+    public SubscriberIdentityType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SubscriberIdentityType(Integer val) throws java.lang.IllegalArgumentException {
+    public SubscriberIdentityType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SubscriberIdentityType(String val) throws java.lang.IllegalArgumentException {
+    public SubscriberIdentityType(String val) throws IllegalArgumentException {
         super(val);
     }
 

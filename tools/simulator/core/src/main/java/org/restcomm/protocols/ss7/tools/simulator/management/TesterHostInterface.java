@@ -1,9 +1,9 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.management;
 
 import javax.management.NotificationEmitter;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.tools.simulator.common.ConfigurationData;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.tools.simulator.common.ConfigurationData;
 import org.restcomm.protocols.ss7.tools.simulator.level1.DialogicMan;
 import org.restcomm.protocols.ss7.tools.simulator.level1.M3uaMan;
 import org.restcomm.protocols.ss7.tools.simulator.level2.SccpMan;
@@ -11,6 +11,7 @@ import org.restcomm.protocols.ss7.tools.simulator.level3.CapMan;
 import org.restcomm.protocols.ss7.tools.simulator.level3.MapMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiClientMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiServerMan;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestServerMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapScfMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapSsfMan;
 import org.restcomm.protocols.ss7.tools.simulator.tests.checkimei.TestCheckImeiClientMan;
@@ -67,6 +68,8 @@ public interface TesterHostInterface extends TesterHostMBean, NotificationEmitte
     TestLcsServerMan getTestLcsServerMan();
 
     TestPsiServerMan getTestPsiServerMan();
+
+    TestServerMan getTestServerMan();
 
     boolean isNeedQuit();
 

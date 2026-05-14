@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level1;
 
 import java.util.Hashtable;
@@ -30,15 +29,15 @@ public class M3uaIPSPType extends EnumeratedBase {
     public M3uaIPSPType() {
     }
 
-    public M3uaIPSPType(int val) throws java.lang.IllegalArgumentException {
+    public M3uaIPSPType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public M3uaIPSPType(Integer val) throws java.lang.IllegalArgumentException {
+    public M3uaIPSPType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public M3uaIPSPType(String val) throws java.lang.IllegalArgumentException {
+    public M3uaIPSPType(String val) throws IllegalArgumentException {
         super(val);
     }
 

@@ -1,10 +1,10 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.ussd;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
@@ -49,7 +49,6 @@ import org.restcomm.protocols.ss7.tools.simulator.common.AddressNatureType;
 import org.restcomm.protocols.ss7.tools.simulator.common.TesterBase;
 import org.restcomm.protocols.ss7.tools.simulator.level3.MapMan;
 import org.restcomm.protocols.ss7.tools.simulator.level3.NumberingPlanMapType;
-import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface;
 
 /**
  *
@@ -72,7 +71,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
     private int countUnstResp = 0;
     private int countUnstNotifReq = 0;
     private MAPDialogSupplementary currentDialog = null;
-    private Queue<MAPDialogSupplementary> currentDialogQuere = new ConcurrentLinkedQueue<MAPDialogSupplementary>();
+    private Queue<MAPDialogSupplementary> currentDialogQuere = new ConcurrentLinkedQueue<>();
     private boolean isStarted = false;
     private String currentRequestDef = "";
     private boolean needSendSend = false;
@@ -86,10 +85,6 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
     public TestUssdServerMan(String name) {
         super(SOURCE_NAME);
         this.name = name;
-    }
-
-    public void setTesterHost(TesterHostInterface testerHost) {
-        this.testerHost = testerHost;
     }
 
     public void setMapMan(MapMan val) {
@@ -221,22 +216,19 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
     @Override
     public void putMsisdnAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setMsisdnAddressNature(x);
+        this.setMsisdnAddressNature(x);
     }
 
     @Override
     public void putMsisdnNumberingPlan(String val) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-        if (x != null)
-            this.setMsisdnNumberingPlan(x);
+        this.setMsisdnNumberingPlan(x);
     }
 
     @Override
     public void putProcessSsRequestAction(String val) {
         ProcessSsRequestAction x = ProcessSsRequestAction.createInstance(val);
-        if (x != null)
-            this.setProcessSsRequestAction(x);
+        this.setProcessSsRequestAction(x);
     }
 
     @Override
@@ -311,7 +303,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
                     return "The current dialog has been closed";
                 } catch (MAPException e) {
                     this.doRemoveDialog();
-                    return "Exception when closing the current dialog: " + e.toString();
+                    return "Exception when closing the current dialog: " + e;
                 }
             } else {
                 return "No current dialog";
@@ -345,11 +337,11 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
         sb.append(dataCodingScheme);
         sb.append(" ");
         if (msisdn != null) {
-            sb.append(msisdn.toString());
+            sb.append(msisdn);
             sb.append(" ");
         }
         if (alPattern != null) {
-            sb.append(alPattern.toString());
+            sb.append(alPattern);
             sb.append(" ");
         }
         return sb.toString();
@@ -376,7 +368,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
         } catch (MAPException e) {
             this.testerHost.sendNotif(SOURCE_NAME,
                     "Exception when invoking addProcessUnstructuredSSResponse() : " + e.getMessage(), e, Level.ERROR);
-            return "Exception when sending ProcessUnstructuredSSResponse: " + e.toString();
+            return "Exception when sending ProcessUnstructuredSSResponse: " + e;
         }
 
         currentRequestDef += "procUnstrSsResp=\"" + msg + "\";";
@@ -435,7 +427,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
         } catch (MAPException e) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking addUnstructuredSSRequest() : " + e.getMessage(), e,
                     Level.ERROR);
-            return "Exception when sending UnstructuredSSRequest: " + e.toString();
+            return "Exception when sending UnstructuredSSRequest: " + e;
         }
 
         currentRequestDef += "unstrSsReq=\"" + msg + "\";";
@@ -513,7 +505,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
             return res;
         } catch (Exception e) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking send() : " + e.getMessage(), e, Level.ERROR);
-            return "Exception when sending UnstructuredSSRequest: " + e.toString();
+            return "Exception when sending UnstructuredSSRequest: " + e;
         }
 
     }
@@ -581,7 +573,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
 
             return "UnstructuredSSNotify has been sent";
         } catch (MAPException ex) {
-            return "Exception when sending UnstructuredSSNotify: " + ex.toString();
+            return "Exception when sending UnstructuredSSNotify: " + ex;
         }
     }
 
@@ -785,7 +777,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
         }
     }
 
-    private class DialogData {
+    private static class DialogData {
         public Long invokeId;
         public String currentRequestDef = "";
     }

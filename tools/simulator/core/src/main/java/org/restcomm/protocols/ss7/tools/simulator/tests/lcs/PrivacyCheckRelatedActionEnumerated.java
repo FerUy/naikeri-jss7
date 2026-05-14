@@ -29,15 +29,15 @@ public class PrivacyCheckRelatedActionEnumerated extends EnumeratedBase {
     public PrivacyCheckRelatedActionEnumerated() {
     }
 
-    public PrivacyCheckRelatedActionEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public PrivacyCheckRelatedActionEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public PrivacyCheckRelatedActionEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public PrivacyCheckRelatedActionEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public PrivacyCheckRelatedActionEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public PrivacyCheckRelatedActionEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

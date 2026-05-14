@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level2;
 
 import java.util.Hashtable;
@@ -28,15 +27,15 @@ public class SccpProtocolVersionType extends EnumeratedBase {
     public SccpProtocolVersionType() {
     }
 
-    public SccpProtocolVersionType(int val) throws java.lang.IllegalArgumentException {
+    public SccpProtocolVersionType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SccpProtocolVersionType(Integer val) throws java.lang.IllegalArgumentException {
+    public SccpProtocolVersionType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SccpProtocolVersionType(String val) throws java.lang.IllegalArgumentException {
+    public SccpProtocolVersionType(String val) throws IllegalArgumentException {
         super(val);
     }
 

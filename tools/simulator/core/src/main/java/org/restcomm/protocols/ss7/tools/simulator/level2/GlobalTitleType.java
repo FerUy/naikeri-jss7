@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level2;
 
 import java.util.Hashtable;
@@ -36,15 +35,15 @@ public class GlobalTitleType extends EnumeratedBase {
     public GlobalTitleType() {
     }
 
-    public GlobalTitleType(int val) throws java.lang.IllegalArgumentException {
+    public GlobalTitleType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public GlobalTitleType(Integer val) throws java.lang.IllegalArgumentException {
+    public GlobalTitleType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public GlobalTitleType(String val) throws java.lang.IllegalArgumentException {
+    public GlobalTitleType(String val) throws IllegalArgumentException {
         super(val);
     }
 

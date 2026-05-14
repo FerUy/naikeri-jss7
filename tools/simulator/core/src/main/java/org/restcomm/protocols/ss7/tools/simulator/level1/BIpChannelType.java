@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level1;
 
 import java.util.Hashtable;
@@ -30,15 +29,15 @@ public class BIpChannelType extends EnumeratedBase {
     public BIpChannelType() {
     }
 
-    public BIpChannelType(int val) throws java.lang.IllegalArgumentException {
+    public BIpChannelType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public BIpChannelType(Integer val) throws java.lang.IllegalArgumentException {
+    public BIpChannelType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public BIpChannelType(String val) throws java.lang.IllegalArgumentException {
+    public BIpChannelType(String val) throws IllegalArgumentException {
         super(val);
     }
 

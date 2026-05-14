@@ -1,11 +1,12 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.sms;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
@@ -72,7 +73,6 @@ import org.restcomm.protocols.ss7.tools.simulator.common.TesterBase;
 import org.restcomm.protocols.ss7.tools.simulator.level3.MapMan;
 import org.restcomm.protocols.ss7.tools.simulator.level3.MapProtocolVersion;
 import org.restcomm.protocols.ss7.tools.simulator.level3.NumberingPlanMapType;
-import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface;
 
 /**
  *
@@ -104,7 +104,7 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
     private boolean needSendSend = false;
     private boolean needSendClose = false;
 
-    private static Charset isoCharset = Charset.forName("ISO-8859-1");
+    private static final Charset isoCharset = StandardCharsets.ISO_8859_1;
 
     public TestSmsServerMan() {
         super(SOURCE_NAME);
@@ -114,10 +114,6 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
     public TestSmsServerMan(String name) {
         super(SOURCE_NAME);
         this.name = name;
-    }
-
-    public void setTesterHost(TesterHostInterface testerHost) {
-        this.testerHost = testerHost;
     }
 
     public void setMapMan(MapMan val) {
@@ -282,43 +278,37 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
     @Override
     public void putAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setAddressNature(x);
+        this.setAddressNature(x);
     }
 
     @Override
     public void putNumberingPlan(String val) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-        if (x != null)
-            this.setNumberingPlan(x);
+        this.setNumberingPlan(x);
     }
 
     @Override
     public void putMapProtocolVersion(String val) {
         MapProtocolVersion x = MapProtocolVersion.createInstance(val);
-        if (x != null)
-            this.setMapProtocolVersion(x);
+        this.setMapProtocolVersion(x);
     }
 
     @Override
     public void putTypeOfNumber(String val) {
         TypeOfNumberType x = TypeOfNumberType.createInstance(val);
-        if (x != null)
-            this.setTypeOfNumber(x);
+        this.setTypeOfNumber(x);
     }
 
     @Override
     public void putNumberingPlanIdentification(String val) {
         NumberingPlanIdentificationType x = NumberingPlanIdentificationType.createInstance(val);
-        if (x != null)
-            this.setNumberingPlanIdentification(x);
+        this.setNumberingPlanIdentification(x);
     }
 
     @Override
     public void putSmsCodingType(String val) {
         SmsCodingType x = SmsCodingType.createInstance(val);
-        if (x != null)
-            this.setSmsCodingType(x);
+        this.setSmsCodingType(x);
     }
 
     @Override
@@ -328,38 +318,36 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
 
     @Override
     public String getState() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append(SOURCE_NAME);
-        sb.append(": ");
-        sb.append("<br>Count: countSriReq-");
-        sb.append(countSriReq);
-        sb.append(", countSriResp-");
-        sb.append(countSriResp);
-        sb.append("<br>countMtFsmReq-");
-        sb.append(countMtFsmReq);
-        sb.append(", countMtFsmResp-");
-        sb.append(countMtFsmResp);
-        sb.append("<br> countMoFsmReq-");
-        sb.append(countMoFsmReq);
-        sb.append(", countMoFsmResp-");
-        sb.append(countMoFsmResp);
-        sb.append(", countIscReq-");
-        sb.append(countIscReq);
-        sb.append("<br>countRsmdsReq-");
-        sb.append(countRsmdsReq);
-        sb.append(", countRsmdsResp-");
-        sb.append(countRsmdsResp);
-        sb.append(", countAscReq-");
-        sb.append(countAscReq);
-        sb.append("<br>countAscResp-");
-        sb.append(countAscResp);
-        sb.append(", countErrRcvd-");
-        sb.append(countErrRcvd);
-        sb.append(", countErrSent-");
-        sb.append(countErrSent);
-        sb.append("</html>");
-        return sb.toString();
+        return "<html>" +
+            SOURCE_NAME +
+            ": " +
+            "<br>Count: countSriReq-" +
+            countSriReq +
+            ", countSriResp-" +
+            countSriResp +
+            "<br>countMtFsmReq-" +
+            countMtFsmReq +
+            ", countMtFsmResp-" +
+            countMtFsmResp +
+            "<br> countMoFsmReq-" +
+            countMoFsmReq +
+            ", countMoFsmResp-" +
+            countMoFsmResp +
+            ", countIscReq-" +
+            countIscReq +
+            "<br>countRsmdsReq-" +
+            countRsmdsReq +
+            ", countRsmdsResp-" +
+            countRsmdsResp +
+            ", countAscReq-" +
+            countAscReq +
+            "<br>countAscResp-" +
+            countAscResp +
+            ", countErrRcvd-" +
+            countErrRcvd +
+            ", countErrSent-" +
+            countErrSent +
+            "</html>";
     }
 
     public boolean start() {
@@ -480,15 +468,13 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
     }
 
     private String createSriData(long dialogId, String destIsdnNumber, String serviceCentreAddr) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", destIsdnNumber=\"");
-        sb.append(destIsdnNumber);
-        sb.append("\", serviceCentreAddr=\"");
-        sb.append(serviceCentreAddr);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", destIsdnNumber=\"" +
+            destIsdnNumber +
+            "\", serviceCentreAddr=\"" +
+            serviceCentreAddr +
+            "\"";
     }
 
     @Override
@@ -579,7 +565,6 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
             int dcsVal = 0;
             switch (this.testerHost.getConfigurationData().getTestSmsServerConfigurationData().getSmsCodingType().intValue()) {
             case SmsCodingType.VAL_GSM7:
-                dcsVal = 0;
                 break;
             case SmsCodingType.VAL_GSM8:
                 dcsVal = 4;
@@ -641,24 +626,22 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
 
             return "MtForwardShortMessageRequest has been sent";
         } catch (MAPException ex) {
-            return "Exception when sending MtForwardShortMessageRequest: " + ex.toString();
+            return "Exception when sending MtForwardShortMessageRequest: " + ex;
         }
     }
 
     private String createMtData(long dialogId, String destImsi, String vlrNumber, String origIsdnNumber, String serviceCentreAddr) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", destImsi=\"");
-        sb.append(destImsi);
-        sb.append(", vlrNumber=\"");
-        sb.append(vlrNumber);
-        sb.append(", origIsdnNumber=\"");
-        sb.append(origIsdnNumber);
-        sb.append("\", serviceCentreAddr=\"");
-        sb.append(serviceCentreAddr);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", destImsi=\"" +
+            destImsi +
+            ", vlrNumber=\"" +
+            vlrNumber +
+            ", origIsdnNumber=\"" +
+            origIsdnNumber +
+            "\", serviceCentreAddr=\"" +
+            serviceCentreAddr +
+            "\"";
     }
 
     @Override
@@ -776,7 +759,7 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
                                 sb.append(i1);
                             }
                             sb.append("] ");
-                            msg = sb.toString() + msg;
+                            msg = sb + msg;
                         }
                     }
                 }
@@ -789,17 +772,15 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
     }
 
     private String createMoData(long dialogId, String destIsdnNumber, String origIsdnNumber, String serviceCentreAddr) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", destIsdnNumber=\"");
-        sb.append(destIsdnNumber);
-        sb.append(", origIsdnNumber=\"");
-        sb.append(origIsdnNumber);
-        sb.append("\", serviceCentreAddr=\"");
-        sb.append(serviceCentreAddr);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", destIsdnNumber=\"" +
+            destIsdnNumber +
+            ", origIsdnNumber=\"" +
+            origIsdnNumber +
+            "\", serviceCentreAddr=\"" +
+            serviceCentreAddr +
+            "\"";
     }
 
     @Override
@@ -873,23 +854,19 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
     }
 
     private String createSriRespData(long dialogId, SendRoutingInfoForSMResponse ind) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", ind=\"");
-        sb.append(ind);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", ind=\"" +
+            ind +
+            "\"";
     }
 
     private String createIscReqData(long dialogId, MWStatus mwStatus) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(",\n mwStatus=");
-        sb.append(mwStatus);
-        sb.append(",\n");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ",\n mwStatus=" +
+            mwStatus +
+            ",\n";
     }
 
     @Override
@@ -1033,7 +1010,6 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
             } catch (Exception e) {
                 this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking send() : " + e.getMessage(), e, Level.ERROR);
             }
-            return;
         }
     }
 
@@ -1130,19 +1106,19 @@ public class TestSmsServerMan extends TesterBase implements TestSmsServerManMBea
             needSendClose = true;
     }
 
-    private class HostMessageData {
+    private static class HostMessageData {
         public MtMessageData mtMessageData;
         public ResendMessageData resendMessageData;
     }
 
-    private class MtMessageData {
+    private static class MtMessageData {
         public String msg;
         public String origIsdnNumber;
         public String vlrNum;
         public String destImsi;
     }
 
-    private class ResendMessageData {
+    private static class ResendMessageData {
         public SM_RP_DA da;
         public SM_RP_OA oa;
         public SmsSignalInfo si;

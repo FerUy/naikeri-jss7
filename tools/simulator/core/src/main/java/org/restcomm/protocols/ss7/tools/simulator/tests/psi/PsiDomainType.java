@@ -28,15 +28,15 @@ public class PsiDomainType extends EnumeratedBase {
   public PsiDomainType() {
   }
 
-  public PsiDomainType(int val) throws java.lang.IllegalArgumentException {
+  public PsiDomainType(int val) throws IllegalArgumentException {
     super(val);
   }
 
-  public PsiDomainType(Integer val) throws java.lang.IllegalArgumentException {
+  public PsiDomainType(Integer val) throws IllegalArgumentException {
     super(val);
   }
 
-  public PsiDomainType(String val) throws java.lang.IllegalArgumentException {
+  public PsiDomainType(String val) throws IllegalArgumentException {
     super(val);
   }
 

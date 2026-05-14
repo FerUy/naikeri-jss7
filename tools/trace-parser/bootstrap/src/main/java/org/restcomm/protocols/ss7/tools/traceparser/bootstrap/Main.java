@@ -5,14 +5,11 @@ import java.beans.XMLDecoder;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.util.Properties;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.restcomm.protocols.ss7.tools.traceparser.MainGui;
 import org.restcomm.protocols.ss7.tools.traceparser.Ss7ParseParameters;
 
@@ -30,7 +27,7 @@ public class Main {
     public static final String TRACE_PARSER_DATA = "traceparser.data.dir";
     private static int index = 0;
 
-    private static Logger logger = org.apache.log4j.Logger.getLogger(Main.class);
+    private static final Logger logger = LogManager.getLogger(Main.class);
 
 //    private String command = null;
 //    private String appName = "main";
@@ -44,7 +41,7 @@ public class Main {
         System.setProperty(TRACE_PARSER_DATA, dataDir);
 
         if (!initLOG4JProperties(homeDir) && !initLOG4JXml(homeDir)) {
-            logger.error("Failed to initialize logging, no configuration. Defaults are used.");
+            logger.error("Failed to initialize loggin, no configuration. Defaults are used.");
         }
 
         logger.info("log4j configured");
@@ -114,11 +111,11 @@ public class Main {
 //                    break;
 //
 //                case ':':
-//                    System.out.println("You need an argument for option " + (char) g.getOptopt());
+//                    logger.info("You need an argument for option " + (char) g.getOptopt());
 //                    System.exit(0);
 //                    break;
 //                case '?':
-//                    System.out.println("The option '" + (char) g.getOptopt() + "' is not valid");
+//                    logger.info("The option '" + (char) g.getOptopt() + "' is not valid");
 //                    System.exit(0);
 //                    break;
 //                case 1:
@@ -135,11 +132,11 @@ public class Main {
 //                        } else if (this.command.equals("gui")) {
 //                            this.guiHelp();
 //                        } else {
-//                            System.out.println("Invalid command " + optArg);
+//                            logger.info("Invalid command " + optArg);
 //                            this.genericHelp();
 //                        }
 //                    } else {
-//                        System.out.println("Invalid command " + optArg);
+//                        logger.info("Invalid command " + optArg);
 //                        this.genericHelp();
 //                    }
 //                    break;
@@ -153,38 +150,38 @@ public class Main {
 //    }
 //
 //    private void genericHelp() {
-//        System.out.println("usage: " + APP_NAME + "<command> [options]");
-//        System.out.println();
-//        System.out.println("command:");
-//        System.out.println("    core      Start the SS7 Trace Parser core");
-//        System.out.println("    gui       Start the SS7 Trace Parser gui");
-//        System.out.println();
-//        System.out.println("see 'run <command> help' for more information on a specific command:");
-//        System.out.println();
+//        logger.info("usage: " + APP_NAME + "<command> [options]");
+//        logger.info();
+//        logger.info("command:");
+//        logger.info("    core      Start the SS7 Trace Parser core");
+//        logger.info("    gui       Start the SS7 Trace Parser gui");
+//        logger.info();
+//        logger.info("see 'run <command> help' for more information on a specific command:");
+//        logger.info();
 //        System.exit(0);
 //    }
 //
 //    private void coreHelp() {
-//        System.out.println("core: Starts the Trace Parser core");
-//        System.out.println();
-//        System.out.println("usage: " + APP_NAME + " core [options]");
-//        System.out.println();
-//        System.out.println("options:");
-//        System.out.println("    -n, --name=<Trace Parser name>     Trace Parser name. If not passed default is main");
-//        System.out.println("    -t, --http=<http port>          Http port for core");
-//        System.out.println("    -r, --rmi=<rmi port>            RMI port for core");
-//        System.out.println();
+//        logger.info("core: Starts the Trace Parser core");
+//        logger.info();
+//        logger.info("usage: " + APP_NAME + " core [options]");
+//        logger.info();
+//        logger.info("options:");
+//        logger.info("    -n, --name=<Trace Parser name>     Trace Parser name. If not passed default is main");
+//        logger.info("    -t, --http=<http port>          Http port for core");
+//        logger.info("    -r, --rmi=<rmi port>            RMI port for core");
+//        logger.info();
 //        System.exit(0);
 //    }
 //
 //    private void guiHelp() {
-//        System.out.println("gui: Starts the Trace Parser gui");
-//        System.out.println();
-//        System.out.println("usage: " + APP_NAME + " gui [options]");
-//        System.out.println();
-//        System.out.println("options:");
-//        System.out.println("    -n, --name=<Trace Parser name>   Trace Parser name. If not passed default is main");
-//        System.out.println();
+//        logger.info("gui: Starts the Trace Parser gui");
+//        logger.info();
+//        logger.info("usage: " + APP_NAME + " gui [options]");
+//        logger.info();
+//        logger.info("options:");
+//        logger.info("    -n, --name=<Trace Parser name>   Trace Parser name. If not passed default is main");
+//        logger.info();
 //        System.exit(0);
 //    }
 
@@ -192,14 +189,9 @@ public class Main {
         String Log4jURL = homeDir + LOG4J_URL;
 
         try {
-            URL log4jurl = getURL(Log4jURL);
-            InputStream inStreamLog4j = log4jurl.openStream();
-            Properties propertiesLog4j = new Properties();
-            try {
-                propertiesLog4j.load(inStreamLog4j);
-                PropertyConfigurator.configure(propertiesLog4j);
-            } catch (IOException e) {
-                e.printStackTrace();
+            URL resourcePropertiesUrl = Main.class.getClassLoader().getResource(Log4jURL);
+            if (resourcePropertiesUrl != null) {
+                ConfigurationFactory.getInstance().getConfiguration(null, null, resourcePropertiesUrl.toURI());
             }
         } catch (Exception e) {
             // e.printStackTrace();
@@ -213,8 +205,10 @@ public class Main {
         String Log4jURL = homeDir + LOG4J_URL_XML;
 
         try {
-            URL log4jurl = getURL(Log4jURL);
-            DOMConfigurator.configure(log4jurl);
+            URL resourcePropertiesUrl = Main.class.getClassLoader().getResource(Log4jURL);
+            if (resourcePropertiesUrl != null) {
+                ConfigurationFactory.getInstance().getConfiguration(null, null, resourcePropertiesUrl.toURI());
+            }
         } catch (Exception e) {
             // e.printStackTrace();
             logger.info("Failed to initialize LOG4J with xml file.");
@@ -243,7 +237,7 @@ public class Main {
 
     protected void boot(String persistDir, Ss7ParseParameters par) throws Throwable {
 //        if (this.command == null) {
-//            System.out.println("No command passed");
+//            logger.info("No command passed");
 //            this.genericHelp();
 //        } else if (this.command.equals("gui")) {
 //            EventQueue.invokeLater(new MainGui(appName));
@@ -258,7 +252,7 @@ public class Main {
 
     public static URL getURL(String url) throws Exception {
         File file = new File(url);
-        if (file.exists() == false) {
+        if (!file.exists()) {
             throw new IllegalArgumentException("No such file: " + url);
         }
         return file.toURI().toURL();
@@ -271,7 +265,7 @@ public class Main {
 //    private class ShutdownThread implements Runnable {
 //
 //        public void run() {
-//            System.out.println("Shutting down");
+//            logger.info("Shutting down");
 //
 //        }
 //    }

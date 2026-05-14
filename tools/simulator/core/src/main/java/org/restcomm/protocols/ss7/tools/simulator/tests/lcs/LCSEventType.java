@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.lcs;
 
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent;
@@ -28,15 +27,15 @@ public class LCSEventType extends EnumeratedBase {
     public LCSEventType() {
     }
 
-    public LCSEventType(int val) throws java.lang.IllegalArgumentException {
+    public LCSEventType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LCSEventType(Integer val) throws java.lang.IllegalArgumentException {
+    public LCSEventType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LCSEventType(String val) throws java.lang.IllegalArgumentException {
+    public LCSEventType(String val) throws IllegalArgumentException {
         super(val);
     }
 

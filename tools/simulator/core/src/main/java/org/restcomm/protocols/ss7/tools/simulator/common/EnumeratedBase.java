@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.common;
 
 import java.lang.reflect.Method;
@@ -22,15 +21,15 @@ public abstract class EnumeratedBase extends Enumerated {
     public EnumeratedBase() {
     }
 
-    public EnumeratedBase(int val) throws java.lang.IllegalArgumentException {
+    public EnumeratedBase(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public EnumeratedBase(Integer val) throws java.lang.IllegalArgumentException {
+    public EnumeratedBase(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public EnumeratedBase(String val) throws java.lang.IllegalArgumentException {
+    public EnumeratedBase(String val) throws IllegalArgumentException {
         super(val);
     }
 

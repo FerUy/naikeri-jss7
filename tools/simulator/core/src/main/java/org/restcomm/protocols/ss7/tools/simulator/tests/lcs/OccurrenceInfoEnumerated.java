@@ -24,15 +24,15 @@ public class OccurrenceInfoEnumerated extends EnumeratedBase {
     public OccurrenceInfoEnumerated() {
     }
 
-    public OccurrenceInfoEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public OccurrenceInfoEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public OccurrenceInfoEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public OccurrenceInfoEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public OccurrenceInfoEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public OccurrenceInfoEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

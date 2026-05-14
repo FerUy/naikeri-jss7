@@ -47,15 +47,15 @@ public class SLRReaction extends EnumeratedBase {
     public SLRReaction() {
     }
 
-    public SLRReaction(int val) throws java.lang.IllegalArgumentException {
+    public SLRReaction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SLRReaction(Integer val) throws java.lang.IllegalArgumentException {
+    public SLRReaction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SLRReaction(String val) throws java.lang.IllegalArgumentException {
+    public SLRReaction(String val) throws IllegalArgumentException {
         super(val);
     }
 

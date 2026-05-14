@@ -36,15 +36,15 @@ public class ATIReaction extends EnumeratedBase {
     public ATIReaction() {
     }
 
-    public ATIReaction(int val) throws java.lang.IllegalArgumentException {
+    public ATIReaction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public ATIReaction(Integer val) throws java.lang.IllegalArgumentException {
+    public ATIReaction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public ATIReaction(String val) throws java.lang.IllegalArgumentException {
+    public ATIReaction(String val) throws IllegalArgumentException {
         super(val);
     }
 

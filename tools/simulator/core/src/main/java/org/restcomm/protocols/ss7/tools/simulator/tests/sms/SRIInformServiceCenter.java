@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.sms;
 
 import java.util.Hashtable;
@@ -40,15 +39,15 @@ public class SRIInformServiceCenter extends EnumeratedBase {
     public SRIInformServiceCenter() {
     }
 
-    public SRIInformServiceCenter(int val) throws java.lang.IllegalArgumentException {
+    public SRIInformServiceCenter(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SRIInformServiceCenter(Integer val) throws java.lang.IllegalArgumentException {
+    public SRIInformServiceCenter(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SRIInformServiceCenter(String val) throws java.lang.IllegalArgumentException {
+    public SRIInformServiceCenter(String val) throws IllegalArgumentException {
         super(val);
     }
 

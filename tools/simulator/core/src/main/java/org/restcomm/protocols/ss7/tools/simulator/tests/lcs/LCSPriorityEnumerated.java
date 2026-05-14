@@ -24,15 +24,15 @@ public class LCSPriorityEnumerated extends EnumeratedBase {
     public LCSPriorityEnumerated() {
     }
 
-    public LCSPriorityEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public LCSPriorityEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LCSPriorityEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public LCSPriorityEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LCSPriorityEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public LCSPriorityEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

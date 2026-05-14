@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.common;
 
 import java.util.Hashtable;
@@ -42,15 +41,15 @@ public class AddressNatureType extends EnumeratedBase {
     public AddressNatureType() {
     }
 
-    public AddressNatureType(int val) throws java.lang.IllegalArgumentException {
+    public AddressNatureType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public AddressNatureType(Integer val) throws java.lang.IllegalArgumentException {
+    public AddressNatureType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public AddressNatureType(String val) throws java.lang.IllegalArgumentException {
+    public AddressNatureType(String val) throws IllegalArgumentException {
         super(val);
     }
 

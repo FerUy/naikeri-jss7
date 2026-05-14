@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.common;
 
 import java.util.Hashtable;
@@ -28,15 +27,15 @@ public class CapApplicationContextScf extends EnumeratedBase {
     public CapApplicationContextScf() {
     }
 
-    public CapApplicationContextScf(int val) throws java.lang.IllegalArgumentException {
+    public CapApplicationContextScf(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public CapApplicationContextScf(Integer val) throws java.lang.IllegalArgumentException {
+    public CapApplicationContextScf(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public CapApplicationContextScf(String val) throws java.lang.IllegalArgumentException {
+    public CapApplicationContextScf(String val) throws IllegalArgumentException {
         super(val);
     }
 

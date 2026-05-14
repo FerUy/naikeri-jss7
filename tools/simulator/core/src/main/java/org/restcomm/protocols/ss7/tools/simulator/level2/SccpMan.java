@@ -1,6 +1,7 @@
 package org.restcomm.protocols.ss7.tools.simulator.level2;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.NumberingPlan;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.mtp.Mtp3UserPart;
@@ -28,8 +29,8 @@ import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface
 /**
  *
  * @author sergey vetyutnev
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
- * @modified <a href="mailto:jarmex@gmail.com"> James Amo </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:jarmex@gmail.com"> James Amo </a>
  */
 public class SccpMan implements SccpManMBean, Stoppable {
 
@@ -249,39 +250,33 @@ public class SccpMan implements SccpManMBean, Stoppable {
     @Override
     public void putGlobalTitleType(String val) {
         GlobalTitleType x = GlobalTitleType.createInstance(val);
-        if (x != null)
-            this.setGlobalTitleType(x);
+        this.setGlobalTitleType(x);
     }
 
     @Override
     public void putNatureOfAddress(String val) {
         NatureOfAddressType x = NatureOfAddressType.createInstance(val);
-        if (x != null)
-            this.setNatureOfAddress(x);
+        this.setNatureOfAddress(x);
     }
 
     @Override
     public void putNumberingPlan(String val) {
         NumberingPlanSccpType x = NumberingPlanSccpType.createInstance(val);
-        if (x != null)
-            this.setNumberingPlan(x);
+        this.setNumberingPlan(x);
     }
 
     @Override
     public void putSccpProtocolVersion(String val) {
         SccpProtocolVersionType x = SccpProtocolVersionType.createInstance(val);
-        if (x != null)
-            this.setSccpProtocolVersion(x);
+        this.setSccpProtocolVersion(x);
     }
 
     @Override
     public String getState() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SCCP: Rspc: ");
-        sb.append(this.isRspcUp ? "Enabled" : "Disabled");
-        sb.append("  Rss: ");
-        sb.append(this.isRssUp ? "Enabled" : "Disabled");
-        return sb.toString();
+        return "SCCP: Rspc: " +
+            (this.isRspcUp ? "Enabled" : "Disabled") +
+            "  Rss: " +
+            (this.isRssUp ? "Enabled" : "Disabled");
     }
 
     public boolean start() {
@@ -341,7 +336,7 @@ public class SccpMan implements SccpManMBean, Stoppable {
     }
 
     private void initSccp(Mtp3UserPart mtp3UserPart, int remoteSsn, int localSsn, int dpc, int dpc2, int opc, int ni,
-            String callingPartyAddressDigits, String persistDir, SccpProtocolVersion sccpProtocolVersion) throws Exception {
+                          String callingPartyAddressDigits, String persistDir, SccpProtocolVersion sccpProtocolVersion) throws Exception {
 
         Ss7ExtInterface ss7ExtInterface = new Ss7ExtInterfaceImpl();
         SccpExtModuleImpl sccpExtModule = new SccpExtModuleImpl();
@@ -374,35 +369,62 @@ public class SccpMan implements SccpManMBean, Stoppable {
             this.resource.addRemoteSsn(2, dpc2, remoteSsn, 0, false);
         }
 
+        int translationType = this.testerHost.getConfigurationData().getSccpConfigurationData().getTranslationType();
+
         if (this.testerHost.getConfigurationData().getSccpConfigurationData().isRouteOnGtMode()) {
             this.router = new RouterExtImpl("SimulatorRouter", this.sccpStack, this.sccpStack.getRouter());
 
-            SccpAddress sccpAddress1 = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle(""), dpc, 0);
-            SccpAddress sccpAddress2 = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, this.createGlobalTitle(""), opc, localSsn);
-            this.router.addRoutingAddress(1,sccpAddress1);
+            SccpAddress sccpAddress1 = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("", translationType), dpc, 0);
+            SccpAddress sccpAddress2 = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, this.createGlobalTitle("", translationType), opc, localSsn);
+            this.router.addRoutingAddress(1, sccpAddress1);
             this.router.addRoutingAddress(2, sccpAddress2);
 
-            SccpAddress pattern = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("*"), 0,
-                0);
-            SccpAddress pattern2 = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("*"), 0,
-                this.testerHost.getConfigurationData().getSccpConfigurationData().getRemoteSsn());
+            SccpAddress pattern = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("*", translationType), 0,
+                    0);
             String mask = "K";
-            ((RouterExtImpl) this.router).addRule(1, RuleType.SOLITARY, null, OriginationType.LOCAL, pattern, mask, 1,
-                -1, null, 0, createCallingPartyAddress1());
+            this.router.addRule(1, RuleType.SOLITARY, null, OriginationType.LOCAL, pattern, mask, 1,
+                    -1, null, 0, createCallingPartyAddress1());
 
-            pattern = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("*"), 0, 0);
+            pattern = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("*", translationType), 0, 0);
             mask = "K";
-            ((RouterExtImpl) this.router).addRule(2, RuleType.SOLITARY, null, OriginationType.REMOTE, pattern, mask, 2,
-                -1, null, 0, createCallingPartyAddress1());
+            this.router.addRule(2, RuleType.SOLITARY, null, OriginationType.REMOTE, pattern, mask, 2,
+                    -1, null, 0, createCallingPartyAddress1());
 
             // add the routing rules
-            sccpExtModule.getRouterExt().addRoutingAddress(1,sccpAddress1);
-            sccpExtModule.getRouterExt().addRoutingAddress(2,sccpAddress2);
+            sccpExtModule.getRouterExt().addRoutingAddress(1, sccpAddress1);
+            sccpExtModule.getRouterExt().addRoutingAddress(2, sccpAddress2);
             // add the rules
             sccpExtModule.getRouterExt().addRule(1, RuleType.SOLITARY, null, OriginationType.LOCAL, pattern, mask, 1,
-                -1, null, 0, null);
+                    -1, null, 0, null);
             sccpExtModule.getRouterExt().addRule(2, RuleType.SOLITARY, null, OriginationType.REMOTE, pattern, mask, 2,
-                -1, null, 0, null);
+                    -1, null, 0, null);
+
+
+            if (translationType != 0) {
+                SccpAddress sccpAddress3 = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("", 0), dpc, 0);
+                SccpAddress sccpAddress4 = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, this.createGlobalTitle("", 0), opc, localSsn);
+                this.router.addRoutingAddress(3, sccpAddress3);
+                this.router.addRoutingAddress(4, sccpAddress4);
+
+
+                pattern = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("*", 0), 0,
+                        0);
+                this.router.addRule(3, RuleType.SOLITARY, null, OriginationType.LOCAL, pattern, mask, 3,
+                        -1, null, 0, createCallingPartyAddress1());
+
+                pattern = parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, this.createGlobalTitle("*", 0), 0, 0);
+                this.router.addRule(4, RuleType.SOLITARY, null, OriginationType.REMOTE, pattern, mask, 4,
+                        -1, null, 0, createCallingPartyAddress1());
+
+                // add the routing rules
+                sccpExtModule.getRouterExt().addRoutingAddress(3, sccpAddress3);
+                sccpExtModule.getRouterExt().addRoutingAddress(4, sccpAddress4);
+                // add the rules
+                sccpExtModule.getRouterExt().addRule(3, RuleType.SOLITARY, null, OriginationType.LOCAL, pattern, mask, 3,
+                        -1, null, 0, null);
+                sccpExtModule.getRouterExt().addRule(4, RuleType.SOLITARY, null, OriginationType.REMOTE, pattern, mask, 4,
+                        -1, null, 0, null);
+            }
         }
     }
 
@@ -412,9 +434,10 @@ public class SccpMan implements SccpManMBean, Stoppable {
     }
 
     public SccpAddress createCallingPartyAddress1() {
+        int translationType = this.testerHost.getConfigurationData().getSccpConfigurationData().getTranslationType();
         if (this.testerHost.getConfigurationData().getSccpConfigurationData().isRouteOnGtMode()) {
             return parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, createGlobalTitle(this.testerHost
-                    .getConfigurationData().getSccpConfigurationData().getCallingPartyAddressDigits()), 0, this.testerHost
+                    .getConfigurationData().getSccpConfigurationData().getCallingPartyAddressDigits(), translationType), 0, this.testerHost
                     .getConfigurationData().getSccpConfigurationData().getLocalSsn());
         } else {
             return parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, this.testerHost.getConfigurationData()
@@ -424,14 +447,15 @@ public class SccpMan implements SccpManMBean, Stoppable {
     }
 
     public SccpAddress createCallingPartyAddress2() {
+        int translationType = this.testerHost.getConfigurationData().getSccpConfigurationData().getTranslationType();
         if (this.testerHost.getConfigurationData().getSccpConfigurationData().isRouteOnGtMode()) {
             return parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, createGlobalTitle(this.testerHost
-                .getConfigurationData().getSccpConfigurationData().getCallingPartyAddressDigits()), 0, this.testerHost
-                .getConfigurationData().getSccpConfigurationData().getLocalSsn2());
+                    .getConfigurationData().getSccpConfigurationData().getCallingPartyAddressDigits(), translationType), 0, this.testerHost
+                    .getConfigurationData().getSccpConfigurationData().getLocalSsn2());
         } else {
             return parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, this.testerHost.getConfigurationData()
-                .getSccpConfigurationData().getLocalSpc(), this.testerHost.getConfigurationData()
-                .getSccpConfigurationData().getLocalSsn());
+                    .getSccpConfigurationData().getLocalSpc(), this.testerHost.getConfigurationData()
+                    .getSccpConfigurationData().getLocalSsn());
         }
     }
 
@@ -442,34 +466,32 @@ public class SccpMan implements SccpManMBean, Stoppable {
     }
 
     public SccpAddress createCalledPartyAddress(String address, int ssn) {
+        int translationType = this.testerHost.getConfigurationData().getSccpConfigurationData().getTranslationType();
         if (this.testerHost.getConfigurationData().getSccpConfigurationData().isRouteOnGtMode()) {
-            return parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, createGlobalTitle(address),0,
+            return parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, createGlobalTitle(address, translationType), 0,
                     (ssn >= 0 ? ssn : this.testerHost.getConfigurationData().getSccpConfigurationData().getRemoteSsn()));
         } else {
             return createCalledPartyAddress();
         }
     }
 
-    public GlobalTitle createGlobalTitle(String address) {
+    public GlobalTitle createGlobalTitle(String address, int translationType) {
         GlobalTitle gt = null;
         switch (this.testerHost.getConfigurationData().getSccpConfigurationData().getGlobalTitleType().intValue()) {
             case GlobalTitleType.VAL_NOA_ONLY:
-                gt = this.parameterFactory.createGlobalTitle(address,this.testerHost.getConfigurationData().getSccpConfigurationData()
+                gt = this.parameterFactory.createGlobalTitle(address, this.testerHost.getConfigurationData().getSccpConfigurationData()
                         .getNatureOfAddress());
                 break;
             case GlobalTitleType.VAL_TT_ONLY:
-                gt = this.parameterFactory.createGlobalTitle(address,this.testerHost.getConfigurationData().getSccpConfigurationData()
-                        .getTranslationType());
+                gt = this.parameterFactory.createGlobalTitle(address, translationType);
                 break;
             case GlobalTitleType.VAL_TT_NP_ES:
-                gt = this.parameterFactory.createGlobalTitle(address,this.testerHost.getConfigurationData().getSccpConfigurationData()
-                        .getTranslationType(), this.testerHost.getConfigurationData().getSccpConfigurationData()
+                gt = this.parameterFactory.createGlobalTitle(address, translationType, this.testerHost.getConfigurationData().getSccpConfigurationData()
                         .getNumberingPlan(), null);
                 break;
             case GlobalTitleType.VAL_TT_NP_ES_NOA:
-                gt = this.parameterFactory.createGlobalTitle(address,this.testerHost.getConfigurationData().getSccpConfigurationData()
-                        .getTranslationType(), this.testerHost.getConfigurationData().getSccpConfigurationData()
-                        .getNumberingPlan(),null, this.testerHost.getConfigurationData().getSccpConfigurationData()
+                gt = this.parameterFactory.createGlobalTitle(address, translationType, this.testerHost.getConfigurationData().getSccpConfigurationData()
+                        .getNumberingPlan(), null, this.testerHost.getConfigurationData().getSccpConfigurationData()
                         .getNatureOfAddress());
                 break;
         }

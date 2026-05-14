@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.traceparser;
 
 import java.awt.BorderLayout;
@@ -29,7 +28,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import org.apache.log4j.BasicConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 
 /**
@@ -111,15 +112,11 @@ public class TraceParserForm {
                 }
             }
         });
-
-        // MAPTraceParser task = new MAPTraceParser();
-        // task.parse(new TraceReaderDriverActerna(), "e:\\Java_workspace\\Trace\\Test\\222.p01");
-        // return;
-
     }
 
     private static void setupLog4j() {
-        BasicConfigurator.configure();
+        Configurator.initialize(new DefaultConfiguration());
+        Configurator.setRootLevel(Level.INFO);
     }
 
     /**
@@ -183,8 +180,8 @@ public class TraceParserForm {
                         newPar.setApplicationContextFilter(Integer.parseInt(tfApplicationContextFilter.getText()));
                     } catch (NumberFormatException ee) {
                         JOptionPane
-                                .showMessageDialog(null,
-                                        "Can not parse ApplicationContextFilter the value. \nIt should be an Integer.\nParsing without ApplicationContextFilter");
+                            .showMessageDialog(null,
+                                "Can not parse ApplicationContextFilter the value. \nIt should be an Integer.\nParsing without ApplicationContextFilter");
                     }
                 }
                 if (cbDialogIdFilter.isSelected()) {
@@ -193,16 +190,16 @@ public class TraceParserForm {
                             newPar.setDialogIdFilter(Long.parseLong(tfDialogIdFilter.getText()));
                     } catch (NumberFormatException ee) {
                         JOptionPane
-                                .showMessageDialog(null,
-                                        "Can not parse ApplicationContextFilter the value. \nIt should be an Integer.\nParsing without ApplicationContextFilter");
+                            .showMessageDialog(null,
+                                "Can not parse ApplicationContextFilter the value. \nIt should be an Integer.\nParsing without ApplicationContextFilter");
                     }
                     try {
                         if (!tfDialogIdFilter2.getText().equals(""))
                             newPar.setDialogIdFilter2(Long.parseLong(tfDialogIdFilter2.getText()));
                     } catch (NumberFormatException ee) {
                         JOptionPane
-                                .showMessageDialog(null,
-                                        "Can not parse ApplicationContextFilter2 the value. \nIt should be an Integer.\nParsing without ApplicationContextFilter2");
+                            .showMessageDialog(null,
+                                "Can not parse ApplicationContextFilter2 the value. \nIt should be an Integer.\nParsing without ApplicationContextFilter2");
                     }
                 }
                 if (cbOpcDpcFilter.isSelected()) {
@@ -218,7 +215,7 @@ public class TraceParserForm {
                         newPar.setOpcDpcFilter(ires);
                     } catch (NumberFormatException ee) {
                         JOptionPane.showMessageDialog(null,
-                                "Can not parse OpcDpcFilter the value. \nIt should be a set of Integers.\nParsing without OpcDpcFilter");
+                            "Can not parse OpcDpcFilter the value. \nIt should be a set of Integers.\nParsing without OpcDpcFilter");
                     }
                 }
                 if (cbMsgLog.isSelected()) {
@@ -245,7 +242,7 @@ public class TraceParserForm {
                 } catch (Exception ee) {
                     ee.printStackTrace();
                     JOptionPane.showMessageDialog(null,
-                            "Failed when saving the parameter file Ss7ParseParameters.xml: " + ee.getMessage());
+                        "Failed when saving the parameter file Ss7ParseParameters.xml: " + ee.getMessage());
                 }
 
                 btnStart.setEnabled(false);
@@ -706,7 +703,7 @@ public class TraceParserForm {
     }
 
     /**
-     * @param persistenceDir the persistenceDir to set
+     * @param persistDir the persistenceDir to set
      */
     public void setPersistDir(String persistDir) {
         this.persistDir = persistDir;

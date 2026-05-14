@@ -1,14 +1,15 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.psi;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.mobicents.protocols.asn.BitSetStrictLength;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.LocationNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.LocationNumber;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
 import org.restcomm.protocols.ss7.map.api.MAPException;
-import org.restcomm.protocols.ss7.map.api.MAPParameterFactory;
 import org.restcomm.protocols.ss7.map.api.MAPProvider;
 import org.restcomm.protocols.ss7.map.api.errors.MAPErrorCode;
 import org.restcomm.protocols.ss7.map.api.errors.MAPErrorMessage;
@@ -28,6 +29,7 @@ import org.restcomm.protocols.ss7.map.api.primitives.CellGlobalIdOrServiceAreaId
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.IMEI;
 
+import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.Time;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.AllowedServices;
 import org.restcomm.protocols.ss7.map.api.service.callhandling.CCBSIndicators;
@@ -87,12 +89,16 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberStateChoice;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.FQDN;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.LSAIdentity;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.InsertSubscriberDataResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataResponse;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationResponse;
 
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.OfferedCamel4CSIs;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
@@ -126,10 +132,16 @@ import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
 
+import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.AdditionalNumberImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.NetworkNodeDiameterAddressImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeographicalInformationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeodeticInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformation5GSImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.MSNetworkCapabilityImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.MSRadioAccessCapabilityImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.NRCellGlobalIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.NRTAIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RouteingNumberImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationEPSImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.EUtranCgiImpl;
@@ -163,8 +175,14 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.GPRSMSClass;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RAIdentity;
 
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TimeZoneImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.UserCSGInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGIdImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.FQDNImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LSAIdentityImpl;
 
+import org.restcomm.protocols.ss7.map.service.sms.IpSmGwGuidanceImpl;
+import org.restcomm.protocols.ss7.map.service.sms.LocationInfoWithLMSIImpl;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.ParameterFactoryImpl;
 import org.restcomm.protocols.ss7.sccp.parameter.EncodingScheme;
 import org.restcomm.protocols.ss7.sccp.parameter.GlobalTitle;
@@ -181,6 +199,7 @@ import org.restcomm.protocols.ss7.tools.simulator.level3.NumberingPlanMapType;
 import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostImpl;
 import org.restcomm.protocols.ss7.tools.simulator.tests.sms.SRIReaction;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -190,12 +209,12 @@ import java.util.Random;
  */
 public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBean, Stoppable, MAPServiceMobilityListener, MAPServiceSmsListener, MAPServiceCallHandlingListener {
 
-  private static Logger logger = Logger.getLogger(TestPsiServerMan.class);
+  private static final Logger logger = LogManager.getLogger(TestPsiServerMan.class);
 
   public static String SOURCE_NAME = "TestPsiServerMan";
   private final String name;
   private MapMan mapMan;
-  private boolean isStarted = false;
+  private boolean isStarted;
   private int countMapSriForSmReq = 0;
   private int countMapSriForSmResp = 0;
   private int countMapSriReq = 0;
@@ -207,10 +226,6 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   private boolean needSendClose = false;
   private int countErrSent = 0;
   private MAPProvider mapProvider;
-  private MAPServiceMobility mapServiceMobility;
-  private MAPServiceSms mapServiceSms;
-  private MAPServiceCallHandling mapServiceCallHandling;
-  private MAPParameterFactory mapParameterFactory;
 
   public TestPsiServerMan(String name) {
     super(SOURCE_NAME);
@@ -221,10 +236,9 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   public boolean start() {
 
     this.mapProvider = this.mapMan.getMAPStack().getMAPProvider();
-    this.mapServiceSms = this.mapProvider.getMAPServiceSms();
-    this.mapServiceCallHandling = this.mapProvider.getMAPServiceCallHandling();
-    this.mapServiceMobility = mapProvider.getMAPServiceMobility();
-    this.mapParameterFactory = mapProvider.getMAPParameterFactory();
+    MAPServiceSms mapServiceSms = this.mapProvider.getMAPServiceSms();
+    MAPServiceCallHandling mapServiceCallHandling = this.mapProvider.getMAPServiceCallHandling();
+    MAPServiceMobility mapServiceMobility = mapProvider.getMAPServiceMobility();
 
     mapServiceSms.activate();
     mapServiceCallHandling.activate();
@@ -251,24 +265,22 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   @Override
   public String getState() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<html>");
-    sb.append(SOURCE_NAME);
-    sb.append(": ");
-    sb.append("<br>Count: countMapSriForSmReq-");
-    sb.append(countMapSriForSmReq);
-    sb.append(", countMapSriForSmResp-");
-    sb.append(countMapSriForSmResp);
-    sb.append("<br>Count: countMapSriReq-");
-    sb.append(countMapSriReq);
-    sb.append(", countMapSriResp-");
-    sb.append(countMapSriResp);
-    sb.append("<br>Count: countMapPsiReq-");
-    sb.append(countMapPsiReq);
-    sb.append(", countMapPsiResp-");
-    sb.append(countMapPsiResp);
-    sb.append("</html>");
-    return sb.toString();
+    return "<html>" +
+        SOURCE_NAME +
+        ": " +
+        "<br>Count: countMapSriForSmReq-" +
+        countMapSriForSmReq +
+        ", countMapSriForSmResp-" +
+        countMapSriForSmResp +
+        "<br>Count: countMapSriReq-" +
+        countMapSriReq +
+        ", countMapSriResp-" +
+        countMapSriResp +
+        "<br>Count: countMapPsiReq-" +
+        countMapPsiReq +
+        ", countMapPsiResp-" +
+        countMapPsiResp +
+        "</html>";
   }
 
   @Override
@@ -287,7 +299,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   }
 
   //**************************//
-  //*** SRIforSMS methods ***//
+  //*** SRISM methods ***//
   //************************//
   @Override
   public String performSendRoutingInfoForSMResponse() {
@@ -303,22 +315,20 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     return "sendRoutingInfoForSMResponse called automatically";
   }
 
-  public void onSendRoutingInfoForSMRequest(SendRoutingInfoForSMRequest sendRoutingInforForSMRequest) {
+  public void onSendRoutingInfoForSMRequest(SendRoutingInfoForSMRequest sendRoutingInfoForSMRequest) {
 
-    MAPErrorMessage mapErrorMessage = null;
     logger.debug("\nonSendRoutingInfoForSMRequest");
     if (!isStarted)
       return;
 
     this.countMapSriForSmReq++;
 
-    MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
-    MAPDialogSms curDialog = sendRoutingInforForSMRequest.getMAPDialog();
-    long invokeId = sendRoutingInforForSMRequest.getInvokeId();
+    MAPDialogSms curDialog = sendRoutingInfoForSMRequest.getMAPDialog();
+    long invokeId = sendRoutingInfoForSMRequest.getInvokeId();
 
     if (!this.testerHost.getConfigurationData().getTestSmsClientConfigurationData().isOneNotificationFor100Dialogs()) {
-      String srIforSMReqData = this.createSRIforSMData(sendRoutingInforForSMRequest);
-      this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: sriForSMReq", srIforSMReqData, Level.DEBUG);
+      String srismReqData = this.createSRISMData(sendRoutingInfoForSMRequest);
+      this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: sriForSMReq", srismReqData, Level.DEBUG);
     }
 
     Random rand = new Random();
@@ -326,7 +336,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     // Set Calling SCCP Address (HLR for SRISM response)
     curDialog.setLocalAddress(getHLRSCCPAddress("598991700001"));
 
-    ISDNAddressString msisdn = sendRoutingInforForSMRequest.getMsisdn();
+    ISDNAddressString msisdn = sendRoutingInfoForSMRequest.getMsisdn();
     String msisdnAddress = msisdn.getAddress();
     IMSI imsi = new IMSIImpl("748026871012345");
     if (msisdnAddress.equals("60196229802"))
@@ -336,8 +346,8 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     if (msisdnAddress.equals("60196229804"))
       imsi = new IMSIImpl("502153147968442");
 
-    // Generate MAP errors for specific MSISDNs
-    msisdnAddress = sendRoutingInforForSMRequest.getMsisdn().getAddress();
+    // Generate MAP errors for specific MSISDN
+    msisdnAddress = sendRoutingInfoForSMRequest.getMsisdn().getAddress();
     if (msisdnAddress.equalsIgnoreCase("99998888")) {
       InvokeProblemType invokeProblemType = InvokeProblemType.UnrecognizedOperation;
       Problem problem = new ProblemImpl();
@@ -350,7 +360,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       }
       logger.debug("\nRejectComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
-          createSRIforSMRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
+              createSRISMRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
       return;
     }
     if (msisdnAddress.equalsIgnoreCase("99990000")) {
@@ -363,40 +373,47 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       }
       logger.debug("\nErrorComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
-          createSRIforSMRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
+              createSRISMRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
       return;
     }
 
-    String nnnAddress = getVLRSCCPAddress("598991900032").getGlobalTitle().getDigits();
-    ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, nnnAddress);
-
-    byte[] lmsiByte = null;
-    int lmsiRandom = rand.nextInt(4) + 1;
-    switch (lmsiRandom) {
-      case 1:
-        // char packet_bytes[] = {0x72, 0x02, 0xe9, 0x8c};
-        lmsiByte = new byte[]{114, 2, (byte) 233, (byte) 140};
-        break;
-      case 2:
-        // char packet_bytes[] = {0x71, 0xff, 0xac, 0xce};
-        lmsiByte = new byte[]{113, (byte) 255, (byte) 172, (byte) 206};
-        break;
-      case 3:
-        // char packet_bytes[] = {0x72, 0x02, 0xeb, 0x37};
-        lmsiByte = new byte[]{114, 2, (byte) 235, 55};
-        break;
-      case 4:
-        // char packet_bytes[] = {0x72, 0x02, 0xe7, 0xd5};
-        lmsiByte = new byte[]{114, 2, (byte) 231, (byte) 213};
-        break;
-    }
-    LMSI lmsi = new LMSIImpl(lmsiByte);
-
     MAPExtensionContainer mapExtensionContainer = null;
-    boolean gprsNodeIndicator = false;
-    AdditionalNumber additionalNumber = null;
     boolean mwdSet = false;
     IpSmGwGuidance ipSmGwGuidance = null;
+    if (sendRoutingInfoForSMRequest.getIpSmGwGuidanceIndicator()) {
+      int minimumDeliveryTimeValue = 30 + rand.nextInt(30);
+      int recommendedDeliveryTimeValue = 60 + rand.nextInt(540);
+      ipSmGwGuidance = new IpSmGwGuidanceImpl(minimumDeliveryTimeValue, recommendedDeliveryTimeValue, null);
+    }
+    LocationInfoWithLMSI locationInfoWithLMSI  = setLocationInfoWithLMSI(sendRoutingInfoForSMRequest);
+    logger.info("LocationInfoWithLMSI for onSendRoutingInfoForSMRequest: networkNodeNumber=" + locationInfoWithLMSI.getNetworkNodeNumber().getAddress() +
+            ", IMSI=" + imsi.getData());
+
+    try {
+
+      curDialog.addSendRoutingInfoForSMResponse(invokeId, imsi, locationInfoWithLMSI, mapExtensionContainer, mwdSet, ipSmGwGuidance);
+      curDialog.close(false);
+
+      logger.debug("\nSendRoutingForSMResponse sent");
+      this.countMapSriForSmResp++;
+
+      this.testerHost.sendNotif(SOURCE_NAME, "Sent: SendRoutingForSMResponse",
+              createSRISMRespData(curDialog.getLocalDialogId(), imsi, locationInfoWithLMSI), Level.INFO);
+
+    } catch (MAPException e) {
+      this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking addSendRoutingInfoForSMResponse() : " + e.getMessage(), e, Level.ERROR);
+    }
+  }
+
+  private static LocationInfoWithLMSI setLocationInfoWithLMSI(SendRoutingInfoForSMRequest sriSMReqInd) {
+    ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900032");
+    ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900032");
+    ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900130");
+    ISDNAddressString trdNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900131");
+    ISDNAddressString trd2Number = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900132");
+    LMSI lmsi = null;
+    boolean gprsNodeIndicator = false;
+    AdditionalNumber additionalNumber = null;
     NetworkNodeDiameterAddress networkNodeDiameterAddress = null;
     NetworkNodeDiameterAddress additionalNetworkNodeDiameterAddress = null;
     AdditionalNumber thirdNumber = null;
@@ -408,57 +425,89 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     NetworkNodeDiameterAddress smsfNon3gppDiameterAddress = null;
     boolean smsf3gppAddressIndicator = false;
     boolean smsfNon3gppAddressIndicator = false;
-    LocationInfoWithLMSI locationInfoWithLMSI  = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, mapExtensionContainer, gprsNodeIndicator, additionalNumber,
-            networkNodeDiameterAddress, additionalNetworkNodeDiameterAddress, thirdNumber, thirdNetworkNodeDiameterAddress, imsNodeIndicator, smsf3gppNumber, smsf3gppDiameterAddress, smsfNon3gppNumber,
-            smsfNon3gppDiameterAddress, smsf3gppAddressIndicator, smsfNon3gppAddressIndicator);
-    logger.info("LocationInfoWithLMSI for onSendRoutingInfoForSMRequest: NNN=" + locationInfoWithLMSI.getNetworkNodeNumber().getAddress() +
-            ", IMSI=" + imsi.getData() + ", LMSI=" + Arrays.toString(lmsi.getData()));
 
-    try {
-
-      curDialog.addSendRoutingInfoForSMResponse(invokeId, imsi, locationInfoWithLMSI, mapExtensionContainer, mwdSet,ipSmGwGuidance);
-      curDialog.close(false);
-
-      logger.debug("\nSendRoutingForSMResponse sent");
-      this.countMapSriForSmResp++;
-
-      this.testerHost.sendNotif(SOURCE_NAME, "Sent: SendRoutingForSMResponse",
-              createSRIforSMRespData(curDialog.getLocalDialogId(), imsi, locationInfoWithLMSI), Level.INFO);
-
-    } catch (MAPException e) {
-      this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking addSendRoutingInfoForSMResponse() : " + e.getMessage(), e, Level.ERROR);
+    Random rand = new Random();
+    switch (rand.nextInt(5) + 1) {
+      case 1:
+        lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 233, (byte) 140});
+        DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        DiameterIdentity mmeRealm = new DiameterIdentityImpl("epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        DiameterIdentity addMmeName = new DiameterIdentityImpl("mmec031.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        DiameterIdentity addMmeRealm = new DiameterIdentityImpl("epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        DiameterIdentity thirdMmeName = new DiameterIdentityImpl("mmec032.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        DiameterIdentity thirdMmeRealm = new DiameterIdentityImpl("epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+        networkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl(mmeName, mmeRealm);
+        additionalNetworkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl(addMmeName, addMmeRealm);
+        thirdNetworkNodeDiameterAddress = new NetworkNodeDiameterAddressImpl(thirdMmeName, thirdMmeRealm);
+        if (sriSMReqInd.getIpSmGwGuidanceIndicator())
+          imsNodeIndicator = true;
+        break;
+      case 2:
+        lmsi = new LMSIImpl(new byte[] {113, (byte) 255, (byte) 172, (byte) 206});
+        if (sriSMReqInd.getGprsSupportIndicator()) {
+          gprsNodeIndicator = true;
+          additionalNumber = new AdditionalNumberImpl(sgsnNumber, null);
+          thirdNumber = new AdditionalNumberImpl(null, trd2Number);
+        } else {
+          additionalNumber = new AdditionalNumberImpl(mscNumber, null);
+          thirdNumber = new AdditionalNumberImpl(trdNumber, null);
+        }
+        break;
+      case 3:
+        lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 235, 55});
+        gprsNodeIndicator = true;
+        break;
+      case 4:
+        lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 231, (byte) 213});
+        if (sriSMReqInd.getSmsfSupportIndicator()) {
+          smsfNon3gppNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900600");
+          DiameterIdentity smsfNon3gppName = new DiameterIdentityImpl("smsf03.mnc002.mcc748".getBytes(StandardCharsets.UTF_8));
+          DiameterIdentity smsfNon3gppRealm = new DiameterIdentityImpl("mnc002.mcc748.telco.com".getBytes(StandardCharsets.UTF_8));
+          smsfNon3gppDiameterAddress = new NetworkNodeDiameterAddressImpl(smsfNon3gppName, smsfNon3gppRealm);
+          smsfNon3gppAddressIndicator = true;
+        }
+        break;
+      case 5:
+        if (sriSMReqInd.getSmsfSupportIndicator()) {
+          smsf3gppNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "598991900505");
+          DiameterIdentity smsfName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+          DiameterIdentity smsfRealm = new DiameterIdentityImpl("epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+          smsf3gppDiameterAddress = new NetworkNodeDiameterAddressImpl(smsfName, smsfRealm);
+          smsf3gppAddressIndicator = true;
+        }
+        break;
     }
+
+    return new LocationInfoWithLMSIImpl(networkNodeNumber, lmsi, null, gprsNodeIndicator, additionalNumber,
+            networkNodeDiameterAddress, additionalNetworkNodeDiameterAddress, thirdNumber, thirdNetworkNodeDiameterAddress,
+            imsNodeIndicator, smsf3gppNumber, smsf3gppDiameterAddress, smsfNon3gppNumber, smsfNon3gppDiameterAddress,
+            smsf3gppAddressIndicator, smsfNon3gppAddressIndicator);
   }
 
-  private String createSRIforSMData(SendRoutingInfoForSMRequest sendRoutingInfoForSMRequest) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("dialogId=");
-    sb.append(sendRoutingInfoForSMRequest.getMAPDialog().getLocalDialogId());
-    sb.append(",\nsriReq=");
-    sb.append(sendRoutingInfoForSMRequest);
-    sb.append(",\nRemoteAddress=");
-    sb.append(sendRoutingInfoForSMRequest.getMAPDialog().getRemoteAddress());
-    sb.append(",\nLocalAddress=");
-    sb.append(sendRoutingInfoForSMRequest.getMAPDialog().getLocalAddress());
-
-    return sb.toString();
+  private String createSRISMData(SendRoutingInfoForSMRequest sendRoutingInfoForSMRequest) {
+    return "dialogId=" +
+        sendRoutingInfoForSMRequest.getMAPDialog().getLocalDialogId() +
+        ",\nsriReq=" +
+        sendRoutingInfoForSMRequest +
+        ",\nRemoteAddress=" +
+        sendRoutingInfoForSMRequest.getMAPDialog().getRemoteAddress() +
+        ",\nLocalAddress=" +
+        sendRoutingInfoForSMRequest.getMAPDialog().getLocalAddress();
   }
 
-  private String createSRIforSMRespData(long dialogId, IMSI imsi, LocationInfoWithLMSI locationInfoWithLMSI) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("dialogId=");
-    sb.append(dialogId);
-    sb.append(",\n imsi=");
-    sb.append(imsi);
-    sb.append(",\n locationInfo=");
-    sb.append(locationInfoWithLMSI);
-    sb.append(",\n");
-    return sb.toString();
+  private String createSRISMRespData(long dialogId, IMSI imsi, LocationInfoWithLMSI locationInfoWithLMSI) {
+    return "dialogId=" +
+        dialogId +
+        ",\n imsi=" +
+        imsi +
+        ",\n locationInfo=" +
+        locationInfoWithLMSI +
+        ",\n";
   }
 
-  //**************************//
-  //*** SRI methods ***//
-  //************************//
+  //***************************//
+  //****** SRISM methods *****//
+  //*************************//
   @Override
   public String performSendRoutingInformationResponse() {
     if (!isStarted) {
@@ -475,14 +524,12 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   public void onSendRoutingInformationRequest(SendRoutingInformationRequest sendRoutingInformationRequest) {
 
-    MAPErrorMessage mapErrorMessage = null;
     logger.debug("\nonSendRoutingInfoRequest");
     if (!isStarted)
       return;
 
     this.countMapSriReq++;
 
-    MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
     MAPDialogCallHandling curDialog = sendRoutingInformationRequest.getMAPDialog();
     long invokeId = sendRoutingInformationRequest.getInvokeId();
 
@@ -502,7 +549,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     // Set Calling SCCP Address (HLR for SRI response)
     curDialog.setLocalAddress(getHLRSCCPAddress("598991700001"));
 
-    // Generate MAP errors for specific MSISDNs
+    // Generate MAP errors for specific MSISDN
     if (msisdnAddress.equalsIgnoreCase("99998888")) {
       InvokeProblemType invokeProblemType = InvokeProblemType.ResourceLimitation;
       Problem problem = new ProblemImpl();
@@ -515,7 +562,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       }
       logger.debug("\nRejectComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
-          createSRIRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
+              createSRIRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
       return;
     }
     if (msisdnAddress.equalsIgnoreCase("99990000")) {
@@ -528,7 +575,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       }
       logger.debug("\nErrorComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
-          createSRIRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
+              createSRIRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
       return;
     }
 
@@ -562,18 +609,16 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     try {
 
       Random rand = new Random();
-
-      int sriLcsResponseDelay = rand.nextInt(150);
       try {
-        Thread.sleep(sriLcsResponseDelay);
+        Thread.sleep(rand.nextInt(150));
       } catch (InterruptedException e) {
         logger.error(e.getMessage());
       }
 
       curDialog.addSendRoutingInformationResponse(invokeId, imsi, extRoutingInfo, cugCheckInfo, cugSubscriptionFlag, subscriberInfo, ssList,
-          basicService, forwardingInterrogationRequired, vmscAddress, extensionContainer, naeaPreferredCI, ccbsIndicators,
-          msisdn, nrPortabilityStatus, istAlertTimer, supportedCamelPhases, offeredCamel4CSIs, routingInfo2, ssList2, basicService2,
-          allowedServices, unavailabilityCause, releaseResourcesSupported, gsmBearerCapability);
+              basicService, forwardingInterrogationRequired, vmscAddress, extensionContainer, naeaPreferredCI, ccbsIndicators,
+              msisdn, nrPortabilityStatus, istAlertTimer, supportedCamelPhases, offeredCamel4CSIs, routingInfo2, ssList2, basicService2,
+              allowedServices, unavailabilityCause, releaseResourcesSupported, gsmBearerCapability);
 
       curDialog.close(false);
 
@@ -581,7 +626,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       this.countMapSriResp++;
 
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: SendRoutingInformationResponse",
-          createSRIRespData(curDialog.getLocalDialogId(), imsi, vmscAddress), Level.INFO);
+              createSRIRespData(curDialog.getLocalDialogId(), imsi, vmscAddress), Level.INFO);
 
     } catch (MAPException e) {
       this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking addSendRoutingInformationResponse() : " + e.getMessage(), e, Level.ERROR);
@@ -589,29 +634,25 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   }
 
   private String createSRIData(SendRoutingInformationRequest sendRoutingInformationRequest) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("dialogId=");
-    sb.append(sendRoutingInformationRequest.getMAPDialog().getLocalDialogId());
-    sb.append(",\nsriReq=");
-    sb.append(sendRoutingInformationRequest);
-    sb.append(",\nRemoteAddress=");
-    sb.append(sendRoutingInformationRequest.getMAPDialog().getRemoteAddress());
-    sb.append(",\nLocalAddress=");
-    sb.append(sendRoutingInformationRequest.getMAPDialog().getLocalAddress());
 
-    return sb.toString();
+    return "dialogId=" +
+        sendRoutingInformationRequest.getMAPDialog().getLocalDialogId() +
+        ",\nsriReq=" +
+        sendRoutingInformationRequest +
+        ",\nRemoteAddress=" +
+        sendRoutingInformationRequest.getMAPDialog().getRemoteAddress() +
+        ",\nLocalAddress=" +
+        sendRoutingInformationRequest.getMAPDialog().getLocalAddress();
   }
 
   private String createSRIRespData(long dialogId, IMSI imsi, ISDNAddressString vmscAddress) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("dialogId=");
-    sb.append(dialogId);
-    sb.append(",\n imsi=");
-    sb.append(imsi);
-    sb.append(",\n vmscAddress=");
-    sb.append(vmscAddress);
-    sb.append(",\n");
-    return sb.toString();
+    return "dialogId=" +
+        dialogId +
+        ",\n imsi=" +
+        imsi +
+        ",\n vmscAddress=" +
+        vmscAddress +
+        ",\n";
   }
 
   //********************//
@@ -634,7 +675,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
   public void onProvideSubscriberInfoRequest(ProvideSubscriberInfoRequest provideSubscriberInfoRequest) {
 
-    MAPErrorMessage mapErrorMessage = null;
+    MAPErrorMessage mapErrorMessage;
     logger.debug("\nonProvideSubscriberInfoRequest");
     if (!isStarted)
       return;
@@ -671,7 +712,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       }
       logger.debug("\nRejectComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
-          createPSIRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
+              createPSIRespData(curDialog.getLocalDialogId(), null), Level.INFO);
       return;
     } else if (provideSubscriberInfoRequest.getImsi().getData().equals("502153147968442")) {
       MAPErrorMessage mapErrorMessage1 = new MAPErrorMessageUnknownSubscriberImpl();
@@ -683,7 +724,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       }
       logger.debug("\nErrorComponent sent");
       this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
-          createPSIRespData(curDialog.getLocalDialogId(), null, null), Level.INFO);
+              createPSIRespData(curDialog.getLocalDialogId(), null), Level.INFO);
       return;
     }
 
@@ -696,13 +737,11 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       switch (psiReaction.intValue()) {
 
         case PSIReaction.VAL_RETURN_SUCCESS:
-          String msisdnStr = "59899077937";
-          ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, msisdnStr);
           SubscriberInfo subscriberInfo;
           LocationInformation locationInformation = null;
           LocationInformationEPS locationInformationEPS = null;
           LocationInformationGPRS locationInformationGPRS = null;
-          Integer ageOfLocationInformation = 0;
+          int ageOfLocationInformation = 0;
           Boolean currentLocationRetrieved = null;
           boolean saiPresent;
           int mcc, mnc, lac, cellId;
@@ -743,6 +782,12 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
           TimeZone timeZone = null;
           DaylightSavingTime daylightSavingTime = null;
           LocationInformation5GS locationInformation5GS = null;
+          NRCellGlobalIdImpl nrCellGlobalIdentity = new NRCellGlobalIdImpl();
+          FQDN amfAddress;
+          PlmnId vplmnId;
+          TimeZone localTimeZone;
+          UsedRATType ratType;
+          NRTAIdImpl nrTrackingAreaIdentity;
 
           if (requestedInfo.getLocationInformation()) {
             if (requestedInfo.getCurrentLocation()) {
@@ -825,8 +870,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
             int geodeticConfidence = 1;
             int screeningAndPresentationIndicators = 3;
             //geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
-            int randLoc = rand.nextInt(10) + 1;
-            switch(randLoc) {
+            switch(rand.nextInt(10) + 1) {
               case 1:
                 mcc = 748;
                 mnc = 1;
@@ -964,7 +1008,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
             if (requestedInfo.getRequestedDomain() == null || requestedInfo.getRequestedDomain() == DomainType.csDomain) {
               mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,NumberingPlan.ISDN, mscAddress);
               vlrNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
-                  NumberingPlan.ISDN, vlrAddress);
+                      NumberingPlan.ISDN, vlrAddress);
               int natureOfAddressIndicator = 4;
               String locationNumberAddressDigits= "819203961904";
               int numberingPlanIndicator = 1;
@@ -972,7 +1016,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               int addressRepresentationRestrictedIndicator = 1;
               int screeningIndicator = 3;
               locationNumber = new LocationNumberImpl(natureOfAddressIndicator, locationNumberAddressDigits, numberingPlanIndicator,
-                  internalNetworkNumberIndicator, addressRepresentationRestrictedIndicator, screeningIndicator);
+                      internalNetworkNumberIndicator, addressRepresentationRestrictedIndicator, screeningIndicator);
               locationNumberMap = null;
               try {
                 locationNumberMap = new LocationNumberMapImpl(locationNumber);
@@ -981,10 +1025,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               }
               eUtranCgi = new EUtranCgiImpl(lteCgi);
               taId = new TAIdImpl(trackingAreaId);
-              //byte[] mmeNom = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
-              //DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNom);
-              String mmneNameStr = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
-              byte[] mme = mmneNameStr.getBytes();
+              byte[] mme = "mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes();
               DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
               byte[] lsaId = {49, 51, 50};
               LSAIdentity selectedLSAId = new LSAIdentityImpl(lsaId);
@@ -1013,7 +1054,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geodeticInformation = null;
                   mscNumber = null;
                   vlrNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
-                      NumberingPlan.ISDN, vlrAddress);
+                          NumberingPlan.ISDN, vlrAddress);
                 } else if (notReachableReason == NotReachableReason.restrictedArea) {
                   ageOfLocationInformation = 300;
                   currentLocationRetrieved = false;
@@ -1021,7 +1062,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geodeticInformation = null;
                   mscNumber = null;
                   vlrNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
-                      NumberingPlan.ISDN, vlrAddress);
+                          NumberingPlan.ISDN, vlrAddress);
                 } else if (notReachableReason == NotReachableReason.msPurged) {
                   ageOfLocationInformation = 221;
                   currentLocationRetrieved = false;
@@ -1029,7 +1070,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geodeticInformation = null;
                   mscNumber = null;
                   vlrNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
-                      NumberingPlan.ISDN, vlrAddress);
+                          NumberingPlan.ISDN, vlrAddress);
                 } else {
                   ageOfLocationInformation = 1879;
                   currentLocationRetrieved = false;
@@ -1037,43 +1078,160 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   geodeticInformation = null;
                   mscNumber = null;
                   vlrNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
-                      NumberingPlan.ISDN, vlrAddress);
+                          NumberingPlan.ISDN, vlrAddress);
                 }
               }
-              boolean epsLocationInfoSupported = requestedInfo.getLocationInformationEPSSupported();
-              if (!epsLocationInfoSupported) {
+              if (!requestedInfo.getLocationInformationEPSSupported()) {
                 locationInformationEPS = null; // set locationInformationEPS to null
                 locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                    vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber, geodeticInformation,
-                    currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                        vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber, geodeticInformation,
+                        currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
               } else {
                 if (this.countMapPsiReq % 4 == 0) {
-                  // Let's set that one out of 4 PSI requests (25%) with epsLocationInfoSupported = true
+                  // Let's set that one out of 4 PSI requests (25%) with requestedInfo.getLocationInformationEPSSupported() = true
                   // doesn't retrieve EPS location information (as if the subscriber is under GERAN or UTRAN coverage only)
                   locationInformationEPS = null;
-                  locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                      vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber, geodeticInformation,
-                      currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                  if (rand.nextInt(4 + 1) == 1) {
+                    BitSetStrictLength csgIdBitSet = new BitSetStrictLength(27);
+                    csgIdBitSet.set(0);
+                    csgIdBitSet.set(1);
+                    csgIdBitSet.set(25);
+                    csgIdBitSet.set(26);
+                    CSGId csgId = new CSGIdImpl(csgIdBitSet);
+                    Integer accessMode = 1;
+                    Integer cmi = 2;
+                    userCSGInformation = new UserCSGInformationImpl(csgId, null, accessMode, cmi);
+                    currentLocationRetrieved = ageOfLocationInformation == 0;
+                    locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
+                            vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, null, null, mscNumber, geodeticInformation,
+                            currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                  } else {
+                    locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
+                            vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber, geodeticInformation,
+                            currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                  }
                 } else {
-                  // Rest of PSI requests (75%) does retrieve EPS location information (subscriber under E-UTRAN coverage)
-                  // thus, locationInformationEPS is NOT null, but rest of CS location information is null (except for Location Number)
-                  locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
-                      geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
-                  ageOfLocationInformation = null;
+                  // Rest of PSI requests (75%) does retrieve EPS and/or 5GS location information (subscriber under E-UTRAN or NR coverage)
+                  // thus, locationInformationEPS/5GS is NOT null, but rest of CS location information is null (except for Location Number)
                   geographicalInformation = null;
-                  vlrNumber = null;
-                  cellGlobalIdOrServiceAreaIdOrLAI = null;
-                  selectedLSAId = null;
-                  mscNumber = null;
                   geodeticInformation = null;
-                  locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                      vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber, geodeticInformation,
-                      currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                  switch (rand.nextInt(10 + 1)) {
+                    case 1:
+                      // another case of target subscriber is under 5G NSA (E-UTRAN and NR)
+                      geographicalLatitude = -34.909744;
+                      geographicalLongitude = -56.146317;
+                      geographicalUncertainty = 1.0;
+                      geographicalInformation = new GeographicalInformationImpl(typeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+                      geodeticInformation = null;
+                      lteCgi = hexStringToByteArray("47f81000095f02"); // ECGI = 748-1-614146; TBCD encoded: 47f81000095f02
+                      trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
+                      eUtranCgi = new EUtranCgiImpl(lteCgi);
+                      taId = new TAIdImpl(trackingAreaId);
+                      mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+                      locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
+                              geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                      nrCellGlobalIdentity.setData(748, 1, 42949672954L);
+                      amfAddress = new FQDNImpl("amf1.cluster1.net2.amf.5gc.mnc01.mcc748.3gppnetwork.org".getBytes());
+                      vplmnId = new PlmnIdImpl(748, 1);
+                      localTimeZone = new TimeZoneImpl(new byte[] {0,9});
+                      ratType = UsedRATType.eUtran;
+                      nrTrackingAreaIdentity = new NRTAIdImpl();
+                      nrTrackingAreaIdentity.setData(748, 1, 595578);
+                      geodeticLatitude = -34.910349;
+                      geodeticLongitude = -56.149832;
+                      geodeticUncertainty = 2.0;
+                      geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                      geographicalInformation = null;
+                      locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, eUtranCgi, geographicalInformation,
+                              geodeticInformation, amfAddress, taId, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
+                              localTimeZone, ratType, null, nrTrackingAreaIdentity);
+                      locationInformation = null;
+                      break;
+                    case 2:
+                      currentLocationRetrieved = ageOfLocationInformation == 0;
+                      // target subscriber is under 5G NR SA
+                      try {
+                        nrCellGlobalIdentity.setData(748, 1, 42949672954L);
+                        amfAddress = new FQDNImpl("amf1.cluster1.net2.amf.5gc.mnc01.mcc748.3gppnetwork.org".getBytes());
+                        vplmnId = new PlmnIdImpl(748, 1);
+                        localTimeZone = new TimeZoneImpl(new byte[] {0,9});
+                        ratType = null;
+                        nrTrackingAreaIdentity = new NRTAIdImpl();
+                        nrTrackingAreaIdentity.setData(748, 1, 595578);
+                        geographicalLatitude = -34.909744;
+                        geographicalLongitude = -56.146317;
+                        geographicalUncertainty = 1.0;
+                        geographicalInformation = new GeographicalInformationImpl(typeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+                        geodeticInformation = null;
+                        locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, null, geographicalInformation,
+                                geodeticInformation, amfAddress, null, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
+                                localTimeZone, ratType, null, nrTrackingAreaIdentity);
+                      } catch (MAPException ex) {
+                        logger.error(ex.getMessage());
+                      }
+                      break;
+                    case 3:
+                      geographicalLatitude = -34.909744;
+                      geographicalLongitude = -56.146317;
+                      geographicalUncertainty = 1.0;
+                      geographicalInformation = new GeographicalInformationImpl(typeOfShape, geographicalLatitude, geographicalLongitude, geographicalUncertainty);
+                      geodeticInformation = null;
+                      lteCgi = hexStringToByteArray("47f81000095f02"); // ECGI = 748-1-614146; TBCD encoded: 47f81000095f02
+                      trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
+                      eUtranCgi = new EUtranCgiImpl(lteCgi);
+                      taId = new TAIdImpl(trackingAreaId);
+                      mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+                      locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
+                              geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                      locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
+                              vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber, geodeticInformation,
+                              currentLocationRetrieved, saiPresent, null, userCSGInformation);
+                      break;
+                    case 4:
+                      // another case of target subscriber is under 5G NSA (E-UTRAN and NR)
+                      try {
+                        nrCellGlobalIdentity.setData(748, 2, 34359738376L);
+                        amfAddress = new FQDNImpl("amf3.cluster2.net2.amf.5gc.mnc02.mcc748.3gppnetwork.org".getBytes());
+                        vplmnId = new PlmnIdImpl(748, 2);
+                        localTimeZone = new TimeZoneImpl(new byte[] {0, 8});
+                        ratType = UsedRATType.nbIoT;
+                        nrTrackingAreaIdentity = new NRTAIdImpl();
+                        nrTrackingAreaIdentity.setData(748, 2, 495570);
+                        currentLocationRetrieved = ageOfLocationInformation == 0;
+                        geodeticLatitude = -34.910349;
+                        geodeticLongitude = -56.149832;
+                        geodeticUncertainty = 2.0;
+                        geodeticInformation = new GeodeticInformationImpl(screeningAndPresentationIndicators, typeOfShape, geodeticLatitude, geodeticLongitude, geodeticUncertainty, geodeticConfidence);
+                        locationInformation5GS = new LocationInformation5GSImpl(nrCellGlobalIdentity, eUtranCgi, geographicalInformation,
+                                geodeticInformation, amfAddress, taId, currentLocationRetrieved, ageOfLocationInformation, vplmnId,
+                                localTimeZone, ratType, null, nrTrackingAreaIdentity);
+                        lteCgi = hexStringToByteArray("47f81000095f02"); // ECGI = 748-1-614146; TBCD encoded: 47f81000095f02
+                        trackingAreaId = hexStringToByteArray("47f810006d"); // TAI = 748-1-109; TBCD encoded: 47f810006d
+                        eUtranCgi = new EUtranCgiImpl(lteCgi);
+                        taId = new TAIdImpl(trackingAreaId);
+                        mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes());
+                        locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
+                                geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                      } catch (MAPException ex) {
+                        logger.error(ex.getMessage());
+                      }
+                      break;
+                    default:
+                      // target subscriber has EPS location information within CS location information
+                      currentLocationRetrieved = ageOfLocationInformation == 0;
+                      locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
+                              geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
+                      locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(null, null,
+                              null, null, null, null, null, null, null,
+                              false, false, locationInformationEPS, null);
+                      locationInformationEPS = null; // If the HLR receives locationInformationEPS (outside the locationInformation IE) from a VLR, it shall discard it.
+                      break;
+                  }
                 }
               }
 
             } else {
-              switch(randLoc) {
+              switch(rand.nextInt(10) + 1) {
                 case 1:
                   mcc = 748;
                   mnc = 1;
@@ -1187,10 +1345,8 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                   break;
               }
               byte[] raId = hexStringToByteArray("47f810006517");
-              if (this.countMapPsiReq % 2 == 0)
-                saiPresent = true; // set saiPresent to true if this PSI request is even since test started
-              else
-                saiPresent = false; // set saiPresent to false if this PSI request is odd since test started
+              // set saiPresent to false if this PSI request is odd since test started
+              saiPresent = this.countMapPsiReq % 2 == 0; // set saiPresent to true if this PSI request is even since test started
               try {
                 cgiOrSai = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdFixedLength(mcc, mnc, lac, cellId);
               } catch (MAPException ex) {
@@ -1199,7 +1355,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               cellGlobalIdOrServiceAreaIdOrLAI = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdOrLAI(cgiOrSai);
               routeingAreaIdentity = new RAIdentityImpl(raId);
               sgsnNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
-                  NumberingPlan.ISDN, sgsnAddress);
+                      NumberingPlan.ISDN, sgsnAddress);
               byte[] lsaId = {49, 51, 49};
               selectedLSAIdentity = new LSAIdentityImpl(lsaId);
               if (psSubscriberStateChoice == PSSubscriberStateChoice.psAttachedReachableForPaging) {
@@ -1225,22 +1381,20 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
                 geodeticInformation = null;
               }
               locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
-                  routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAIdentity, extensionContainer, saiPresent, geodeticInformation,
-                  currentLocationRetrieved, ageOfLocationInformation);
+                      routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAIdentity, extensionContainer, saiPresent, geodeticInformation,
+                      currentLocationRetrieved, ageOfLocationInformation);
             }
           }
 
           if (requestedInfo.getMnpRequestedInfo()) {
             if (subscriberStateChoice != SubscriberStateChoice.netDetNotReachable &&
-                psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
-                psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
-              //RouteingNumber routeingNumber = mapProvider.getMAPParameterFactory().createRouteingNumber("5555555888");
+                    psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
+                    psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
               routeingNumber = new RouteingNumberImpl("598123");
               IMSI mnpImsi = new IMSIImpl("748026871012345");
-              ISDNAddressString mnpMsisdn = new ISDNAddressStringImpl(AddressNature.international_number,
-                  NumberingPlan.ISDN, msisdnStr);
+              ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "59899077937");
               numberPortabilityStatus = NumberPortabilityStatus.ownNumberNotPortedOut;
-              mnpInfoRes = mapProvider.getMAPParameterFactory().createMNPInfoRes(routeingNumber, mnpImsi, mnpMsisdn, numberPortabilityStatus, extensionContainer);
+              mnpInfoRes = mapProvider.getMAPParameterFactory().createMNPInfoRes(routeingNumber, mnpImsi, msisdn, numberPortabilityStatus, extensionContainer);
             } else {
               mnpInfoRes = null;
             }
@@ -1248,8 +1402,8 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
           if (requestedInfo.getImei()) {
             if (subscriberStateChoice != SubscriberStateChoice.netDetNotReachable &&
-                psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
-                psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
+                    psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
+                    psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
               if (requestedInfo.getRequestedDomain() == null || requestedInfo.getRequestedDomain() == DomainType.csDomain) {
                 imei = mapProvider.getMAPParameterFactory().createIMEI("011714004661050");
               } else {
@@ -1270,7 +1424,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               }
             } else {
               if (psSubscriberStateChoice != PSSubscriberStateChoice.psAttachedNotReachableForPaging &&
-                  psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
+                      psSubscriberStateChoice != PSSubscriberStateChoice.netDetNotReachable) {
                 byte[] mSNetworkCapabilityB = hexStringToByteArray("3130303032303331");
                 MSNetworkCapability mSNetworkCapability = new MSNetworkCapabilityImpl(mSNetworkCapabilityB);
                 byte[] mSRadioAccessCapabilityB = hexStringToByteArray("31303030323033313730383134");
@@ -1285,7 +1439,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
           try {
 
             subscriberInfo = mapProvider.getMAPParameterFactory().createSubscriberInfo(locationInformation, subscriberState, extensionContainer,
-                locationInformationGPRS, psSubscriberState, imei, msClassmark2, gprsMSClass, mnpInfoRes, imsVoiceOverPsSessionsIndication, lastUEActivityTime,
+                    locationInformationGPRS, psSubscriberState, imei, msClassmark2, gprsMSClass, mnpInfoRes, imsVoiceOverPsSessionsIndication, lastUEActivityTime,
                     lastRATType, epsSubscriberState, locationInformationEPS, timeZone, daylightSavingTime, locationInformation5GS);
 
             delayResponse(300);
@@ -1297,7 +1451,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
             this.countMapPsiResp++;
 
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: ProvideSubscriberInfoResponse",
-                createPSIRespData(curDialog.getLocalDialogId(), subscriberInfo, extensionContainer), Level.INFO);
+                    createPSIRespData(curDialog.getLocalDialogId(), subscriberInfo), Level.INFO);
 
           } catch (MAPException e) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking addProvideSubscriberInfoResponse() : " + e.getMessage(), e, Level.ERROR);
@@ -1306,7 +1460,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
         case PSIReaction.VAL_UNEXPECTED_DATA_VALUE:
           mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageExtensionContainer(
-              (long) MAPErrorCode.unexpectedDataValue, null);
+                  (long) MAPErrorCode.unexpectedDataValue, null);
           curDialog.sendErrorComponent(invokeId, mapErrorMessage);
           this.countErrSent++;
           psiReqData = this.createErrorData(curDialog.getLocalDialogId(), (int) invokeId, mapErrorMessage);
@@ -1315,7 +1469,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
         case PSIReaction.VAL_ERROR_SYSTEM_FAILURE:
           mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageSystemFailure(
-              (long) curDialog.getApplicationContext().getApplicationContextVersion().getVersion(), NetworkResource.hlr, null, null);
+                  curDialog.getApplicationContext().getApplicationContextVersion().getVersion(), NetworkResource.hlr, null, null);
           curDialog.sendErrorComponent(invokeId, mapErrorMessage);
           this.countErrSent++;
           psiReqData = this.createErrorData(curDialog.getLocalDialogId(), (int) invokeId, mapErrorMessage);
@@ -1324,7 +1478,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
         case PSIReaction.VAL_DATA_MISSING:
           mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageExtensionContainer(
-              (long) MAPErrorCode.dataMissing, null);
+                  (long) MAPErrorCode.dataMissing, null);
           curDialog.sendErrorComponent(invokeId, mapErrorMessage);
           this.countErrSent++;
           psiReqData = this.createErrorData(curDialog.getLocalDialogId(), (int) invokeId, mapErrorMessage);
@@ -1333,11 +1487,11 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
         case PSIReaction.VAL_ERROR_UNKNOWN_SUBSCRIBER:
           mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageUnknownSubscriber(null,
-              UnknownSubscriberDiagnostic.imsiUnknown);
+                  UnknownSubscriberDiagnostic.imsiUnknown);
           curDialog.sendErrorComponent(invokeId, mapErrorMessage);
           this.countErrSent++;
           psiReqData = this.createErrorData(curDialog.getLocalDialogId(), (int) invokeId, mapErrorMessage);
-          this.testerHost.sendNotif(SOURCE_NAME, "Sent: errUnkownSubs", psiReqData, Level.DEBUG);
+          this.testerHost.sendNotif(SOURCE_NAME, "Sent: errUnknownSubs", psiReqData, Level.DEBUG);
           break;
       }
 
@@ -1348,58 +1502,64 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   }
 
   private String createPSIReqData(ProvideSubscriberInfoRequest provideSubscriberInfoRequest) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("dialogId=");
-    sb.append(provideSubscriberInfoRequest.getMAPDialog().getLocalDialogId());
-    sb.append(",\nPSI Operation Code=");
-    sb.append(provideSubscriberInfoRequest.getOperationCode());
-    sb.append(",\nRemoteAddress=");
-    sb.append(provideSubscriberInfoRequest.getMAPDialog().getRemoteAddress());
-    sb.append(",\nLocalAddress=");
-    sb.append(provideSubscriberInfoRequest.getMAPDialog().getLocalAddress());
-    sb.append(",\nPSI Request=");
-    sb.append(provideSubscriberInfoRequest);
 
-    return sb.toString();
+    return "dialogId=" +
+        provideSubscriberInfoRequest.getMAPDialog().getLocalDialogId() +
+        ",\nPSI Operation Code=" +
+        provideSubscriberInfoRequest.getOperationCode() +
+        ",\nRemoteAddress=" +
+        provideSubscriberInfoRequest.getMAPDialog().getRemoteAddress() +
+        ",\nLocalAddress=" +
+        provideSubscriberInfoRequest.getMAPDialog().getLocalAddress() +
+        ",\nPSI Request=" +
+        provideSubscriberInfoRequest;
   }
 
-  private String createPSIRespData(long dialogId, SubscriberInfo subscriberInfo, MAPExtensionContainer mapExtensionContainer) {
+  private String createPSIRespData(long dialogId, SubscriberInfo subscriberInfo) {
     StringBuilder sb = new StringBuilder();
     sb.append("dialogId=");
     sb.append(dialogId);
     if (subscriberInfo.getLocationInformation() != null) {
       if (subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI() != null) {
         if (subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength() != null) {
+          sb.append(",\nCGI [");
           try {
-            sb.append(",\nMCC=");
-            sb.append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getMCC());
-            sb.append(",\nMNC=");
-            sb.append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getMNC());
-            sb.append(",\nLAC=");
-            sb.append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getLac());
-            sb.append(",\nCI=");
-            sb.append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode());
+            sb.append("mcc=");
+            sb.append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().
+                    getCellGlobalIdOrServiceAreaIdFixedLength().getMCC());
+            sb.append(", mnc=");
+            sb.append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().
+                    getCellGlobalIdOrServiceAreaIdFixedLength().getMNC());
+            if (subscriberInfo.getLocationInformation().getSaiPresent())
+              sb.append(", sac=").append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().
+                      getCellGlobalIdOrServiceAreaIdFixedLength().getLac());
+            else
+              sb.append(", lac=").append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().
+                    getCellGlobalIdOrServiceAreaIdFixedLength().getLac());
+            sb.append(",\nci=");
+            sb.append(subscriberInfo.getLocationInformation().getCellGlobalIdOrServiceAreaIdOrLAI().
+                    getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode()).append("]");
           } catch (MAPException e) {
             logger.error(e.getMessage());
           }
         }
         if (subscriberInfo.getLocationInformation().getLocationNumber() != null) {
-          sb.append(",\nLocation number=");
+          sb.append(",\nLocationNumber [");
           try {
-            sb.append(",\nLocation number address digits=");
+            sb.append(", address digits=");
             sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getAddress());
-            sb.append(",\nLocation number NAI=");
+            sb.append(", NAI=");
             sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getNatureOfAddressIndicator());
-            sb.append(",\nLocation number code=");
+            sb.append(", code=");
             sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getCode());
-            sb.append(",\nLocation number NPI=");
+            sb.append(", NPI=");
             sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getNumberingPlanIndicator());
-            sb.append(",\nLocation number AddressRepresentationRestrictedIndicator=");
+            sb.append(", AddressRepresentationRestrictedIndicator=");
             sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getAddressRepresentationRestrictedIndicator());
-            sb.append(",\nLocation number InternalNetworkNumberIndicator=");
+            sb.append(", InternalNetworkNumberIndicator=");
             sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getInternalNetworkNumberIndicator());
-            sb.append(",\nLocation number ScreeningIndicator=");
-            sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getScreeningIndicator());
+            sb.append(", ScreeningIndicator=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationNumber().getLocationNumber().getScreeningIndicator()).append("]");
           } catch (MAPException e) {
             logger.error(e.getMessage());
           }
@@ -1418,28 +1578,29 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       sb.append(",\nSAI present=");
       sb.append(subscriberInfo.getLocationInformation().getSaiPresent());
       if (subscriberInfo.getLocationInformation().getGeographicalInformation() != null) {
-        sb.append(",\nGeographicalLatitude=");
+        sb.append(",\nGeographicalInformation [Latitude=");
         sb.append(subscriberInfo.getLocationInformation().getGeographicalInformation().getLatitude());
-        sb.append(",\nGeographical Longitude=");
+        sb.append(", Longitude=");
         sb.append(subscriberInfo.getLocationInformation().getGeographicalInformation().getLongitude());
-        sb.append(",\nGeographicalUncertainty=");
+        sb.append(", Uncertainty=");
         sb.append(subscriberInfo.getLocationInformation().getGeographicalInformation().getUncertainty());
-        sb.append(",\nGeographical Type of Shape=");
-        sb.append(subscriberInfo.getLocationInformation().getGeographicalInformation().getTypeOfShape());
+        sb.append(", Type of Shape=");
+        sb.append(subscriberInfo.getLocationInformation().getGeographicalInformation().getTypeOfShape()).append("]");
       }
-      if (subscriberInfo.getLocationInformation().getGeographicalInformation() != null) {
-        sb.append(",\nGeodetic Latitude=");
+      if (subscriberInfo.getLocationInformation().getGeodeticInformation() != null) {
+        sb.append(",\nGeodeticInformation [Latitude=");
         sb.append(subscriberInfo.getLocationInformation().getGeodeticInformation().getLatitude());
-        sb.append(",\nGeodetic Longitude=");
+        sb.append(", Longitude=");
         sb.append(subscriberInfo.getLocationInformation().getGeodeticInformation().getLongitude());
-        sb.append(",\nGeodetic Uncertainty=");
+        sb.append(", Uncertainty=");
         sb.append(subscriberInfo.getLocationInformation().getGeodeticInformation().getUncertainty());
-        sb.append(",\nGeodetic Confidence=");
+        sb.append(", Confidence=");
         sb.append(subscriberInfo.getLocationInformation().getGeodeticInformation().getConfidence());
-        sb.append(",\nGeodetic Type of Shape=");
+        sb.append(", Type of Shape=");
         sb.append(subscriberInfo.getLocationInformation().getGeodeticInformation().getTypeOfShape());
-        sb.append(",\nGeodetic Screening and Presentation Indicators=");
-        sb.append(subscriberInfo.getLocationInformation().getGeodeticInformation().getScreeningAndPresentationIndicators());
+        sb.append(", Screening and Presentation Indicators=");
+        sb.append(subscriberInfo.getLocationInformation().getGeodeticInformation().
+                getScreeningAndPresentationIndicators()).append("]");
       }
       sb.append(",\nCurrent Location Retrieved=");
       sb.append(subscriberInfo.getLocationInformation().getCurrentLocationRetrieved());
@@ -1449,36 +1610,57 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
           sb.append(new String(subscriberInfo.getLocationInformation().getLocationInformationEPS().getMmeName().getData()));
         }
         if (subscriberInfo.getLocationInformation().getLocationInformationEPS().getEUtranCellGlobalIdentity() != null) {
-          sb.append(",\nE-UTRAN CGI=");
-          sb.append(new String(subscriberInfo.getLocationInformation().getLocationInformationEPS().getEUtranCellGlobalIdentity().getData()));
+          try {
+            sb.append(",\nECGI [mcc=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getEUtranCellGlobalIdentity().getMCC());
+            sb.append(", mnc=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getEUtranCellGlobalIdentity().getMNC());
+            sb.append(", eci=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getEUtranCellGlobalIdentity().getEci());
+            sb.append(", eNBId=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getEUtranCellGlobalIdentity().getENodeBId());
+            sb.append(", ci=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getEUtranCellGlobalIdentity().getCi()).append("]");
+          } catch (MAPException e) {
+            logger.error(e.getMessage());
+          }
         }
         if (subscriberInfo.getLocationInformation().getLocationInformationEPS().getTrackingAreaIdentity() != null) {
-          sb.append(",\nEPS Traking Identity=");
-          sb.append(new String(subscriberInfo.getLocationInformation().getLocationInformationEPS().getTrackingAreaIdentity().getData()));
+          try {
+            sb.append(",\nEPS Tracking Area Identity [mcc=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getTrackingAreaIdentity().getMCC());
+            sb.append(", mnc=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getTrackingAreaIdentity().getMNC());
+            sb.append(", tac=");
+            sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getTrackingAreaIdentity().getTAC()).append("]");
+          } catch (MAPException e) {
+            logger.error(e.getMessage());
+          }
         }
         if (subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeographicalInformation() != null) {
-          sb.append(",\nEPS GeographicalLatitude=");
+          sb.append(",\nEPS GeographicalInformation [Latitude=");
           sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeographicalInformation().getLatitude());
-          sb.append(",\nEPS Geographical Longitude=");
+          sb.append(", Longitude=");
           sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeographicalInformation().getLongitude());
-          sb.append(",\nEPS GeographicalUncertainty=");
+          sb.append(", Uncertainty=");
           sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeographicalInformation().getUncertainty());
-          sb.append(",\nEPS Geographical Type of Shape Code=");
-          sb.append(subscriberInfo.getLocationInformation().getGeographicalInformation().getTypeOfShape().getCode());
+          sb.append(", Type of Shape=");
+          sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeographicalInformation().getTypeOfShape()).append("]");
         }
         if (subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeodeticInformation() != null) {
-          sb.append(",\nEPS Geodetic Latitude=");
+          sb.append(",\nEPS Geodetic Information [Latitude=");
           sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeodeticInformation().getLatitude());
-          sb.append(",\nEPS Geodetic Longitude=");
+          sb.append(", Geodetic Longitude=");
           sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeodeticInformation().getLongitude());
-          sb.append(",\nEPS Geodetic Uncertainty=");
+          sb.append(", Geodetic Uncertainty=");
           sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeodeticInformation().getUncertainty());
-          sb.append(",\nEPS Geodetic Confidence=");
+          sb.append(", Geodetic Confidence=");
           sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeodeticInformation().getConfidence());
-          sb.append(",\nEPS Geodetic Type of Shape=");
+          sb.append(", Geodetic Type of Shape=");
           sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeodeticInformation().getTypeOfShape());
-          sb.append(",\nEPS Geodetic Screening and Presentation Indicators=");
-          sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeodeticInformation().getScreeningAndPresentationIndicators());
+          sb.append(", Geodetic Screening and Presentation Indicators=");
+          sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getGeodeticInformation().
+                  getScreeningAndPresentationIndicators()).append("]");
         }
         sb.append(",\nEPS Current Location Retrieved=");
         sb.append(subscriberInfo.getLocationInformation().getLocationInformationEPS().getCurrentLocationRetrieved());
@@ -1487,86 +1669,229 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       }
     }
     if (subscriberInfo.getLocationInformationGPRS() != null) {
+      sb.append(",\nGPRS LocationInformation");
       if (subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI() != null) {
         if (subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength() != null) {
+          sb.append(",\nCGI [");
           try {
-            sb.append(",\nMCC=");
-            sb.append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getMCC());
-            sb.append(",\nMNC=");
-            sb.append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getMNC());
-            sb.append(",\nLAC=");
-            sb.append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getLac());
-            sb.append(",\nCI=");
-            sb.append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode());
+            sb.append("mcc=");
+            sb.append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().
+                    getCellGlobalIdOrServiceAreaIdFixedLength().getMCC());
+            sb.append(", mnc=");
+            sb.append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().
+                    getCellGlobalIdOrServiceAreaIdFixedLength().getMNC());
+            if (subscriberInfo.getLocationInformationGPRS().isSaiPresent())
+              sb.append(", sac=").append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().
+                      getCellGlobalIdOrServiceAreaIdFixedLength().getLac());
+            else
+              sb.append(", lac=").append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().
+                      getCellGlobalIdOrServiceAreaIdFixedLength().getLac());
+            sb.append(",\nci=");
+            sb.append(subscriberInfo.getLocationInformationGPRS().getCellGlobalIdOrServiceAreaIdOrLAI().
+                    getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode()).append("]");
           } catch (MAPException e) {
             logger.error(e.getMessage());
           }
         }
       }
       if (subscriberInfo.getLocationInformationGPRS().getGeographicalInformation() != null) {
-        sb.append(",\nGPRS GeographicalLatitude=");
+        sb.append(",\nGPRS GeographicalInformation [Latitude=");
         sb.append(subscriberInfo.getLocationInformationGPRS().getGeographicalInformation().getLatitude());
-        sb.append(",\nGPRS Geographical Longitude=");
+        sb.append(", Longitude=");
         sb.append(subscriberInfo.getLocationInformationGPRS().getGeographicalInformation().getLongitude());
-        sb.append(",\nGPRS GeographicalUncertainty=");
+        sb.append(", Uncertainty=");
         sb.append(subscriberInfo.getLocationInformationGPRS().getGeographicalInformation().getUncertainty());
-        sb.append(",\nGPRS Geographical Type of Shape=");
-        sb.append(subscriberInfo.getLocationInformationGPRS().getGeographicalInformation().getTypeOfShape());
+        sb.append(", Type of Shape=");
+        sb.append(subscriberInfo.getLocationInformationGPRS().getGeographicalInformation().getTypeOfShape()).append("]");
       }
       if (subscriberInfo.getLocationInformationGPRS().getGeodeticInformation() != null) {
-        sb.append(",\nGPRS Geodetic Latitude=");
+        sb.append(",\nGPRS Geodetic Information [Latitude=");
         sb.append(subscriberInfo.getLocationInformationGPRS().getGeodeticInformation().getLatitude());
-        sb.append(",\nGPRS Geodetic Longitude=");
+        sb.append(", Geodetic Longitude=");
         sb.append(subscriberInfo.getLocationInformationGPRS().getGeodeticInformation().getLongitude());
-        sb.append(",\nGPRS Geodetic Uncertainty=");
+        sb.append(", Geodetic Uncertainty=");
         sb.append(subscriberInfo.getLocationInformationGPRS().getGeodeticInformation().getUncertainty());
-        sb.append(",\nGPRS Geodetic Confidence=");
+        sb.append(", Geodetic Confidence=");
         sb.append(subscriberInfo.getLocationInformationGPRS().getGeodeticInformation().getConfidence());
-        sb.append(",\nGPRS Geodetic Type of Shape=");
+        sb.append(", Geodetic Type of Shape=");
         sb.append(subscriberInfo.getLocationInformationGPRS().getGeodeticInformation().getTypeOfShape());
-        sb.append(",\nGPRS Geodetic Screening and Presentation Indicators=");
-        sb.append(subscriberInfo.getLocationInformationGPRS().getGeodeticInformation().getScreeningAndPresentationIndicators());
+        sb.append(", Geodetic Screening and Presentation Indicators=");
+        sb.append(subscriberInfo.getLocationInformationGPRS().getGeodeticInformation().
+                getScreeningAndPresentationIndicators()).append("]");
       }
     }
-    sb.append(",\nMNP info result=");
+
+    sb.append(",\nMNP info result [");
     if (subscriberInfo.getMNPInfoRes() != null) {
-      sb.append(",\nMNP info result number portability status=");
+      sb.append(", number portability status=");
       sb.append(subscriberInfo.getMNPInfoRes().getNumberPortabilityStatus().getType());
-      sb.append(",\nMNP info result MSISDN=");
+      sb.append(", MSISDN=");
       sb.append(subscriberInfo.getMNPInfoRes().getMSISDN().getAddress());
-      sb.append(",\nMNP info result IMSI=");
+      sb.append(", IMSI=");
       sb.append(subscriberInfo.getMNPInfoRes().getIMSI().getData());
-      sb.append(",\nMNP info result MSISDN=");
+      sb.append(", IMSI=");
       sb.append(subscriberInfo.getMNPInfoRes().getMSISDN().getAddress());
-      sb.append(",\nMNP info result Routeing Number=");
-      sb.append(subscriberInfo.getMNPInfoRes().getRouteingNumber().getRouteingNumber());
+      sb.append(", Routeing Number=");
+      sb.append(subscriberInfo.getMNPInfoRes().getRouteingNumber().getRouteingNumber()).append("]");
     }
 
-    sb.append(",\nMS Classmark2=");
+    sb.append(",\nMS Classmark2 =");
     if (subscriberInfo.getMSClassmark2() != null)
       sb.append(new String(subscriberInfo.getMSClassmark2().getData()));
-    sb.append(",\nGPRS MS Class:");
+    sb.append(", GPRS MS Class [");
     if (subscriberInfo.getGPRSMSClass() != null) {
-      sb.append(",\nNetwork Capability:");
+      sb.append(", Network Capability:");
       if (subscriberInfo.getGPRSMSClass().getMSNetworkCapability() != null)
         sb.append(new String(subscriberInfo.getGPRSMSClass().getMSNetworkCapability().getData()));
-      sb.append(",\nMS Radio Access Capability:");
+      sb.append(", MS Radio Access Capability:");
       if (subscriberInfo.getGPRSMSClass().getMSRadioAccessCapability() != null)
-        sb.append(new String(subscriberInfo.getGPRSMSClass().getMSRadioAccessCapability().getData()));
+        sb.append(new String(subscriberInfo.getGPRSMSClass().getMSRadioAccessCapability().getData())).append("]");
+    }
+
+    if (subscriberInfo.getLocationInformationEPS() != null) {
+      if (subscriberInfo.getLocationInformationEPS().getMmeName() != null) {
+        sb.append(",\nMME name=");
+        sb.append(new String(subscriberInfo.getLocationInformationEPS().getMmeName().getData()));
+      }
+      if (subscriberInfo.getLocationInformationEPS().getEUtranCellGlobalIdentity() != null) {
+        try {
+          sb.append(",\nECGI [mcc=");
+          sb.append(subscriberInfo.getLocationInformationEPS().getEUtranCellGlobalIdentity().getMCC());
+          sb.append(", mnc=");
+          sb.append(subscriberInfo.getLocationInformationEPS().getEUtranCellGlobalIdentity().getMNC());
+          sb.append(", eci=");
+          sb.append(subscriberInfo.getLocationInformationEPS().getEUtranCellGlobalIdentity().getEci());
+          sb.append(", eNBId=");
+          sb.append(subscriberInfo.getLocationInformationEPS().getEUtranCellGlobalIdentity().getENodeBId());
+          sb.append(", ci=");
+          sb.append(subscriberInfo.getLocationInformationEPS().getEUtranCellGlobalIdentity().getCi()).append("]");
+        } catch (MAPException e) {
+          logger.error(e.getMessage());
+        }
+      }
+      if (subscriberInfo.getLocationInformationEPS().getTrackingAreaIdentity() != null) {
+        try {
+          sb.append(",\nEPS Tracking Area Identity [mcc=");
+          sb.append(subscriberInfo.getLocationInformationEPS().getTrackingAreaIdentity().getMCC());
+          sb.append(", mnc=");
+          sb.append(subscriberInfo.getLocationInformationEPS().getTrackingAreaIdentity().getMNC());
+          sb.append(", tac=");
+          sb.append(subscriberInfo.getLocationInformationEPS().getTrackingAreaIdentity().getTAC()).append("]");
+        } catch (MAPException e) {
+          logger.error(e.getMessage());
+        }
+      }
+      if (subscriberInfo.getLocationInformationEPS().getGeographicalInformation() != null) {
+        sb.append(",\nEPS GeographicalInformation [Latitude=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeographicalInformation().getLatitude());
+        sb.append(", Longitude=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeographicalInformation().getLongitude());
+        sb.append(", Uncertainty=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeographicalInformation().getUncertainty());
+        sb.append(", Type of Shape=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeographicalInformation().getTypeOfShape()).append("]");
+      }
+      if (subscriberInfo.getLocationInformationEPS().getGeodeticInformation() != null) {
+        sb.append(",\nEPS Geodetic Information [Latitude=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeodeticInformation().getLatitude());
+        sb.append(", Geodetic Longitude=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeodeticInformation().getLongitude());
+        sb.append(", Geodetic Uncertainty=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeodeticInformation().getUncertainty());
+        sb.append(", Geodetic Confidence=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeodeticInformation().getConfidence());
+        sb.append(", Geodetic Type of Shape=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeodeticInformation().getTypeOfShape());
+        sb.append(", Geodetic Screening and Presentation Indicators=");
+        sb.append(subscriberInfo.getLocationInformationEPS().getGeodeticInformation().
+                getScreeningAndPresentationIndicators()).append("]");
+      }
+      sb.append(",\nEPS Current Location Retrieved=");
+      sb.append(subscriberInfo.getLocationInformationEPS().getCurrentLocationRetrieved());
+      sb.append(",\nEPS AOL=");
+      sb.append(subscriberInfo.getLocationInformationEPS().getAgeOfLocationInformation());
+    }
+    if (subscriberInfo.getLocationInformation5GS() != null) {
+      if (subscriberInfo.getLocationInformation5GS().getNRCellGlobalId() != null) {
+        try {
+          sb.append(",\nNCGI [mcc=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getNRCellGlobalId().getMCC());
+          sb.append(", mnc=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getNRCellGlobalId().getMNC());
+          sb.append(", nci=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getNRCellGlobalId().getNCI()).append("]");
+        } catch (MAPException e) {
+          logger.error(e.getMessage());
+        }
+      }
+      if (subscriberInfo.getLocationInformation5GS().getEUtranCgi() != null) {
+        try {
+          sb.append(",\nECGI [mcc=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getEUtranCgi().getMCC());
+          sb.append(", mnc=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getEUtranCgi().getMNC());
+          sb.append(", eci=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getEUtranCgi().getEci());
+          sb.append(", eNBId=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getEUtranCgi().getENodeBId());
+          sb.append(", ci=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getEUtranCgi().getCi()).append("]");
+        } catch (MAPException e) {
+          logger.error(e.getMessage());
+        }
+      }
+      if (subscriberInfo.getLocationInformation5GS().getGeographicalInformation() != null) {
+        sb.append(",\n5GS GeographicalInformation [Latitude=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeographicalInformation().getLatitude());
+        sb.append(", Longitude=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeographicalInformation().getLongitude());
+        sb.append(", Uncertainty=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeographicalInformation().getUncertainty());
+        sb.append(", Type of Shape Code=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeographicalInformation().getTypeOfShape().getCode()).append("]");
+      }
+      if (subscriberInfo.getLocationInformation5GS().getGeodeticInformation() != null) {
+        sb.append(",\n5GS Geodetic Information [Latitude=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeodeticInformation().getLatitude());
+        sb.append(", Longitude=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeodeticInformation().getLongitude());
+        sb.append(", Uncertainty=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeodeticInformation().getUncertainty());
+        sb.append(", Confidence=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeodeticInformation().getConfidence());
+        sb.append(", Type of Shape=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeodeticInformation().getTypeOfShape());
+        sb.append(", Screening and Presentation Indicators=");
+        sb.append(subscriberInfo.getLocationInformation5GS().getGeodeticInformation().getScreeningAndPresentationIndicators()).append("]");
+      }
+      if (subscriberInfo.getLocationInformation5GS().getAMFAddress() != null) {
+        sb.append(",\n5GS AMF address =");
+        sb.append(Arrays.toString(subscriberInfo.getLocationInformation5GS().getAMFAddress().getData())).append("]");
+      }
+      if (subscriberInfo.getLocationInformation5GS().getNRTAId() != null) {
+        try {
+          sb.append(",\nEPS Tracking Area Identity [mcc=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getNRTAId().getMCC());
+          sb.append(", mnc=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getNRTAId().getMNC());
+          sb.append(", nrTac=");
+          sb.append(subscriberInfo.getLocationInformation5GS().getNRTAId()).append("]");
+        } catch (MAPException e) {
+          logger.error(e.getMessage());
+        }
+      }
     }
     return sb.toString();
   }
 
   private String createErrorData(long dialogId, int invokeId, MAPErrorMessage mapErrorMessage) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("dialogId=");
-    sb.append(dialogId);
-    sb.append(",\n invokeId=");
-    sb.append(invokeId);
-    sb.append(",\n mapErrorMessage=");
-    sb.append(mapErrorMessage);
-    sb.append(",\n");
-    return sb.toString();
+    return "dialogId=" +
+        dialogId +
+        ",\n invokeId=" +
+        invokeId +
+        ",\n mapErrorMessage=" +
+        mapErrorMessage +
+        ",\n";
   }
 
   /*
@@ -1622,7 +1947,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     byte[] data = new byte[len / 2];
     for (int i = 0; i < len; i += 2) {
       data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-          + Character.digit(s.charAt(i+1), 16));
+              + Character.digit(s.charAt(i+1), 16));
     }
     return data;
   }
@@ -1674,7 +1999,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   @Override
   public void putAddressNature(String val) {
     AddressNatureType x = AddressNatureType.createInstance(val);
-      this.setAddressNature(x);
+    this.setAddressNature(x);
   }
 
   @Override
@@ -1929,7 +2254,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   @Override
   public void putSRIReaction(String val) {
     SRIReaction x = SRIReaction.createInstance(val);
-      this.setSRIReaction(x);
+    this.setSRIReaction(x);
   }
 
   @Override
@@ -1951,7 +2276,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   @Override
   public void putPSIReaction(String val) {
     PSIReaction x = PSIReaction.createInstance(val);
-      this.setPSIReaction(x);
+    this.setPSIReaction(x);
   }
 
   @Override
@@ -1982,11 +2307,9 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
       if (needSendClose) {
         needSendClose = false;
         mapDialog.close(false);
-        return;
       }
     } catch (Exception e) {
       this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking close() : " + e.getMessage(), e, Level.ERROR);
-      return;
     }
   }
 
@@ -2179,6 +2502,16 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   }
 
   @Override
+  public void onAnyTimeModificationRequest(AnyTimeModificationRequest anyTimeModificationRequest) {
+
+  }
+
+  @Override
+  public void onAnyTimeModificationResponse(AnyTimeModificationResponse anyTimeModificationResponse) {
+
+  }
+
+  @Override
   public void onProvideSubscriberInfoResponse(ProvideSubscriberInfoResponse provideSubscriberInfoResponse) {
 
   }
@@ -2247,5 +2580,4 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
   public void onIstCommandResponse(IstCommandResponse response) {
 
   }
-
 }

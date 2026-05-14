@@ -32,15 +32,15 @@ public class LocationEstimateTypeEnumerated extends EnumeratedBase {
     public LocationEstimateTypeEnumerated() {
     }
 
-    public LocationEstimateTypeEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public LocationEstimateTypeEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LocationEstimateTypeEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public LocationEstimateTypeEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LocationEstimateTypeEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public LocationEstimateTypeEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

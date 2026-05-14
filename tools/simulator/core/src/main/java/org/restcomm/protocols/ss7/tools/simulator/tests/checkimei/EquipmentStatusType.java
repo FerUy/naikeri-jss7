@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.checkimei;
 
 import java.util.Hashtable;
@@ -32,15 +31,15 @@ public class EquipmentStatusType extends EnumeratedBase {
     public EquipmentStatusType() {
     }
 
-    public EquipmentStatusType(int val) throws java.lang.IllegalArgumentException {
+    public EquipmentStatusType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public EquipmentStatusType(Integer val) throws java.lang.IllegalArgumentException {
+    public EquipmentStatusType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public EquipmentStatusType(String val) throws java.lang.IllegalArgumentException {
+    public EquipmentStatusType(String val) throws IllegalArgumentException {
         super(val);
     }
 

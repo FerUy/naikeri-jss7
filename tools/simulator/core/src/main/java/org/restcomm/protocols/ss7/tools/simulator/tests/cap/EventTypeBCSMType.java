@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.cap;
 
 import java.util.Hashtable;
@@ -70,15 +69,15 @@ public class EventTypeBCSMType extends EnumeratedBase {
     public EventTypeBCSMType() {
     }
 
-    public EventTypeBCSMType(int val) throws java.lang.IllegalArgumentException {
+    public EventTypeBCSMType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public EventTypeBCSMType(Integer val) throws java.lang.IllegalArgumentException {
+    public EventTypeBCSMType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public EventTypeBCSMType(String val) throws java.lang.IllegalArgumentException {
+    public EventTypeBCSMType(String val) throws IllegalArgumentException {
         super(val);
     }
 

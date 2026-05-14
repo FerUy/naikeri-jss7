@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.sms;
 
 import java.util.Hashtable;
@@ -40,15 +39,15 @@ public class SRIReaction extends EnumeratedBase {
     public SRIReaction() {
     }
 
-    public SRIReaction(int val) throws java.lang.IllegalArgumentException {
+    public SRIReaction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SRIReaction(Integer val) throws java.lang.IllegalArgumentException {
+    public SRIReaction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public SRIReaction(String val) throws java.lang.IllegalArgumentException {
+    public SRIReaction(String val) throws IllegalArgumentException {
         super(val);
     }
 

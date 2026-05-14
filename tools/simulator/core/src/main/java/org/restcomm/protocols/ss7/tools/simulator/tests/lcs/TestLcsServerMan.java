@@ -1,6 +1,9 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.lcs;
 
 
+import javax.xml.bind.DatatypeConverter;
+
+import com.google.common.collect.Multimap;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
@@ -63,11 +66,16 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.restcomm.protocols.ss7.map.api.service.lsm.SLRArgExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AddGeographicalInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
+import org.restcomm.protocols.ss7.map.api.service.lsm.SLRArgPCSExtensions;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ServingNodeAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.PositioningDataInformation;
+import org.restcomm.protocols.ss7.map.api.service.lsm.SupportedGADShapes;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranAdditionalPositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranCivicAddress;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranPositioningDataInfo;
+import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
+import org.restcomm.protocols.ss7.map.api.service.lsm.UtranGANSSpositioningData;
+
 import org.restcomm.protocols.ss7.map.api.service.lsm.VelocityEstimate;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSLocationInfo;
 import org.restcomm.protocols.ss7.map.api.service.lsm.TerminationCause;
@@ -86,8 +94,6 @@ import org.restcomm.protocols.ss7.map.datacoding.CBSDataCodingSchemeImpl;
 import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageFacilityNotSupImpl;
 import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageUnauthorizedLCSClientImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
-import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
-import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdOrLAIImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
 import org.restcomm.protocols.ss7.map.primitives.SubscriberIdentityImpl;
@@ -100,8 +106,18 @@ import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.AddGeographicalInformationImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.DeferredLocationEventTypeImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.LCSClientNameImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.LCSLocationInfoImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.LCSRequestorIDImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.PeriodicLDRInfoImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.PolygonImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.PositioningDataInformationImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.ReportingOptionMillisecondsImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.SLRArgExtensionContainerImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.SLRArgPCSExtensionsImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.ServingNodeAddressImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.SupportedGADShapesImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.UtranAdditionalPositioningDataImpl;
+import org.restcomm.protocols.ss7.map.service.lsm.UtranCivicAddressImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.VelocityEstimateImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.DeferredmtlrDataImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.AdditionalNumberImpl;
@@ -127,32 +143,37 @@ import org.restcomm.protocols.ss7.tools.simulator.Stoppable;
 import org.restcomm.protocols.ss7.tools.simulator.common.AddressNatureType;
 import org.restcomm.protocols.ss7.tools.simulator.common.TesterBase;
 
-import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 
-import org.apache.log4j.Level;import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.tools.simulator.level3.MapMan;
 import org.restcomm.protocols.ss7.tools.simulator.level3.NumberingPlanMapType;
 import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostImpl;
 
 import java.nio.charset.Charset;
 
+import static org.apache.commons.lang3.RandomUtils.nextLong;
+
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBean, Stoppable, MAPServiceLsmListener {
 
-    private static Logger logger = Logger.getLogger(TestLcsServerMan.class);
+    private static final Logger logger = LogManager.getLogger(TestLcsServerMan.class);
 
     public static String SOURCE_NAME = "TestLcsServerMan";
-    private final String name;
     private MapMan mapMan;
-    private boolean isStarted = false;
+    private boolean isStarted;
     private int countMapLcsReq = 0;
     private int countMapLcsResp = 0;
     private String currentRequestDef = "";
@@ -162,7 +183,6 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
     public TestLcsServerMan(String name) {
         super(SOURCE_NAME);
-        this.name = name;
         this.isStarted = false;
     }
 
@@ -193,16 +213,14 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
     @Override
     public String getState() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append(SOURCE_NAME);
-        sb.append(": ");
-        sb.append("<br>Count: countMapLcsReq-");
-        sb.append(countMapLcsReq);
-        sb.append(", countMapLcsResp-");
-        sb.append(countMapLcsResp);
-        sb.append("</html>");
-        return sb.toString();
+        return "<html>" +
+            SOURCE_NAME +
+            ": " +
+            "<br>Count: countMapLcsReq-" +
+            countMapLcsReq +
+            ", countMapLcsResp-" +
+            countMapLcsResp +
+            "</html>";
     }
 
     @Override
@@ -219,7 +237,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
     }
 
     //***************************//
-    //**** SRIforLCS methods ***//
+    //***** SRILCS methods *****//
     //*************************//
     @Override
     public String performSendRoutingInfoForLCSResponse() {
@@ -235,7 +253,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         return "sendRoutingInfoForLCSResponse called automatically";
     }
 
-    public void onSendRoutingInfoForLCSRequest(SendRoutingInfoForLCSRequest sendRoutingInforForLCSRequest) {
+    public void onSendRoutingInfoForLCSRequest(SendRoutingInfoForLCSRequest sendRoutingInfoForLCSRequest) {
 
         logger.debug("\nonSendRoutingInfoForLCSRequest");
         if (!isStarted)
@@ -243,12 +261,12 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
         this.countMapLcsReq++;
 
-        MAPDialogLsm curDialog = sendRoutingInforForLCSRequest.getMAPDialog();
-        long invokeId = sendRoutingInforForLCSRequest.getInvokeId();
+        MAPDialogLsm curDialog = sendRoutingInfoForLCSRequest.getMAPDialog();
+        long invokeId = sendRoutingInfoForLCSRequest.getInvokeId();
 
         this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: SendRoutingInfoForLCSRequest",
-            createSRIforLCSReqData(curDialog.getLocalDialogId(), sendRoutingInforForLCSRequest.getMLCNumber(),
-                sendRoutingInforForLCSRequest.getTargetMS()), Level.INFO);
+            createSRILCSReqData(curDialog.getLocalDialogId(), sendRoutingInfoForLCSRequest.getMLCNumber(),
+                sendRoutingInfoForLCSRequest.getTargetMS()), Level.INFO);
 
         Random rand = new Random();
 
@@ -256,13 +274,13 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         curDialog.setLocalAddress(getHLRSCCPAddress("59899170001"));
 
         String subId = null;
-        // Generate MAP errors for specific MSISDNs
-        if (sendRoutingInforForLCSRequest.getTargetMS().getMSISDN() != null)
-            subId = sendRoutingInforForLCSRequest.getTargetMS().getMSISDN().getAddress();
-        else if (sendRoutingInforForLCSRequest.getTargetMS().getIMSI() != null)
-            subId = sendRoutingInforForLCSRequest.getTargetMS().getIMSI().getData();
+        // Generate MAP errors for specific MSISDN
+        if (sendRoutingInfoForLCSRequest.getTargetMS().getMSISDN() != null)
+            subId = sendRoutingInfoForLCSRequest.getTargetMS().getMSISDN().getAddress();
+        else if (sendRoutingInfoForLCSRequest.getTargetMS().getIMSI() != null)
+            subId = sendRoutingInfoForLCSRequest.getTargetMS().getIMSI().getData();
         if (subId != null) {
-            if (subId != null && subId.equalsIgnoreCase("99998888")) {
+            if (subId.equalsIgnoreCase("99998888")) {
                 InvokeProblemType invokeProblemType = InvokeProblemType.UnrecognizedOperation;
                 Problem problem = new ProblemImpl();
                 problem.setInvokeProblemType(invokeProblemType);
@@ -273,7 +291,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     logger.error(e.getMessage());
                 }
                 logger.debug("\nRejectComponent sent");
-                this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent", createSRIforLCSResData(curDialog.getLocalDialogId(),
+                this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent", createSRILCSResData(curDialog.getLocalDialogId(),
                         null, null, null), Level.INFO);
                 return;
             }
@@ -286,7 +304,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     logger.error(e.getMessage());
                 }
                 logger.debug("\nErrorComponent sent");
-                this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent", createSRIforLCSResData(curDialog.getLocalDialogId(),
+                this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent", createSRILCSResData(curDialog.getLocalDialogId(),
                         null, null, null), Level.INFO);
                 return;
             }
@@ -295,14 +313,14 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         try {
             MAPParameterFactoryImpl mapFactory = new MAPParameterFactoryImpl();
             ISDNAddressString msisdnAddress = new ISDNAddressStringImpl(AddressNature.international_number,
-                org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan.ISDN, "59899077937");
+                NumberingPlan.ISDN, "59899077937");
             SubscriberIdentity msisdn = new SubscriberIdentityImpl(msisdnAddress);
             IMSI imsiImpl;
             SubscriberIdentity imsi, targetMS = null;
-            if (sendRoutingInforForLCSRequest.getTargetMS().getIMSI() != null)
+            if (sendRoutingInfoForLCSRequest.getTargetMS().getIMSI() != null)
                 targetMS = msisdn;
-            if (sendRoutingInforForLCSRequest.getTargetMS().getMSISDN() != null) {
-                msisdnAddress = sendRoutingInforForLCSRequest.getTargetMS().getMSISDN();
+            if (sendRoutingInfoForLCSRequest.getTargetMS().getMSISDN() != null) {
+                msisdnAddress = sendRoutingInfoForLCSRequest.getTargetMS().getMSISDN();
                 if (msisdnAddress.getAddress().equals("60196229802"))
                     imsiImpl = new IMSIImpl("502153207655206");
                  else if (msisdnAddress.getAddress().equals("60196229803"))
@@ -314,7 +332,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 imsi = new SubscriberIdentityImpl(imsiImpl);
                 targetMS = imsi;
             }
-            ISDNAddressString mlcNumber = sendRoutingInforForLCSRequest.getMLCNumber();
+            ISDNAddressString mlcNumber = sendRoutingInfoForLCSRequest.getMLCNumber();
             String mscAddress = "598991800024";
             ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
                 NumberingPlan.ISDN, mscAddress);
@@ -356,49 +374,111 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
             logger.warn("Additional Number onSendRoutingInfoForLCSRequest : " + additionalNumber);
 
-            byte[] lmsiByte = null;
-            int lmsiRandom = rand.nextInt(4) + 1;
-            switch (lmsiRandom) {
+            LMSI lmsi;
+            switch (rand.nextInt(10) + 1) {
                 case 1:
-                    // ﻿char packet_bytes[] = {0x72, 0x02, 0xe9, 0x8c};
-                    lmsiByte = new byte[]{114, 2, (byte) 233, (byte) 140};
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 233, (byte) 140});
                     break;
                 case 2:
-                    // ﻿char packet_bytes[] = {﻿0x71, 0xff, 0xac, 0xce};
-                    lmsiByte = new byte[]{113, (byte) 255, (byte) 172, (byte) 206};
+                    lmsi = new LMSIImpl(new byte[] {113, (byte) 255, (byte) 172, (byte) 206});
                     break;
                 case 3:
-                    // ﻿char packet_bytes[] = {﻿0x72, 0x02, 0xeb, 0x37};
-                    lmsiByte = new byte[]{114, 2, (byte) 235, 55};
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 235, 55});
                     break;
                 case 4:
-                    // ﻿char packet_bytes[] = {﻿0x72, 0x02, 0xe7, 0xd5};
-                    lmsiByte = new byte[]{114, 2, (byte) 231, (byte) 213};
+                    lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 231, (byte) 213});
+                    break;
+                default:
+                    lmsi = null;
                     break;
             }
-            LMSI lmsi = new LMSIImpl(lmsiByte);
-            boolean lcsCapabilitySetRelease98_99 = true;
-            boolean lcsCapabilitySetRelease4 = true;
-            boolean lcsCapabilitySetRelease5 = true;
-            boolean lcsCapabilitySetRelease6 = true;
-            boolean lcsCapabilitySetRelease7 = false;
-            SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
-                lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-            lcsCapabilitySetRelease7 = true;
-            SupportedLCSCapabilitySets additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
-                lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-            MAPExtensionContainer mapExtensionContainer = null;
-            DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity sgsnName = new DiameterIdentityImpl("mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity sgsnRealm = new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            GSNAddress vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
-            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
-            GSNAddress pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x12 });
-            GSNAddress additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
+            SupportedLCSCapabilitySets supportedLCSCapabilitySets = null, additionalLCSCapabilitySets = null;
+            switch (rand.nextInt(10) + 1) {
+                case 1:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            false, false, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    break;
+                case 2:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, false, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    break;
+                case 3:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, true);
+                    break;
+                case 4:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, true);
+                    break;
+                default:
+                    break;
 
-            LCSLocationInfo lcsLocationInfo = mapFactory.createLCSLocationInfo(mscNumber, lmsi, mapExtensionContainer, gprsNodeIndicator,
+            }
+            DiameterIdentity mmeName = null;
+            DiameterIdentity aaaServerName = null;
+            DiameterIdentity sgsnName = null;
+            DiameterIdentity sgsnRealm = null;
+            switch (rand.nextInt(10) + 1) {
+                case 1:
+                    mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 2:
+                    sgsnName = new DiameterIdentityImpl("sgsn1B34.mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+                    sgsnRealm = new DiameterIdentityImpl("mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 3:
+                    aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 4:
+                    mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                default:
+                    break;
+            }
+
+            LCSLocationInfo lcsLocationInfo = mapFactory.createLCSLocationInfo(mscNumber, lmsi, null, gprsNodeIndicator,
                 additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
+
+            GSNAddress vGmlcAddress = null;
+            GSNAddress hGmlcAddress = null;
+            GSNAddress pprAddress = null;
+            GSNAddress additionalVGmlcAddress = null;
+            switch (rand.nextInt(10 + 1)) {
+                case 1:
+                    vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
+                    break;
+                case 2:
+                    hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.14").getAddress());
+                    break;
+                case 3:
+                    vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
+                    additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
+                    break;
+                case 4:
+                    vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
+                    pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.18").getAddress());
+                    break;
+                case 5:
+                    vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
+                    hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.14").getAddress());
+                    additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
+                    break;
+                case 6:
+                    vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
+                    hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.14").getAddress());
+                    pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.18").getAddress());
+                    additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
+                    break;
+                default:
+                    break;
+            }
 
             int sriLcsResponseDelay = rand.nextInt(150);
             try {
@@ -407,8 +487,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 logger.error(e.getMessage());
             }
 
-            curDialog.addSendRoutingInfoForLCSResponse(sendRoutingInforForLCSRequest.getInvokeId(),
-                targetMS, lcsLocationInfo, mapExtensionContainer, vGmlcAddress, hGmlcAddress, pprAddress, additionalVGmlcAddress);
+            curDialog.addSendRoutingInfoForLCSResponse(sendRoutingInfoForLCSRequest.getInvokeId(),
+                targetMS, lcsLocationInfo, null, vGmlcAddress, hGmlcAddress, pprAddress, additionalVGmlcAddress);
 
             logger.debug("\nset addSendRoutingForLCSResponse");
             curDialog.close(false);
@@ -416,15 +496,17 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             this.countMapLcsResp++;
 
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: SendRoutingForLCSResponse",
-                createSRIforLCSResData(curDialog.getLocalDialogId(), mscNumber, targetMS, additionalNumber), Level.INFO);
+                createSRILCSResData(curDialog.getLocalDialogId(), mscNumber, targetMS, additionalNumber), Level.INFO);
 
         } catch (MAPException me) {
             logger.debug("Failed building SendRoutingInfoForLCS response " + me);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
         }
 
     }
 
-    private String createSRIforLCSReqData(long dialogId, ISDNAddressString mlcNumber, SubscriberIdentity targetMS) {
+    private String createSRILCSReqData(long dialogId, ISDNAddressString mlcNumber, SubscriberIdentity targetMS) {
         StringBuilder sb = new StringBuilder();
         sb.append("dialogId=");
         sb.append(dialogId);
@@ -447,7 +529,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
     }
 
 
-    private String createSRIforLCSResData(long dialogId, ISDNAddressString networkNodeNumber, SubscriberIdentity targetMS,
+    private String createSRILCSResData(long dialogId, ISDNAddressString networkNodeNumber, SubscriberIdentity targetMS,
                                           AdditionalNumber additionalNumber) {
         StringBuilder sb = new StringBuilder();
         sb.append("dialogId=");
@@ -458,38 +540,33 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         }
         if (additionalNumber != null) {
             if (additionalNumber.getMSCNumber() != null) {
-                sb.append(", Additional MSC Number=\"");
-                sb.append(targetMS.getMSISDN());
-            }
-            if (additionalNumber.getSGSNNumber() != null) {
-                sb.append(", Additional SGSN Number=\"");
-                sb.append(targetMS.getIMSI());
+                sb.append(", Additional MSC Number=\"").append(additionalNumber.getMSCNumber().getAddress());
+            } else if (additionalNumber.getSGSNNumber() != null) {
+                sb.append(", Additional SGSN Number=\"").append(additionalNumber.getSGSNNumber().getAddress());
             }
         }
         if (targetMS != null) {
             if (targetMS.getMSISDN() != null) {
-                sb.append(", MSISDN=\"");
-                sb.append(targetMS.getMSISDN());
+                sb.append(", MSISDN=\"").append(targetMS.getMSISDN());
             }
             if (targetMS.getIMSI() != null) {
-                sb.append(", IMSI=\"");
-                sb.append(targetMS.getIMSI());
+                sb.append(", IMSI=\"").append(targetMS.getIMSI());
             }
         }
         sb.append("\"");
         return sb.toString();
     }
 
-    public void onSendRoutingInfoForLCSResponse(SendRoutingInfoForLCSResponse sendRoutingInforForLCSResponseIndication) {
+    public void onSendRoutingInfoForLCSResponse(SendRoutingInfoForLCSResponse sendRoutingInfoForLCSResponse) {
         logger.debug("\nonSendRoutingInfoForLCSResponse");
         this.countMapLcsResp++;
-        MAPDialogLsm curDialog = sendRoutingInforForLCSResponseIndication.getMAPDialog();
+        MAPDialogLsm curDialog = sendRoutingInfoForLCSResponse.getMAPDialog();
         this.testerHost.sendNotif(SOURCE_NAME,
             "Rcvd: SendRoutingInfoForLCSResponse", this
-                .createSRIforLCSResData(curDialog.getLocalDialogId(),
-                    sendRoutingInforForLCSResponseIndication.getLCSLocationInfo().getNetworkNodeNumber(),
-                    sendRoutingInforForLCSResponseIndication.getTargetMS(),
-                    sendRoutingInforForLCSResponseIndication.getLCSLocationInfo().getAdditionalNumber()),
+                .createSRILCSResData(curDialog.getLocalDialogId(),
+                        sendRoutingInfoForLCSResponse.getLCSLocationInfo().getNetworkNodeNumber(),
+                        sendRoutingInfoForLCSResponse.getTargetMS(),
+                        sendRoutingInfoForLCSResponse.getLCSLocationInfo().getAdditionalNumber()),
             Level.INFO);
 
     }
@@ -510,7 +587,6 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         // Set Calling SCCP Address (MSC for PSL response)
         curDialog.setLocalAddress(getMSCSCCPAddress("59899180071"));
 
-        MAPParameterFactoryImpl mapFactory = new MAPParameterFactoryImpl();
         int cbsDataCodingSchemeCode = 15;
         CBSDataCodingScheme cbsDataCodingScheme = new CBSDataCodingSchemeImpl(cbsDataCodingSchemeCode);
         String ussdLcsString = "3";
@@ -534,9 +610,11 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
         LCSPrivacyCheck lcsPrivacyCheck;
         LCSClientID lcsClientID;
+        boolean privacyOverride = false;
         LCSCodeword lcsCodeword;
         IMSI imsi;
         IMEI imei;
+        SupportedGADShapes supportedGADShapes;
         Integer lcsReferenceNumber = null;
 
         if (provideSubscriberLocationRequest.getIMSI().getData().equals("502153207655206")) {
@@ -558,7 +636,9 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             }
             logger.debug("\nRejectComponent sent");
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
-                createPSLResponse(curDialog.getLocalDialogId(), null, null), Level.INFO);
+                createPSLResponse(curDialog.getLocalDialogId(), null, null, null, null, null,
+                        false, null, false, null, null, false, null,
+                        null, null, null, null, null, null), Level.INFO);
             return;
         } else if (provideSubscriberLocationRequest.getIMSI().getData().equals("502153147968442")) {
             MAPErrorMessage mapErrorMessage1 = new MAPErrorMessageFacilityNotSupImpl();
@@ -570,20 +650,19 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             }
             logger.debug("\nErrorComponent sent");
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
-                createPSLResponse(curDialog.getLocalDialogId(), null, null), Level.INFO);
+                createPSLResponse(curDialog.getLocalDialogId(), null, null, null, null, null,
+                        false, null, false, null, null, false, null,
+                        null, null, null, null, null, null), Level.INFO);
             return;
         }
-
-        Random rand = new Random();
 
         if (provideSubscriberLocationRequest.getLCSClientID() == null) {
             String clientName = "545248";
             LCSClientName lcsClientName = new LCSClientNameImpl(cbsDataCodingScheme, ussdString, lcsFormatIndicator);
             AddressString lcsClientDialedByMS = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, clientName);
-            String apnStr = "restcomm.org";
             APN lcsAPN = null;
             try {
-                lcsAPN = new APNImpl(apnStr);
+                lcsAPN = new APNImpl("restcomm.org");
             } catch (MAPException e) {
                 logger.error(e.getMessage());
             }
@@ -591,6 +670,9 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         } else {
             lcsClientID = provideSubscriberLocationRequest.getLCSClientID();
         }
+
+        if (provideSubscriberLocationRequest.getPrivacyOverride())
+            privacyOverride = true;
 
         if (provideSubscriberLocationRequest.getLCSCodeword() == null) {
             lcsCodeword = new LCSCodewordImpl(cbsDataCodingScheme, ussdString);
@@ -617,6 +699,21 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             imei = provideSubscriberLocationRequest.getIMEI();
         }
 
+        if (provideSubscriberLocationRequest.getSupportedGADShapes() == null) {
+            boolean ellipsoidPoint = true;
+            boolean ellipsoidPointWithUncertaintyCircle = true;
+            boolean ellipsoidPointWithUncertaintyEllipse = true;
+            boolean polygon = true;
+            boolean ellipsoidPointWithAltitude = false;
+            boolean ellipsoidPointWithAltitudeAndUncertaintyEllipsoid = true;
+            boolean ellipsoidArc = true;
+            supportedGADShapes = new SupportedGADShapesImpl(ellipsoidPoint, ellipsoidPointWithUncertaintyCircle,
+                    ellipsoidPointWithUncertaintyEllipse, polygon, ellipsoidPointWithAltitude,
+                    ellipsoidPointWithAltitudeAndUncertaintyEllipsoid, ellipsoidArc);
+        } else {
+            supportedGADShapes = provideSubscriberLocationRequest.getSupportedGADShapes();
+        }
+
         if (provideSubscriberLocationRequest.getLCSPrivacyCheck() == null) {
             lcsPrivacyCheck = new LCSPrivacyCheckImpl(callSessionUnrelated, callSessionRelated);
         } else {
@@ -628,37 +725,19 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             lcsReferenceNumber = provideSubscriberLocationRequest.getLCSReferenceNumber();
         }
 
-        logger.info("\n\nDialog Id=" + curDialog);
-        logger.info("\n\nLocal Dialog Id=" + curDialog.getLocalDialogId());
-        logger.info("\n\nLocation Type=" + provideSubscriberLocationRequest.getLocationType());
-        logger.info("\n\nMLC Number=" + provideSubscriberLocationRequest.getMlcNumber());
-        logger.info("\n\nLCS Client ID=" + lcsClientID);
-        logger.info("\n\nIMSI=" + imsi);
-        logger.info("\n\nMSISDN=" + msisdn);
-        logger.info("\n\nLMSI=" + provideSubscriberLocationRequest.getLMSI());
-        logger.info("\n\nLCS Priority=" + provideSubscriberLocationRequest.getLCSPriority());
-        logger.info("\n\nLCS QoS=" + provideSubscriberLocationRequest.getLCSQoS());
-        logger.info("\n\nIMEI=" + imei);
-        logger.info("\n\nLCS Reference Number=" + lcsReferenceNumber);
-        logger.info("\n\nLCS Service Type ID=" + provideSubscriberLocationRequest.getLCSServiceTypeID());
-        logger.info("\n\nLCS Codeword=" + lcsCodeword);
-        logger.info("\n\nLCS Privacy Check=" + lcsPrivacyCheck);
-        logger.info("\n\nArea Event Info=" + provideSubscriberLocationRequest.getAreaEventInfo());
-        logger.info("\n\nH-GMLC Address=" + provideSubscriberLocationRequest.getHGMLCAddress());
-        logger.info("\n\nMO LR Short Circuit Indicator=" + provideSubscriberLocationRequest.getMoLrShortCircuitIndicator());
-        logger.info("\n\nPeriodic LDR Info=" + provideSubscriberLocationRequest.getPeriodicLDRInfo());
-
         this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: ProvideSubscriberLocationRequest",
             createPSLRequestData(curDialog.getLocalDialogId(),
                 provideSubscriberLocationRequest.getLocationType(),
                 provideSubscriberLocationRequest.getMlcNumber(),
                 lcsClientID,
+                privacyOverride,
                 imsi,
                 msisdn,
                 provideSubscriberLocationRequest.getLMSI(),
+                imei,
                 provideSubscriberLocationRequest.getLCSPriority(),
                 provideSubscriberLocationRequest.getLCSQoS(),
-                imei,
+                supportedGADShapes,
                 lcsReferenceNumber,
                 provideSubscriberLocationRequest.getLCSServiceTypeID(),
                 lcsCodeword,
@@ -666,63 +745,25 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 provideSubscriberLocationRequest.getAreaEventInfo(),
                 provideSubscriberLocationRequest.getHGMLCAddress(),
                 provideSubscriberLocationRequest.getMoLrShortCircuitIndicator(),
-                provideSubscriberLocationRequest.getPeriodicLDRInfo()
+                provideSubscriberLocationRequest.getPeriodicLDRInfo(),
+                provideSubscriberLocationRequest.getReportingPLMNList()
             ), Level.INFO);
 
-        byte[] geranPosInfo = {0, 3};
-        PositioningDataInformation geranPositioningData = new PositioningDataInformationImpl(geranPosInfo);
-        Integer ageOfLocationEstimate = 0;
-        AddGeographicalInformation additionalLocationEstimate = null;
-        MAPExtensionContainer extensionContainer = null;
-        boolean deferredMTLRResponseIndicator = true;
-        byte[] cidOrSaiFixedLength = new BigInteger("34970120704321", 16).toByteArray();
-        CellGlobalIdOrServiceAreaIdFixedLength cellGlobalIdOrServiceAreaIdFixedLength = new CellGlobalIdOrServiceAreaIdFixedLengthImpl(cidOrSaiFixedLength);
-        CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI = new CellGlobalIdOrServiceAreaIdOrLAIImpl(cellGlobalIdOrServiceAreaIdFixedLength);
-        // set saiPresent to true if this ATI request is odd since test started
-        saiPresent = this.countMapLcsReq % 2 != 0; // set saiPresent to false if this ATI request is even since test started
-        ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
-            NumberingPlan.ISDN, "598991800024");
-        ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
-            NumberingPlan.ISDN, "598992000077");
-        byte[] utranData = {57, 51, 51, 54, 48, 49};
-        UtranPositioningDataInfo utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranData);
-        AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyFulfilled;
-        VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
-        int horizontalSpeed = 101;
-        int bearing = 3;
-        int verticalSpeed = 2;
-        int uncertaintyHorizontalSpeed = 5;
-        int uncertaintyVerticalSpeed = 1;
-        VelocityEstimate velocityEstimate = null;
-        try {
-            velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
-        } catch (MAPException e) {
-            logger.error(e.getMessage());
-        }
-        boolean moLrShortCircuitIndicator = true;
-        // Method=MS-Based, GANSSId=Galileo
-        // Method=MS-Assisted, GANSSId=GLONASS
-        // Method=Conventional, GANSSId=SBAS
-        byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
-        GeranGANSSpositioningDataImpl geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
-        // Method=MS-Based, GANSSId=Galileo
-        // Method=MS-Assisted, GANSSId=GLONASS
-        // Method=Conventional, GANSSId=SBAS
-        byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
-        UtranGANSSpositioningDataImpl utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
-        ServingNodeAddress targetServingNodeForHandover = mapFactory.createServingNodeAddressMscNumber(mscNumber);
+        Random rand = new Random();
 
         ExtGeographicalInformation locationEstimate = null;
         TypeOfShape typeOfShape = null;
         double latitude, longitude, uncertainty, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, uncertaintyAltitude, uncertaintyRadius,
-            offsetAngle, includedAngle;
+                offsetAngle, includedAngle;
         int confidence, altitude, innerRadius;
         EllipsoidPoint ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6;
         // ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10, ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13,
         // ellipsoidPoint14, ellipsoidPoint15;
         // 3 <= numberOfPoints <= 15
-        int typeOfShapeRandomOption = rand.nextInt(6) + 1;
-        switch (typeOfShapeRandomOption) {
+        Integer ageOfLocationEstimate = null;
+        AddGeographicalInformation additionalLocationEstimate = null;
+        AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyFulfilled;
+        switch (rand.nextInt(6) + 1) {
             case 1:
                 typeOfShape = TypeOfShape.EllipsoidPoint;
                 latitude = 34.909744;
@@ -732,17 +773,20 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 } catch (MAPException e) {
                     logger.error(e.getMessage());
                 }
+                ageOfLocationEstimate = 0;
                 break;
             case 2:
                 typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
                 latitude = -34.910349;
                 longitude = -56.149832;
                 uncertainty = 5.1;
+                accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyNotFulfilled;
                 try {
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
                 } catch (MAPException e) {
                     logger.error(e.getMessage());
                 }
+                ageOfLocationEstimate = 1;
                 break;
             case 3:
                 typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyEllipse;
@@ -754,10 +798,11 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 confidence = 1;
                 try {
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyEllipse(latitude, longitude,
-                        uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
+                            uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
                 } catch (MAPException e) {
                     logger.error(e.getMessage());
                 }
+                ageOfLocationEstimate = 0;
                 break;
             case 4:
                 typeOfShape = TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid;
@@ -771,10 +816,12 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 confidence = 5;
                 try {
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(latitude,
-                        longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
+                            longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
                 } catch (MAPException e) {
                     logger.error(e.getMessage());
                 }
+                ageOfLocationEstimate = 5;
+                accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyNotFulfilled;
                 break;
             case 5:
                 typeOfShape = TypeOfShape.EllipsoidArc;
@@ -787,10 +834,11 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 confidence = 2;
                 try {
                     locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidArc(latitude, longitude, innerRadius,
-                        uncertaintyRadius, offsetAngle, includedAngle, confidence);
+                            uncertaintyRadius, offsetAngle, includedAngle, confidence);
                 } catch (MAPException e) {
                     logger.error(e.getMessage());
                 }
+                ageOfLocationEstimate = 10;
                 break;
             case 6:
                 typeOfShape = TypeOfShape.Polygon;
@@ -801,75 +849,63 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 } catch (MAPException e) {
                     logger.error(e.getMessage());
                 }
+                ageOfLocationEstimate = 0;
                 break;
         }
 
-        int additionalLocationEstimateRandomOption = rand.nextInt(6) + 1;
         if (typeOfShape == TypeOfShape.Polygon) {
-            ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
-            ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
-            ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
-            ellipsoidPoint4 = new EllipsoidPoint(-3.040019, 70.681903);
-            ellipsoidPoint5 = new EllipsoidPoint(-3.045001, 70.700109);
-            ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
-            EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
-
-            byte[] polygonData1 = { 83,
-                                    41, (byte) 234, (byte) 138, 55, 67, 17,
-                                    41, (byte) 234, (byte) 136, 55, 67, 3,
-                                    41, (byte) 234, 0, 55, 67, 24};
-
-            byte[] polygonData2 = { 83,
-                                    44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
-                                    44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
-                                    44, 29, (byte) 190, 53, (byte) 227, 123};
-
-            byte[] polygonData3 = { 83,
-                                    36, (byte) 167, 60, 52, 37, 0,
-                                    36, (byte) 167, 49, 52, 36, (byte) 255,
-                                    36, (byte) 167, 50, 52, 37, 0};
-
-            byte[] polygonData4 = { 83,
-                                    36, 124, (byte) 163, 59, 49, 112,
-                                    36, 126, 7, 59, 49, (byte) 138,
-                                    36, 127, (byte) 224, 59, 49, 72};
-
-            byte[] polygonData5 = { 84,
-                                    37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
-                                    37, (byte) 230, 64, 52, 67, 124,
-                                    37, (byte) 230, (byte) 131, 52, 67, 121,
-                                    37, (byte) 230, (byte) 132, 52, 67, 125};
-
-            Polygon polygon1;
-            Polygon polygon2;
-            Polygon polygon3;
-            Polygon polygon4;
-            Polygon polygon5;
-            PolygonImpl polygon6 = new PolygonImpl();
-
             try {
-                switch (additionalLocationEstimateRandomOption) {
+                switch (rand.nextInt(6) + 1) {
                     case 1:
-                        polygon1 = new PolygonImpl(polygonData1);
+                        byte[] polygonData1 = { 83,
+                                41, (byte) 234, (byte) 138, 55, 67, 17,
+                                41, (byte) 234, (byte) 136, 55, 67, 3,
+                                41, (byte) 234, 0, 55, 67, 24};
+                        Polygon polygon1 = new PolygonImpl(polygonData1);
                         additionalLocationEstimate = new AddGeographicalInformationImpl(polygon1.getData());
                         break;
                     case 2:
-                        polygon2 = new PolygonImpl(polygonData2);
+                        byte[] polygonData2 = { 83,
+                                44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                                44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                                44, 29, (byte) 190, 53, (byte) 227, 123};
+                        Polygon polygon2 = new PolygonImpl(polygonData2);
                         additionalLocationEstimate = new AddGeographicalInformationImpl(polygon2.getData());
                         break;
                     case 3:
-                        polygon3 = new PolygonImpl(polygonData3);
+                        byte[] polygonData3 = { 83,
+                                36, (byte) 167, 60, 52, 37, 0,
+                                36, (byte) 167, 49, 52, 36, (byte) 255,
+                                36, (byte) 167, 50, 52, 37, 0};
+                        Polygon polygon3 = new PolygonImpl(polygonData3);
                         additionalLocationEstimate = new AddGeographicalInformationImpl(polygon3.getData());
                         break;
                     case 4:
-                        polygon4 = new PolygonImpl(polygonData4);
+                        byte[] polygonData4 = { 83,
+                                36, 124, (byte) 163, 59, 49, 112,
+                                36, 126, 7, 59, 49, (byte) 138,
+                                36, 127, (byte) 224, 59, 49, 72};
+                        Polygon polygon4 = new PolygonImpl(polygonData4);
                         additionalLocationEstimate = new AddGeographicalInformationImpl(polygon4.getData());
                         break;
                     case 5:
-                        polygon5 = new PolygonImpl(polygonData5);
+                        byte[] polygonData5 = { 84,
+                                37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                                37, (byte) 230, 64, 52, 67, 124,
+                                37, (byte) 230, (byte) 131, 52, 67, 121,
+                                37, (byte) 230, (byte) 132, 52, 67, 125};
+                        Polygon polygon5 = new PolygonImpl(polygonData5);
                         additionalLocationEstimate = new AddGeographicalInformationImpl(polygon5.getData());
                         break;
                     case 6:
+                        ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
+                        ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
+                        ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
+                        ellipsoidPoint4 = new EllipsoidPoint(-3.040019, 70.681903);
+                        ellipsoidPoint5 = new EllipsoidPoint(-3.045001, 70.700109);
+                        ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
+                        EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
+                        PolygonImpl polygon6 = new PolygonImpl();
                         polygon6.setData(ellipsoidPoints);
                         additionalLocationEstimate = new AddGeographicalInformationImpl(polygon6.getData());
                         break;
@@ -879,9 +915,273 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             }
         }
 
-        try {
-            //locationEstimate = new ExtGeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude, innerRadius, uncertaintyRadius, offsetAngle, includedAngle);
+        PositioningDataInformationImpl geranPositioningDataInfo =  null;
+        UtranPositioningDataInfoImpl utranPositioningDataInfo = null;
+        GeranGANSSpositioningDataImpl geranGanssPositioningData = null;
+        UtranGANSSpositioningDataImpl utranGanssPositioningData = null;
+        UtranAdditionalPositioningData utranAdditionalPositioningData = null;
+        // // 0x00=0000 0000 -> positioning data discriminator (bits 4-1): 0000 indicate usage of each positioning method that was attempted either successfully or unsuccessfully
+        // 0x03=0000 0011 -> 00000=>Method=Timing Advance, 011=>Usage=3 (Attempted successfully: results used to generate location)
+        // 0x1b=0001 1011 -> 00011=>Method=Mobile Assisted E-OTD, 011=>Usage=3 (Attempted successfully: results used to generate location)
+        // 0x21=0010 0001 -> 00100=>Method=Mobile Based E-OTD, 001=>Usage=1 (Attempted successfully: results not used to generate location
+        // 0x2b=0010 1011 -> 00101=>Method=Mobile Assisted GPS, 011=>Usage=3: Attempted successfully: results used to generate location
+        // 0x3a=0011 1010 -> 00111=>Method=Conventional GPS, 010=>Usage=2: Attempted successfully: results used to verify but not generate location
+        // 0x43=0100 0011 -> 01000=>Method=U-TDOA, 011=>Usage=3: Attempted successfully: results used to generate location
+        // 0x60=0110 0000 -> 01100=>Method=Cell ID, 000=>Usage=0: Attempted unsuccessfully due to failure or interruption
+        // byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
 
+        // 0x00=0000 0000 -> positioning data discriminator (BIT STRING (SIZE(4))): 0000 indicates the presence of the Positioning Data Set IE (that reports the usage of each non-GANSS method that was successfully used to obtain the location estimate) and the optional presence of the GANSS Positioning Data Set IE. It also indicates the optional presence of the Additional Positioning Data Set IE;
+        // 0x00=0000 0000 -> C-ifDiscriminator=0
+        // 0x28=0010 1000 -> 00101=>Method=Mobile Assisted GPS, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+        // 0x31=0011 0001 -> 00110=>Method=Mobile Based GPS, usage=1 (Attempted successfully: results not used to generate location - not used)
+        // 0x40=0100 0000 -> 01000=>Method=U-TDOA, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+        // 0x51=0101 0001 -> 01010=>Method=IPDL, usage=1 (Attempted successfully: results not used to generate location - not used)
+        // 0x5c=0101 1100 -> 01011=>Method=RTT, usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+        // 0x4b=0100 1011 -> 01000=>Method=OTDOA, usage 3 (Attempted successfully: results used to generate location)
+        // 0x3a=0011 1010 -> 00111=>Method=Conventional GPS, usage=2 (results used to verify but not generate location - not used)
+        // byte[] utranPosData = new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a};
+
+        // 0x06 Length Indicator?
+        // 0x8c=1000 1100 -> 10=>Method=Conventional, 001=>GANSSId=SBAS, 100=>usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+        // 0x02=0000 0010 -> 00=>Method=MS-Based, 000=>GANSSId=Galileo, 10=>usage=2 (Attempted successfully: results used to verify but not generate location)
+        // 0x11=0001 0001 -> 00=>Method=MS-Based, 010=>GANSSId=Modernized GPS, 01=>usage=1 (Attempted successfully: results not used to generate location)
+        // 0x58=0101 1000 -> 01=>Method=MS-Assisted, 011=>GANSSId=QZSS, 00=usage=0 (Attempted unsuccessfully due to failure or interruption)
+        // 0xe8=1110 1000 -> 11=>Method=Reserved, 101=>GANSSId=BDS, 00=usage0 (Attempted unsuccessfully due to failure or interruption)
+        // 0x63=0110 0011 -> 01=>MS-Assisted, 100=>GANSSId=GLONASS, 11=usage3 (Attempted successfully: results used to generate location)
+        // byte[] geranGANSSData = new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63};
+
+        // 0x01=0000 0001 -> 00=>Method=MS-Based, 000=>GANSSId=Galileo, 01=>usage=1 (Attempted successfully: results used to generate location)
+        // 0x4a=0100 0110 -> 01=>Method=MS-Assisted, 100=>GANSSId=SBAS, 010=>usage=2 (Attempted successfully: results used to verify but not generate location - not used)
+        // 0x90=1001 0000 -> 10=>Method=Conventional, 010=>GANSSId=Modernized GPS, 000=>usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+        // 0x18=0001 1000 -> 00=>Method=MS-Based, 000=>GANSSId=Modernized GPS, 000=>usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+        // 0xdc=1110 1100 -> 11=>Method=Reserved, 101=>GANSSId=QZSS, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+        // 0x63=0110 0011 -> 01=>Method=MS-Assisted, 100=>GANSSId=GLONASS, usage=3 (Attempted successfully: results used to generate location)
+        // byte[] utranGanssData = new byte[] {0x01, 0x46, (byte) 0x90, 0x18, (byte) 0xec, 0x63};
+
+        // 0x94=1001 0100 10=>Method=Standalone, 010=>GANSSId=Bluetooth, 100=>usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+        // 0x4b=0100 1011 00=>Method=MS-Assisted, AddPosId=GANSSId=WLAN, 011=>usage=3 (Attempted successfully: results used to generate location)
+        // byte[] utranAddPosData = new byte[] {(byte) 0x94, 0x4b};
+
+        switch (rand.nextInt(7) + 1) {
+            case 1:
+                geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+                break;
+            case 2:
+                geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+                geranGanssPositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63});
+                break;
+            case 3:
+                utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                break;
+            case 4:
+                utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                break;
+            case 5:
+                utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(new byte[] {(byte) 0x94, 0x4b});
+                break;
+            case 6:
+                geranGanssPositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63});
+                break;
+            case 7:
+                utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                break;
+        }
+
+        boolean deferredMTLRResponseIndicator = false;
+        LocationType locationType = provideSubscriberLocationRequest.getLocationType();
+        if (locationType.getDeferredLocationEventType() != null) {
+            deferredMTLRResponseIndicator = true;
+        }
+
+        int mcc, mnc, lac, ci;
+        mcc = 748;
+        mnc = 1;
+        lac = 101;
+        ci = 10263;
+        saiPresent = false;
+        switch(rand.nextInt(10) + 1) {
+            case 1:
+                saiPresent = true;
+                break;
+            case 2:
+                lac = 119;
+                ci = 15336;
+                break;
+            case 3:
+                lac = 118;
+                ci = 292;
+                break;
+            case 4:
+                lac = 109;
+                ci = 10175;
+                saiPresent = true;
+                break;
+            case 5:
+                lac = 11;
+                ci = 4812;
+                saiPresent = true;
+                break;
+            case 6:
+                mnc = 7;
+                lac = 8820;
+                ci = 9748;
+                break;
+            case 7:
+                mnc = 7;
+                lac = 8552;
+                ci = 8239;
+                saiPresent = true;
+                break;
+            case 8:
+                mnc = 10;
+                lac = 9501;
+                ci = 35100;
+                break;
+            case 9:
+                mnc = 7;
+                lac = 8313;
+                ci = 9281;
+                saiPresent = true;
+                break;
+            case 10:
+                mnc = 7;
+                lac = 8820;
+                ci = 8051;
+                break;
+        }
+        CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
+        CellGlobalIdOrServiceAreaIdFixedLength cgiOrSai = null;
+        try {
+            cgiOrSai = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdFixedLength(mcc, mnc, lac, ci);
+        } catch (MAPException ex) {
+            logger.error(ex.getMessage());
+        }
+        cellGlobalIdOrServiceAreaIdOrLAI = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdOrLAI(cgiOrSai);
+
+        VelocityEstimate velocityEstimate = null;
+        if (provideSubscriberLocationRequest.getLCSQoS() != null) {
+            if (provideSubscriberLocationRequest.getLCSQoS().getVelocityRequest()) {
+                VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
+                int horizontalSpeed = rand.nextInt(100) + 10;
+                int bearing = rand.nextInt(5) + 1;
+                int verticalSpeed = rand.nextInt(10) + 1;
+                int uncertaintyHorizontalSpeed = rand.nextInt(5) + 1;
+                int uncertaintyVerticalSpeed = rand.nextInt(2) + 1;
+                try {
+                    velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed,
+                            uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
+                } catch (MAPException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        }
+
+        boolean moLrShortCircuitIndicator = provideSubscriberLocationRequest.getMoLrShortCircuitIndicator();
+
+        ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                NumberingPlan.ISDN, "59899180071");
+        ServingNodeAddress targetServingNodeForHandover = new ServingNodeAddressImpl(networkNodeNumber, true);
+
+        Integer utranBaroPressureMeas = null;
+        UtranCivicAddress utranCivicAddress = null;
+
+        if (geranPositioningDataInfo == null || geranGanssPositioningData == null) {
+            utranBaroPressureMeas = rand.nextInt(85000) + 30000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
+            String civicAddressString = null;
+            switch (rand.nextInt(7) + 1) {
+                case 1:
+                    civicAddressString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                            "<civicAddress xml:lang=\"en-AU\"\n" +
+                            "              xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                            "              xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                            "    <country>AU</country>\n" +
+                            "    <A1>NSW</A1>\n" +
+                            "    <A3>Wollongong</A3>\n" +
+                            "    <A4>North Wollongong</A4>\n" +
+                            "    <RD>Flinders</RD>\n" +
+                            "    <STS>Street</STS>\n" +
+                            "    <RDBR>Campbell Street</RDBR>\n" +
+                            "    <LMK>Gilligan's Island</LMK>\n" +
+                            "    <LOC>Corner</LOC>\n" +
+                            "    <NAM>Video Rental Store</NAM>\n" +
+                            "    <PC>2500</PC>\n" +
+                            "    <ROOM>Westerns and Classics</ROOM>\n" +
+                            "    <PLC>store</PLC>\n" +
+                            "    <POBOX>Private Box 15</POBOX>\n" +
+                            "    <cae:MP>248</cae:MP>\n" +
+                            "    <cae:PN>22-109-689</cae:PN>\n" +
+                            "</civicAddress>";
+                    break;
+                case 2:
+                    civicAddressString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                            "<civicAddress>\n" +
+                            "    <country>US</country>\n" +
+                            "    <A1>New York</A1>\n" +
+                            "    <A3>New York</A3>\n" +
+                            "    <A4>Broadway</A4>\n" +
+                            "    <HNO>123</HNO>\n" +
+                            "    <LOC>Suite 75</LOC>\n" +
+                            "    <PC>10027-0401</PC>\n" +
+                            "</civicAddress>";
+                    break;
+                case 3:
+                    civicAddressString = "<civicAddress xml:lang=\"en-AU\"\n" +
+                            "     xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\">\n" +
+                            "     <country>AU</country>\n" +
+                            "     <A1>NSW</A1>\n" +
+                            "     <A3>Wollongong</A3>\n" +
+                            "     <A4>North Wollongong</A4>\n" +
+                            "     <RD>Flinders</RD>\n" +
+                            "     <STS>Street</STS>\n" +
+                            "     <RDBR>Campbell Street</RDBR>\n" +
+                            "     <LMK>Gilligan's Island</LMK>\n" +
+                            "     <LOC>Corner</LOC>\n" +
+                            "     <NAM>Video Rental Store</NAM>\n" +
+                            "     <PC>2500</PC>\n" +
+                            "     <ROOM>Westerns and Classics</ROOM>\n" +
+                            "     <PLC>store</PLC>\n" +
+                            "     <POBOX>Private Box 15</POBOX>\n" +
+                            "   </civicAddress>";
+                    break;
+                case 4:
+                    civicAddressString = "<civicAddress xml:lang=\"en-US\"\n" +
+                            "        xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                            "        xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                            "     <country>US</country>\n" +
+                            "     <A1>CA</A1>\n" +
+                            "     <A2>Sacramento</A2>\n" +
+                            "     <RD>I5</RD>\n" +
+                            "     <cae:MP>248</cae:MP>\n" +
+                            "     <cae:PN>22-109-689</cae:PN>\n" +
+                            "   </civicAddress>";
+                    break;
+                case 5:
+                    civicAddressString = "<civicAddress xml:lang=\"en-US\"\n" +
+                            "        xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                            "        xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                            "     <country>US</country>\n" +
+                            "     <A1>CA</A1>\n" +
+                            "     <A2>Sacramento</A2>\n" +
+                            "     <RD>Colorado</RD>\n" +
+                            "     <HNO>223</HNO>\n" +
+                            "     <cae:STP>Boulevard</cae:STP>\n" +
+                            "     <cae:HNP>A</cae:HNP>\n" +
+                            "   </civicAddress>";
+                    break;
+                default:
+                    break;
+            }
+            if (civicAddressString != null) {
+                byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
+                utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
+            }
+        }
+
+
+        try {
             int pslResponse = rand.nextInt(10) + 1;
             switch (pslResponse) {
                 case 1:
@@ -919,26 +1219,22 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
             }
 
-            UtranAdditionalPositioningData utranAdditionalPositioningData = null;
-            Integer utranBaroPressureMeas = null;
-            UtranCivicAddress utranCivicAddress = null;
-
             curDialog.addProvideSubscriberLocationResponse(
                 provideSubscriberLocationRequest.getInvokeId(),
                 locationEstimate,
-                geranPositioningData,
+                geranPositioningDataInfo,
                 utranPositioningDataInfo,
                 ageOfLocationEstimate,
                 additionalLocationEstimate,
-                extensionContainer,
+                null,
                 deferredMTLRResponseIndicator,
                 cellGlobalIdOrServiceAreaIdOrLAI,
                 saiPresent,
                 accuracyFulfilmentIndicator,
                 velocityEstimate,
                 moLrShortCircuitIndicator,
-                geranGANSSpositioningData,
-                utranGANSSpositioningData,
+                geranGanssPositioningData,
+                utranGanssPositioningData,
                 targetServingNodeForHandover,
                 utranAdditionalPositioningData,
                 utranBaroPressureMeas,
@@ -950,7 +1246,10 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             this.countMapLcsResp++;
 
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: ProvideSubscriberLocationResponse", createPSLResponse(curDialog.getLocalDialogId(),
-                locationEstimate, lcsReferenceNumber), Level.INFO);
+                    locationEstimate, geranPositioningDataInfo, utranPositioningDataInfo, ageOfLocationEstimate, additionalLocationEstimate,
+                    deferredMTLRResponseIndicator, cellGlobalIdOrServiceAreaIdOrLAI, saiPresent, accuracyFulfilmentIndicator,
+                    velocityEstimate, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData, targetServingNodeForHandover,
+                    utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress, lcsReferenceNumber), Level.INFO);
 
         } catch (MAPException me) {
             logger.debug("Exception on addProvideSubscriberLocationResponse " + me);
@@ -965,115 +1264,303 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         }
     }
 
-    private String createPSLResponse(long dialogId, ExtGeographicalInformation locationEstimate, Integer lcsReferenceNumber) {
+    private String createPSLResponse(long dialogId, ExtGeographicalInformation locationEstimate,
+            PositioningDataInformation geranPositioningData, UtranPositioningDataInfo utranPositioningData,
+            Integer ageOfLocationEstimate, AddGeographicalInformation additionalLocationEstimate,
+            boolean deferredMTLRResponseIndicator, CellGlobalIdOrServiceAreaIdOrLAI cellIdOrSai,
+            boolean saiPresent, AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate,
+            boolean moLrShortCircuitIndicator, GeranGANSSpositioningData geranGANSSpositioningData,
+            UtranGANSSpositioningData utranGANSSpositioningData, ServingNodeAddress targetServingNodeForHandover,
+            UtranAdditionalPositioningData utranAdditionalPositioningData, Integer utranBaroPressureMeas,
+            UtranCivicAddress utranCivicAddress, Integer lcsReferenceNumber) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("dialogId=");
         sb.append(dialogId).append("\",\n ");
-        sb.append("locationEstimate=\"");
-        sb.append(locationEstimate).append("\"");
-        sb.append(locationEstimate).append(", ");
-        if (locationEstimate.getTypeOfShape() != null) {
-            sb.append("\", typeOfShape=\"");
-            sb.append(locationEstimate.getTypeOfShape()).append(", ");
+
+        if (locationEstimate != null) {
+            sb.append("\", addLocationEstimate=\"");
+            sb.append("\" Type of Shape=\"").append(locationEstimate.getTypeOfShape());
+            if (locationEstimate.getLatitude() > -90 && locationEstimate.getLatitude() < 90) {
+                sb.append("\", latitude=\"");
+                sb.append(locationEstimate.getLatitude()).append(", ");
+            }
+            if (locationEstimate.getLongitude() > -180 && locationEstimate.getLongitude() < 180) {
+                sb.append("\", longitude=\"");
+                sb.append(locationEstimate.getLongitude()).append(", ");
+            }
+            if (locationEstimate.getTypeOfShape() != null) {
+                sb.append("\", typeOfShape=\"");
+                sb.append(locationEstimate.getTypeOfShape()).append(", ");
+            }
+            if (locationEstimate.getUncertainty() >= 0 && locationEstimate.getUncertainty() < 128) {
+                sb.append("\", uncertainty=\"");
+                sb.append(locationEstimate.getUncertainty()).append(", ");
+            }
+            if (locationEstimate.getAltitude() > Integer.MIN_VALUE && locationEstimate.getAltitude() < Integer.MAX_VALUE) {
+                sb.append("\", altitude=\"");
+                sb.append(locationEstimate.getAltitude()).append(", ");
+            }
+            if (locationEstimate.getUncertaintyAltitude() > Double.MIN_VALUE && locationEstimate.getUncertaintyAltitude() < Double.MAX_VALUE) {
+                sb.append("\", uncertaintyAltitude=\"");
+                sb.append(locationEstimate.getUncertaintyAltitude()).append(", ");
+            }
+            if (locationEstimate.getConfidence() > Integer.MIN_VALUE && locationEstimate.getConfidence() < Integer.MAX_VALUE) {
+                sb.append("\", confidence=\"");
+                sb.append(locationEstimate.getConfidence()).append(", ");
+            }
+            if (locationEstimate.getInnerRadius() > Integer.MIN_VALUE && locationEstimate.getInnerRadius() < Integer.MAX_VALUE) {
+                sb.append("\", innerRadius=\"");
+                sb.append(locationEstimate.getInnerRadius()).append(", ");
+            }
+            if (locationEstimate.getUncertaintyRadius() > Double.MIN_VALUE && locationEstimate.getUncertaintyRadius() < Double.MAX_VALUE) {
+                sb.append("\", uncertaintyRadius=\"");
+                sb.append(locationEstimate.getUncertaintyRadius()).append(", ");
+            }
+            if (locationEstimate.getUncertaintySemiMajorAxis() > Double.MIN_VALUE && locationEstimate.getUncertaintySemiMajorAxis() < Double.MAX_VALUE) {
+                sb.append("\", uncertaintySemiMajorAxis=\"");
+                sb.append(locationEstimate.getUncertaintySemiMajorAxis()).append(", ");
+            }
+            if (locationEstimate.getUncertaintySemiMinorAxis() > Double.MIN_VALUE && locationEstimate.getUncertaintySemiMinorAxis() < Double.MAX_VALUE) {
+                sb.append("\", uncertaintySemiMinorAxis=\"");
+                sb.append(locationEstimate.getUncertaintySemiMinorAxis()).append(", ");
+            }
+            if (locationEstimate.getAngleOfMajorAxis() > Double.MIN_VALUE && locationEstimate.getAngleOfMajorAxis() < Double.MAX_VALUE) {
+                sb.append("\", angleOfMajorAxis=\"");
+                sb.append(locationEstimate.getAngleOfMajorAxis()).append(", ");
+            }
+            if (locationEstimate.getOffsetAngle() > Double.MIN_VALUE && locationEstimate.getOffsetAngle() < Double.MAX_VALUE) {
+                sb.append("\", offsetAngle=\"");
+                sb.append(locationEstimate.getOffsetAngle()).append(", ");
+            }
+            if (locationEstimate.getIncludedAngle() > Double.MIN_VALUE && locationEstimate.getIncludedAngle() < Double.MAX_VALUE) {
+                sb.append("\", includedAngle=\"");
+                sb.append(locationEstimate.getIncludedAngle()).append(", ");
+            }
         }
-        if (locationEstimate.getLatitude() > -90 && locationEstimate.getLatitude() < 90) {
-            sb.append("\", latitude=\"");
-            sb.append(locationEstimate.getLatitude()).append(", ");
+        sb.append("\", ageOfLocationEstimate=\"").append(ageOfLocationEstimate);
+
+        if (additionalLocationEstimate != null) {
+            sb.append("\", addLocationEstimate=\"");
+            sb.append("\" Type of Shape=\"").append(additionalLocationEstimate.getTypeOfShape());
+            byte[] addLocationEstimateByteArray = additionalLocationEstimate.getData();
+            if (additionalLocationEstimate.getTypeOfShape() == TypeOfShape.Polygon) {
+                PolygonImpl polygon = new PolygonImpl(addLocationEstimateByteArray);
+                sb.append(polygon);
+            }
         }
-        if (locationEstimate.getLongitude() > -180 && locationEstimate.getLongitude() < 180) {
-            sb.append("\", longitude=\"");
-            sb.append(locationEstimate.getLongitude()).append(", ");
+
+        if (geranPositioningData != null) {
+            try {
+                ArrayList<String> methods = geranPositioningData.getLocationGeneratedPositioningMethods();
+                StringBuilder geranPositioningDataInfo = new StringBuilder();
+                int metCounter = 0;
+                for (String met : methods) {
+                    metCounter++;
+                    geranPositioningDataInfo.append(met);
+                    if (methods.size() != metCounter)
+                        geranPositioningDataInfo.append(", ");
+                }
+                sb.append("\", geranPositioningData=\"").append(geranPositioningDataInfo);
+            } catch (MAPException e) {
+                throw new RuntimeException(e);
+            }
         }
-        if (locationEstimate.getUncertainty() >= 0 && locationEstimate.getUncertainty() < 128) {
-            sb.append("\", uncertainty=\"");
-            sb.append(locationEstimate.getUncertainty()).append(", ");
+
+        if (utranPositioningData != null) {
+            try {
+                ArrayList<String> methods = utranPositioningData.getUtranLocationGeneratedPositioningMethods();
+                StringBuilder utranPosDataInfo = new StringBuilder();
+                int metCounter = 0;
+                for (String met : methods) {
+                    metCounter++;
+                    utranPosDataInfo.append(met);
+                    if (methods.size() != metCounter)
+                        utranPosDataInfo.append(", ");
+                }
+                sb.append("\", utranPositioningData=\"").append(utranPosDataInfo);
+            } catch (MAPException e) {
+                throw new RuntimeException(e);
+            }
         }
-        if (locationEstimate.getAltitude() > Integer.MIN_VALUE && locationEstimate.getAltitude() < Integer.MAX_VALUE) {
-            sb.append("\", altitude=\"");
-            sb.append(locationEstimate.getAltitude()).append(", ");
+
+        if (deferredMTLRResponseIndicator)
+            sb.append("\", deferredMTLRResponseIndicator=\"").append(deferredMTLRResponseIndicator);
+
+        if (cellIdOrSai != null) {
+            sb.append("\", MCC=\"");
+            try {
+                sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC())).append(", ");
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+            sb.append("\", MNC=\"");
+            try {
+                sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC())).append(", ");
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+            sb.append("\", LAC=\"");
+            try {
+                sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac())).append(", ");
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+            if (saiPresent) {
+                try {
+                    sb.append("\", SAC=\"").append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode()));
+                } catch (MAPException e) {
+                    logger.error(e.getMessage());
+                }
+            } else {
+                try {
+                    sb.append("\", CI=\"").append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode())).append(", ");
+                } catch (MAPException e) {
+                    logger.error(e.getMessage());
+                }
+            }
         }
-        if (locationEstimate.getUncertaintyAltitude() > Double.MIN_VALUE && locationEstimate.getUncertaintyAltitude() < Double.MAX_VALUE) {
-            sb.append("\", uncertaintyAltitude=\"");
-            sb.append(locationEstimate.getUncertaintyAltitude()).append(", ");
+
+        if (accuracyFulfilmentIndicator != null)
+            sb.append("\", accuracyFulfilmentIndicator=\"").append(accuracyFulfilmentIndicator);
+
+        if (velocityEstimate != null) {
+            sb.append("\", Velocity Estimate: velocity type=\"").append(velocityEstimate.getVelocityType());
+            sb.append("\", horizontal speed=\"").append(velocityEstimate.getHorizontalSpeed());
+            sb.append("\", horizontal speed uncertainty=\"").append(velocityEstimate.getUncertaintyHorizontalSpeed());
+            sb.append("\", vertical speed=\"").append(velocityEstimate.getVerticalSpeed());
+            sb.append("\", vertical speed uncertainty=\"").append(velocityEstimate.getUncertaintyVerticalSpeed());
+            sb.append("\", bearing=\"").append(velocityEstimate.getVerticalSpeed());velocityEstimate.getBearing();
         }
-        if (locationEstimate.getConfidence() > Integer.MIN_VALUE && locationEstimate.getConfidence() < Integer.MAX_VALUE) {
-            sb.append("\", confidence=\"");
-            sb.append(locationEstimate.getConfidence()).append(", ");
+
+        if (moLrShortCircuitIndicator)
+            sb.append("\", moLrShortCircuitIndicator=\"").append(moLrShortCircuitIndicator);
+
+        if (geranGANSSpositioningData != null) {
+            try {
+                Multimap<String, String> methodsAndGanssIds = geranGANSSpositioningData.getLocationGeneratedMethodsAndGANSSIds();
+                StringBuilder geranGANSSPosDataInfo = new StringBuilder();
+                String key = null, value = null;
+                for (Map.Entry<String, String> entry : methodsAndGanssIds.entries()) {
+                    if (key != null || value != null)
+                        geranGANSSPosDataInfo.append("; ");
+                    key = entry.getKey();
+                    value = entry.getValue();
+                    geranGANSSPosDataInfo.append("Method=").append(key).append(", GANSSId=").append(value);
+                }
+                sb.append("\", GERAN GANSS positioning data=\"").append(geranGANSSPosDataInfo);
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
         }
-        if (locationEstimate.getInnerRadius() > Integer.MIN_VALUE && locationEstimate.getInnerRadius() < Integer.MAX_VALUE) {
-            sb.append("\", innerRadius=\"");
-            sb.append(locationEstimate.getInnerRadius()).append(", ");
+
+        if (utranGANSSpositioningData != null) {
+            try {
+                Multimap<String, String> methodsAndGanssIds = utranGANSSpositioningData.getLocationGeneratedMethodsAndGANSSIds();
+                StringBuilder utranGANSSPosDataInfo = new StringBuilder();
+                String key = null, value = null;
+                for (Map.Entry<String, String> entry : methodsAndGanssIds.entries()) {
+                    if (key != null || value != null)
+                        utranGANSSPosDataInfo.append("; ");
+                    key = entry.getKey();
+                    value = entry.getValue();
+                    utranGANSSPosDataInfo.append("Method=").append(key).append(", GANSSId=").append(value);
+                }
+                sb.append("\", UTRAN GANSS positioning data=\"").append(utranGANSSPosDataInfo);
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
         }
-        if (locationEstimate.getUncertaintyRadius() > Double.MIN_VALUE && locationEstimate.getUncertaintyRadius() < Double.MAX_VALUE) {
-            sb.append("\", uncertaintyRadius=\"");
-            sb.append(locationEstimate.getUncertaintyRadius()).append(", ");
+
+        if (targetServingNodeForHandover != null) {
+            if (targetServingNodeForHandover.getMscNumber() != null)
+                sb.append("\", targetServingNodeForHandover=\"").append(targetServingNodeForHandover.getMscNumber().getAddress());
+            if (targetServingNodeForHandover.getSgsnNumber() != null)
+                sb.append("\", targetServingNodeForHandover=\"").append(targetServingNodeForHandover.getSgsnNumber().getAddress());
+            if (targetServingNodeForHandover.getMmeNumber() != null)
+                sb.append("\", targetServingNodeForHandover=\"").append(Arrays.toString(targetServingNodeForHandover.getMmeNumber().getData()));
         }
-        if (locationEstimate.getUncertaintySemiMajorAxis() > Double.MIN_VALUE && locationEstimate.getUncertaintySemiMajorAxis() < Double.MAX_VALUE) {
-            sb.append("\", uncertaintySemiMajorAxis=\"");
-            sb.append(locationEstimate.getUncertaintySemiMajorAxis()).append(", ");
+        if (utranAdditionalPositioningData != null) {
+            try {
+                Multimap<String, String> methodsAndAddPosIds = utranAdditionalPositioningData.getUtranAdditionalPositioningMethodsAndIds();
+                StringBuilder slrUtranAddPositioningData = new StringBuilder();
+                String key = null, value = null;
+                for (Map.Entry<String, String> entry : methodsAndAddPosIds.entries()) {
+                    if (key != null || value != null)
+                        slrUtranAddPositioningData.append("; ");
+                    key = entry.getKey();
+                    value = entry.getValue();
+                    slrUtranAddPositioningData.append("Method=").append(key).append(", AddPosId=").append(value);
+                }
+                sb.append("\", UTRAN additional positioning data=\"").append(slrUtranAddPositioningData);
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
         }
-        if (locationEstimate.getUncertaintySemiMinorAxis() > Double.MIN_VALUE && locationEstimate.getUncertaintySemiMinorAxis() < Double.MAX_VALUE) {
-            sb.append("\", uncertaintySemiMinorAxis=\"");
-            sb.append(locationEstimate.getUncertaintySemiMinorAxis()).append(", ");
-        }
-        if (locationEstimate.getAngleOfMajorAxis() > Double.MIN_VALUE && locationEstimate.getAngleOfMajorAxis() < Double.MAX_VALUE) {
-            sb.append("\", angleOfMajorAxis=\"");
-            sb.append(locationEstimate.getAngleOfMajorAxis()).append(", ");
-        }
-        if (locationEstimate.getOffsetAngle() > Double.MIN_VALUE && locationEstimate.getOffsetAngle() < Double.MAX_VALUE) {
-            sb.append("\", offsetAngle=\"");
-            sb.append(locationEstimate.getOffsetAngle()).append(", ");
-        }
-        if (locationEstimate.getIncludedAngle() > Double.MIN_VALUE && locationEstimate.getIncludedAngle() < Double.MAX_VALUE) {
-            sb.append("\", includedAngle=\"");
-            sb.append(locationEstimate.getIncludedAngle());
-        }
+
+        if (utranBaroPressureMeas != null)
+            sb.append(", UTRAN Barometric Pressure Measurement=\"").append(utranBaroPressureMeas);
+
+        if (utranCivicAddress != null)
+            sb.append(", UTRAN civic address=\"").append(Arrays.toString(utranCivicAddress.getData()));
+
         if (lcsReferenceNumber != null) {
-            sb.append("\", lcsReferenceNumber=\"");
-            sb.append(lcsReferenceNumber);
+            sb.append("\", lcsReferenceNumber=\"").append(lcsReferenceNumber);
         }
+
         return sb.toString();
     }
 
-    private String createPSLRequestData(long dialogId, LocationType locationType, ISDNAddressString mlcNumber, LCSClientID lcsClientID, IMSI imsi,
-                                        ISDNAddressString msisdn, LMSI lmsi, LCSPriority lcsPriority, LCSQoS lcsQoS, IMEI imei, Integer lcsReferenceNumber,
-                                        Integer lcsServiceTypeID, LCSCodeword lcsCodeword, LCSPrivacyCheck lcsPrivacyCheck, AreaEventInfo areaEventInfo,
-                                        GSNAddress hgmlcAddress, boolean moLrShortCircuitIndicator, PeriodicLDRInfo periodicLDRInfo) {
+    private String createPSLRequestData(long dialogId, LocationType locationType, ISDNAddressString mlcNumber,
+            LCSClientID lcsClientID, boolean privacyOverride, IMSI imsi, ISDNAddressString msisdn, LMSI lmsi, IMEI imei,
+            LCSPriority lcsPriority, LCSQoS lcsQoS, SupportedGADShapes supportedGADShapes, Integer lcsReferenceNumber, Integer lcsServiceTypeID,
+             LCSCodeword lcsCodeword, LCSPrivacyCheck lcsPrivacyCheck, AreaEventInfo areaEventInfo, GSNAddress hgmlcAddress,
+             boolean moLrShortCircuitIndicator, PeriodicLDRInfo periodicLDRInfo, ReportingPLMNList reportingPLMNList) {
+
         StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId).append("\",\n ");
-        sb.append("locationType=\"");
-        sb.append(locationType).append("\",\n ");
-        if (locationType.getLocationEstimateType() != null) {
-            sb.append("locationEstimateType=\"");
-            sb.append(locationType.getLocationEstimateType().getType()).append("\",\n ");
+        sb.append("dialogId=").append(dialogId).append("\",\n ");
+
+        if (locationType != null) {
+            sb.append("locationType=\"").append("\",\n ");
+            if (locationType.getLocationEstimateType() != null) {
+                sb.append("locationEstimateType=\"").append(locationType.getLocationEstimateType().getType()).append("\",\n ");
+            }
+            if (locationType.getDeferredLocationEventType() != null) {
+                sb.append("deferredLocationEventType=\"").append(locationType.getDeferredLocationEventType()).append("\",\n ");
+            }
         }
-        if (locationType.getDeferredLocationEventType() != null) {
-            sb.append("deferredLocationEventType=\"");
-            sb.append(locationType.getDeferredLocationEventType()).append("\",\n ");
+
+        if (mlcNumber != null) {
+            if (mlcNumber.getAddress() != null) {
+                sb.append("mlcNumber=\"").append(mlcNumber.getAddress()).append("\",\n ");
+            }
         }
-        if (mlcNumber.getAddress() != null) {
-            sb.append("mlcNumber=\"");
-            sb.append(mlcNumber.getAddress()).append("\",\n ");
-        }
-        sb.append("lcsClientID=\"");
-        sb.append(lcsClientID).append("\",\n ");
+
+        sb.append("lcsClientID=\"").append(lcsClientID).append("\",\n ");
+
+        if (privacyOverride)
+            sb.append("privacyOverride=\"").append(privacyOverride).append("\",\n ");
+
         if (imsi != null) {
-            sb.append("IMSI=\"");
-            sb.append(imsi.getData()).append("\",\n ");
+            sb.append("IMSI=\"").append(imsi.getData()).append("\",\n ");
         }
+
         if (msisdn != null) {
-            sb.append("MSISDIN=\"");
-            sb.append(msisdn.getAddress()).append("\",\n ");
+            sb.append("MSISDN=\"").append(msisdn.getAddress()).append("\",\n ");
         }
-        sb.append("LMSI=\"");
-        sb.append(lmsi).append("\",\n ");
-        sb.append("lcsPriority=\"");
-        sb.append(lcsPriority).append("\",\n ");
-        sb.append("lcsQos=\"");
-        sb.append(lcsQoS).append("\",\n ");
+
+        if (imei != null) {
+            sb.append("IMEI=\"").append(imei.getIMEI()).append("\",\n ");
+        }
+
+        if (lmsi != null)
+            sb.append("LMSI=\"").append(lmsi).append("\",\n ");
+
+        if (lcsPriority != null)
+            sb.append("lcsPriority=\"").append(lcsPriority).append("\",\n ");
+
         if (lcsQoS != null) {
+            sb.append("lcsQos=\"").append(lcsQoS).append("\",\n ");
             sb.append("lcsQosHorizontalAccuracy=\"");
             if (lcsQoS.getHorizontalAccuracy() != null)
                 sb.append(lcsQoS.getHorizontalAccuracy().intValue()).append("\",\n ");
@@ -1087,38 +1574,77 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             if (lcsQoS.getVerticalCoordinateRequest())
                 sb.append(lcsQoS.getVerticalCoordinateRequest()).append("\",\n ");
         }
-        sb.append("IMEI=\"");
-        sb.append(imei).append("\",\n ");
-        sb.append("lcsReferenceNumber=\"");
-        sb.append(lcsReferenceNumber).append("\",\n ");
-        sb.append("lcsServiceTypeID=\"");
-        sb.append(lcsServiceTypeID).append("\",\n ");
-        sb.append("lcsCodeword=\"");
-        sb.append(lcsCodeword).append("\",\n ");
-        sb.append("lcsPrivacyCheck=\"");
-        sb.append(lcsPrivacyCheck).append("\",\n ");
-        sb.append("areaEventInfo=\"");
-        sb.append(areaEventInfo).append("\",\n ");
-        sb.append("hgmlcAddress=\"");
-        sb.append(hgmlcAddress).append("\",\n ");
-        sb.append("moLrShortCircuitIndicator=\"");
-        sb.append(moLrShortCircuitIndicator).append("\",\n ");
-        sb.append("periodicLDRInfo=\"");
-        sb.append(periodicLDRInfo);
+
+        if (supportedGADShapes != null) {
+            sb.append("Supported GAD Shapes: EllipsoidArc=").append(supportedGADShapes.getEllipsoidArc())
+                    .append(", Polygon").append(supportedGADShapes.getPolygon())
+                    .append(", EllipsoidPointWithAltitudeAndUncertaintyEllipsoid").append(supportedGADShapes.getEllipsoidPointWithAltitudeAndUncertaintyEllipsoid())
+                    .append(", EllipsoidPointWithAltitude").append(supportedGADShapes.getEllipsoidPointWithAltitude())
+                    .append(", EllipsoidPointWithUncertaintyCircle").append(supportedGADShapes.getEllipsoidPointWithUncertaintyCircle())
+                    .append(", EllipsoidPointWithUncertaintyEllipse").append(supportedGADShapes.getEllipsoidPointWithUncertaintyEllipse())
+                    .append(", EllipsoidPoint").append(supportedGADShapes.getEllipsoidPoint()).append("\",\n ");
+        }
+
+        if (lcsReferenceNumber != null)
+            sb.append("lcsReferenceNumber=\"").append(lcsReferenceNumber).append("\",\n ");
+
+        if (lcsServiceTypeID != null)
+            sb.append("lcsServiceTypeID=\"").append(lcsServiceTypeID).append("\",\n ");
+
+        if (lcsCodeword != null)
+            sb.append("lcsCodeword=\"").append(lcsCodeword).append("\",\n ");
+
+        if (lcsPrivacyCheck != null)
+            sb.append("lcsPrivacyCheck=\"").append(lcsPrivacyCheck).append("\",\n ");
+
+        if (areaEventInfo != null) {
+            sb.append("areaEventInfo=\"").append(areaEventInfo).append("\",\n ");
+        }
+
+        if (hgmlcAddress != null) {
+            String hGmlcAddress = bytesToHexString(hgmlcAddress.getGSNAddressData());
+            try {
+                InetAddress address = InetAddress.getByAddress(DatatypeConverter.parseHexBinary(hGmlcAddress));
+                hGmlcAddress = address.getHostAddress();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            sb.append("\", H-GMLCAddress=\"").append(hGmlcAddress);
+        }
+
+        if (moLrShortCircuitIndicator)
+            sb.append("moLrShortCircuitIndicator=\"").append(moLrShortCircuitIndicator).append("\",\n ");
+
+        if (periodicLDRInfo != null) {
+            sb.append("\"Periodic LDR Info, reporting amount=\"").append(periodicLDRInfo.getReportingAmount());
+            sb.append("\"Periodic LDR Info, reporting interval=\"").append(periodicLDRInfo.getReportingInterval());
+            if (periodicLDRInfo.getReportingOptionMilliseconds() != null) {
+                sb.append("\"Periodic LDR Info, reporting amount ms=\"").append(
+                        periodicLDRInfo.getReportingOptionMilliseconds().getReportingAmountMilliseconds());
+                sb.append("\"Periodic LDR Info, reporting interval ms=\"").append(
+                        periodicLDRInfo.getReportingOptionMilliseconds().getReportingIntervalMilliseconds());
+            }
+        }
+
         return sb.toString();
     }
 
-    public void onProvideSubscriberLocationResponse(
-        ProvideSubscriberLocationResponse provideSubscriberLocationResponse) {
+    public void onProvideSubscriberLocationResponse(ProvideSubscriberLocationResponse pslResponse) {
 
         logger.debug("onProvideSubscriberLocationResponse");
 
-        MAPDialogLsm curDialog = provideSubscriberLocationResponse.getMAPDialog();
+        MAPDialogLsm curDialog = pslResponse.getMAPDialog();
 
         this.countMapLcsResp++;
         this.testerHost.sendNotif(SOURCE_NAME,
             "Rcvd: ProvideSubscriberLocationResponse", this.createPSLResponse(curDialog.getLocalDialogId(),
-                provideSubscriberLocationResponse.getLocationEstimate(), null), Level.INFO);
+                        pslResponse.getLocationEstimate(), pslResponse.getGeranPositioningData(), pslResponse.getUtranPositioningData(),
+                        pslResponse.getAgeOfLocationEstimate(), pslResponse.getAdditionalLocationEstimate(), pslResponse.getDeferredMTLRResponseIndicator(),
+                        pslResponse.getCellIdOrSai(), pslResponse.getSaiPresent(), pslResponse.getAccuracyFulfilmentIndicator(),
+                        pslResponse.getVelocityEstimate(), pslResponse.getMoLrShortCircuitIndicator(), pslResponse.getGeranGANSSpositioningData(),
+                        pslResponse.getUtranGANSSpositioningData(), pslResponse.getTargetServingNodeForHandover(),
+                        pslResponse.getUtranAdditionalPositioningData(), pslResponse.getUtranBaroPressureMeas(),
+                        pslResponse.getUtranCivicAddress(), null), Level.INFO);
     }
 
     //*********************//
@@ -1155,7 +1681,6 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             TestLcsServerConfigurationData configData = this.testerHost.getConfigurationData().getTestLcsServerConfigurationData();
 
             // SLR Mandatory parameters LCSEvent, LCSClientID & Network Node Number
-            MAPParameterFactoryImpl mapFactory = new MAPParameterFactoryImpl();
             LCSEvent lcsEvent = LCSEvent.deferredmtlrResponse;
 
             LCSClientExternalID lcsClientExternalID = null;
@@ -1163,76 +1688,165 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             String clientName = "545248";
             int cbsDataCodingSchemeCode = 15;
             CBSDataCodingScheme cbsDataCodingScheme = new CBSDataCodingSchemeImpl(cbsDataCodingSchemeCode);
-            String ussdLcsString = "3";
+            String ussdLcsString = "*123#";
             Charset gsm8Charset = Charset.defaultCharset();
             USSDString ussdString = new USSDStringImpl(ussdLcsString, cbsDataCodingScheme, gsm8Charset);
             LCSFormatIndicator lcsFormatIndicator = LCSFormatIndicator.url;
             LCSClientName lcsClientName = new LCSClientNameImpl(cbsDataCodingScheme, ussdString, lcsFormatIndicator);
             AddressString lcsClientDialedByMS = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, clientName);
-            String apnStr = "internet.mnc002.mcc345.gprs";
             APN lcsAPN = null;
             try {
-                lcsAPN = new APNImpl(apnStr);
+                lcsAPN = new APNImpl("internet.mnc002.mcc345.gprs");
             } catch (MAPException e) {
                 logger.error(e.getMessage());
             }
-            LCSRequestorID lcsRequestorID = null;
+            LCSRequestorID lcsRequestorID = new LCSRequestorIDImpl(cbsDataCodingScheme, ussdString, lcsFormatIndicator);
             LCSClientID lcsClientID = mapParameterFactory.createLCSClientID(configData.getLcsClientType(), lcsClientExternalID, lcsClientInternalID,
                 lcsClientName, lcsClientDialedByMS, lcsAPN, lcsRequestorID);
 
             ISDNAddressString networkNodeNumber = mapParameterFactory.createISDNAddressString(
-                this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getAddressNature(),
-                this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getNumberingPlanType(),
-                getNetworkNodeNumber());
-
-            // SLR TC-user optional parameters
-            IMEI imei = mapParameterFactory.createIMEI(getIMEI());
-
-            byte[] lmsiByte = null;
-            int lmsiRandom = rand.nextInt(4) + 1;
-            switch (lmsiRandom) {
+                    this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getAddressNature(),
+                    this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getNumberingPlanType(),
+                    getNetworkNodeNumber());
+            LMSI lmsi = null;
+            switch (rand.nextInt(10) + 1) {
                 case 1:
-                    // char packet_bytes[] = {0x72, 0x02, 0xe9, 0x8c};
-                    lmsiByte = new byte[]{114, 2, (byte) 233, (byte) 140};
+                    lmsi = new LMSIImpl(new byte[]{114, 2, (byte) 233, (byte) 140});
                     break;
                 case 2:
-                    // char packet_bytes[] = {0x71, 0xff, 0xac, 0xce};
-                    lmsiByte = new byte[]{113, (byte) 255, (byte) 172, (byte) 206};
+                    lmsi = new LMSIImpl(new byte[]{113, (byte) 255, (byte) 172, (byte) 206});
                     break;
                 case 3:
-                    // char packet_bytes[] = {0x72, 0x02, 0xeb, 0x37};
-                    lmsiByte = new byte[]{114, 2, (byte) 235, 55};
+                    lmsi = new LMSIImpl(new byte[]{114, 2, (byte) 235, 55});
                     break;
                 case 4:
-                    // char packet_bytes[] = {0x72, 0x02, 0xe7, 0xd5};
-                    lmsiByte = new byte[]{114, 2, (byte) 231, (byte) 213};
+                    lmsi = new LMSIImpl(new byte[]{114, 2, (byte) 231, (byte) 213});
+                    break;
+                default:
                     break;
             }
-            LMSI lmsi = new LMSIImpl(lmsiByte);
+            String mscAddress = "598991800024";
+            ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, mscAddress);
+            String additionalMcsAddress = "598991800179";
+            String sgsnAddress = "598992000077";
+            ISDNAddressString additionalMcsNumber = null;
+            ISDNAddressString sgsnNumber = null;
+            AdditionalNumber additionalNumber = null;
+            boolean gprsNodeIndicator = false;
+            int addNumRandom = rand.nextInt(5) + 1;
+            switch (addNumRandom) {
+                case 1:
+                    break;
+                case 2:
+                    gprsNodeIndicator = true;
+                    break;
+                case 3:
+                    additionalMcsNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                            NumberingPlan.ISDN, additionalMcsAddress);
+                    additionalNumber = new AdditionalNumberImpl(additionalMcsNumber, sgsnNumber);
+                    break;
+                case 4:
+                    gprsNodeIndicator = true;
+                    sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                            NumberingPlan.ISDN, sgsnAddress);
+                    additionalNumber = new AdditionalNumberImpl(additionalMcsNumber, sgsnNumber);
+                    break;
+                case 5:
+                    additionalMcsNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                            NumberingPlan.ISDN, additionalMcsAddress);
+                    additionalNumber = new AdditionalNumberImpl(additionalMcsNumber, sgsnNumber);
+                    gprsNodeIndicator = true;
+                    break;
+                default:
+                    additionalNumber = null; // not needed, just for being explicit about the default case
+                    gprsNodeIndicator = false; // not needed, just for being explicit about the default case
+                    break;
+            }
 
-            // LSR Conditional parameters
-            IMSI imsi = mapParameterFactory.createIMSI(getIMSI());
+            SupportedLCSCapabilitySets supportedLCSCapabilitySets = null, additionalLCSCapabilitySets = null;
+            switch (rand.nextInt(10) + 1) {
+                case 1:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            false, false, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    break;
+                case 2:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, false, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    break;
+                case 3:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, true);
+                    break;
+                case 4:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, true);
+                    break;
+                default:
+                    break;
 
-            ISDNAddressString msisdn = mapParameterFactory.createISDNAddressString(
-                this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getAddressNature(),
-                this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getNumberingPlanType(),
-                getMSISDN());
+            }
+            DiameterIdentity mmeName = null;
+            DiameterIdentity aaaServerName = null;
+            DiameterIdentity sgsnName = null;
+            DiameterIdentity sgsnRealm = null;
+            switch (rand.nextInt(10) + 1) {
+                case 1:
+                    mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 2:
+                    sgsnName = new DiameterIdentityImpl("sgsn1B34.mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+                    sgsnRealm = new DiameterIdentityImpl("mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 3:
+                    aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 4:
+                    mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                default:
+                    break;
+            }
+            LCSLocationInfo lcsLocationInfo = new LCSLocationInfoImpl(networkNodeNumber, lmsi, null, gprsNodeIndicator, additionalNumber,
+                    supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
+            // SLR optional parameters
+            // -- one of msisdn or imsi is mandatory
+            IMSI imsi = null;
+            ISDNAddressString msisdn = null;
+            if (rand.nextInt(2) + 1 == 1) {
+                msisdn = mapParameterFactory.createISDNAddressString(
+                        this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getAddressNature(),
+                        this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getNumberingPlanType(),
+                        getMSISDN());
+            } else {
+                imsi = mapParameterFactory.createIMSI(getIMSI());
+            }
+
+            IMEI imei = mapParameterFactory.createIMEI(getIMEI());
+
+            Integer ageOfLocationEstimate = 0;
             ExtGeographicalInformation locationEstimate = null;
-            AddGeographicalInformation additionalLocationEstimate = null;
-            TypeOfShape typeOfShape = null, additionalTypeOfShape = null;
+            TypeOfShape typeOfShape = null;
             double latitude, longitude, uncertainty, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, uncertaintyAltitude, uncertaintyRadius,
-                offsetAngle, includedAngle;
+                    offsetAngle, includedAngle;
             int confidence, altitude, innerRadius;
-            EllipsoidPoint ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5,
-                ellipsoidPoint6, ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10 = null,
-                ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13, ellipsoidPoint14, ellipsoidPoint15 = null;
-            Integer typeOfShapeRandomOption = rand.nextInt(6) + 1;
-            switch (typeOfShapeRandomOption) {
+            EllipsoidPoint ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6;
+            // ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10, ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13,
+            // ellipsoidPoint14, ellipsoidPoint15;
+            // 3 <= numberOfPoints <= 15
+            switch (rand.nextInt(6) + 1) {
                 case 1:
                     typeOfShape = TypeOfShape.EllipsoidPoint;
-                    latitude = 34.789123;
-                    longitude = -124.902033;
+                    latitude = 34.909744;
+                    longitude = -56.146317;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
@@ -1241,8 +1855,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
                 case 2:
                     typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
-                    latitude = 51.123002;
-                    longitude = -102.108732;
+                    latitude = -34.910349;
+                    longitude = -56.149832;
                     uncertainty = 5.1;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
@@ -1252,23 +1866,23 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
                 case 3:
                     typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyEllipse;
-                    latitude = 75.301024;
-                    longitude = 122.718139;
+                    latitude = -34.905624;
+                    longitude = -55.042191;
                     uncertaintySemiMajorAxis = 21.2;
                     uncertaintySemiMinorAxis = 10.4;
                     angleOfMajorAxis = 30.0; // orientation of major axis
                     confidence = 1;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyEllipse(latitude, longitude,
-                            uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
+                                uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
                     } catch (MAPException e) {
                         logger.error(e.getMessage());
                     }
                     break;
                 case 4:
                     typeOfShape = TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid;
-                    latitude = 45.907010;
-                    longitude = -99.000239;
+                    latitude = -34.956436;
+                    longitude = -54.937820;
                     altitude = 570;
                     uncertaintySemiMajorAxis = 25.4;
                     uncertaintySemiMinorAxis = 12.1;
@@ -1277,15 +1891,15 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     confidence = 5;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(latitude,
-                            longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
+                                longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
                     } catch (MAPException e) {
                         logger.error(e.getMessage());
                     }
                     break;
                 case 5:
                     typeOfShape = TypeOfShape.EllipsoidArc;
-                    latitude = 45.907010;
-                    longitude = -99.000239;
+                    latitude = -34.939956;
+                    longitude = -54.914474;
                     innerRadius = 5;
                     uncertaintyRadius = 1.50;
                     offsetAngle = 20.0;
@@ -1293,7 +1907,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     confidence = 2;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidArc(latitude, longitude, innerRadius,
-                            uncertaintyRadius, offsetAngle, includedAngle, confidence);
+                                uncertaintyRadius, offsetAngle, includedAngle, confidence);
                     } catch (MAPException e) {
                         logger.error(e.getMessage());
                     }
@@ -1309,75 +1923,63 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     }
                     break;
             }
-
+            AddGeographicalInformation additionalLocationEstimate = null;
             int additionalLocationEstimateRandomOption = rand.nextInt(6) + 1;
             if (typeOfShape == TypeOfShape.Polygon) {
-                additionalTypeOfShape = TypeOfShape.Polygon;
                 ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
                 ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
                 ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
                 ellipsoidPoint4 = new EllipsoidPoint(-3.040019, 70.681903);
                 ellipsoidPoint5 = new EllipsoidPoint(-3.045001, 70.700109);
-                EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5};
-
-                /*  char packet_bytes[] = { 0x53, 0x27, 0x65, 0xe6, 0x35, 0x72, 0xb9, 0x27, 0x65, 0xe6, 0x35, 0x72, 0xb9, 0x27, 0x66, 0xef, 0x35, 0x73, 0x8e};   */
-                byte[] polygonData1 = { 83,
-                                        39, 101, (byte) 230, 53, 114, (byte) 185,
-                                        39, 101, (byte) 230, 53, 114, (byte) 185,
-                                        39, 102, (byte) 239, 53, 115, (byte) 142};
-
-                /*  char packet_bytes[] = { 0x53, 0x2c, 0x1d, 0xbc, 0x35, 0xe3, 0x87, 0x2c,0x1d, 0xc1, 0x35, 0xe3, 0x82, 0x2c, 0x1d, 0xbe, 0x35, 0xe3, 0x7b};  */
-                byte[] polygonData2 = { 83,
-                                        44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
-                                        44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
-                                        44, 29, (byte) 190, 53, (byte) 227, 123};
-
-                /* char packet_bytes[] =  { 0x53, 0x24, 0xa7, 0x3c, 0x34, 0x25, 0x00, 0x24, 0xa7, 0x31, 0x34, 0x24, 0xff, 0x24, 0xa7, 0x32,0x34, 0x25, 0x00}; */
-                byte[] polygonData3 = { 83,
-                                        36, (byte) 167, 60, 52, 37, 0,
-                                        36, (byte) 167, 49, 52, 36, (byte) 255,
-                                        36, (byte) 167, 50, 52, 37, 0};
-
-                /* char packet_bytes[] =  { 0x53, 0x24, 0x7c, 0xa3, 0x3b, 0x31, 0x70, 0x24, 0x7e, 0x07, 0x3b, 0x31, 0x8a, 0x24, 0x7f, 0xe0, 0x3b, 0x31, 0x48}; */
-                byte[] polygonData4 = { 83,
-                                        36, 124, (byte) 163, 59, 49, 112,
-                                        36, 126, 7, 59, 49, (byte) 138,
-                                        36, 127, (byte) 224, 59, 49, 72};
-
-                /* char packet_bytes[] =  { 0x53, 0x25, 0xe5, 0xb3, 0x34, 0x42, 0xd3, 0x25, 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25, 0xe6, 0x83, 0x34, 0x43, 0x79
-                                            0x25, 0xe6, 0x84, 0x34, 0x43, 0x7d};  */
-                byte[] polygonData5 = { 84,
-                                        37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
-                                        37, (byte) 230, 64, 52, 67, 124,
-                                        37, (byte) 230, (byte) 131, 52, 67, 121,
-                                        37, (byte) 230, (byte) 132, 52, 67, 125};
-
-                Polygon polygon1, polygon2, polygon3, polygon4, polygon5, polygon6 = new PolygonImpl();
+                ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
+                EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
 
                 try {
                     switch (additionalLocationEstimateRandomOption) {
                         case 1:
-                            polygon1 = new PolygonImpl(polygonData1);
+                            byte[] polygonData1 = { 83,
+                                    41, (byte) 234, (byte) 138, 55, 67, 17,
+                                    41, (byte) 234, (byte) 136, 55, 67, 3,
+                                    41, (byte) 234, 0, 55, 67, 24};
+                            Polygon polygon1 = new PolygonImpl(polygonData1);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon1.getData());
                             break;
                         case 2:
-                            polygon2 = new PolygonImpl(polygonData2);
+                            byte[] polygonData2 = { 83,
+                                    44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                                    44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                                    44, 29, (byte) 190, 53, (byte) 227, 123};
+                            Polygon polygon2 = new PolygonImpl(polygonData2);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon2.getData());
                             break;
                         case 3:
-                            polygon3 = new PolygonImpl(polygonData3);
+                            byte[] polygonData3 = { 83,
+                                    36, (byte) 167, 60, 52, 37, 0,
+                                    36, (byte) 167, 49, 52, 36, (byte) 255,
+                                    36, (byte) 167, 50, 52, 37, 0};
+                            Polygon polygon3 = new PolygonImpl(polygonData3);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon3.getData());
                             break;
                         case 4:
-                            polygon4 = new PolygonImpl(polygonData4);
+                            byte[] polygonData4 = { 83,
+                                    36, 124, (byte) 163, 59, 49, 112,
+                                    36, 126, 7, 59, 49, (byte) 138,
+                                    36, 127, (byte) 224, 59, 49, 72};
+                            Polygon polygon4 = new PolygonImpl(polygonData4);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon4.getData());
                             break;
                         case 5:
-                            polygon5 = new PolygonImpl(polygonData5);
+                            byte[] polygonData5 = { 84,
+                                    37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                                    37, (byte) 230, 64, 52, 67, 124,
+                                    37, (byte) 230, (byte) 131, 52, 67, 121,
+                                    37, (byte) 230, (byte) 132, 52, 67, 125};
+                            Polygon polygon5 = new PolygonImpl(polygonData5);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon5.getData());
                             break;
                         case 6:
-                            ((PolygonImpl) polygon6).setData(ellipsoidPoints);
+                            PolygonImpl polygon6 = new PolygonImpl();
+                            polygon6.setData(ellipsoidPoints);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon6.getData());
                             break;
                     }
@@ -1386,112 +1988,395 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 }
             }
 
-            Boolean gprsNodeIndicator = false;
-
-            GSNAddress hgmlcAddress = createGSNAddress(getHGMLCAddress());
-
-            AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyFulfilled;
-
             ISDNAddressString naEsrd = null;
             ISDNAddressString naEsrk = null;
-            SLRArgExtensionContainer slrArgExtensionContainer = null;
-
-            CellGlobalIdOrServiceAreaIdFixedLength cellGlobalIdOrServiceAreaIdFixedLength = mapParameterFactory.createCellGlobalIdOrServiceAreaIdFixedLength(this.getMCC(), this.getMNC(), this.getLAC(), this.getCellId());
-            CellGlobalIdOrServiceAreaIdOrLAI cellIdOrSai = mapParameterFactory.createCellGlobalIdOrServiceAreaIdOrLAI(cellGlobalIdOrServiceAreaIdFixedLength);
-
-            MAPExtensionContainer extensionContainer = null;
-
-            byte[] geranPosInfo = {0, 3};
-            PositioningDataInformation geranPositioningData = new PositioningDataInformationImpl(geranPosInfo);
-            byte[] utranData = {57, 51, 52, 54, 48, 49};
-            UtranPositioningDataInfo utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranData);
-            Integer lcsServiceTypeID = 1;
-            Boolean saiPresent = false;
-            Boolean pseudonymIndicator = false;
-            VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
-            int horizontalSpeed = 101;
-            int bearing = 3;
-            int verticalSpeed = 2;
-            int uncertaintyHorizontalSpeed = 5;
-            int uncertaintyVerticalSpeed = 1;
-            VelocityEstimate velocityEstimate = null;
-            try {
-                velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
-            } catch (MAPException e) {
-                logger.error(e.getMessage());
+            boolean naEsrkRequest = false;
+            switch (rand.nextInt(3) + 1) {
+                case 1:
+                    naEsrd = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "1210101075");
+                    break;
+                case 2:
+                    naEsrk = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "9289277009");
+                    break;
+                default:
+                    naEsrkRequest = true;
+                    break;
             }
-            Integer sequenceNumber = 0;
-            int reportingAmount = 10;
-            int reportingInterval = 60;
-            ReportingOptionMilliseconds reportingOptionMilliseconds = null;
-            PeriodicLDRInfo periodicLDRInfo = mapParameterFactory.createPeriodicLDRInfo(reportingAmount, reportingInterval, reportingOptionMilliseconds);
-            boolean moLrShortCircuitIndicator = false;
-            // Method=MS-Based, GANSSId=Galileo
-            // Method=MS-Assisted, GANSSId=GLONASS
-            // Method=Conventional, GANSSId=SBAS
-            byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
-            GeranGANSSpositioningDataImpl geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
-            // Method=MS-Based, GANSSId=Galileo
-            // Method=MS-Assisted, GANSSId=GLONASS
-            // Method=Conventional, GANSSId=SBAS
-            byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
-            UtranGANSSpositioningDataImpl utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
-            ServingNodeAddress targetNodeForHandover = null;
-            AdditionalNumber additionalNumber = null;
-            boolean lcsCapabilitySetRelease98_99 = true;
-            boolean lcsCapabilitySetRelease4 = true;
-            boolean lcsCapabilitySetRelease5 = true;
-            boolean lcsCapabilitySetRelease6 = true;
-            boolean lcsCapabilitySetRelease7 = true;
-            SupportedLCSCapabilitySets supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
-                lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-            SupportedLCSCapabilitySets additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
-                lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-            String mmneNameStr = "mmec01.mmegi8000.mme.epc.mnc053.mcc404.3gppnetwork.org";
-            byte[] mme = mmneNameStr.getBytes();
-            //byte[] mme = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
-            DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
-            String aaaServerNameStr = "aaa01.aaa8000.aaa.epc.mnc053.mcc404.3gppnetwork.org";
-            byte[] aaa = aaaServerNameStr.getBytes();
-            //byte[] aaa = {65, 65, 65, 55, 52, 56, 48, 48, 48, 49, 53, 48};
-            DiameterIdentity aaaServerName = new DiameterIdentityImpl(aaa);
-            DiameterIdentity sgsnName = null;
-            DiameterIdentity sgsnRealm = null;
+            SLRArgExtensionContainer slrArgExtensionContainer = null;
+            if (naEsrkRequest) {
+                SLRArgPCSExtensions slrArgPcsExtensions = new SLRArgPCSExtensionsImpl(naEsrkRequest);
+                slrArgExtensionContainer = new SLRArgExtensionContainerImpl(null, slrArgPcsExtensions);
+            }
 
-            LCSLocationInfo lcsLocationInfo = mapParameterFactory.createLCSLocationInfo(networkNodeNumber, lmsi, extensionContainer, gprsNodeIndicator,
-                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
-
+            DeferredLocationEventType deferredLocationEventType;
+            TerminationCause terminationCause;
+            DeferredmtlrData deferredmtlrData;
+            // the deferredmt-lrData parameter shall be included if and only if the lcs-Event indicates a deferredmt-lrResponse.
+            PeriodicLDRInfo periodicLDRInfo = null; // This parameter refers to the periodic reporting interval and reporting amount of the deferred periodic location.
+            Integer sequenceNumber = null; // SequenceNumber ::= INTEGER (1..8639999)
+            // sequenceNumber parameter refers to the number of the periodic location reports completed.
+            // The sequence number would be set to 1 in the first location report and increment by 1 for each new report.
+            // When the number reaches the reporting amount value,
+            // the H-GMLC (for a periodic MT-LR or a periodic MO-LR transfer to third party) will know the procedure is complete
             boolean msAvailable = false;
             boolean enteringIntoArea = false;
             boolean leavingFromArea = false;
-            boolean beingInsideArea = true;
+            boolean beingInsideArea = false;
             boolean periodicLDR = false;
-            DeferredLocationEventType deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
-            TerminationCause terminationCause = TerminationCause.congestion;
-            DeferredmtlrData deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
+            switch (rand.nextInt(5) + 1) {
+                case 1:
+                    msAvailable = true;
+                    break;
+                case 2:
+                    enteringIntoArea = true;
+                    break;
+                case 3:
+                    leavingFromArea = true;
+                    break;
+                case 4:
+                    beingInsideArea = true;
+                    break;
+                case 5:
+                    periodicLDR = true;
+                    int reportingAmount = 3;
+                    int reportingInterval = 600;
+                    int randReporting = rand.nextInt(5) + 1;
+                    if (randReporting == 1) {
+                        int reportingAmountMilliseconds = 863999; // ReportingAmountMilliseconds ::= INTEGER (1..8639999000)
+                        int reportingIntervalMilliseconds = 100; // ReportingIntervalMilliseconds ::= INTEGER (1..999)
+                        ReportingOptionMilliseconds reportingOptionMilliseconds = new ReportingOptionMillisecondsImpl(reportingAmountMilliseconds, reportingIntervalMilliseconds);
+                        periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, reportingOptionMilliseconds);
+                    } else {
+                        periodicLDRInfo = new PeriodicLDRInfoImpl(reportingAmount, reportingInterval, null);
+                    }
+                    sequenceNumber = 1;
+                    break;
+            }
+            deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
+            switch (rand.nextInt(20) + 1) {
+                case 1:
+                    terminationCause = TerminationCause.normal;
+                    break;
+                case 2:
+                    terminationCause = TerminationCause.errorUndefined;
+                    break;
+                case 3:
+                    terminationCause = TerminationCause.internalTimeout;
+                    break;
+                case 4:
+                    terminationCause = TerminationCause.congestion;
+                    break;
+                case 5:
+                    terminationCause = TerminationCause.privacyViolation;
+                    break;
+                case 6:
+                    terminationCause = TerminationCause.shapeOfLocationEstimateNotSupported;
+                    break;
+                case 7:
+                    terminationCause = TerminationCause.subscriberTermination;
+                    break;
+                case 8:
+                    terminationCause = TerminationCause.uETermination;
+                    break;
+                case 9:
+                    terminationCause = TerminationCause.networkTermination;
+                    break;
+                default:
+                    terminationCause = TerminationCause.mtlrRestart;
+                    break;
+            }
+            if (terminationCause == TerminationCause.mtlrRestart)
+                deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
+            else
+                deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, null);
+
+            Integer lcsServiceTypeID = 1;
+            boolean pseudonymIndicator = false;
+            AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyNotFulfilled;
+
+            VelocityEstimate velocityEstimate = null;
+            VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
+            int horizontalSpeed = rand.nextInt(100) + 10;
+            int bearing = rand.nextInt(5) + 1;
+            int verticalSpeed = rand.nextInt(10) + 1;
+            int uncertaintyHorizontalSpeed = rand.nextInt(5) + 1;
+            int uncertaintyVerticalSpeed = rand.nextInt(2) + 1;
+            try {
+                velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed,
+                        uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+
+            boolean moLrShortCircuitIndicator = true;
+
+            int mcc, mnc, lac, ci;
+            mcc = 748;
+            mnc = 1;
+            lac = 101;
+            ci = 10263;
+            boolean saiPresent = false;
+            switch(rand.nextInt(10) + 1) {
+                case 1:
+                    saiPresent = true;
+                    break;
+                case 2:
+                    lac = 119;
+                    ci = 15336;
+                    break;
+                case 3:
+                    lac = 118;
+                    ci = 292;
+                    break;
+                case 4:
+                    lac = 109;
+                    ci = 10175;
+                    saiPresent = true;
+                    break;
+                case 5:
+                    lac = 11;
+                    ci = 4812;
+                    saiPresent = true;
+                    break;
+                case 6:
+                    mnc = 7;
+                    lac = 8820;
+                    ci = 9748;
+                    break;
+                case 7:
+                    mnc = 7;
+                    lac = 8552;
+                    ci = 8239;
+                    saiPresent = true;
+                    break;
+                case 8:
+                    mnc = 10;
+                    lac = 9501;
+                    ci = 35100;
+                    break;
+                case 9:
+                    mnc = 7;
+                    lac = 8313;
+                    ci = 9281;
+                    saiPresent = true;
+                    break;
+                case 10:
+                    mnc = 7;
+                    lac = 8820;
+                    ci = 8051;
+                    break;
+            }
+            CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
+            CellGlobalIdOrServiceAreaIdFixedLength cgiOrSai = null;
+            try {
+                cgiOrSai = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdFixedLength(mcc, mnc, lac, ci);
+            } catch (MAPException ex) {
+                logger.error(ex.getMessage());
+            }
+            cellGlobalIdOrServiceAreaIdOrLAI = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdOrLAI(cgiOrSai);
+
+            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.14").getAddress());
+
+            MAPExtensionContainer extensionContainer = null;
+
+            PositioningDataInformationImpl geranPositioningDataInfo =  null;
+            UtranPositioningDataInfoImpl utranPositioningDataInfo = null;
+            GeranGANSSpositioningDataImpl geranGanssPositioningData = null;
+            UtranGANSSpositioningDataImpl utranGanssPositioningData = null;
             UtranAdditionalPositioningData utranAdditionalPositioningData = null;
+            // Method=Mobile Based E-OTD, Usage=1: Attempted successfully: results not used to generate location
+            // Method=Mobile Assisted E-OTD, Usage=3: Attempted successfully: results used to generate location
+            // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
+            // Method=Cell ID, Usage=0: Attempted unsuccessfully due to failure or interruption
+            // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
+            // Method=Timing Advance, Usage=3: Attempted successfully: results used to generate location
+            // Method=Conventional GPS, Usage=2: Attempted successfully: results used to verify but not generate location
+            // byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
+
+            // 0x00=0000 0000 -> positioning data discriminator (BIT STRING (SIZE(4))): 0000 indicates the presence of the Positioning Data Set IE (that reports the usage of each non-GANSS method that was successfully used to obtain the location estimate) and the optional presence of the GANSS Positioning Data Set IE. It also indicates the optional presence of the Additional Positioning Data Set IE;
+            // 0x00=0000 0000 -> C-ifDiscriminator=0
+            // 0x28=0010 1000 -> 00101=>Method=Mobile Assisted GPS, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0x31=0011 0001 -> 00110=>Method=Mobile Based GPS, usage=1 (Attempted successfully: results not used to generate location - not used)
+            // 0x40=0100 0000 -> 01000=>Method=U-TDOA, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0x51=0101 0001 -> 01010=>Method=IPDL, usage=1 (Attempted successfully: results not used to generate location - not used)
+            // 0x5c=0101 1100 -> 01011=>Method=RTT, usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+            // 0x4b=0100 1011 -> 01000=>Method=OTDOA, usage 3 (Attempted successfully: results used to generate location)
+            // 0x3a=0011 1010 -> 00111=>Method=Conventional GPS, usage=2 (results used to verify but not generate location - not used)
+            // byte[] utranPosData = new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a};
+
+            // 0x06 Length Indicator?
+            // 0x8c=1000 1100 -> 10=>Method=Conventional, 001=>GANSSId=SBAS, 100=>usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+            // 0x02=0000 0010 -> 00=>Method=MS-Based, 000=>GANSSId=Galileo, 10=>usage=2 (Attempted successfully: results used to verify but not generate location)
+            // 0x11=0001 0001 -> 00=>Method=MS-Based, 010=>GANSSId=Modernized GPS, 01=>usage=1 (Attempted successfully: results not used to generate location)
+            // 0x58=0101 1000 -> 01=>Method=MS-Assisted, 011=>GANSSId=QZSS, 00=usage=0 (Attempted unsuccessfully due to failure or interruption)
+            // 0xe8=1110 1000 -> 11=>Method=Reserved, 101=>GANSSId=BDS, 00=usage0 (Attempted unsuccessfully due to failure or interruption)
+            // 0x63=0110 0011 -> 01=>MS-Assisted, 100=>GANSSId=GLONASS, 11=usage3 (Attempted successfully: results used to generate location)
+            // byte[] geranGANSSData = new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63};
+
+            // 0x01=0000 0001 -> 00=>Method=MS-Based, 000=>GANSSId=Galileo, 01=>usage=1 (Attempted successfully: results used to generate location)
+            // 0x4a=0100 1010 -> 01=>Method=MS-Assisted, 100=>GANSSId=SBAS, 010=>usage=2 (Attempted successfully: results used to verify but not generate location - not used)
+            // 0x90=1001 0000 -> 10=>Method=Conventional, 010=>GANSSId=Modernized GPS, 000=>usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0x18=0001 1000 -> 00=>Method=MS-Based, 000=>GANSSId=Modernized GPS, 000=>usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0xdc=1110 1100 -> 11=>Method=Reserved, 101=>GANSSId=QZSS, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0x63=0110 0011 -> 01=>Method=MS-Assisted, 100=>GANSSId=GLONASS, usage=3 (Attempted successfully: results used to generate location)
+            // byte[] utranGanssData = new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63};
+
+            // 0x94=1001 0100 10=>Method=Standalone, 010=>GANSSId=Bluetooth, 100=>usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+            // 0x4b=0100 1011 00=>Method=MS-Assisted, AddPosId=GANSSId=WLAN, 011=>usage=3 (Attempted successfully: results used to generate location)
+            // byte[] utranAddPosData = new byte[] {(byte) 0x94, 0x4b};
+
+            switch (rand.nextInt(7) + 1) {
+                case 1:
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+                    break;
+                case 2:
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63});
+                    break;
+                case 3:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                    break;
+                case 4:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                    break;
+                case 5:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                    utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(new byte[] {(byte) 0x94, 0x4b});
+                    break;
+                case 6:
+                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63});
+                    break;
+                case 7:
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                    break;
+            }
+
+            boolean isMsc = true;
+            ServingNodeAddress targetServingNodeForHandover = new ServingNodeAddressImpl(networkNodeNumber, isMsc);
+
             Integer utranBaroPressureMeas = null;
             UtranCivicAddress utranCivicAddress = null;
 
-            mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo,
-                msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate, getAgeOfLocationEstimate(), slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData,
-                getLCSReferenceNumber(), geranPositioningData, utranPositioningDataInfo, cellIdOrSai, hgmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator,
-                accuracyFulfilmentIndicator, velocityEstimate, sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGANSSpositioningData,
-                utranGANSSpositioningData, targetNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
+            if (geranPositioningDataInfo == null || geranGanssPositioningData == null) {
+                utranBaroPressureMeas = rand.nextInt(85000) + 30000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
+                String civicAddressString = null;
+                switch (rand.nextInt(7) + 1) {
+                    case 1:
+                        civicAddressString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                "<civicAddress xml:lang=\"en-AU\"\n" +
+                                "              xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                                "              xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                                "    <country>AU</country>\n" +
+                                "    <A1>NSW</A1>\n" +
+                                "    <A3>Wollongong</A3>\n" +
+                                "    <A4>North Wollongong</A4>\n" +
+                                "    <RD>Flinders</RD>\n" +
+                                "    <STS>Street</STS>\n" +
+                                "    <RDBR>Campbell Street</RDBR>\n" +
+                                "    <LMK>Gilligan's Island</LMK>\n" +
+                                "    <LOC>Corner</LOC>\n" +
+                                "    <NAM>Video Rental Store</NAM>\n" +
+                                "    <PC>2500</PC>\n" +
+                                "    <ROOM>Westerns and Classics</ROOM>\n" +
+                                "    <PLC>store</PLC>\n" +
+                                "    <POBOX>Private Box 15</POBOX>\n" +
+                                "    <cae:MP>248</cae:MP>\n" +
+                                "    <cae:PN>22-109-689</cae:PN>\n" +
+                                "</civicAddress>";
+                        break;
+                    case 2:
+                        civicAddressString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                "<civicAddress>\n" +
+                                "    <country>US</country>\n" +
+                                "    <A1>New York</A1>\n" +
+                                "    <A3>New York</A3>\n" +
+                                "    <A4>Broadway</A4>\n" +
+                                "    <HNO>123</HNO>\n" +
+                                "    <LOC>Suite 75</LOC>\n" +
+                                "    <PC>10027-0401</PC>\n" +
+                                "</civicAddress>";
+                        break;
+                    case 3:
+                        civicAddressString = "<civicAddress xml:lang=\"en-AU\"\n" +
+                                "     xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\">\n" +
+                                "     <country>AU</country>\n" +
+                                "     <A1>NSW</A1>\n" +
+                                "     <A3>Wollongong</A3>\n" +
+                                "     <A4>North Wollongong</A4>\n" +
+                                "     <RD>Flinders</RD>\n" +
+                                "     <STS>Street</STS>\n" +
+                                "     <RDBR>Campbell Street</RDBR>\n" +
+                                "     <LMK>Gilligan's Island</LMK>\n" +
+                                "     <LOC>Corner</LOC>\n" +
+                                "     <NAM>Video Rental Store</NAM>\n" +
+                                "     <PC>2500</PC>\n" +
+                                "     <ROOM>Westerns and Classics</ROOM>\n" +
+                                "     <PLC>store</PLC>\n" +
+                                "     <POBOX>Private Box 15</POBOX>\n" +
+                                "   </civicAddress>";
+                        break;
+                    case 4:
+                        civicAddressString = "<civicAddress xml:lang=\"en-US\"\n" +
+                                "        xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                                "        xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                                "     <country>US</country>\n" +
+                                "     <A1>CA</A1>\n" +
+                                "     <A2>Sacramento</A2>\n" +
+                                "     <RD>I5</RD>\n" +
+                                "     <cae:MP>248</cae:MP>\n" +
+                                "     <cae:PN>22-109-689</cae:PN>\n" +
+                                "   </civicAddress>";
+                        break;
+                    case 5:
+                        civicAddressString = "<civicAddress xml:lang=\"en-US\"\n" +
+                                "        xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                                "        xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                                "     <country>US</country>\n" +
+                                "     <A1>CA</A1>\n" +
+                                "     <A2>Sacramento</A2>\n" +
+                                "     <RD>Colorado</RD>\n" +
+                                "     <HNO>223</HNO>\n" +
+                                "     <cae:STP>Boulevard</cae:STP>\n" +
+                                "     <cae:HNP>A</cae:HNP>\n" +
+                                "   </civicAddress>";
+                        break;
+                    default:
+                        break;
+                }
+                if (civicAddressString != null) {
+                    byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
+                    utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
+                }
+            }
+
+            mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk,
+                    locationEstimate, getAgeOfLocationEstimate(), slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData,
+                    getLCSReferenceNumber(), geranPositioningDataInfo, utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI, hGmlcAddress,
+                    lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator, velocityEstimate, sequenceNumber,
+                    periodicLDRInfo, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData,
+                    targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
             logger.debug("Added SubscriberLocationReportRequest");
 
             mapDialogLsm.send();
 
             this.countMapLcsReq++;
 
-            this.testerHost.sendNotif(SOURCE_NAME, "Sent: SubscriberLocationReportRequest", createSLRReqData(mapDialogLsm.getLocalDialogId(), lcsEvent,
-                this.getNetworkNodeNumber(), lcsClientID, msisdn, imsi, imei, locationEstimate, getAgeOfLocationEstimate(), getLCSReferenceNumber(),
-                deferredmtlrData, cellIdOrSai, hgmlcAddress, accuracyFulfilmentIndicator), Level.INFO);
+            this.testerHost.sendNotif(SOURCE_NAME, "Sent: SubscriberLocationReportRequest", createSLRReqData(mapDialogLsm.getLocalDialogId(),
+                    lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate, ageOfLocationEstimate,
+                    slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData, getLCSReferenceNumber(), geranPositioningDataInfo,
+                    utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI, hGmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator,
+                    accuracyFulfilmentIndicator, velocityEstimate, sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator,
+                    geranGanssPositioningData, utranGanssPositioningData, targetServingNodeForHandover,
+                    utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress), Level.INFO);
 
             currentRequestDef += "Sent SLR Request;";
 
         } catch (MAPException e) {
-            return "Exception on addSubscriberLocationReportRequest: " + e.toString();
+            return "Exception on addSubscriberLocationReportRequest: " + e;
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
         }
 
         return "subscriberLocationReportRequest sent";
@@ -1513,70 +2398,203 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             MAPDialogLsm mapDialogLsm = mapServiceLsm.createNewDialog(appCnt, this.mapMan.createOrigAddress(), origReference,
                 this.mapMan.createDestAddress(), destReference);
             logger.debug("MAPDialogLsm Created");
-            TestLcsServerConfigurationData configData = this.testerHost.getConfigurationData().getTestLcsServerConfigurationData();
+            //TestLcsServerConfigurationData configData = this.testerHost.getConfigurationData().getTestLcsServerConfigurationData();
 
             // SLR Mandatory parameters LCSEvent, LCSClientID & Network Node Number
-            MAPParameterFactoryImpl mapFactory = new MAPParameterFactoryImpl();
-            LCSEvent lcsEvent = this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getLCSEvent();
+            LCSEvent lcsEvent = null;
+            switch (rand.nextInt(5) + 1) {
+                case 1:
+                    lcsEvent = LCSEvent.emergencyCallOrigination;
+                    break;
+                case 2:
+                    lcsEvent = LCSEvent.emergencyCallRelease;
+                    break;
+                case 3:
+                    lcsEvent = LCSEvent.molr;
+                    break;
+                case 4:
+                    lcsEvent = LCSEvent.deferredmolrTTTPInitiation;
+                    break;
+                case 5:
+                    lcsEvent = LCSEvent.emergencyCallHandover;
+                    break;
+            }
 
-            LCSClientExternalID lcsClientExternalID = null;
-            LCSClientInternalID lcsClientInternalID = null; //LCSClientInternalID.anonymousLocation;
-            String clientName = "545248";
+            ISDNAddressString externalAddress = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, "444567");
+            LCSClientExternalID lcsClientExternalID = new LCSClientExternalIDImpl(externalAddress, null);
+            LCSClientInternalID lcsClientInternalID = LCSClientInternalID.broadcastService;
+            String clientName = "219023";
             int cbsDataCodingSchemeCode = 15;
             CBSDataCodingScheme cbsDataCodingScheme = new CBSDataCodingSchemeImpl(cbsDataCodingSchemeCode);
-            String ussdLcsString = "3";
+            String ussdLcsString = "*911#";
             Charset gsm8Charset = Charset.defaultCharset();
             USSDString ussdString = new USSDStringImpl(ussdLcsString, cbsDataCodingScheme, gsm8Charset);
             LCSFormatIndicator lcsFormatIndicator = LCSFormatIndicator.url;
-            LCSClientName lcsClientName = null; //new LCSClientNameImpl(cbsDataCodingScheme, ussdString, lcsFormatIndicator);
-            AddressString lcsClientDialedByMS = null; //new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, clientName);
-            //String apnStr = "internet.mnc002.mcc345.gprs";
-            APN lcsAPN = null;
-            /*try {
-                lcsAPN = new APNImpl(apnStr);
-            } catch (MAPException e) {
-                logger.error(e.getMessage());
-            }*/
-            LCSRequestorID lcsRequestorID = null;
-            LCSClientID lcsClientID = mapParameterFactory.createLCSClientID(LCSClientType.emergencyServices, lcsClientExternalID, lcsClientInternalID,
-                lcsClientName, lcsClientDialedByMS, lcsAPN, lcsRequestorID);
+            LCSClientName lcsClientName = new LCSClientNameImpl(cbsDataCodingScheme, ussdString, lcsFormatIndicator);
+            AddressString lcsClientDialedByMS = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, clientName);
+            APN lcsAPN = new APNImpl("e911");
+            LCSClientID lcsClientID = new LCSClientIDImpl(LCSClientType.valueAddedServices, lcsClientExternalID, lcsClientInternalID, lcsClientName, lcsClientDialedByMS, lcsAPN, null);
 
             ISDNAddressString networkNodeNumber = mapParameterFactory.createISDNAddressString(
-                this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getAddressNature(),
-                this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getNumberingPlanType(),
-                "919418599995");
+                    this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getAddressNature(),
+                    this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getNumberingPlanType(),
+                    getNetworkNodeNumber());
+            LMSI lmsi = null;
+            switch (rand.nextInt(10) + 1) {
+                case 1:
+                    lmsi = new LMSIImpl(new byte[]{114, 2, (byte) 233, (byte) 140});
+                    break;
+                case 2:
+                    lmsi = new LMSIImpl(new byte[]{113, (byte) 255, (byte) 172, (byte) 206});
+                    break;
+                case 3:
+                    lmsi = new LMSIImpl(new byte[]{114, 2, (byte) 235, 55});
+                    break;
+                case 4:
+                    lmsi = new LMSIImpl(new byte[]{114, 2, (byte) 231, (byte) 213});
+                    break;
+                default:
+                    break;
+            }
+            String mscAddress = "598991800024";
+            ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                    NumberingPlan.ISDN, mscAddress);
+            String additionalMcsAddress = "598991800179";
+            String sgsnAddress = "598992000077";
+            ISDNAddressString additionalMcsNumber = null;
+            ISDNAddressString sgsnNumber = null;
+            AdditionalNumber additionalNumber = null;
+            boolean gprsNodeIndicator = false;
+            int addNumRandom = rand.nextInt(5) + 1;
+            switch (addNumRandom) {
+                case 1:
+                    break;
+                case 2:
+                    gprsNodeIndicator = true;
+                    break;
+                case 3:
+                    additionalMcsNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                            NumberingPlan.ISDN, additionalMcsAddress);
+                    additionalNumber = new AdditionalNumberImpl(additionalMcsNumber, sgsnNumber);
+                    break;
+                case 4:
+                    gprsNodeIndicator = true;
+                    sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                            NumberingPlan.ISDN, sgsnAddress);
+                    additionalNumber = new AdditionalNumberImpl(additionalMcsNumber, sgsnNumber);
+                    break;
+                case 5:
+                    additionalMcsNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                            NumberingPlan.ISDN, additionalMcsAddress);
+                    additionalNumber = new AdditionalNumberImpl(additionalMcsNumber, sgsnNumber);
+                    gprsNodeIndicator = true;
+                    break;
+                default:
+                    additionalNumber = null; // not needed, just for being explicit about the default case
+                    gprsNodeIndicator = false; // not needed, just for being explicit about the default case
+                    break;
+            }
 
-            // SLR TC-user optional parameters
-            IMEI imei = null; // mapParameterFactory.createIMEI(getIMEI());
+            SupportedLCSCapabilitySets supportedLCSCapabilitySets = null, additionalLCSCapabilitySets = null;
+            switch (rand.nextInt(10) + 1) {
+                case 1:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            false, false, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    break;
+                case 2:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, false, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    break;
+                case 3:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, false);
+                    additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, true);
+                    break;
+                case 4:
+                    supportedLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(true, true,
+                            true, true, true);
+                    break;
+                default:
+                    break;
 
-            byte[] lmsiByte = {(byte) 179, 125, 75, 2}; //0xb3, 0x7d, 0x4b, 0x02
-            LMSI lmsi = new LMSIImpl(lmsiByte);
+            }
+            DiameterIdentity mmeName = null;
+            DiameterIdentity aaaServerName = null;
+            DiameterIdentity sgsnName = null;
+            DiameterIdentity sgsnRealm = null;
+            switch (rand.nextInt(10) + 1) {
+                case 1:
+                    mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 2:
+                    sgsnName = new DiameterIdentityImpl("sgsn1B34.mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+                    sgsnRealm = new DiameterIdentityImpl("mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 3:
+                    aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case 4:
+                    mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+                    break;
+                default:
+                    break;
+            }
+            LCSLocationInfo lcsLocationInfo = new LCSLocationInfoImpl(networkNodeNumber, lmsi, null, gprsNodeIndicator, additionalNumber,
+                    supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
-            // LSR Conditional parameters
-            IMSI imsi = mapParameterFactory.createIMSI("404511170527751");
+            // SLR optional parameters
+            ISDNAddressString msisdn = null;
+            IMSI imsi = null;
+            int msisdnOrImsi = rand.nextInt(10) + 1;
+            // -- one of msisdn or imsi is mandatory
+            if (msisdnOrImsi == 1) {
+                long msisdnDigits = nextLong(59898000000L, 59899000000L);
+                msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, String.valueOf(msisdnDigits));
+            } else {
+                long imsiDigits = nextLong(748020000000000L, 748030000000000L);
+                imsi = new IMSIImpl(String.valueOf(imsiDigits));
+            }
 
-            ISDNAddressString msisdn = mapParameterFactory.createISDNAddressString(
-                this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getAddressNature(),
-                this.testerHost.getConfigurationData().getTestLcsServerConfigurationData().getNumberingPlanType(),
-                "919418967382");
+            long imeiDigits = nextLong(100710000000000L, 100720000000000L);
+            IMEI imei = new IMEIImpl(String.valueOf(imeiDigits));
 
+            ISDNAddressString naEsrd = null;
+            ISDNAddressString naEsrk = null;
+            boolean naEsrkRequest = false;
+            switch (rand.nextInt(3) + 1) {
+                case 1:
+                    naEsrd = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "1210101075");
+                    break;
+                case 2:
+                    naEsrk = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "9289277009");
+                    break;
+                default:
+                    naEsrkRequest = true;
+                    break;
+            }
+
+            Integer ageOfLocationEstimate = 0;
             ExtGeographicalInformation locationEstimate = null;
-            AddGeographicalInformation additionalLocationEstimate = null;
-            TypeOfShape typeOfShape = null, additionalTypeOfShape = null;
+            TypeOfShape typeOfShape = null;
             double latitude, longitude, uncertainty, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, uncertaintyAltitude, uncertaintyRadius,
-                offsetAngle, includedAngle;
+                    offsetAngle, includedAngle;
             int confidence, altitude, innerRadius;
-            EllipsoidPoint ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5,
-                ellipsoidPoint6, ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10 = null,
-                ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13, ellipsoidPoint14, ellipsoidPoint15 = null;
-            int typeOfShapeRandomOption = rand.nextInt(6) + 1;
-            // = -34.870059;
-            // = -56.000217;
-            switch (typeOfShapeRandomOption) {
+            EllipsoidPoint ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6;
+            // ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10, ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13,
+            // ellipsoidPoint14, ellipsoidPoint15;
+            // 3 <= numberOfPoints <= 15
+            switch (rand.nextInt(6) + 1) {
                 case 1:
                     typeOfShape = TypeOfShape.EllipsoidPoint;
-                    latitude = -34.810259;
-                    longitude = -56.000217;
+                    latitude = 34.909744;
+                    longitude = -56.146317;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
@@ -1585,8 +2603,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
                 case 2:
                     typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
-                    latitude = -34.801052;
-                    longitude = -56.000219;
+                    latitude = -34.910349;
+                    longitude = -56.149832;
                     uncertainty = 5.1;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
@@ -1596,23 +2614,23 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
                 case 3:
                     typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyEllipse;
-                    latitude = -34.322357;
-                    longitude = -56.000322;
-                    uncertaintySemiMajorAxis = 35.0;
-                    uncertaintySemiMinorAxis = 33.0;
-                    angleOfMajorAxis = 100.0; // orientation of major axis
-                    confidence = 80;
+                    latitude = -34.905624;
+                    longitude = -55.042191;
+                    uncertaintySemiMajorAxis = 21.2;
+                    uncertaintySemiMinorAxis = 10.4;
+                    angleOfMajorAxis = 30.0; // orientation of major axis
+                    confidence = 1;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyEllipse(latitude, longitude,
-                            uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
+                                uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence);
                     } catch (MAPException e) {
                         logger.error(e.getMessage());
                     }
                     break;
                 case 4:
                     typeOfShape = TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid;
-                    latitude = -34.778123;
-                    longitude = -56.001014;
+                    latitude = -34.956436;
+                    longitude = -54.937820;
                     altitude = 570;
                     uncertaintySemiMajorAxis = 25.4;
                     uncertaintySemiMinorAxis = 12.1;
@@ -1621,15 +2639,15 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     confidence = 5;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithAltitudeAndUncertaintyEllipsoid(latitude,
-                            longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
+                                longitude, uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude);
                     } catch (MAPException e) {
                         logger.error(e.getMessage());
                     }
                     break;
                 case 5:
                     typeOfShape = TypeOfShape.EllipsoidArc;
-                    latitude = -34.100017;
-                    longitude = -56.000441;
+                    latitude = -34.939956;
+                    longitude = -54.914474;
                     innerRadius = 5;
                     uncertaintyRadius = 1.50;
                     offsetAngle = 20.0;
@@ -1637,7 +2655,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     confidence = 2;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidArc(latitude, longitude, innerRadius,
-                            uncertaintyRadius, offsetAngle, includedAngle, confidence);
+                                uncertaintyRadius, offsetAngle, includedAngle, confidence);
                     } catch (MAPException e) {
                         logger.error(e.getMessage());
                     }
@@ -1653,75 +2671,63 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     }
                     break;
             }
-
+            AddGeographicalInformation additionalLocationEstimate = null;
             int additionalLocationEstimateRandomOption = rand.nextInt(6) + 1;
             if (typeOfShape == TypeOfShape.Polygon) {
-                additionalTypeOfShape = TypeOfShape.Polygon;
                 ellipsoidPoint1 = new EllipsoidPoint(-2.907010, 70.778014);
                 ellipsoidPoint2 = new EllipsoidPoint(-3.017238, 70.708922);
                 ellipsoidPoint3 = new EllipsoidPoint(-2.941387, 70.432091);
                 ellipsoidPoint4 = new EllipsoidPoint(-3.040019, 70.681903);
                 ellipsoidPoint5 = new EllipsoidPoint(-3.045001, 70.700109);
-                EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5};
-
-                /*  char packet_bytes[] = { 0x53, 0x27, 0x65, 0xe6, 0x35, 0x72, 0xb9, 0x27, 0x65, 0xe6, 0x35, 0x72, 0xb9, 0x27, 0x66, 0xef, 0x35, 0x73, 0x8e};   */
-                byte[] polygonData1 = { 83,
-                                        39, 101, (byte) 230, 53, 114, (byte) 185,
-                                        39, 101, (byte) 230, 53, 114, (byte) 185,
-                                        39, 102, (byte) 239, 53, 115, (byte) 142};
-
-                /*  char packet_bytes[] = { 0x53, 0x2c, 0x1d, 0xbc, 0x35, 0xe3, 0x87, 0x2c,0x1d, 0xc1, 0x35, 0xe3, 0x82, 0x2c, 0x1d, 0xbe, 0x35, 0xe3, 0x7b};  */
-                byte[] polygonData2 = { 83,
-                                        44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
-                                        44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
-                                        44, 29, (byte) 190, 53, (byte) 227, 123};
-
-                /* char packet_bytes[] =  { 0x53, 0x24, 0xa7, 0x3c, 0x34, 0x25, 0x00, 0x24, 0xa7, 0x31, 0x34, 0x24, 0xff, 0x24, 0xa7, 0x32,0x34, 0x25, 0x00}; */
-                byte[] polygonData3 = { 83,
-                                        36, (byte) 167, 60, 52, 37, 0,
-                                        36, (byte) 167, 49, 52, 36, (byte) 255,
-                                        36, (byte) 167, 50, 52, 37, 0};
-
-                /* char packet_bytes[] =  { 0x53, 0x24, 0x7c, 0xa3, 0x3b, 0x31, 0x70, 0x24, 0x7e, 0x07, 0x3b, 0x31, 0x8a, 0x24, 0x7f, 0xe0, 0x3b, 0x31, 0x48}; */
-                byte[] polygonData4 = { 83,
-                                        36, 124, (byte) 163, 59, 49, 112,
-                                        36, 126, 7, 59, 49, (byte) 138,
-                                        36, 127, (byte) 224, 59, 49, 72};
-
-                /* char packet_bytes[] =  { 0x53, 0x25, 0xe5, 0xb3, 0x34, 0x42, 0xd3, 0x25, 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25, 0xe6, 0x83, 0x34, 0x43, 0x79
-                                            0x25, 0xe6, 0x84, 0x34, 0x43, 0x7d};  */
-                byte[] polygonData5 = { 84,
-                                        37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
-                                        37, (byte) 230, 64, 52, 67, 124,
-                                        37, (byte) 230, (byte) 131, 52, 67, 121,
-                                        37, (byte) 230, (byte) 132, 52, 67, 125};
-
-                Polygon polygon1, polygon2, polygon3, polygon4, polygon5, polygon6 = new PolygonImpl();
+                ellipsoidPoint6 = new EllipsoidPoint(-2.989001, 71.000004);
+                EllipsoidPoint[] ellipsoidPoints = {ellipsoidPoint1, ellipsoidPoint2, ellipsoidPoint3, ellipsoidPoint4, ellipsoidPoint5, ellipsoidPoint6};
 
                 try {
                     switch (additionalLocationEstimateRandomOption) {
                         case 1:
-                            polygon1 = new PolygonImpl(polygonData1);
+                            byte[] polygonData1 = { 83,
+                                    41, (byte) 234, (byte) 138, 55, 67, 17,
+                                    41, (byte) 234, (byte) 136, 55, 67, 3,
+                                    41, (byte) 234, 0, 55, 67, 24};
+                            Polygon polygon1 = new PolygonImpl(polygonData1);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon1.getData());
                             break;
                         case 2:
-                            polygon2 = new PolygonImpl(polygonData2);
+                            byte[] polygonData2 = { 83,
+                                    44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                                    44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                                    44, 29, (byte) 190, 53, (byte) 227, 123};
+                            Polygon polygon2 = new PolygonImpl(polygonData2);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon2.getData());
                             break;
                         case 3:
-                            polygon3 = new PolygonImpl(polygonData3);
+                            byte[] polygonData3 = { 83,
+                                    36, (byte) 167, 60, 52, 37, 0,
+                                    36, (byte) 167, 49, 52, 36, (byte) 255,
+                                    36, (byte) 167, 50, 52, 37, 0};
+                            Polygon polygon3 = new PolygonImpl(polygonData3);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon3.getData());
                             break;
                         case 4:
-                            polygon4 = new PolygonImpl(polygonData4);
+                            byte[] polygonData4 = { 83,
+                                    36, 124, (byte) 163, 59, 49, 112,
+                                    36, 126, 7, 59, 49, (byte) 138,
+                                    36, 127, (byte) 224, 59, 49, 72};
+                            Polygon polygon4 = new PolygonImpl(polygonData4);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon4.getData());
                             break;
                         case 5:
-                            polygon5 = new PolygonImpl(polygonData5);
+                            byte[] polygonData5 = { 84,
+                                    37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                                    37, (byte) 230, 64, 52, 67, 124,
+                                    37, (byte) 230, (byte) 131, 52, 67, 121,
+                                    37, (byte) 230, (byte) 132, 52, 67, 125};
+                            Polygon polygon5 = new PolygonImpl(polygonData5);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon5.getData());
                             break;
                         case 6:
-                            ((PolygonImpl) polygon6).setData(ellipsoidPoints);
+                            PolygonImpl polygon6 = new PolygonImpl();
+                            polygon6.setData(ellipsoidPoints);
                             additionalLocationEstimate = new AddGeographicalInformationImpl(polygon6.getData());
                             break;
                     }
@@ -1730,249 +2736,673 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 }
             }
 
-            Boolean gprsNodeIndicator = false;
-
-            GSNAddress hgmlcAddress = null; //createGSNAddress(getHGMLCAddress());
-
-            AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = null; //AccuracyFulfilmentIndicator.requestedAccuracyFulfilled;
-
-            ISDNAddressString naEsrd = null;
-            ISDNAddressString naEsrk = null;
             SLRArgExtensionContainer slrArgExtensionContainer = null;
+            if (naEsrkRequest) {
+                SLRArgPCSExtensions slrArgPcsExtensions = new SLRArgPCSExtensionsImpl(naEsrkRequest);
+                slrArgExtensionContainer = new SLRArgExtensionContainerImpl(null, slrArgPcsExtensions);
+            }
 
-            byte[] cgiByteArray = {4, (byte) 244, 21, 19, (byte) 136, 85, 71}; // 0x04, 0xf4, 0x15, 0x13, 0x88, 0x55, 0x47
-            CellGlobalIdOrServiceAreaIdFixedLength cellGlobalIdOrServiceAreaIdFixedLength = mapParameterFactory.createCellGlobalIdOrServiceAreaIdFixedLength(cgiByteArray);
-            CellGlobalIdOrServiceAreaIdOrLAI cellIdOrSai = mapParameterFactory.createCellGlobalIdOrServiceAreaIdOrLAI(cellGlobalIdOrServiceAreaIdFixedLength);
-
-            MAPExtensionContainer extensionContainer = null;
-
-            byte[] geranPosInfo = null; //{50, 57, 49, 53, 51};
-            PositioningDataInformation geranPositioningData = null; //new PositioningDataInformationImpl(geranPosInfo);
-            byte[] utranData = null; //{57, 51, 52, 54, 48, 49};
-            UtranPositioningDataInfo utranPositioningDataInfo = null; //new UtranPositioningDataInfoImpl(utranData);
-            Integer lcsServiceTypeID = null;
-            Boolean saiPresent = false;
-            Boolean pseudonymIndicator = false;
+            VelocityEstimate velocityEstimate = null;
             VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
-            int horizontalSpeed = 101;
-            int bearing = 3;
-            int verticalSpeed = 2;
-            int uncertaintyHorizontalSpeed = 5;
-            int uncertaintyVerticalSpeed = 1;
-            VelocityEstimate velocityEstimate;
+            int horizontalSpeed = rand.nextInt(100) + 10;
+            int bearing = rand.nextInt(5) + 1;
+            int verticalSpeed = rand.nextInt(10) + 1;
+            int uncertaintyHorizontalSpeed = rand.nextInt(5) + 1;
+            int uncertaintyVerticalSpeed = rand.nextInt(2) + 1;
             try {
-                velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
+                velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed,
+                        uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
             } catch (MAPException e) {
                 logger.error(e.getMessage());
             }
-            velocityEstimate = null;
-            Integer sequenceNumber = null;
-            int reportingAmount = 10;
-            int reportingInterval = 60;
-            PeriodicLDRInfo periodicLDRInfo = null; //mapParameterFactory.createPeriodicLDRInfo(reportingAmount, reportingInterval);
+
             boolean moLrShortCircuitIndicator = false;
-            // Method=MS-Based, GANSSId=Galileo
-            // Method=MS-Assisted, GANSSId=GLONASS
-            // Method=Conventional, GANSSId=SBAS
-            byte[] geranGANSSData = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
-            GeranGANSSpositioningDataImpl geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(geranGANSSData);
-            // Method=MS-Based, GANSSId=Galileo
-            // Method=MS-Assisted, GANSSId=GLONASS
-            // Method=Conventional, GANSSId=SBAS
-            byte[] utranGanssData = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
-            UtranGANSSpositioningDataImpl utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(utranGanssData);
-            ServingNodeAddress targetNodeForHandover = null;
-            AdditionalNumber additionalNumber = null;
-            boolean lcsCapabilitySetRelease98_99 = true;
-            boolean lcsCapabilitySetRelease4 = true;
-            boolean lcsCapabilitySetRelease5 = true;
-            boolean lcsCapabilitySetRelease6 = true;
-            boolean lcsCapabilitySetRelease7 = true;
-            SupportedLCSCapabilitySets supportedLCSCapabilitySets = null; // new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4, lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-            SupportedLCSCapabilitySets additionalLCSCapabilitySets = null; // new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4, lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-            String mmneNameStr = "mmec02.mmegi8000.mme.epc.mnc052.mcc404.3gppnetwork.org";
-            byte[] mme = mmneNameStr.getBytes();
-            //byte[] mme = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
-            DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
-            String aaaServerNameStr = "aaa02.aaa8000.aaa.epc.mnc052.mcc404.3gppnetwork.org";
-            byte[] aaa = aaaServerNameStr.getBytes();
-            //byte[] aaa = {65, 65, 65, 55, 52, 56, 48, 48, 48, 49, 53, 48};
-            DiameterIdentity aaaServerName = new DiameterIdentityImpl(aaa);
-            DiameterIdentity sgsnName = null;
-            DiameterIdentity sgsnRealm = null;
 
-            LCSLocationInfo lcsLocationInfo = mapParameterFactory.createLCSLocationInfo(networkNodeNumber, lmsi, extensionContainer, gprsNodeIndicator,
-                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
+            int mcc, mnc, lac, ci;
+            mcc = 748;
+            mnc = 1;
+            lac = 101;
+            ci = 10263;
+            boolean saiPresent = false;
+            switch(rand.nextInt(10) + 1) {
+                case 1:
+                    saiPresent = true;
+                    break;
+                case 2:
+                    lac = 119;
+                    ci = 15336;
+                    break;
+                case 3:
+                    lac = 118;
+                    ci = 292;
+                    break;
+                case 4:
+                    lac = 109;
+                    ci = 10175;
+                    saiPresent = true;
+                    break;
+                case 5:
+                    lac = 11;
+                    ci = 4812;
+                    saiPresent = true;
+                    break;
+                case 6:
+                    mnc = 7;
+                    lac = 8820;
+                    ci = 9748;
+                    break;
+                case 7:
+                    mnc = 7;
+                    lac = 8552;
+                    ci = 8239;
+                    saiPresent = true;
+                    break;
+                case 8:
+                    mnc = 10;
+                    lac = 9501;
+                    ci = 35100;
+                    break;
+                case 9:
+                    mnc = 7;
+                    lac = 8313;
+                    ci = 9281;
+                    saiPresent = true;
+                    break;
+                case 10:
+                    mnc = 7;
+                    lac = 8820;
+                    ci = 8051;
+                    break;
+            }
+            CellGlobalIdOrServiceAreaIdOrLAI cellGlobalIdOrServiceAreaIdOrLAI;
+            CellGlobalIdOrServiceAreaIdFixedLength cgiOrSai = null;
+            try {
+                cgiOrSai = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdFixedLength(mcc, mnc, lac, ci);
+            } catch (MAPException ex) {
+                logger.error(ex.getMessage());
+            }
+            cellGlobalIdOrServiceAreaIdOrLAI = mapProvider.getMAPParameterFactory().createCellGlobalIdOrServiceAreaIdOrLAI(cgiOrSai);
 
-            boolean msAvailable = false;
-            boolean enteringIntoArea = false;
-            boolean leavingFromArea = false;
-            boolean beingInsideArea = true;
-            boolean periodicLDR = false;
-            DeferredLocationEventType deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
-            TerminationCause terminationCause = TerminationCause.congestion;
-            DeferredmtlrData deferredmtlrData = null; //new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
+            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.14").getAddress());
+
+            Integer lcsServiceTypeID = null;
+            boolean pseudonymIndicator = false;
+            AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = null;
+
+            PositioningDataInformationImpl geranPositioningDataInfo =  null;
+            UtranPositioningDataInfoImpl utranPositioningDataInfo = null;
+            GeranGANSSpositioningDataImpl geranGanssPositioningData = null;
+            UtranGANSSpositioningDataImpl utranGanssPositioningData = null;
             UtranAdditionalPositioningData utranAdditionalPositioningData = null;
+            // Method=Mobile Based E-OTD, Usage=1: Attempted successfully: results not used to generate location
+            // Method=Mobile Assisted E-OTD, Usage=3: Attempted successfully: results used to generate location
+            // Method=U-TDOA, Usage=3: Attempted successfully: results used to generate location
+            // Method=Cell ID, Usage=0: Attempted unsuccessfully due to failure or interruption
+            // Method=Mobile Assisted GPS, Usage=3: Attempted successfully: results used to generate location
+            // Method=Timing Advance, Usage=3: Attempted successfully: results used to generate location
+            // Method=Conventional GPS, Usage=2: Attempted successfully: results used to verify but not generate location
+            // byte[] geranPosData = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
+
+            // 0x00=0000 0000 -> positioning data discriminator (BIT STRING (SIZE(4))): 0000 indicates the presence of the Positioning Data Set IE (that reports the usage of each non-GANSS method that was successfully used to obtain the location estimate) and the optional presence of the GANSS Positioning Data Set IE. It also indicates the optional presence of the Additional Positioning Data Set IE;
+            // 0x00=0000 0000 -> C-ifDiscriminator=0
+            // 0x28=0010 1000 -> 00101=>Method=Mobile Assisted GPS, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0x31=0011 0001 -> 00110=>Method=Mobile Based GPS, usage=1 (Attempted successfully: results not used to generate location - not used)
+            // 0x40=0100 0000 -> 01000=>Method=U-TDOA, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0x51=0101 0001 -> 01010=>Method=IPDL, usage=1 (Attempted successfully: results not used to generate location - not used)
+            // 0x5c=0101 1100 -> 01011=>Method=RTT, usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+            // 0x4b=0100 1011 -> 01000=>Method=OTDOA, usage 3 (Attempted successfully: results used to generate location)
+            // 0x3a=0011 1010 -> 00111=>Method=Conventional GPS, usage=2 (results used to verify but not generate location - not used)
+            // byte[] utranPosData = new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a};
+
+            // 0x06 Length Indicator?
+            // 0x8c=1000 1100 -> 10=>Method=Conventional, 001=>GANSSId=SBAS, 100=>usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+            // 0x02=0000 0010 -> 00=>Method=MS-Based, 000=>GANSSId=Galileo, 10=>usage=2 (Attempted successfully: results used to verify but not generate location)
+            // 0x11=0001 0001 -> 00=>Method=MS-Based, 010=>GANSSId=Modernized GPS, 01=>usage=1 (Attempted successfully: results not used to generate location)
+            // 0x58=0101 1000 -> 01=>Method=MS-Assisted, 011=>GANSSId=QZSS, 00=usage=0 (Attempted unsuccessfully due to failure or interruption)
+            // 0xe8=1110 1000 -> 11=>Method=Reserved, 101=>GANSSId=BDS, 00=usage0 (Attempted unsuccessfully due to failure or interruption)
+            // 0x63=0110 0011 -> 01=>MS-Assisted, 100=>GANSSId=GLONASS, 11=usage3 (Attempted successfully: results used to generate location)
+            // byte[] geranGANSSData = new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63};
+
+            // 0x01=0000 0001 -> 00=>Method=MS-Based, 000=>GANSSId=Galileo, 01=>usage=1 (Attempted successfully: results used to generate location)
+            // 0x4a=0100 1010 -> 01=>Method=MS-Assisted, 100=>GANSSId=SBAS, 010=>usage=2 (Attempted successfully: results used to verify but not generate location - not used)
+            // 0x90=1001 0000 -> 10=>Method=Conventional, 010=>GANSSId=Modernized GPS, 000=>usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0x18=0001 1000 -> 00=>Method=MS-Based, 000=>GANSSId=Modernized GPS, 000=>usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0xdc=1110 1100 -> 11=>Method=Reserved, 101=>GANSSId=QZSS, usage=0 (Attempted unsuccessfully due to failure or interruption - not used)
+            // 0x63=0110 0011 -> 01=>Method=MS-Assisted, 100=>GANSSId=GLONASS, usage=3 (Attempted successfully: results used to generate location)
+            // byte[] utranGanssData = new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63};
+
+            // 0x94=1001 0100 10=>Method=Standalone, 010=>GANSSId=Bluetooth, 100=>usage=4 (Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined)
+            // 0x4b=0100 1011 00=>Method=MS-Assisted, AddPosId=GANSSId=WLAN, 011=>usage=3 (Attempted successfully: results used to generate location)
+            // byte[] utranAddPosData = new byte[] {(byte) 0x94, 0x4b};
+
+            switch (rand.nextInt(7) + 1) {
+                case 1:
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+                    break;
+                case 2:
+                    geranPositioningDataInfo = new PositioningDataInformationImpl(new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60});
+                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63});
+                    break;
+                case 3:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                    break;
+                case 4:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                    break;
+                case 5:
+                    utranPositioningDataInfo = new UtranPositioningDataInfoImpl(new byte[] {0x00, 0x00, 0x28, 0x31, 0x40, 0x51, 0x5c, 0x4b, 0x3a});
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                    utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(new byte[] {(byte) 0x94, 0x4b});
+                    break;
+                case 6:
+                    geranGanssPositioningData = new GeranGANSSpositioningDataImpl(new byte[] {0x06, (byte) 0x8c, 0x02, 0x11, 0x58, (byte) 0xe8, 0x63});
+                    break;
+                case 7:
+                    utranGanssPositioningData = new UtranGANSSpositioningDataImpl(new byte[] {0x01, 0x4a, (byte) 0x90, 0x18, (byte) 0xec, 0x63});
+                    break;
+            }
+
+            boolean isMsc = true;
+            ServingNodeAddress targetServingNodeForHandover = new ServingNodeAddressImpl(networkNodeNumber, isMsc);
+
+            Integer lcsReferenceNumber = null; // needs to be null for this case
+
+            Integer sequenceNumber = null;
+
+            PeriodicLDRInfo periodicLDRInfo = null;
+            DeferredmtlrData deferredmtlrData = null;
             Integer utranBaroPressureMeas = null;
             UtranCivicAddress utranCivicAddress = null;
 
+            if (geranPositioningDataInfo == null || geranGanssPositioningData == null) {
+                utranBaroPressureMeas = rand.nextInt(85000) + 30000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
+                String civicAddressString = null;
+                switch (rand.nextInt(7) + 1) {
+                    case 1:
+                        civicAddressString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                "<civicAddress xml:lang=\"en-AU\"\n" +
+                                "              xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                                "              xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                                "    <country>AU</country>\n" +
+                                "    <A1>NSW</A1>\n" +
+                                "    <A3>Wollongong</A3>\n" +
+                                "    <A4>North Wollongong</A4>\n" +
+                                "    <RD>Flinders</RD>\n" +
+                                "    <STS>Street</STS>\n" +
+                                "    <RDBR>Campbell Street</RDBR>\n" +
+                                "    <LMK>Gilligan's Island</LMK>\n" +
+                                "    <LOC>Corner</LOC>\n" +
+                                "    <NAM>Video Rental Store</NAM>\n" +
+                                "    <PC>2500</PC>\n" +
+                                "    <ROOM>Westerns and Classics</ROOM>\n" +
+                                "    <PLC>store</PLC>\n" +
+                                "    <POBOX>Private Box 15</POBOX>\n" +
+                                "    <cae:MP>248</cae:MP>\n" +
+                                "    <cae:PN>22-109-689</cae:PN>\n" +
+                                "</civicAddress>";
+                        break;
+                    case 2:
+                        civicAddressString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                "<civicAddress>\n" +
+                                "    <country>US</country>\n" +
+                                "    <A1>New York</A1>\n" +
+                                "    <A3>New York</A3>\n" +
+                                "    <A4>Broadway</A4>\n" +
+                                "    <HNO>123</HNO>\n" +
+                                "    <LOC>Suite 75</LOC>\n" +
+                                "    <PC>10027-0401</PC>\n" +
+                                "</civicAddress>";
+                        break;
+                    case 3:
+                        civicAddressString = "<civicAddress xml:lang=\"en-AU\"\n" +
+                                "     xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\">\n" +
+                                "     <country>AU</country>\n" +
+                                "     <A1>NSW</A1>\n" +
+                                "     <A3>Wollongong</A3>\n" +
+                                "     <A4>North Wollongong</A4>\n" +
+                                "     <RD>Flinders</RD>\n" +
+                                "     <STS>Street</STS>\n" +
+                                "     <RDBR>Campbell Street</RDBR>\n" +
+                                "     <LMK>Gilligan's Island</LMK>\n" +
+                                "     <LOC>Corner</LOC>\n" +
+                                "     <NAM>Video Rental Store</NAM>\n" +
+                                "     <PC>2500</PC>\n" +
+                                "     <ROOM>Westerns and Classics</ROOM>\n" +
+                                "     <PLC>store</PLC>\n" +
+                                "     <POBOX>Private Box 15</POBOX>\n" +
+                                "   </civicAddress>";
+                        break;
+                    case 4:
+                        civicAddressString = "<civicAddress xml:lang=\"en-US\"\n" +
+                                "        xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                                "        xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                                "     <country>US</country>\n" +
+                                "     <A1>CA</A1>\n" +
+                                "     <A2>Sacramento</A2>\n" +
+                                "     <RD>I5</RD>\n" +
+                                "     <cae:MP>248</cae:MP>\n" +
+                                "     <cae:PN>22-109-689</cae:PN>\n" +
+                                "   </civicAddress>";
+                        break;
+                    case 5:
+                        civicAddressString = "<civicAddress xml:lang=\"en-US\"\n" +
+                                "        xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+                                "        xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+                                "     <country>US</country>\n" +
+                                "     <A1>CA</A1>\n" +
+                                "     <A2>Sacramento</A2>\n" +
+                                "     <RD>Colorado</RD>\n" +
+                                "     <HNO>223</HNO>\n" +
+                                "     <cae:STP>Boulevard</cae:STP>\n" +
+                                "     <cae:HNP>A</cae:HNP>\n" +
+                                "   </civicAddress>";
+                        break;
+                    default:
+                        break;
+                }
+                if (civicAddressString != null) {
+                    byte[] civicAddressByteArray = civicAddressString.getBytes(StandardCharsets.UTF_8);
+                    utranCivicAddress = new UtranCivicAddressImpl(civicAddressByteArray);
+                }
+            }
+
             mapDialogLsm.addSubscriberLocationReportRequest(lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate,
-                getAgeOfLocationEstimate(), slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData, null, geranPositioningData,
-                utranPositioningDataInfo, cellIdOrSai, hgmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator,
-                velocityEstimate, sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGANSSpositioningData, utranGANSSpositioningData,
-                targetNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
+                    getAgeOfLocationEstimate(), slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData, lcsReferenceNumber, geranPositioningDataInfo,
+                    utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI, hGmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator,
+                    velocityEstimate, sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData,
+                    targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
             logger.debug("Added SubscriberLocationReportRequest");
 
             mapDialogLsm.send();
 
             this.countMapLcsReq++;
 
-            this.testerHost.sendNotif(SOURCE_NAME, "Sent: SubscriberLocationReportRequest", createSLRReqData(mapDialogLsm.getLocalDialogId(), lcsEvent,
-                this.getNetworkNodeNumber(), lcsClientID, msisdn, imsi, imei, locationEstimate, getAgeOfLocationEstimate(), null,
-                deferredmtlrData, cellIdOrSai, hgmlcAddress, accuracyFulfilmentIndicator), Level.INFO);
+            this.testerHost.sendNotif(SOURCE_NAME, "Sent: SubscriberLocationReportRequest", createSLRReqData(mapDialogLsm.getLocalDialogId(),
+                    lcsEvent, lcsClientID, lcsLocationInfo, msisdn, imsi, imei, naEsrd, naEsrk, locationEstimate, ageOfLocationEstimate,
+                    slrArgExtensionContainer, additionalLocationEstimate, deferredmtlrData, lcsReferenceNumber, geranPositioningDataInfo,
+                    utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI, hGmlcAddress,
+                    lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator, velocityEstimate, sequenceNumber,
+                    periodicLDRInfo, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData,
+                    targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress), Level.INFO);
 
             currentRequestDef += "Sent SLR Request;";
 
         } catch (MAPException e) {
-            return "Exception on addSubscriberLocationReportRequest: " + e.toString();
+            return "Exception on addSubscriberLocationReportRequest: " + e;
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
         }
 
         return "subscriberLocationReportRequest sent";
     }
 
-    private String createSLRReqData(long dialogId, LCSEvent lcsEvent, String networkNodeNumber, LCSClientID lcsClientID, ISDNAddressString msisdn, IMSI imsi,
-                                    IMEI imei, ExtGeographicalInformation locationEstimate, Integer ageOfLocationEstimate, Integer lcsReferenceNumber,
-                                    DeferredmtlrData deferredmtlrData, CellGlobalIdOrServiceAreaIdOrLAI cellIdOrSai, GSNAddress hgmlcAddress,
-                                    AccuracyFulfilmentIndicator accuracyFulfilmentIndicator) {
+    private String createSLRReqData(long dialogId, LCSEvent lcsEvent, LCSClientID lcsClientID,
+            LCSLocationInfo lcsLocationInfo, ISDNAddressString msisdn, IMSI imsi, IMEI imei, ISDNAddressString naEsrd,
+            ISDNAddressString naEsrk, ExtGeographicalInformation locationEstimate, Integer ageOfLocationEstimate,
+            SLRArgExtensionContainer slrArgExtensionContainer, AddGeographicalInformation addLocationEstimate,
+            DeferredmtlrData deferredmtlrData, Integer lcsReferenceNumber, PositioningDataInformation geranPositioningData,
+            UtranPositioningDataInfo utranPositioningData, CellGlobalIdOrServiceAreaIdOrLAI cellIdOrSai,
+            GSNAddress hgmlcAddress, Integer lcsServiceTypeID, boolean saiPresent, boolean pseudonymIndicator,
+            AccuracyFulfilmentIndicator accuracyFulfilmentIndicator, VelocityEstimate velocityEstimate, Integer sequenceNumber,
+            PeriodicLDRInfo periodicLDRInfo, boolean moLrShortCircuitIndicator,
+            GeranGANSSpositioningData geranGANSSpositioningData, UtranGANSSpositioningData utranGANSSpositioningData,
+            ServingNodeAddress targetServingNodeForHandover, UtranAdditionalPositioningData utranAdditionalPositioningData,
+            Integer utranBaroPressureMeas, UtranCivicAddress utranCivicAddress) {
+
         StringBuilder sb = new StringBuilder();
         sb.append("dialogId=");
         sb.append(dialogId);
-        sb.append(", lcsEvent=\"");
-        if (lcsEvent != null)
-            sb.append(lcsEvent.getEvent());
-        sb.append("\", networkNodeNumber=\"");
-        sb.append(networkNodeNumber).append(", ");
-        sb.append("\", lcsClientID=\"");
-        sb.append(lcsClientID).append(", ");
-        sb.append("\", MSISDN=\"");
-        if (msisdn != null)
-            sb.append(msisdn.getAddress()).append(", ");
+        sb.append(", lcsEvent=\"").append(lcsEvent);
+        sb.append("\", lcsClientID=\"").append(lcsClientID);
+        sb.append("\", lcsLocationInfo=\"").append(lcsLocationInfo);
+        sb.append("\", MSISDN=\"").append(msisdn);
         sb.append("\", IMSI=\"");
         if (imsi != null)
             sb.append(imsi.getData()).append(", ");
-        sb.append("\", IMEI=\"");
-        sb.append(imei).append(", ");
-        if (locationEstimate.getLatitude() > -90 && locationEstimate.getLatitude() < 90) {
-            sb.append("\", latitude=\"");
-            sb.append(locationEstimate.getLatitude()).append(", ");
-        }
-        if (locationEstimate.getLongitude() > -180 && locationEstimate.getLongitude() < 180) {
-            sb.append("\", longitude=\"");
-            sb.append(locationEstimate.getLongitude()).append(", ");
-        }
-        if (locationEstimate.getTypeOfShape() != null) {
-            sb.append("\", typeOfShape=\"");
-            sb.append(locationEstimate.getTypeOfShape()).append(", ");
-        }
-        if (locationEstimate.getUncertainty() >= 0 && locationEstimate.getUncertainty() < 128) {
-            sb.append("\", uncertainty=\"");
-            sb.append(locationEstimate.getUncertainty()).append(", ");
-        }
-        if (locationEstimate.getAltitude() > Integer.MIN_VALUE && locationEstimate.getAltitude() < Integer.MAX_VALUE) {
-            sb.append("\", altitude=\"");
-            sb.append(locationEstimate.getAltitude()).append(", ");
-        }
-        if (locationEstimate.getUncertaintyAltitude() > Double.MIN_VALUE && locationEstimate.getUncertaintyAltitude() < Double.MAX_VALUE) {
-            sb.append("\", uncertaintyAltitude=\"");
-            sb.append(locationEstimate.getUncertaintyAltitude()).append(", ");
-        }
-        if (locationEstimate.getConfidence() > Integer.MIN_VALUE && locationEstimate.getConfidence() < Integer.MAX_VALUE) {
-            sb.append("\", confidence=\"");
-            sb.append(locationEstimate.getConfidence()).append(", ");
-        }
-        if (locationEstimate.getInnerRadius() > Integer.MIN_VALUE && locationEstimate.getInnerRadius() < Integer.MAX_VALUE) {
-            sb.append("\", innerRadius=\"");
-            sb.append(locationEstimate.getInnerRadius()).append(", ");
-        }
-        if (locationEstimate.getUncertaintyRadius() > Double.MIN_VALUE && locationEstimate.getUncertaintyRadius() < Double.MAX_VALUE) {
-            sb.append("\", uncertaintyRadius=\"");
-            sb.append(locationEstimate.getUncertaintyRadius()).append(", ");
-        }
-        if (locationEstimate.getUncertaintySemiMajorAxis() > Double.MIN_VALUE && locationEstimate.getUncertaintySemiMajorAxis() < Double.MAX_VALUE) {
-            sb.append("\", uncertaintySemiMajorAxis=\"");
-            sb.append(locationEstimate.getUncertaintySemiMajorAxis()).append(", ");
-        }
-        if (locationEstimate.getUncertaintySemiMinorAxis() > Double.MIN_VALUE && locationEstimate.getUncertaintySemiMinorAxis() < Double.MAX_VALUE) {
-            sb.append("\", uncertaintySemiMinorAxis=\"");
-            sb.append(locationEstimate.getUncertaintySemiMinorAxis()).append(", ");
-        }
-        if (locationEstimate.getAngleOfMajorAxis() > Double.MIN_VALUE && locationEstimate.getAngleOfMajorAxis() < Double.MAX_VALUE) {
-            sb.append("\", angleOfMajorAxis=\"");
-            sb.append(locationEstimate.getAngleOfMajorAxis()).append(", ");
-        }
-        if (locationEstimate.getOffsetAngle() > Double.MIN_VALUE && locationEstimate.getOffsetAngle() < Double.MAX_VALUE) {
-            sb.append("\", offsetAngle=\"");
-            sb.append(locationEstimate.getOffsetAngle()).append(", ");
-        }
-        if (locationEstimate.getIncludedAngle() > Double.MIN_VALUE && locationEstimate.getIncludedAngle() < Double.MAX_VALUE) {
-            sb.append("\", includeAngle=\"");
-            sb.append(locationEstimate.getIncludedAngle()).append(", ");
-        }
-        sb.append("\", ageOfLocationEstimate=\"");
-        sb.append(ageOfLocationEstimate);
-        sb.append("\", lcsReferenceNumber=\"");
-        sb.append(lcsReferenceNumber).append("\", ");
-        sb.append("\", deferredmtlrData=\"");
-        sb.append(deferredmtlrData).append(", ");
-        sb.append("\", MCC=\"");
-        try {
-            sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC())).append(", ");
-        } catch (MAPException e) {
-            logger.error(e.getMessage());
-        }
-        sb.append("\", MNC=\"");
-        try {
-            sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC())).append(", ");
-        } catch (MAPException e) {
-            logger.error(e.getMessage());
-        }
-        sb.append("\", LAC=\"");
-        try {
-            sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac())).append(", ");
-        } catch (MAPException e) {
-            logger.error(e.getMessage());
-        }
-        sb.append("\", LAC=\"");
-        try {
-            sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode())).append(", ");
-        } catch (MAPException e) {
-            logger.error(e.getMessage());
-        }
-        sb.append("\", H-GMLCAddress=\"");
-        sb.append(hgmlcAddress);
-        sb.append("\", accuracyFulfilmentIndicator=\"");
-        sb.append(accuracyFulfilmentIndicator);
-        sb.append("\", reportingPLMNList=\"");
-        /*if (reportingPLMNList != null) {
-            for (int i = 0; i < reportingPLMNList.getPlmnList().size(); i++) {
-                if (i < reportingPLMNList.getPlmnList().size())
-                    sb.append(reportingPLMNList.getPlmnList().get(i)).append(", ");
-                else
-                    sb.append(reportingPLMNList.getPlmnList().get(i));
+        sb.append("\", IMEI=\"").append(imei);
+        sb.append("\", naESRD=\"").append(naEsrd);
+        sb.append("\", naESRK=\"").append(naEsrk);
+        if (locationEstimate != null) {
+            sb.append("\", addLocationEstimate=\"");
+            sb.append("\" Type of Shape=\"").append(locationEstimate.getTypeOfShape());
+            if (locationEstimate.getLatitude() > -90 && locationEstimate.getLatitude() < 90) {
+                sb.append("\", latitude=\"");
+                sb.append(locationEstimate.getLatitude()).append(", ");
             }
-        }*/
+            if (locationEstimate.getLongitude() > -180 && locationEstimate.getLongitude() < 180) {
+                sb.append("\", longitude=\"");
+                sb.append(locationEstimate.getLongitude()).append(", ");
+            }
+            if (locationEstimate.getTypeOfShape() != null) {
+                sb.append("\", typeOfShape=\"");
+                sb.append(locationEstimate.getTypeOfShape()).append(", ");
+            }
+            if (locationEstimate.getUncertainty() >= 0 && locationEstimate.getUncertainty() < 128) {
+                sb.append("\", uncertainty=\"");
+                sb.append(locationEstimate.getUncertainty()).append(", ");
+            }
+            if (locationEstimate.getAltitude() > Integer.MIN_VALUE && locationEstimate.getAltitude() < Integer.MAX_VALUE) {
+                sb.append("\", altitude=\"");
+                sb.append(locationEstimate.getAltitude()).append(", ");
+            }
+            if (locationEstimate.getUncertaintyAltitude() > Double.MIN_VALUE && locationEstimate.getUncertaintyAltitude() < Double.MAX_VALUE) {
+                sb.append("\", uncertaintyAltitude=\"");
+                sb.append(locationEstimate.getUncertaintyAltitude()).append(", ");
+            }
+            if (locationEstimate.getConfidence() > Integer.MIN_VALUE && locationEstimate.getConfidence() < Integer.MAX_VALUE) {
+                sb.append("\", confidence=\"");
+                sb.append(locationEstimate.getConfidence()).append(", ");
+            }
+            if (locationEstimate.getInnerRadius() > Integer.MIN_VALUE && locationEstimate.getInnerRadius() < Integer.MAX_VALUE) {
+                sb.append("\", innerRadius=\"");
+                sb.append(locationEstimate.getInnerRadius()).append(", ");
+            }
+            if (locationEstimate.getUncertaintyRadius() > Double.MIN_VALUE && locationEstimate.getUncertaintyRadius() < Double.MAX_VALUE) {
+                sb.append("\", uncertaintyRadius=\"");
+                sb.append(locationEstimate.getUncertaintyRadius()).append(", ");
+            }
+            if (locationEstimate.getUncertaintySemiMajorAxis() > Double.MIN_VALUE && locationEstimate.getUncertaintySemiMajorAxis() < Double.MAX_VALUE) {
+                sb.append("\", uncertaintySemiMajorAxis=\"");
+                sb.append(locationEstimate.getUncertaintySemiMajorAxis()).append(", ");
+            }
+            if (locationEstimate.getUncertaintySemiMinorAxis() > Double.MIN_VALUE && locationEstimate.getUncertaintySemiMinorAxis() < Double.MAX_VALUE) {
+                sb.append("\", uncertaintySemiMinorAxis=\"");
+                sb.append(locationEstimate.getUncertaintySemiMinorAxis()).append(", ");
+            }
+            if (locationEstimate.getAngleOfMajorAxis() > Double.MIN_VALUE && locationEstimate.getAngleOfMajorAxis() < Double.MAX_VALUE) {
+                sb.append("\", angleOfMajorAxis=\"");
+                sb.append(locationEstimate.getAngleOfMajorAxis()).append(", ");
+            }
+            if (locationEstimate.getOffsetAngle() > Double.MIN_VALUE && locationEstimate.getOffsetAngle() < Double.MAX_VALUE) {
+                sb.append("\", offsetAngle=\"");
+                sb.append(locationEstimate.getOffsetAngle()).append(", ");
+            }
+            if (locationEstimate.getIncludedAngle() > Double.MIN_VALUE && locationEstimate.getIncludedAngle() < Double.MAX_VALUE) {
+                sb.append("\", includedAngle=\"");
+                sb.append(locationEstimate.getIncludedAngle()).append(", ");
+            }
+        }
+        sb.append("\", ageOfLocationEstimate=\"").append(ageOfLocationEstimate);
+        if (slrArgExtensionContainer != null)
+            if (slrArgExtensionContainer.getSlrArgPcsExtensions() != null)
+                sb.append("\", slrArgExtensionContainer=\"").append(slrArgExtensionContainer.getSlrArgPcsExtensions().getNaEsrkRequest());
+
+        if (addLocationEstimate != null) {
+            sb.append("\", addLocationEstimate=\"");
+            sb.append("\" Type of Shape=\"").append(addLocationEstimate.getTypeOfShape());
+            byte[] addLocationEstimateByteArray = addLocationEstimate.getData();
+            if (addLocationEstimate.getTypeOfShape() == TypeOfShape.Polygon) {
+                PolygonImpl polygon = new PolygonImpl(addLocationEstimateByteArray);
+                sb.append(polygon);
+            }
+        }
+
+        if (lcsReferenceNumber != null)
+            sb.append("\", lcsReferenceNumber=\"").append(lcsReferenceNumber);
+
+        if (geranPositioningData != null) {
+            try {
+                ArrayList<String> methods = geranPositioningData.getLocationGeneratedPositioningMethods();
+                StringBuilder geranPositioningDataInfo = new StringBuilder();
+                int metCounter = 0;
+                for (String met : methods) {
+                    metCounter++;
+                    geranPositioningDataInfo.append(met);
+                    if (methods.size() != metCounter)
+                        geranPositioningDataInfo.append(", ");
+                }
+                sb.append("\", geranPositioningData=\"").append(geranPositioningDataInfo);
+            } catch (MAPException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if (utranPositioningData != null) {
+            try {
+                ArrayList<String> methods = utranPositioningData.getUtranLocationGeneratedPositioningMethods();
+                StringBuilder utranPosDataInfo = new StringBuilder();
+                int metCounter = 0;
+                for (String met : methods) {
+                    metCounter++;
+                    utranPosDataInfo.append(met);
+                    if (methods.size() != metCounter)
+                        utranPosDataInfo.append(", ");
+                }
+                sb.append("\", utranPositioningData=\"").append(utranPosDataInfo);
+            } catch (MAPException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if (deferredmtlrData != null) {
+            sb.append("\", deferredmtlrData=\"");
+            if (deferredmtlrData.getDeferredLocationEventType() != null) {
+                sb.append("\", ms available=\"").append(deferredmtlrData.getDeferredLocationEventType().getMsAvailable());
+                sb.append("\" being inside area=\"").append(deferredmtlrData.getDeferredLocationEventType().getBeingInsideArea());
+                sb.append("\", entering into area=\"").append(deferredmtlrData.getDeferredLocationEventType().getEnteringIntoArea());
+                sb.append("\", leaving into area=\"").append(deferredmtlrData.getDeferredLocationEventType().getLeavingFromArea());
+                sb.append("\", periodic LDR=\"").append(deferredmtlrData.getDeferredLocationEventType().getPeriodicLDR());
+            }
+            if (deferredmtlrData.getLCSLocationInfo() != null) {
+                sb.append("\", LCS location info=\"");
+                if (deferredmtlrData.getLCSLocationInfo().getNetworkNodeNumber() != null) {
+                    sb.append("\", Network node number=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getNetworkNodeNumber().getAddress());
+                }
+                if (deferredmtlrData.getLCSLocationInfo().getGprsNodeIndicator()) {
+                    sb.append("\", GPRS node indicator=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getGprsNodeIndicator());
+                }
+                if (deferredmtlrData.getLCSLocationInfo().getAdditionalNumber() != null) {
+                    sb.append("\", additional number=\"");
+                    if (deferredmtlrData.getLCSLocationInfo().getAdditionalNumber().getMSCNumber() != null) {
+                        sb.append("\", MSC number=\"");
+                        sb.append(deferredmtlrData.getLCSLocationInfo().getAdditionalNumber().getMSCNumber().getAddress());
+                    }
+                    if (deferredmtlrData.getLCSLocationInfo().getAdditionalNumber().getSGSNNumber() != null) {
+                        sb.append("\", SGSN number=\"");
+                        sb.append(deferredmtlrData.getLCSLocationInfo().getAdditionalNumber().getSGSNNumber().getAddress());
+                    }
+                }
+                if (deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets() != null) {
+                    sb.append("\", Supported LCS capability sets=\"");
+                    sb.append("\" Release 98_99=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets().getCapabilitySetRelease98_99());
+                    sb.append("\" Release 4=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets().getCapabilitySetRelease4());
+                    sb.append("\" Release 5=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets().getCapabilitySetRelease5());
+                    sb.append("\" Release 6=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets().getCapabilitySetRelease6());
+                    sb.append("\" Release 7=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getSupportedLCSCapabilitySets().getCapabilitySetRelease7());
+                }
+                if (deferredmtlrData.getLCSLocationInfo().getAdditionalLCSCapabilitySets() != null) {
+                    sb.append("\", Additional supported LCS capability sets=\"");
+                    sb.append("\" Release 98_99=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getAdditionalLCSCapabilitySets().getCapabilitySetRelease98_99());
+                    sb.append("\" Release 4=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getAdditionalLCSCapabilitySets().getCapabilitySetRelease4());
+                    sb.append("\" Release 5=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getAdditionalLCSCapabilitySets().getCapabilitySetRelease5());
+                    sb.append("\" Release 6=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getAdditionalLCSCapabilitySets().getCapabilitySetRelease6());
+                    sb.append("\" Release 7=\"");
+                    sb.append(deferredmtlrData.getLCSLocationInfo().getAdditionalLCSCapabilitySets().getCapabilitySetRelease7());
+                }
+                if (deferredmtlrData.getLCSLocationInfo().getMmeName() != null) {
+                    sb.append("\", MME name=\"").append(deferredmtlrData.getLCSLocationInfo().getMmeName());
+                }
+                if (deferredmtlrData.getLCSLocationInfo().getSgsnName() != null) {
+                    sb.append("\", SGSN name=\"").append(deferredmtlrData.getLCSLocationInfo().getSgsnName());
+                }
+                if (deferredmtlrData.getLCSLocationInfo().getSgsnRealm() != null) {
+                    sb.append("\", SGSN realm=\"").append(deferredmtlrData.getLCSLocationInfo().getSgsnRealm());
+                }
+                if (deferredmtlrData.getLCSLocationInfo().getAaaServerName() != null) {
+                    sb.append("\", AAA server name=\"").append(deferredmtlrData.getLCSLocationInfo().getAaaServerName());
+                }
+            }
+        }
+
+        if (cellIdOrSai != null) {
+            sb.append("\", MCC=\"");
+            try {
+                sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMCC())).append(", ");
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+            sb.append("\", MNC=\"");
+            try {
+                sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getMNC())).append(", ");
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+            sb.append("\", LAC=\"");
+            try {
+                sb.append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getLac())).append(", ");
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+            if (saiPresent) {
+                try {
+                    sb.append("\", SAC=\"").append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode()));
+                } catch (MAPException e) {
+                    logger.error(e.getMessage());
+                }
+            } else {
+                try {
+                    sb.append("\", CI=\"").append((cellIdOrSai.getCellGlobalIdOrServiceAreaIdFixedLength().getCellIdOrServiceAreaCode())).append(", ");
+                } catch (MAPException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        }
+
+        if (hgmlcAddress != null) {
+            String hGmlcAddress = bytesToHexString(hgmlcAddress.getGSNAddressData());
+            try {
+                InetAddress address = InetAddress.getByAddress(DatatypeConverter.parseHexBinary(hGmlcAddress));
+                hGmlcAddress = address.getHostAddress();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            sb.append("\", H-GMLCAddress=\"").append(hGmlcAddress);
+        }
+
+        if (lcsServiceTypeID != null)
+            sb.append("\", lcsServiceTypeID=\"").append(lcsServiceTypeID);
+
+        if (pseudonymIndicator)
+            sb.append("\", pseudonymIndicator=\"").append(pseudonymIndicator);
+
+        if (accuracyFulfilmentIndicator != null)
+            sb.append("\", accuracyFulfilmentIndicator=\"").append(accuracyFulfilmentIndicator);
+
+        if (velocityEstimate != null) {
+            sb.append("\", Velocity Estimate: velocity type=\"").append(velocityEstimate.getVelocityType());
+            sb.append("\", horizontal speed=\"").append(velocityEstimate.getHorizontalSpeed());
+            sb.append("\", horizontal speed uncertainty=\"").append(velocityEstimate.getUncertaintyHorizontalSpeed());
+            sb.append("\", vertical speed=\"").append(velocityEstimate.getVerticalSpeed());
+            sb.append("\", vertical speed uncertainty=\"").append(velocityEstimate.getUncertaintyVerticalSpeed());
+            sb.append("\", bearing=\"").append(velocityEstimate.getVerticalSpeed());velocityEstimate.getBearing();
+        }
+
+        if (sequenceNumber != null)
+            sb.append("\", sequenceNumber=\"").append(sequenceNumber);
+
+        if (periodicLDRInfo != null) {
+            sb.append("\"Periodic LDR Info, reporting amount=\"").append(periodicLDRInfo.getReportingAmount());
+            sb.append("\"Periodic LDR Info, reporting interval=\"").append(periodicLDRInfo.getReportingInterval());
+            if (periodicLDRInfo.getReportingOptionMilliseconds() != null) {
+                sb.append("\"Periodic LDR Info, reporting amount ms=\"").append(
+                        periodicLDRInfo.getReportingOptionMilliseconds().getReportingAmountMilliseconds());
+                sb.append("\"Periodic LDR Info, reporting interval ms=\"").append(
+                        periodicLDRInfo.getReportingOptionMilliseconds().getReportingIntervalMilliseconds());
+            }
+        }
+
+        if (moLrShortCircuitIndicator)
+            sb.append("\", moLrShortCircuitIndicator=\"").append(moLrShortCircuitIndicator);
+
+        if (geranGANSSpositioningData != null) {
+            try {
+                Multimap<String, String> methodsAndGanssIds = geranGANSSpositioningData.getLocationGeneratedMethodsAndGANSSIds();
+                StringBuilder geranGANSSPosDataInfo = new StringBuilder();
+                String key = null, value = null;
+                for (Map.Entry<String, String> entry : methodsAndGanssIds.entries()) {
+                    if (key != null || value != null)
+                        geranGANSSPosDataInfo.append("; ");
+                    key = entry.getKey();
+                    value = entry.getValue();
+                    geranGANSSPosDataInfo.append("Method=").append(key).append(", GANSSId=").append(value);
+                }
+                sb.append("\", GERAN GANSS positioning data=\"").append(geranGANSSPosDataInfo);
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        if (utranGANSSpositioningData != null) {
+            try {
+                Multimap<String, String> methodsAndGanssIds = utranGANSSpositioningData.getLocationGeneratedMethodsAndGANSSIds();
+                StringBuilder utranGANSSPosDataInfo = new StringBuilder();
+                String key = null, value = null;
+                for (Map.Entry<String, String> entry : methodsAndGanssIds.entries()) {
+                    if (key != null || value != null)
+                        utranGANSSPosDataInfo.append("; ");
+                    key = entry.getKey();
+                    value = entry.getValue();
+                    utranGANSSPosDataInfo.append("Method=").append(key).append(", GANSSId=").append(value);
+                }
+                sb.append("\", UTRAN GANSS positioning data=\"").append(utranGANSSPosDataInfo);
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        if (targetServingNodeForHandover != null) {
+            if (targetServingNodeForHandover.getMscNumber() != null)
+                sb.append("\", targetServingNodeForHandover=\"").append(targetServingNodeForHandover.getMscNumber().getAddress());
+            if (targetServingNodeForHandover.getSgsnNumber() != null)
+                sb.append("\", targetServingNodeForHandover=\"").append(targetServingNodeForHandover.getSgsnNumber().getAddress());
+            if (targetServingNodeForHandover.getMmeNumber() != null)
+                sb.append("\", targetServingNodeForHandover=\"").append(Arrays.toString(targetServingNodeForHandover.getMmeNumber().getData()));
+        }
+        if (utranAdditionalPositioningData != null) {
+            try {
+                Multimap<String, String> methodsAndAddPosIds = utranAdditionalPositioningData.getUtranAdditionalPositioningMethodsAndIds();
+                StringBuilder slrUtranAddPositioningData = new StringBuilder();
+                String key = null, value = null;
+                for (Map.Entry<String, String> entry : methodsAndAddPosIds.entries()) {
+                    if (key != null || value != null)
+                        slrUtranAddPositioningData.append("; ");
+                    key = entry.getKey();
+                    value = entry.getValue();
+                    slrUtranAddPositioningData.append("Method=").append(key).append(", AddPosId=").append(value);
+                }
+                sb.append("\", UTRAN additional positioning data=\"").append(slrUtranAddPositioningData);
+            } catch (MAPException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        if (utranBaroPressureMeas != null)
+            sb.append(", UTRAN Barometric Pressure Measurement=\"").append(utranBaroPressureMeas);
+
+        if (utranCivicAddress != null)
+            sb.append(", UTRAN civic address=\"").append(Arrays.toString(utranCivicAddress.getData()));
 
         return sb.toString();
     }
 
     private String createSLRResData(long dialogId, String address) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", naESRD=\"");
-        sb.append(address);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", naESRD=\"" +
+            address +
+            "\"";
     }
 
     public void onSubscriberLocationReportRequest(SubscriberLocationReportRequest subscriberLocationReportRequestIndication) {
@@ -1982,22 +3412,41 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             return;
 
         MAPDialogLsm curDialog = subscriberLocationReportRequestIndication.getMAPDialog();
-        String networkNodeNumberAddress = subscriberLocationReportRequestIndication.getLCSLocationInfo().getNetworkNodeNumber().getAddress();
 
         this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: SubscriberLocationReportRequest",
             createSLRReqData(curDialog.getLocalDialogId(), subscriberLocationReportRequestIndication.getLCSEvent(),
-                networkNodeNumberAddress,
-                subscriberLocationReportRequestIndication.getLCSClientID(),
-                subscriberLocationReportRequestIndication.getMSISDN(),
-                subscriberLocationReportRequestIndication.getIMSI(),
-                subscriberLocationReportRequestIndication.getIMEI(),
-                subscriberLocationReportRequestIndication.getLocationEstimate(),
-                subscriberLocationReportRequestIndication.getAgeOfLocationEstimate(),
-                subscriberLocationReportRequestIndication.getLCSReferenceNumber(),
-                subscriberLocationReportRequestIndication.getDeferredmtlrData(),
-                subscriberLocationReportRequestIndication.getCellGlobalIdOrServiceAreaIdOrLAI(),
-                subscriberLocationReportRequestIndication.getHGMLCAddress(),
-                subscriberLocationReportRequestIndication.getAccuracyFulfilmentIndicator()), Level.INFO);
+                    subscriberLocationReportRequestIndication.getLCSClientID(),
+                    subscriberLocationReportRequestIndication.getLCSLocationInfo(),
+                    subscriberLocationReportRequestIndication.getMSISDN(),
+                    subscriberLocationReportRequestIndication.getIMSI(),
+                    subscriberLocationReportRequestIndication.getIMEI(),
+                    subscriberLocationReportRequestIndication.getNaESRD(),
+                    subscriberLocationReportRequestIndication.getNaESRK(),
+                    subscriberLocationReportRequestIndication.getLocationEstimate(),
+                    subscriberLocationReportRequestIndication.getAgeOfLocationEstimate(),
+                    subscriberLocationReportRequestIndication.getSLRArgExtensionContainer(),
+                    subscriberLocationReportRequestIndication.getAdditionalLocationEstimate(),
+                    subscriberLocationReportRequestIndication.getDeferredmtlrData(),
+                    subscriberLocationReportRequestIndication.getLCSReferenceNumber(),
+                    subscriberLocationReportRequestIndication.getGeranPositioningData(),
+                    subscriberLocationReportRequestIndication.getUtranPositioningData(),
+                    subscriberLocationReportRequestIndication.getCellGlobalIdOrServiceAreaIdOrLAI(),
+                    subscriberLocationReportRequestIndication.getHGMLCAddress(),
+                    subscriberLocationReportRequestIndication.getLCSServiceTypeID(),
+                    subscriberLocationReportRequestIndication.getSaiPresent(),
+                    subscriberLocationReportRequestIndication.getPseudonymIndicator(),
+                    subscriberLocationReportRequestIndication.getAccuracyFulfilmentIndicator(),
+                    subscriberLocationReportRequestIndication.getVelocityEstimate(),
+                    subscriberLocationReportRequestIndication.getSequenceNumber(),
+                    subscriberLocationReportRequestIndication.getPeriodicLDRInfo(),
+                    subscriberLocationReportRequestIndication.getMoLrShortCircuitIndicator(),
+                    subscriberLocationReportRequestIndication.getGeranGANSSpositioningData(),
+                    subscriberLocationReportRequestIndication.getUtranGANSSpositioningData(),
+                    subscriberLocationReportRequestIndication.getTargetServingNodeForHandover(),
+                    subscriberLocationReportRequestIndication.getUtranAdditionalPositioningData(),
+                    subscriberLocationReportRequestIndication.getUtranBaroPressureMeas(),
+                    subscriberLocationReportRequestIndication.getUtranCivicAddress()),
+                Level.INFO);
 
         ISDNAddressString naEsrd = null;
         ISDNAddressString naEsrk = null;
@@ -2025,7 +3474,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 createSLRResData(curDialog.getLocalDialogId(), getNaESRDAddress()), Level.INFO);
 
         } catch (MAPException e) {
-            logger.debug("Exception on addSubscriberLocationReportResponse: " + e.toString());
+            logger.debug("Exception on addSubscriberLocationReportResponse: " + e);
         }
     }
 
@@ -2085,6 +3534,17 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
         int sgsnSsn = 149;
         return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, sgsnSsn);
+    }
+
+    private static String bytesToHexString(byte[] bytes) {
+        char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 
     //**********************************************************//
@@ -2476,22 +3936,19 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
     @Override
     public void putAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setAddressNature(x);
+        this.setAddressNature(x);
     }
 
     @Override
     public void putNumberingPlanType(String val) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-        if (x != null)
-            this.setNumberingPlanType(x);
+        this.setNumberingPlanType(x);
     }
 
     @Override
     public void putLCSEventType(String val) {
         LCSEventType x = LCSEventType.createInstance(val);
-        if (x != null)
-            this.setLCSEventType(x);
+        this.setLCSEventType(x);
     }
 
     @Override
@@ -2548,8 +4005,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
     @Override
     public void putSRIforLCSReaction(String val) {
         SRIforLCSReaction x = SRIforLCSReaction.createInstance(val);
-        if (x != null)
-            this.setSRIforLCSReaction(x);
+        this.setSRIforLCSReaction(x);
     }
 
     @Override
@@ -2571,8 +4027,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
     @Override
     public void putPSLReaction(String val) {
         PSLReaction x = PSLReaction.createInstance(val);
-        if (x != null)
-            this.setPSLReaction(x);
+        this.setPSLReaction(x);
     }
 
     @Override
@@ -2594,8 +4049,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
     @Override
     public void putSLRReaction(String val) {
         SLRReaction x = SLRReaction.createInstance(val);
-        if (x != null)
-            this.setSLRReaction(x);
+        this.setSLRReaction(x);
     }
 
 

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.ussd;
 
 import javax.management.MBeanAttributeInfo;

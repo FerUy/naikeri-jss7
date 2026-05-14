@@ -1,4 +1,3 @@
-
 package org.restcomm.ss7.service;
 
 import java.util.LinkedList;
@@ -72,44 +71,44 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
     // //
     public static final SS7ExtensionService INSTANCE = new SS7ExtensionService();
 
-    private final Logger log = Logger.getLogger(SS7ExtensionService.class);
+    private final Logger logger = Logger.getLogger(SS7ExtensionService.class);
 
     public static ServiceName getServiceName() {
         return ServiceName.of("restcomm", "ss7");
     }
 
-    private final InjectedValue<MBeanServer> mbeanServer = new InjectedValue<MBeanServer>();
+    private final InjectedValue<MBeanServer> mbeanServer = new InjectedValue<>();
 
     public InjectedValue<MBeanServer> getMbeanServer() {
         return mbeanServer;
     }
 
-    private final InjectedValue<PathManager> pathManagerInjector = new InjectedValue<PathManager>();
+    private final InjectedValue<PathManager> pathManagerInjector = new InjectedValue<>();
 
     public InjectedValue<PathManager> getPathManagerInjector() {
         return pathManagerInjector;
     }
 
-    private final LinkedList<String> registeredMBeans = new LinkedList<String>();
+    private final LinkedList<String> registeredMBeans = new LinkedList<>();
 
     private static final String DATA_DIR = "jboss.server.data.dir";
 
     private ModelNode fullModel;
 
-    private FastMap<String, Management> beanSctpManagements = new FastMap<String, Management>();
+    private FastMap<String, Management> beanSctpManagements = new FastMap<>();
     private SCTPShellExecutor beanSctpShellExecutor;
-    private FastMap<String, SctpManagementJmx> beanSctpManagementJmxs = new FastMap<String, SctpManagementJmx>();
-    private FastMap<String, RoutingLabelFormat> routingLabelFormats = new FastMap<String, RoutingLabelFormat>();
-    private FastMap<String, Mtp3UserPart> beanMtp3UserParts = new FastMap<String, Mtp3UserPart>();
-    private FastMap<String, M3UAManagementImpl> beanM3uaManagementImpls = new FastMap<String, M3UAManagementImpl>();
-    private FastMap<String, M3uaManagementJmx> beanM3uaManagementJmxs = new FastMap<String, M3uaManagementJmx>();
+    private FastMap<String, SctpManagementJmx> beanSctpManagementJmxs = new FastMap<>();
+    private FastMap<String, RoutingLabelFormat> routingLabelFormats = new FastMap<>();
+    private FastMap<String, Mtp3UserPart> beanMtp3UserParts = new FastMap<>();
+    private FastMap<String, M3UAManagementImpl> beanM3uaManagementImpls = new FastMap<>();
+    private FastMap<String, M3uaManagementJmx> beanM3uaManagementJmxs = new FastMap<>();
     private M3UAShellExecutor beanM3uaShellExecutor;
     private Ss7ExtInterfaceImpl ss7ExtInterfaceImpl;
     private SccpExtModule sccpExtModule;
 
     private Scheduler schedulerMBean = null;
 
-    private FastMap<String, Comparator<RuleImpl>> beanRuleComparators = new FastMap<String, Comparator<RuleImpl>>();
+    private FastMap<String, Comparator<RuleImpl>> beanRuleComparators = new FastMap<>();
     private RuleComparatorFactory ruleComparatorMbean;
 
     private FastMap<String, ISUPStack> beanISUPStacks = new FastMap<String, ISUPStack>();
@@ -182,10 +181,10 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
 
     @Override
     public void start(StartContext context) throws StartException {
-        log.info("Starting SS7ExtensionService");
+        logger.info("Starting SS7ExtensionService");
 
         String dataDir = pathManagerInjector.getValue().getPathEntry(DATA_DIR).resolvePath();
-        log.info("dataDir: " + dataDir);
+        logger.info("dataDir: " + dataDir);
 
         ss7ExtInterfaceImpl = new Ss7ExtInterfaceImpl();
         sccpExtModule = new SccpExtModuleImpl();
@@ -194,7 +193,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
         createMtp3UserParts(dataDir);
 
         // DefaultClock
-        DefaultClock ss7Clock = null;
+        DefaultClock ss7Clock;
         try {
             ss7Clock = new DefaultClock();
         } catch (Exception e) {
@@ -493,7 +492,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
 
     @Override
     public void stop(StopContext context) {
-        log.info("Stopping SS7ExtensionService");
+        logger.info("Stopping SS7ExtensionService");
 
                 // TcapManagementMBean - stop
         for (FastMap.Entry<String, TcapManagementJmx> n = beanTcapManagementJmxs.head(), end = beanTcapManagementJmxs.tail(); (n = n
@@ -503,7 +502,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 tcapManagementJmx.stop();
             } catch (Exception e) {
-                log.warn("TcapManagementJmx_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("TcapManagementJmx_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -515,7 +514,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 sccpManagementJmx.stop();
             } catch (Exception e) {
-                log.warn("SccpManagementJmx_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("SccpManagementJmx_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -527,7 +526,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 m3uaManagementJmx.stop();
             } catch (Exception e) {
-                log.warn("M3uaManagementJmx_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("M3uaManagementJmx_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -539,7 +538,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 sctpManagementJmx.stop();
             } catch (Exception e) {
-                log.warn("SCTPManagementJmx_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("SCTPManagementJmx_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -550,7 +549,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 ss7Service.stop();
             } catch (Exception e) {
-                log.warn("SS7Service_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("SS7Service_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -559,7 +558,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             if (shellExecutorMBean != null)
                 shellExecutorMBean.stop();
         } catch (Exception e) {
-            log.warn("Genaral MBean stopping is failed: " + e);
+            logger.warn("Genaral MBean stopping is failed: " + e);
         }
 
         // CAP - stop
@@ -569,7 +568,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 capStack.stop();
             } catch (Exception e) {
-                log.warn("CAPStack_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("CAPStack_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -580,7 +579,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 mapStack.stop();
             } catch (Exception e) {
-                log.warn("MAPStack_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("MAPStack_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -591,7 +590,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 tcapStack.stop();
             } catch (Exception e) {
-                log.warn("TCAPStack_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("TCAPStack_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -602,7 +601,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 sccpStack.stop();
             } catch (Exception e) {
-                log.warn("SCCPStack_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("SCCPStack_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -613,7 +612,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 isupStack.stop();
             } catch (Exception e) {
-                log.warn("ISUPStack_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("ISUPStack_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -622,7 +621,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             if (schedulerMBean != null)
                 schedulerMBean.stop();
         } catch (Exception e) {
-            log.warn("Scheduler MBean stopping is failed: " + e);
+            logger.warn("Scheduler MBean stopping is failed: " + e);
         }
 
         // mtp3UserParts - stop
@@ -632,7 +631,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 mtp3UserPart.stop();
             } catch (Exception e) {
-                log.warn("Mtp3UserPart_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("Mtp3UserPart_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -644,7 +643,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
             try {
                 sctpManagement.stop();
             } catch (Exception e) {
-                log.warn("SCTPManagement_" + beanName + " MBean stopping is failed: " + e);
+                logger.warn("SCTPManagement_" + beanName + " MBean stopping is failed: " + e);
             }
         }
 
@@ -670,7 +669,7 @@ public class SS7ExtensionService implements SS7ServiceInterface,Service<SS7Servi
         try {
             getMbeanServer().getValue().unregisterMBean(new ObjectName(name));
         } catch (Throwable e) {
-            log.error("failed to unregister mbean", e);
+            logger.error("failed to unregister mbean", e);
         }
     }
 

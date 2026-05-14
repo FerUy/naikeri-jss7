@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level2;
 
 import java.util.Hashtable;
@@ -44,15 +43,15 @@ public class NumberingPlanSccpType extends EnumeratedBase {
     public NumberingPlanSccpType() {
     }
 
-    public NumberingPlanSccpType(int val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanSccpType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public NumberingPlanSccpType(Integer val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanSccpType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public NumberingPlanSccpType(String val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanSccpType(String val) throws IllegalArgumentException {
         super(val);
     }
 

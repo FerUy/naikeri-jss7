@@ -1,6 +1,7 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.ati;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
 import org.restcomm.protocols.ss7.map.api.MAPDialog;
@@ -41,6 +42,8 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DomainType;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
@@ -250,29 +253,25 @@ public class TestAtiClientMan extends TesterBase implements TestAtiClientManMBea
     @Override
     public void putAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setAddressNature(x);
+        this.setAddressNature(x);
     }
 
     @Override
     public void putNumberingPlan(String val) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(val);
-        if (x != null)
-            this.setNumberingPlan(x);
+        this.setNumberingPlan(x);
     }
 
     @Override
     public void putSubscriberIdentityType(String val) {
         SubscriberIdentityType x = SubscriberIdentityType.createInstance(val);
-        if (x != null)
-            this.setSubscriberIdentityType(x);
+        this.setSubscriberIdentityType(x);
     }
 
     @Override
     public void putGetRequestedDomain(String val) {
         AtiDomainType x = AtiDomainType.createInstance(val);
-        if (x != null)
-            this.setGetRequestedDomain(x);
+        this.setGetRequestedDomain(x);
     }
 
     @Override
@@ -282,16 +281,14 @@ public class TestAtiClientMan extends TesterBase implements TestAtiClientManMBea
 
     @Override
     public String getState() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append(SOURCE_NAME);
-        sb.append(": ");
-        sb.append("<br>Count: countAtiReq-");
-        sb.append(countAtiReq);
-        sb.append(", countAtiResp-");
-        sb.append(countAtiResp);
-        sb.append("</html>");
-        return sb.toString();
+        return "<html>" +
+            SOURCE_NAME +
+            ": " +
+            "<br>Count: countAtiReq-" +
+            countAtiReq +
+            ", countAtiResp-" +
+            countAtiResp +
+            "</html>";
     }
 
     public boolean start() {
@@ -386,18 +383,16 @@ public class TestAtiClientMan extends TesterBase implements TestAtiClientManMBea
 
             return "AtiRequest has been sent";
         } catch (MAPException ex) {
-            return "Exception when sending AtiRequest: " + ex.toString();
+            return "Exception when sending AtiRequest: " + ex;
         }
     }
 
     private String createAtiReqData(long dialogId, String address) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", address=\"");
-        sb.append(address);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", address=\"" +
+            address +
+            "\"";
     }
 
     @Override
@@ -425,14 +420,22 @@ public class TestAtiClientMan extends TesterBase implements TestAtiClientManMBea
 
     }
 
+    @Override
+    public void onAnyTimeModificationRequest(AnyTimeModificationRequest anyTimeModificationRequest) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationResponse(AnyTimeModificationResponse anyTimeModificationResponse) {
+
+    }
+
     private String createAtiRespData(long dialogId, AnyTimeInterrogationResponse ind) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", ind=\"");
-        sb.append(ind);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", ind=\"" +
+            ind +
+            "\"";
     }
 
     @Override
@@ -458,11 +461,9 @@ public class TestAtiClientMan extends TesterBase implements TestAtiClientManMBea
             if (needSendClose) {
                 needSendClose = false;
                 mapDialog.close(false);
-                return;
             }
         } catch (Exception e) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when invoking close() : " + e.getMessage(), e, Level.ERROR);
-            return;
         }
     }
 

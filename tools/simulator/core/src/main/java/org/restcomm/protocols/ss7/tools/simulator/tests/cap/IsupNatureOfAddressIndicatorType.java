@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.cap;
 
 import java.util.Hashtable;
@@ -46,15 +45,15 @@ public class IsupNatureOfAddressIndicatorType extends EnumeratedBase {
     public IsupNatureOfAddressIndicatorType() {
     }
 
-    public IsupNatureOfAddressIndicatorType(int val) throws java.lang.IllegalArgumentException {
+    public IsupNatureOfAddressIndicatorType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public IsupNatureOfAddressIndicatorType(Integer val) throws java.lang.IllegalArgumentException {
+    public IsupNatureOfAddressIndicatorType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public IsupNatureOfAddressIndicatorType(String val) throws java.lang.IllegalArgumentException {
+    public IsupNatureOfAddressIndicatorType(String val) throws IllegalArgumentException {
         super(val);
     }
 

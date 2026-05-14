@@ -334,11 +334,11 @@ public class TestPsiServerConfigurationData {
         this.lmsi = lmsi;
     }
 
-    public org.restcomm.protocols.ss7.map.api.primitives.IMEI getiMei() {
+    public IMEI getiMei() {
         return imei;
     }
 
-    public void setiMei(org.restcomm.protocols.ss7.map.api.primitives.IMEI imei) {
+    public void setiMei(IMEI imei) {
         this.imei = imei;
     }
 
@@ -994,7 +994,7 @@ public class TestPsiServerConfigurationData {
         this.locationNumber = locationNumber;
     }
 
-    protected static final XMLFormat<TestPsiServerConfigurationData> XML = new XMLFormat<TestPsiServerConfigurationData>(TestPsiServerConfigurationData.class) {
+    protected static final XMLFormat<TestPsiServerConfigurationData> XML = new XMLFormat<>(TestPsiServerConfigurationData.class) {
 
         public void write(TestPsiServerConfigurationData clt, OutputElement xml) throws XMLStreamException {
             xml.add(clt.psiReaction.toString(), PSI_REACTION, String.class);
@@ -1035,7 +1035,7 @@ public class TestPsiServerConfigurationData {
             xml.add(clt.psSubscriberStateChoice.toString(), PS_SUBSCRIBER_STATE, String.class);
         }
 
-        public void read(XMLFormat.InputElement xml, TestPsiServerConfigurationData clt) throws XMLStreamException {
+        public void read(InputElement xml, TestPsiServerConfigurationData clt) throws XMLStreamException {
             String psiR = xml.get(PSI_REACTION, String.class);
             clt.psiReaction = PSIReaction.createInstance(psiR);
             String an = xml.get(ADDRESS_NATURE, String.class);

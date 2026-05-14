@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator;
 
 import java.io.File;
@@ -35,6 +34,8 @@ import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiClientManMBea
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiClientStandardManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiServerManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiServerStandardManMBean;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestServerManMBean;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestServerStandardManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapScfManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapScfStandardManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapSsfManMBean;
@@ -117,33 +118,33 @@ public class MainCore {
         int httpPort = -1;
         int[] rmiPort = new int[] { -1, -1 };
         String appName = "main";
-        if (args != null && args.length > 0) {
+        if (args != null) {
             for (String s : args) {
-                if (s.length() > 5 && s.substring(0, 5).toLowerCase().equals("name=")) {
-                    appName = s.substring(5, s.length());
+                if (s.length() > 5 && s.substring(0, 5).equalsIgnoreCase("name=")) {
+                    appName = s.substring(5);
                 }
-                if (s.length() > 2 && s.substring(0, 2).toLowerCase().equals("-n")) {
-                    appName = s.substring(2, s.length());
+                if (s.length() > 2 && s.substring(0, 2).equalsIgnoreCase("-n")) {
+                    appName = s.substring(2);
                 }
-                if (s.length() > 4 && s.substring(0, 4).toLowerCase().equals("rmi=")) {
+                if (s.length() > 4 && s.substring(0, 4).equalsIgnoreCase("rmi=")) {
                     try {
-                        String s1 = s.substring(4, s.length());
+                        String s1 = s.substring(4);
                         parseRmi(rmiPort, s1);
                     } catch (Exception e) {
                         System.out.println("Exception when parsing parameter \"rmi\"");
                     }
                 }
-                if (s.length() > 2 && s.substring(0, 2).toLowerCase().equals("-r")) {
+                if (s.length() > 2 && s.substring(0, 2).equalsIgnoreCase("-r")) {
                     try {
-                        String s1 = s.substring(2, s.length());
+                        String s1 = s.substring(2);
                         parseRmi(rmiPort, s1);
                     } catch (Exception e) {
                         System.out.println("Exception when parsing parameter \"rmi\"");
                     }
                 }
-                if (s.length() > 5 && s.substring(0, 5).toLowerCase().equals("http=")) {
+                if (s.length() > 5 && s.substring(0, 5).equalsIgnoreCase("http=")) {
                     try {
-                        int porta = Integer.parseInt(s.substring(5, s.length()));
+                        int porta = Integer.parseInt(s.substring(5));
                         if (porta > 0 && porta < 65000)
                             httpPort = porta;
                         else
@@ -152,9 +153,9 @@ public class MainCore {
                         System.out.println("Exception when parsing parameter \"http\"");
                     }
                 }
-                if (s.length() > 2 && s.substring(0, 2).toLowerCase().equals("-t")) {
+                if (s.length() > 2 && s.substring(0, 2).equalsIgnoreCase("-t")) {
                     try {
-                        int porta = Integer.parseInt(s.substring(2, s.length()));
+                        int porta = Integer.parseInt(s.substring(2));
                         if (porta > 0 && porta < 65000)
                             httpPort = porta;
                         else
@@ -219,6 +220,7 @@ public class MainCore {
         ObjectName nameMapLcsClientManMan = new ObjectName("SS7_Simulator_" + appName + ":type=TestMapLcsClientMan");
         ObjectName nameMapLcsServerManMan = new ObjectName("SS7_Simulator_" + appName + ":type=TestMapLcsServerMan");
         ObjectName nameMapPsiServerManMan = new ObjectName("SS7_Simulator_" + appName + ":type=TestMapPsiServerMan");
+        ObjectName nameMapAtiPsiLsmServerMan = new ObjectName("SS7_Simulator_" + appName + ":type=TestMapServerMan");
 
 
         // HtmlAdaptorServer
@@ -305,6 +307,8 @@ public class MainCore {
             TestPsiServerStandardManMBean mapPsiServerManMBean = new TestPsiServerStandardManMBean(host.getTestPsiServerMan(), TestPsiServerManMBean.class);
             mbs.registerMBean(mapPsiServerManMBean, nameMapPsiServerManMan);
 
+            TestServerStandardManMBean mapAtiPsiLsmServerManMBean = new TestServerStandardManMBean(host.getTestServerMan(), TestServerManMBean.class);
+            mbs.registerMBean(mapAtiPsiLsmServerManMBean, nameMapAtiPsiLsmServerMan);
 
             System.out.println("All beans have been loaded...");
 
@@ -363,7 +367,8 @@ public class MainCore {
             mbs.unregisterMBean(adapterName);
         }
         if (rmiPort > 0) {
-            cs.stop();
+            if (cs != null)
+                cs.stop();
         }
 
         mbs.unregisterMBean(nameTesterHost);
@@ -385,7 +390,7 @@ public class MainCore {
         mbs.unregisterMBean(nameMapLcsClientManMan);
         mbs.unregisterMBean(nameMapLcsServerManMan);
         mbs.unregisterMBean(nameMapPsiServerManMan);
-
+        mbs.unregisterMBean(nameMapAtiPsiLsmServerMan);
 
         // Registry.unbind(key);
         UnicastRemoteObject.unexportObject(reg, true);

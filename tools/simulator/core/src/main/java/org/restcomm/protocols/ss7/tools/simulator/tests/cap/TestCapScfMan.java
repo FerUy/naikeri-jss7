@@ -1,9 +1,9 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.cap;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.cap.api.CAPDialog;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.cap.api.CAPDialog;
 import org.restcomm.protocols.ss7.cap.api.CAPDialogListener;
 import org.restcomm.protocols.ss7.cap.api.CAPException;
 import org.restcomm.protocols.ss7.cap.api.CAPMessage;
@@ -73,7 +73,6 @@ import org.restcomm.protocols.ss7.tools.simulator.Stoppable;
 import org.restcomm.protocols.ss7.tools.simulator.common.CapApplicationContextScf;
 import org.restcomm.protocols.ss7.tools.simulator.common.TesterBase;
 import org.restcomm.protocols.ss7.tools.simulator.level3.CapMan;
-import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface;
 
 /**
  *
@@ -121,10 +120,6 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
         this.name = name;
     }
 
-    public void setTesterHost(TesterHostInterface testerHost) {
-        this.testerHost = testerHost;
-    }
-
     public void setCapMan(CapMan val) {
         this.capMan = val;
     }
@@ -148,8 +143,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
     @Override
     public void putCapApplicationContext(String val) {
         CapApplicationContextScf x = CapApplicationContextScf.createInstance(val);
-        if (x != null)
-            this.setCapApplicationContext(x);
+        this.setCapApplicationContext(x);
     }
 
     @Override
@@ -182,8 +176,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
     @Override
     public void putConDestRouteAddrNatureOfAddress(String s) {
         IsupNatureOfAddressIndicatorType x = IsupNatureOfAddressIndicatorType.createInstance(s);
-        if (x != null)
-            this.setConnectDestinationRoutingAddressNatureOfAddress(x);
+        this.setConnectDestinationRoutingAddressNatureOfAddress(x);
     }
 
     @Override
@@ -205,8 +198,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
     @Override
     public void putConDestRouteAddrNumberingPlan(String s) {
         IsupNumberingPlanIndicatorType x = IsupNumberingPlanIndicatorType.createInstance(s);
-        if (x != null)
-            this.setConnectDestinationRoutingAddressNumberingPlan(x);
+        this.setConnectDestinationRoutingAddressNumberingPlan(x);
     }
 
     @Override
@@ -228,8 +220,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
     @Override
     public void putReleaseCauseValue(String s) {
         IsupCauseIndicatorCauseValueType x = IsupCauseIndicatorCauseValueType.createInstance(s);
-        if (x != null)
-            this.setReleaseCauseValue(x);
+        this.setReleaseCauseValue(x);
     }
 
     @Override
@@ -252,8 +243,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
     @Override
     public void putReleaseCauseCodingStandardIndicator(String s) {
         IsupCauseIndicatorCodingStandardType x = IsupCauseIndicatorCodingStandardType.createInstance(s);
-        if (x != null)
-            this.setReleaseCauseCodingStandardIndicator(x);
+        this.setReleaseCauseCodingStandardIndicator(x);
     }
 
     @Override
@@ -275,8 +265,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
     @Override
     public void putReleaseCauseLocationIndicator(String s) {
         IsupCauseIndicatorLocationType x = IsupCauseIndicatorLocationType.createInstance(s);
-        if (x != null)
-            this.setReleaseCauseLocationIndicator(x);
+        this.setReleaseCauseLocationIndicator(x);
     }
 
 
@@ -379,7 +368,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             } catch (CAPException e) {
                 this.doRemoveDialog();
                 this.testerHost.sendNotif(SOURCE_NAME, "Exception when closing a dialog", e.toString(), Level.DEBUG);
-                return "Exception when closing the current dialog: " + e.toString();
+                return "Exception when closing the current dialog: " + e;
             }
         } else {
             return "No current dialog";
@@ -403,7 +392,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -423,7 +412,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "applyCharging has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending applyCharging", ex.toString(), Level.DEBUG);
-            return "Exception when sending applyCharging: " + ex.toString();
+            return "Exception when sending applyCharging: " + ex;
         }
     }
 
@@ -434,7 +423,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -451,7 +440,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "cancel has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending cancel", ex.toString(), Level.DEBUG);
-            return "Exception when sending cancel: " + ex.toString();
+            return "Exception when sending cancel: " + ex;
         }
     }
 
@@ -462,13 +451,13 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
         TestCapScfConfigurationData scfConfigData = testerHost.getConfigurationData().getTestCapScfConfigurationData();
         try {
-            ArrayList<CalledPartyNumberCap> calledPartyNumber = new ArrayList<CalledPartyNumberCap>();
+            ArrayList<CalledPartyNumberCap> calledPartyNumber = new ArrayList<>();
             CalledPartyNumber cpnIsup = capProvider.getISUPParameterFactory().createCalledPartyNumber();
             cpnIsup.setAddress(scfConfigData.getConDestRouteAddrAddress());
             cpnIsup.setInternalNetworkNumberIndicator(CalledPartyNumber._INN_ROUTING_ALLOWED);
@@ -491,7 +480,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "cancel has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending connect", ex.toString(), Level.DEBUG);
-            return "Exception when sending connect: " + ex.toString();
+            return "Exception when sending connect: " + ex;
         }
     }
 
@@ -502,7 +491,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -519,7 +508,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "Continue has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending continue", ex.toString(), Level.DEBUG);
-            return "Exception when sending continue: " + ex.toString();
+            return "Exception when sending continue: " + ex;
         }
     }
 
@@ -530,7 +519,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -554,7 +543,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "ReleaseCall has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending releaseCall", ex.toString(), Level.DEBUG);
-            return "Exception when sending releaseCall: " + ex.toString();
+            return "Exception when sending releaseCall: " + ex;
         }
     }
 
@@ -565,12 +554,12 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
         try {
-            ArrayList<BCSMEvent> bcsmEventList = new ArrayList<BCSMEvent>();
+            ArrayList<BCSMEvent> bcsmEventList = new ArrayList<>();
             BCSMEvent ev = capProvider.getCAPParameterFactory().createBCSMEvent(EventTypeBCSM.oAnswer, MonitorMode.transparent,
                     null, null, false);
             bcsmEventList.add(ev);
@@ -586,7 +575,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "RequestReportBCSMEvent has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending requestReportBCSMEvent", ex.toString(), Level.DEBUG);
-            return "Exception when sending requestReportBCSMEvent: " + ex.toString();
+            return "Exception when sending requestReportBCSMEvent: " + ex;
         }
     }
 
@@ -597,7 +586,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -619,7 +608,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "ConnectToResource has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending ConnectToResource", ex.toString(), Level.DEBUG);
-            return "Exception when sending ConnectToResource: " + ex.toString();
+            return "Exception when sending ConnectToResource: " + ex;
         }
     }
 
@@ -630,7 +619,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -651,7 +640,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "FurnishChargingInformation has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending FurnishChargingInformation", ex.toString(), Level.DEBUG);
-            return "Exception when sending FurnishChargingInformation: " + ex.toString();
+            return "Exception when sending FurnishChargingInformation: " + ex;
         }
     }
 
@@ -662,7 +651,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -682,7 +671,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "PromptAndCollectUserInformation has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending PromptAndCollectUserInformation", ex.toString(), Level.DEBUG);
-            return "Exception when sending PromptAndCollectUserInformation: " + ex.toString();
+            return "Exception when sending PromptAndCollectUserInformation: " + ex;
         }
     }
 
@@ -693,7 +682,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         try {
             curDialog.addActivityTestRequest();
@@ -708,7 +697,7 @@ public class TestCapScfMan extends TesterBase implements TestCapScfManMBean, Sto
             return "ActivityTest has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending ActivityTest", ex.toString(), Level.DEBUG);
-            return "Exception when sending ActivityTest: " + ex.toString();
+            return "Exception when sending ActivityTest: " + ex;
         }
     }
 

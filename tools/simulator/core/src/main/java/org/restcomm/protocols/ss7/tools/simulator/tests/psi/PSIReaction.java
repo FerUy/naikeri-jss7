@@ -38,15 +38,15 @@ public class PSIReaction extends EnumeratedBase {
   public PSIReaction() {
   }
 
-  public PSIReaction(int val) throws java.lang.IllegalArgumentException {
+  public PSIReaction(int val) throws IllegalArgumentException {
     super(val);
   }
 
-  public PSIReaction(Integer val) throws java.lang.IllegalArgumentException {
+  public PSIReaction(Integer val) throws IllegalArgumentException {
     super(val);
   }
 
-  public PSIReaction(String val) throws java.lang.IllegalArgumentException {
+  public PSIReaction(String val) throws IllegalArgumentException {
     super(val);
   }
 

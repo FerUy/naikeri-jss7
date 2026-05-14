@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.traceparser;
 
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;

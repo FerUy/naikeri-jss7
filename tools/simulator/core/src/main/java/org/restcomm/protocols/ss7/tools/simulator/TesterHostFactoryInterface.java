@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator;
 
 import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface;

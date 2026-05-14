@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.sms;
 
 import java.util.Hashtable;
@@ -61,15 +60,15 @@ public class NumberingPlanIdentificationType extends EnumeratedBase {
     public NumberingPlanIdentificationType() {
     }
 
-    public NumberingPlanIdentificationType(int val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanIdentificationType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public NumberingPlanIdentificationType(Integer val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanIdentificationType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public NumberingPlanIdentificationType(String val) throws java.lang.IllegalArgumentException {
+    public NumberingPlanIdentificationType(String val) throws IllegalArgumentException {
         super(val);
     }
 

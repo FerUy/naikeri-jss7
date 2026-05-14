@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulatorgui;
 
 import java.awt.BorderLayout;
@@ -36,6 +35,7 @@ import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface
 import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiClientManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiServerManMBean;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestServerManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapScfManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapSsfManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.checkimei.TestCheckImeiClientManMBean;
@@ -55,7 +55,7 @@ import org.restcomm.protocols.ss7.tools.simulator.tests.ussd.TestUssdServerManMB
  */
 public class ConnectionForm extends JFrame {
 
-    private static final long serialVersionUID = 1892971654619519775L;
+    private static final long serialVersionUID = 1L;
 
     private TesterHostFactoryInterface testerHostFactoryInterface;
 
@@ -168,7 +168,8 @@ public class ConnectionForm extends JFrame {
                 host.getMapMan(), host.getCapMan(), host.getTestUssdClientMan(), host.getTestUssdServerMan(),
                 host.getTestSmsClientMan(), host.getTestSmsServerMan(), host.getTestCapScfMan(), host.getTestCapSsfMan(),
                 host.getTestAtiClientMan(), host.getTestAtiServerMan(), host.getTestCheckImeiClientMan(),
-                host.getTestCheckImeiServerMan(), host.getTestLcsClientMan(), host.getTestLcsServerMan(), host.getTestPsiServerMan());
+                host.getTestCheckImeiServerMan(), host.getTestLcsClientMan(), host.getTestLcsServerMan(),
+                host.getTestPsiServerMan(), host.getTestServerMan());
         frame.setVisible(true);
 
         // closing the connection form
@@ -238,6 +239,9 @@ public class ConnectionForm extends JFrame {
             TestLcsServerManMBean lcsServer = JMX.newMBeanProxy(mbsc, mbeanNameLcsServer, TestLcsServerManMBean.class, false);
             ObjectName mbeanNamePsiServer = new ObjectName(tagDomain + ":type=TestMapPsiServerMan");
             TestPsiServerManMBean psiServer = JMX.newMBeanProxy(mbsc, mbeanNamePsiServer, TestPsiServerManMBean.class, false);
+            ObjectName mbeanNameServer = new ObjectName(tagDomain + ":type=TestMapServerMan");
+            TestServerManMBean server = JMX.newMBeanProxy(mbsc, mbeanNameServer, TestServerManMBean.class, false);
+
             // checking if MBean is workable
             host.getInstance_L1_Value();
 
@@ -245,7 +249,7 @@ public class ConnectionForm extends JFrame {
             SimulatorGuiForm frame = new SimulatorGuiForm();
             mbsc.addNotificationListener(mbeanNameTesterHost, frame, null, null);
             frame.startHost(appName + "-remote", true, null, host, m3ua, dialogic, sccp, map, cap, ussdClient, ussdServer,
-                    smsClient, smsServer, capScf, capSsf, atiClient, atiServer, checkImeiClient, checkImeiServer, lcsClient, lcsServer, psiServer);
+                    smsClient, smsServer, capScf, capSsf, atiClient, atiServer, checkImeiClient, checkImeiServer, lcsClient, lcsServer, psiServer, server);
             frame.setVisible(true);
 
             // closing the connection form
@@ -262,7 +266,7 @@ public class ConnectionForm extends JFrame {
             // JOptionPane.showMessageDialog(this, "Exception: " + e.toString() + "/n");
             // e.printStackTrace();
 
-            ErrorForm fm = new ErrorForm("Exception: " + e.toString() + "/n" + s1, this);
+            ErrorForm fm = new ErrorForm("Exception: " + e + "/n" + s1, this);
             fm.setVisible(true);
         }
     }

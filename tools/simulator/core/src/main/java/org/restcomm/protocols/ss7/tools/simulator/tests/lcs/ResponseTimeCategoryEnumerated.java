@@ -24,15 +24,15 @@ public class ResponseTimeCategoryEnumerated extends EnumeratedBase {
     public ResponseTimeCategoryEnumerated() {
     }
 
-    public ResponseTimeCategoryEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public ResponseTimeCategoryEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public ResponseTimeCategoryEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public ResponseTimeCategoryEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public ResponseTimeCategoryEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public ResponseTimeCategoryEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

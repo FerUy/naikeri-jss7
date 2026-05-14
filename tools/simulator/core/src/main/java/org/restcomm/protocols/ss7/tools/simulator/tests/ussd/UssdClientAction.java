@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.ussd;
 
 import java.util.Hashtable;
@@ -30,15 +29,15 @@ public class UssdClientAction extends EnumeratedBase {
     public UssdClientAction() {
     }
 
-    public UssdClientAction(int val) throws java.lang.IllegalArgumentException {
+    public UssdClientAction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public UssdClientAction(Integer val) throws java.lang.IllegalArgumentException {
+    public UssdClientAction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public UssdClientAction(String val) throws java.lang.IllegalArgumentException {
+    public UssdClientAction(String val) throws IllegalArgumentException {
         super(val);
     }
 

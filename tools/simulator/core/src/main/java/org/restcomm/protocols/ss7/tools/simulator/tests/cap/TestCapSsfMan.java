@@ -1,7 +1,7 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.cap;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.cap.api.CAPApplicationContext;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.cap.api.CAPApplicationContext;
 import org.restcomm.protocols.ss7.cap.api.CAPDialog;
 import org.restcomm.protocols.ss7.cap.api.CAPDialogListener;
 import org.restcomm.protocols.ss7.cap.api.CAPException;
@@ -77,7 +77,6 @@ import org.restcomm.protocols.ss7.tools.simulator.common.CapApplicationContextSs
 import org.restcomm.protocols.ss7.tools.simulator.common.TesterBase;
 import org.restcomm.protocols.ss7.tools.simulator.level3.CapMan;
 import org.restcomm.protocols.ss7.tools.simulator.level3.NumberingPlanMapType;
-import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface;
 
 /**
  *
@@ -126,10 +125,6 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
         this.name = name;
     }
 
-    public void setTesterHost(TesterHostInterface testerHost) {
-        this.testerHost = testerHost;
-    }
-
     public void setCapMan(CapMan val) {
         this.capMan = val;
     }
@@ -153,8 +148,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putCapApplicationContext(String val) {
         CapApplicationContextSsf x = CapApplicationContextSsf.createInstance(val);
-        if (x != null)
-            this.setCapApplicationContext(x);
+        this.setCapApplicationContext(x);
     }
 
     @Override
@@ -188,8 +182,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putIdpEventTypeBCSM(String s) {
         EventTypeBCSMType x = EventTypeBCSMType.createInstance(s);
-        if (x != null)
-            this.setIdpEventTypeBCSM(x);
+        this.setIdpEventTypeBCSM(x);
     }
 
     @Override
@@ -235,8 +228,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putCallingPartyNumberNatureOfAddress(String s) {
         IsupNatureOfAddressIndicatorType x = IsupNatureOfAddressIndicatorType.createInstance(s);
-        if (x != null)
-            this.setCallingPartyNumberNatureOfAddress(x);
+        this.setCallingPartyNumberNatureOfAddress(x);
     }
 
     @Override
@@ -257,8 +249,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putCallingPartyNumberNumberingPlan(String s) {
         IsupNumberingPlanIndicatorType x = IsupNumberingPlanIndicatorType.createInstance(s);
-        if (x != null)
-            this.setCallingPartyNumberNumberingPlan(x);
+        this.setCallingPartyNumberNumberingPlan(x);
     }
 
     @Override
@@ -291,8 +282,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putCalledPartyBCDNumberAddressNature(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setCalledPartyBCDNumberAddressNature(x);
+        this.setCalledPartyBCDNumberAddressNature(x);
     }
 
     @Override
@@ -314,8 +304,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putCalledPartyBCDNumberNumberingPlan(String s) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(s);
-        if (x != null)
-            this.setCalledPartyBCDNumberNumberingPlan(x);
+        this.setCalledPartyBCDNumberNumberingPlan(x);
     }
 
     @Override
@@ -348,8 +337,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putCalledPartyNumberNatureOfAddress(String s) {
         IsupNatureOfAddressIndicatorType x = IsupNatureOfAddressIndicatorType.createInstance(s);
-        if (x != null)
-            this.setCalledPartyNumberNatureOfAddress(x);
+        this.setCalledPartyNumberNatureOfAddress(x);
     }
 
     @Override
@@ -371,8 +359,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putCalledPartyNumberNumberingPlan(String s) {
         IsupNumberingPlanIndicatorType x = IsupNumberingPlanIndicatorType.createInstance(s);
-        if (x != null)
-            this.setCalledPartyNumberNumberingPlan(x);
+        this.setCalledPartyNumberNumberingPlan(x);
     }
 
     @Override
@@ -405,8 +392,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putMscAddressNatureOfAddress(String val) {
         AddressNatureType x = AddressNatureType.createInstance(val);
-        if (x != null)
-            this.setMscAddressNatureOfAddress(x);
+        this.setMscAddressNatureOfAddress(x);
     }
 
     @Override
@@ -428,8 +414,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
     @Override
     public void putMscAddressNumberingPlan(String s) {
         NumberingPlanMapType x = NumberingPlanMapType.createInstance(s);
-        if (x != null)
-            this.setMscAddressNumberingPlan(x);
+        this.setMscAddressNumberingPlan(x);
     }
 
     @Override
@@ -529,7 +514,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
             } catch (CAPException e) {
                 this.doRemoveDialog();
                 this.testerHost.sendNotif(SOURCE_NAME, "Exception when closing a dialog", e.toString(), Level.DEBUG);
-                return "Exception when closing the current dialog: " + e.toString();
+                return "Exception when closing the current dialog: " + e;
             }
         } else {
             return "No current dialog";
@@ -556,7 +541,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog2 = currentDialog;
         if (curDialog2 != null)
-            return "The current dialog exists. Finish it previousely";
+            return "The current dialog exists. Finish it previously";
 
         currentRequestDef = "";
 
@@ -625,7 +610,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
             return "initialDP has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending initialDP", ex.toString(), Level.DEBUG);
-            return "Exception when sending initialDP: " + ex.toString();
+            return "Exception when sending initialDP: " + ex;
         }
     }
 
@@ -636,7 +621,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog2 = currentDialog;
         if (curDialog2 != null)
-            return "The current dialog exists. Finish it previousely";
+            return "The current dialog exists. Finish it previously";
 
         currentRequestDef = "";
 
@@ -654,7 +639,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
             genericNumber.setAddress("111333");
             genericNumber.setAddressRepresentationRestrictedIndicator(GenericNumber._APRI_ALLOWED);
             genericNumber.setNatureOfAddresIndicator(GenericNumber._NAI_INTERNATIONAL_NUMBER);
-            genericNumber.setNumberIncompleter(GenericNumber._NI_COMPLETE);
+            genericNumber.setNumberIncomplete(GenericNumber._NI_COMPLETE);
             genericNumber.setNumberingPlanIndicator(GenericNumber._NPI_ISDN);
             genericNumber.setNumberQualifierIndicator(GenericNumber._NQIA_CALLED_NUMBER);
             genericNumber.setScreeningIndicator(GenericNumber._SI_NETWORK_PROVIDED);
@@ -676,7 +661,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending assistRequestInstructions", ex.toString(),
                     Level.DEBUG);
-            return "Exception when sending assistRequestInstructions: " + ex.toString();
+            return "Exception when sending assistRequestInstructions: " + ex;
         }
     }
 
@@ -687,7 +672,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -709,7 +694,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
             return "applyChargingReport has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending applyChargingReport", ex.toString(), Level.DEBUG);
-            return "Exception when sending applyChargingReport: " + ex.toString();
+            return "Exception when sending applyChargingReport: " + ex;
         }
     }
 
@@ -720,7 +705,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
 
         CAPDialogCircuitSwitchedCall curDialog = currentDialog;
         if (curDialog == null)
-            return "The current dialog does not exist. Start it previousely or wait of starting by a peer";
+            return "The current dialog does not exist. Start it previously or wait of starting by a peer";
 
         CAPProvider capProvider = this.capMan.getCAPStack().getCAPProvider();
 
@@ -737,7 +722,7 @@ public class TestCapSsfMan extends TesterBase implements TestCapSsfManMBean, Sto
             return "eventReportBCSM has been sent";
         } catch (CAPException ex) {
             this.testerHost.sendNotif(SOURCE_NAME, "Exception when sending eventReportBCSM", ex.toString(), Level.DEBUG);
-            return "Exception when sending eventReportBCSM: " + ex.toString();
+            return "Exception when sending eventReportBCSM: " + ex;
         }
     }
 

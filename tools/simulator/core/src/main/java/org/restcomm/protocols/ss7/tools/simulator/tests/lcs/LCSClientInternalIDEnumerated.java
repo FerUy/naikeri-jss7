@@ -30,15 +30,15 @@ public class LCSClientInternalIDEnumerated extends EnumeratedBase {
     public LCSClientInternalIDEnumerated() {
     }
 
-    public LCSClientInternalIDEnumerated(int val) throws java.lang.IllegalArgumentException {
+    public LCSClientInternalIDEnumerated(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LCSClientInternalIDEnumerated(Integer val) throws java.lang.IllegalArgumentException {
+    public LCSClientInternalIDEnumerated(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public LCSClientInternalIDEnumerated(String val) throws java.lang.IllegalArgumentException {
+    public LCSClientInternalIDEnumerated(String val) throws IllegalArgumentException {
         super(val);
     }
 

@@ -61,7 +61,7 @@ public class SS7Extension implements Extension {
 
     subsystem.registerXMLElementWriter(SS7SubsystemParser.getInstance());
 
-    // here we can register submodels
+    // here we can register sub-models
     final ManagementResourceRegistration mbeans = registration.registerSubModel(SS7MbeanDefinition.INSTANCE);
   }
 }

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.checkimei;
 
 import java.util.Hashtable;
@@ -29,15 +28,15 @@ public class CheckImeiClientAction extends EnumeratedBase {
     public CheckImeiClientAction() {
     }
 
-    public CheckImeiClientAction(int val) throws java.lang.IllegalArgumentException {
+    public CheckImeiClientAction(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public CheckImeiClientAction(Integer val) throws java.lang.IllegalArgumentException {
+    public CheckImeiClientAction(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public CheckImeiClientAction(String val) throws java.lang.IllegalArgumentException {
+    public CheckImeiClientAction(String val) throws IllegalArgumentException {
         super(val);
     }
 

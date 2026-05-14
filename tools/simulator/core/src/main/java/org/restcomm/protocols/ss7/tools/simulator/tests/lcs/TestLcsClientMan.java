@@ -1,7 +1,8 @@
 package org.restcomm.protocols.ss7.tools.simulator.tests.lcs;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.math.BigInteger;
 import java.net.Inet4Address;
@@ -9,8 +10,12 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Random;
 
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.restcomm.protocols.ss7.map.MAPParameterFactoryImpl;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
@@ -110,6 +115,7 @@ import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
 import org.restcomm.protocols.ss7.map.primitives.GSNAddressImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 
+import org.restcomm.protocols.ss7.map.service.lsm.AdditionalNumberImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.DeferredLocationEventTypeImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.LCSClientNameImpl;
 import org.restcomm.protocols.ss7.map.service.lsm.ExtGeographicalInformationImpl;
@@ -146,7 +152,7 @@ import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostImpl;
  */
 public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBean, Stoppable, MAPServiceLsmListener {
 
-    private static Logger logger = Logger.getLogger(TestLcsClientMan.class);
+    private static final Logger logger = LogManager.getLogger(TestLcsClientMan.class);
 
     public static String SOURCE_NAME = "TestLcsClientMan";
     private final String name;
@@ -188,16 +194,14 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
 
     @Override
     public String getState() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append(SOURCE_NAME);
-        sb.append(": ");
-        sb.append("<br>Count: countMapLcsReq-");
-        sb.append(countMapLcsReq);
-        sb.append(", countMapLcsResp-");
-        sb.append(countMapLcsResp);
-        sb.append("</html>");
-        return sb.toString();
+        return "<html>" +
+            SOURCE_NAME +
+            ": " +
+            "<br>Count: countMapLcsReq-" +
+            countMapLcsReq +
+            ", countMapLcsResp-" +
+            countMapLcsResp +
+            "</html>";
     }
 
     @Override
@@ -209,7 +213,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
     }
 
     //***************************//
-    //**** SRIforLCS methods ***//
+    //**** SRILCS methods ***//
     //*************************//
     @Override
     public String performSendRoutingInfoForLCSRequest() {
@@ -220,7 +224,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
         return sendRoutingInfoForLCSRequest();
     }
 
-    public String sendRoutingInfoForLCSRequest(){
+    public String sendRoutingInfoForLCSRequest() {
 
         if (mapProvider == null) {
             return "mapProvider is null";
@@ -243,22 +247,20 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             ISDNAddressString mlcAddress = new ISDNAddressStringImpl(AddressNature.international_number,
                     NumberingPlan.ISDN, "222333");
 
-            MAPExtensionContainer mapExtensionContainer = null;
-
-            mapDialogLsm.addSendRoutingInfoForLCSRequest(mlcAddress, targetMS, mapExtensionContainer);
+            mapDialogLsm.addSendRoutingInfoForLCSRequest(mlcAddress, targetMS, null);
             logger.debug("Added SRIforLCS msisdn:" + targetMS + ", sriForLCSIsdnAddress:" + mlcAddress);
 
             mapDialogLsm.send();
 
             this.countMapLcsReq++;
 
-            this.testerHost.sendNotif(SOURCE_NAME, "Sent: SRIforLCS", createSRIforLCSReqData(mapDialogLsm.getLocalDialogId(), mlcAddress.getAddress(),
+            this.testerHost.sendNotif(SOURCE_NAME, "Sent: SRIforLCS", createSRILCSReqData(mapDialogLsm.getLocalDialogId(), mlcAddress.getAddress(),
                     targetMS.getMSISDN().getAddress()), Level.INFO);
 
-            currentRequestDef += "Sent SRIforLCS Request;";
+            currentRequestDef += "Sent SRILCS Request;";
 
         } catch (MAPException e) {
-            return "Exception " + e.toString();
+            return "Exception " + e;
         }
 
         return "sendRoutingInfoForLCSRequest sent";
@@ -281,7 +283,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
         MAPDialogLsm curDialog = sendRoutingInforForLCSRequestIndication.getMAPDialog();
 
         this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: SendRoutingInfoForLCSRequest",
-                createSRIforLCSReqData(curDialog.getLocalDialogId(),
+                createSRILCSReqData(curDialog.getLocalDialogId(),
                         mlc.getAddress(),
                         targetMS.getMSISDN().getAddress()), Level.INFO);
 
@@ -290,16 +292,29 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
                 NumberingPlan.getInstance(getNumberingPlanType().intValue()),
                 getNetworkNodeNumber());
 
-        String lmsIdStr = "4321";
-        byte[] lmsid = lmsIdStr.getBytes();
-        LMSI lmsi = new LMSIImpl(lmsid);
-
-        MAPExtensionContainer extensionContainer = null;
-
+        ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
+                NumberingPlan.ISDN, networkNodeNumber.getAddress());
+        AdditionalNumber additionalNumber = new AdditionalNumberImpl(null, sgsnNumber);
+        LMSI lmsi;
+        Random rand = new Random();
+        switch (rand.nextInt(10) + 1) {
+            case 1:
+                lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 233, (byte) 140});
+                break;
+            case 2:
+                lmsi = new LMSIImpl(new byte[] {113, (byte) 255, (byte) 172, (byte) 206});
+                break;
+            case 3:
+                lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 235, 55});
+                break;
+            case 4:
+                lmsi = new LMSIImpl(new byte[] {114, 2, (byte) 231, (byte) 213});
+                break;
+            default:
+                lmsi = null;
+                break;
+        }
         boolean gprsNodeIndicator = false;
-
-        AdditionalNumber additionalNumber = null;
-
         boolean lcsCapabilitySetRelease98_99 = true;
         boolean lcsCapabilitySetRelease4 = true;
         boolean lcsCapabilitySetRelease5 = true;
@@ -310,118 +325,106 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
         lcsCapabilitySetRelease7 = true;
         SupportedLCSCapabilitySets additionalLCSCapabilitySets = new SupportedLCSCapabilitySetsImpl(lcsCapabilitySetRelease98_99, lcsCapabilitySetRelease4,
                 lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
-
-        byte[] mme = new BigInteger("8720c00a30a1743401000a", 16).toByteArray();
-        DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
-        byte[] aaa = new BigInteger("8720c00a30a1743401101112", 16).toByteArray();
-        DiameterIdentity aaaServerName = new DiameterIdentityImpl(aaa);
-        DiameterIdentity sgsnName = null;
-        DiameterIdentity sgsnRealm = null;
-
-        LCSLocationInfo lcsLocationInfo = mapParameterFactory.createLCSLocationInfo(networkNodeNumber, lmsi, extensionContainer,
-                gprsNodeIndicator, additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName,
-                sgsnName, sgsnRealm);
+        DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+        DiameterIdentity aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+        DiameterIdentity sgsnName = new DiameterIdentityImpl("sgsn1B34.mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+        DiameterIdentity sgsnRealm = new DiameterIdentityImpl("mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+        LCSLocationInfo lcsLocationInfo = mapParameterFactory.createLCSLocationInfo(networkNodeNumber, lmsi, null, gprsNodeIndicator,
+                additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
         try {
-
-            GSNAddress hgmlcAddress = createGSNAddress(getHGMLCAddress());
-            GSNAddress vgmlAddress = null, pprAddress = null, addVGmlcAddress = null;
+            GSNAddress vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
+            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
+            GSNAddress pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x12 });
+            GSNAddress additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
 
             curDialog.addSendRoutingInfoForLCSResponse(
                     sendRoutingInforForLCSRequestIndication.getInvokeId(),
                     targetMS,
                     lcsLocationInfo,
-                    extensionContainer,
-                    vgmlAddress,
-                    hgmlcAddress,
+                    null,
+                    vGmlcAddress,
+                    hGmlcAddress,
                     pprAddress,
-                    addVGmlcAddress);
+                    additionalVGmlcAddress);
             logger.debug("set addSendRoutingInfoForLCSResponse");
             curDialog.send();
             logger.debug("addSendRoutingInfoForLCSResponse sent");
             this.countMapLcsResp++;
 
             this.testerHost.sendNotif(SOURCE_NAME, "Sent: SendRoutingInfoForLCSResponse",
-                    createSRIforLCSResData(curDialog.getLocalDialogId(), networkNodeNumber.getAddress()), Level.INFO);
+                    createSRILCSResData(curDialog.getLocalDialogId(), networkNodeNumber.getAddress()), Level.INFO);
 
         } catch (MAPException e) {
-            logger.debug("Failed building response " + e.toString());
+            logger.debug("Failed building response " + e);
         }
 
     }
 
-    private String createSRIforLCSReqData(long dialogId, String address, String msisdn) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", GMLC address=\"");
-        sb.append(address);
-        sb.append("\"");
-        sb.append(", MSISDN=\"");
-        sb.append(msisdn);
-        sb.append("\"");
-        return sb.toString();
+    private String createSRILCSReqData(long dialogId, String address, String msisdn) {
+        return "dialogId=" +
+            dialogId +
+            ", GMLC address=\"" +
+            address +
+            "\"" +
+            ", MSISDN=\"" +
+            msisdn +
+            "\"";
     }
 
-    private String createSRIforLCSResData(long dialogId, String address) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", networkNodeNumber=\"");
-        sb.append(address);
-        sb.append("\"");
-        return sb.toString();
+    private String createSRILCSResData(long dialogId, String address) {
+        return "dialogId=" +
+            dialogId +
+            ", networkNodeNumber=\"" +
+            address +
+            "\"";
     }
 
     private String createSLRReqData(Long dialogId, String networkNodeNumberAddress) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", networkNodeNumber=\"");
-        sb.append(networkNodeNumberAddress);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", networkNodeNumber=\"" +
+            networkNodeNumberAddress +
+            "\"";
     }
 
     private String createSLRReqData(long dialogId, LCSEvent lcsEvent, String address, LCSClientID lcsClientID, ISDNAddressString msisdn, IMSI imsi, IMEI imei,
                                     ExtGeographicalInformation locationEstimate, Integer ageOfLocationEstimate, Integer lcsReferenceNumber,
                                     CellGlobalIdOrServiceAreaIdOrLAI cellIdOrSai, GSNAddress hgmlcAddress) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", lcsEvent=\"");
-        sb.append(lcsEvent);
-        sb.append("\", networkNodeNumber=\"");
-        sb.append(address).append(", ");
-        sb.append("\", lcsClientID=\"");
-        sb.append(lcsClientID).append(", ");
-        sb.append("\", MSISDN=\"");
-        sb.append(msisdn.getAddress()).append(", ");
-        sb.append("\", IMSI=\"");
-        sb.append(imsi.getData()).append(", ");
-        sb.append("\", IMEI=\"");
-        sb.append(imei.getIMEI()).append(", ");
-        sb.append("\", locationEstimate=\"");
-        sb.append(locationEstimate).append(", ");
-        sb.append("\", latitude=\"");
-        sb.append(locationEstimate.getLatitude()).append(", ");
-        sb.append("\", longitude=\"");
-        sb.append(locationEstimate.getLongitude()).append(", ");
-        sb.append("\", altitude=\"");
-        sb.append(locationEstimate.getAltitude()).append(", ");
-        sb.append("\", locationEstimateConfidence=\"");
-        sb.append(locationEstimate.getConfidence()).append(", ");
-        sb.append("\", locationEstimateInnerRadius=\"");
-        sb.append(locationEstimate.getInnerRadius()).append(", ");
-        sb.append("\", locationEstimateTypeOfShape=\"");
-        sb.append(locationEstimate.getTypeOfShape()).append(", ");
-        sb.append("\", ageOfLocationEstimate=\"");
-        sb.append(ageOfLocationEstimate);
-        sb.append("\", lcsReferenceNumber=\"");
-        sb.append(lcsReferenceNumber).append("\", ");
-        sb.append(cellIdOrSai).append(", ");
-        sb.append(hgmlcAddress);
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", lcsEvent=\"" +
+            lcsEvent +
+            "\", networkNodeNumber=\"" +
+            address + ", " +
+            "\", lcsClientID=\"" +
+            lcsClientID + ", " +
+            "\", MSISDN=\"" +
+            msisdn.getAddress() + ", " +
+            "\", IMSI=\"" +
+            imsi.getData() + ", " +
+            "\", IMEI=\"" +
+            imei.getIMEI() + ", " +
+            "\", locationEstimate=\"" +
+            locationEstimate + ", " +
+            "\", latitude=\"" +
+            locationEstimate.getLatitude() + ", " +
+            "\", longitude=\"" +
+            locationEstimate.getLongitude() + ", " +
+            "\", altitude=\"" +
+            locationEstimate.getAltitude() + ", " +
+            "\", locationEstimateConfidence=\"" +
+            locationEstimate.getConfidence() + ", " +
+            "\", locationEstimateInnerRadius=\"" +
+            locationEstimate.getInnerRadius() + ", " +
+            "\", locationEstimateTypeOfShape=\"" +
+            locationEstimate.getTypeOfShape() + ", " +
+            "\", ageOfLocationEstimate=\"" +
+            ageOfLocationEstimate +
+            "\", lcsReferenceNumber=\"" +
+            lcsReferenceNumber + "\", " +
+            cellIdOrSai + ", " +
+            hgmlcAddress;
     }
 
     public void onSendRoutingInfoForLCSResponse(SendRoutingInfoForLCSResponse sendRoutingInforForLCSResponseIndication) {
@@ -461,15 +464,11 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             // Then, create parameters for concerning MAP operation
             ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number,
                     NumberingPlan.ISDN, "3797554321");
-            // SubscriberIdentity msisdn = new SubscriberIdentityImpl(isdnAdd);
             ISDNAddressString mlcNumber = new ISDNAddressStringImpl(AddressNature.international_number,
                     NumberingPlan.ISDN, "222333");
             LocationEstimateType locationEstimateType = LocationEstimateType.currentLocation;
-            // public enum LocationEstimateType {currentLocation(0), currentOrLastKnownLocation(1), initialLocation(2),
-            //                                   activateDeferredLocation(3), cancelDeferredLocation(4)..
             DeferredLocationEventType deferredLocationEventType = new DeferredLocationEventTypeImpl();
             deferredLocationEventType.getEnteringIntoArea();
-            // DeferredLocationEventType: boolean getMsAvailable(); getEnteringIntoArea(); getLeavingFromArea(); getBeingInsideArea();
             LocationType locationType = new LocationTypeImpl(locationEstimateType, deferredLocationEventType);
             ISDNAddressString externalAddress = new ISDNAddressStringImpl(AddressNature.international_number,
                     NumberingPlan.ISDN, "340444567");
@@ -592,75 +591,67 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
                                         GSNAddress hgmlcAddress,
                                         boolean moLrShortCircuitIndicator,
                                         PeriodicLDRInfo periodicLDRInfo) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId).append("\",\n ");
-        sb.append("locationType=\"");
-        sb.append(locationType).append("\",\n ");
-        sb.append("locationEstimateType=\"");
-        sb.append(locationType.getLocationEstimateType().getType()).append("\",\n ");
-        sb.append("deferredLocationEventType=\"");
-        sb.append(locationType.getDeferredLocationEventType()).append("\",\n ");
-        sb.append("mlcNumber=\"");
-        sb.append(mlcNumber.getAddress()).append("\",\n ");
-        sb.append("lcsClientID=\"");
-        sb.append(lcsClientID).append("\",\n ");
-        sb.append("IMSI=\"");
-        sb.append(imsi.getData()).append("\",\n ");
-        sb.append("MSISDIN=\"");
-        sb.append(msisdn.getAddress()).append("\",\n ");
-        sb.append("LMSI=\"");
-        sb.append(lmsi).append("\",\n ");
-        sb.append("lcsPriority=\"");
-        sb.append(lcsPriority).append("\",\n ");
-        sb.append("lcsQos=\"");
-        sb.append(lcsQoS).append("\",\n ");
-        sb.append("lcsQosHorizontalAccuracy=\"");
-        sb.append(lcsQoS.getHorizontalAccuracy().intValue()).append("\",\n ");
-        sb.append("lcsQosVerticalAccuracy=\"");
-        sb.append(lcsQoS.getVerticalAccuracy().intValue()).append("\",\n ");
-        sb.append("lcsQosResponseTimeCategory=\"");
-        sb.append(lcsQoS.getResponseTime().getResponseTimeCategory()).append("\",\n ");
-        sb.append("lcsQosVerticalCoordinateRequest=\"");
-        sb.append(lcsQoS.getVerticalCoordinateRequest()).append("\",\n ");
-        sb.append("IMEI=\"");
-        sb.append(imei).append("\",\n ");
-        sb.append("lcsReferenceNumber=\"");
-        sb.append(lcsReferenceNumber).append("\",\n ");
-        sb.append("lcsServiceTypeID=\"");
-        sb.append(lcsServiceTypeID).append("\",\n ");
-        sb.append("lcsCodeword=\"");
-        sb.append(lcsCodeword).append("\",\n ");
-        sb.append("lcsPrivacyCheck=\"");
-        sb.append(lcsPrivacyCheck).append("\",\n ");
-        sb.append("areaEventInfo=\"");
-        sb.append(areaEventInfo).append("\",\n ");
-        sb.append("areaId=\"");
-        sb.append(areaEventInfo.getAreaDefinition().getAreaList().get(0)).append("\",\n ");
-        sb.append("occurrenceInfo=\"");
-        sb.append(areaEventInfo.getOccurrenceInfo().getInfo()).append("\",\n ");
-        sb.append("intervalTime=\"");
-        sb.append(areaEventInfo.getIntervalTime()).append("\",\n ");
-        sb.append("hgmlcAddress=\"");
-        sb.append(hgmlcAddress).append("\",\n ");
-        sb.append("moLrShortCircuitIndicator=\"");
-        sb.append(moLrShortCircuitIndicator).append("\",\n ");
-        sb.append("periodicLDRInfo=\"");
-        sb.append(periodicLDRInfo);
-        return sb.toString();
+        return "dialogId=" +
+            dialogId + "\",\n " +
+            "locationType=\"" +
+            locationType + "\",\n " +
+            "locationEstimateType=\"" +
+            locationType.getLocationEstimateType().getType() + "\",\n " +
+            "deferredLocationEventType=\"" +
+            locationType.getDeferredLocationEventType() + "\",\n " +
+            "mlcNumber=\"" +
+            mlcNumber.getAddress() + "\",\n " +
+            "lcsClientID=\"" +
+            lcsClientID + "\",\n " +
+            "IMSI=\"" +
+            imsi.getData() + "\",\n " +
+            "MSISDN=\"" +
+            msisdn.getAddress() + "\",\n " +
+            "LMSI=\"" +
+            lmsi + "\",\n " +
+            "lcsPriority=\"" +
+            lcsPriority + "\",\n " +
+            "lcsQos=\"" +
+            lcsQoS + "\",\n " +
+            "lcsQosHorizontalAccuracy=\"" +
+            lcsQoS.getHorizontalAccuracy() + "\",\n " +
+            "lcsQosVerticalAccuracy=\"" +
+            lcsQoS.getVerticalAccuracy() + "\",\n " +
+            "lcsQosResponseTimeCategory=\"" +
+            lcsQoS.getResponseTime().getResponseTimeCategory() + "\",\n " +
+            "lcsQosVerticalCoordinateRequest=\"" +
+            lcsQoS.getVerticalCoordinateRequest() + "\",\n " +
+            "IMEI=\"" +
+            imei + "\",\n " +
+            "lcsReferenceNumber=\"" +
+            lcsReferenceNumber + "\",\n " +
+            "lcsServiceTypeID=\"" +
+            lcsServiceTypeID + "\",\n " +
+            "lcsCodeword=\"" +
+            lcsCodeword + "\",\n " +
+            "lcsPrivacyCheck=\"" +
+            lcsPrivacyCheck + "\",\n " +
+            "areaEventInfo=\"" +
+            areaEventInfo + "\",\n " +
+            "areaId=\"" +
+            areaEventInfo.getAreaDefinition().getAreaList().get(0) + "\",\n " +
+            "occurrenceInfo=\"" +
+            areaEventInfo.getOccurrenceInfo().getInfo() + "\",\n " +
+            "intervalTime=\"" +
+            areaEventInfo.getIntervalTime() + "\",\n " +
+            "hgmlcAddress=\"" +
+            hgmlcAddress + "\",\n " +
+            "moLrShortCircuitIndicator=\"" +
+            moLrShortCircuitIndicator + "\",\n " +
+            "periodicLDRInfo=\"" +
+            periodicLDRInfo;
     }
 
-    private String createPSLResponse(
-            long dialogId,
-            ExtGeographicalInformation locationEstimate) {
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId).append("\",\n ");
-        sb.append("locationEstimate=\"");
-        sb.append(locationEstimate).append("\"");
-
-        return sb.toString();
+    private String createPSLResponse(long dialogId, ExtGeographicalInformation locationEstimate) {
+        return "dialogId=" +
+            dialogId + "\",\n " +
+            "locationEstimate=\"" +
+            locationEstimate + "\"";
     }
 
     public void onProvideSubscriberLocationRequest(ProvideSubscriberLocationRequest provideSubscriberLocationRequestIndication) {
@@ -743,7 +734,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
                             locationEstimate), Level.INFO);
 
         } catch (MAPException e) {
-            logger.debug("Failed building  SendRoutingInfoForLCS response " + e.toString());
+            logger.debug("Failed building  SendRoutingInfoForLCS response " + e);
         }
     }
 
@@ -763,45 +754,44 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             GSNAddress hgmlcAddress,
             boolean moLrShortCircuitIndicator,
             PeriodicLDRInfo periodicLDRInfo) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId).append("\",\n ");
-        sb.append("locationType=\"");
-        sb.append(locationType).append("\",\n ");
-        sb.append("mlcNumber=\"");
-        sb.append(mlcNumber.getAddress()).append("\",\n ");
-        sb.append("lcsClientID=\"");
-        sb.append(lcsClientID).append("\",\n ");
-        sb.append("imsi=\"");
-        sb.append(imsi).append("\",\n ");
-        sb.append("msisdn=\"");
-        sb.append(msisdn.getAddress()).append("\",\n ");
-        sb.append("imei=\"");
-        sb.append(imei).append("\",\n ");
-        sb.append("lcsReferenceNumber=\"");
-        sb.append(lcsReferenceNumber).append("\",\n ");
-        sb.append("lcsServiceTypeID=\"");
-        sb.append(lcsServiceTypeID).append("\",\n ");
-        sb.append("lcsCodeword=\"");
-        sb.append(lcsCodeword).append("\",\n ");
-        sb.append("lcsPrivacyCheck=\"");
-        sb.append(lcsPrivacyCheck).append("\",\n ");
-        sb.append("areaEventInfo=\"");
-        sb.append(areaEventInfo).append("\",\n ");
-        sb.append("hgmlcAddress=\"");
-        sb.append(hgmlcAddress).append("\",\n ");
-        sb.append("moLrShortCircuitIndicator=\"");
-        sb.append(moLrShortCircuitIndicator).append("\",\n ");
-        sb.append("periodicLDRInfo=\"");
-        sb.append(periodicLDRInfo);
-        return sb.toString();
+        return "dialogId=" +
+            dialogId + "\",\n " +
+            "locationType=\"" +
+            locationType + "\",\n " +
+            "mlcNumber=\"" +
+            mlcNumber.getAddress() + "\",\n " +
+            "lcsClientID=\"" +
+            lcsClientID + "\",\n " +
+            "imsi=\"" +
+            imsi + "\",\n " +
+            "msisdn=\"" +
+            msisdn.getAddress() + "\",\n " +
+            "imei=\"" +
+            imei + "\",\n " +
+            "lcsReferenceNumber=\"" +
+            lcsReferenceNumber + "\",\n " +
+            "lcsServiceTypeID=\"" +
+            lcsServiceTypeID + "\",\n " +
+            "lcsCodeword=\"" +
+            lcsCodeword + "\",\n " +
+            "lcsPrivacyCheck=\"" +
+            lcsPrivacyCheck + "\",\n " +
+            "areaEventInfo=\"" +
+            areaEventInfo + "\",\n " +
+            "hgmlcAddress=\"" +
+            hgmlcAddress + "\",\n " +
+            "moLrShortCircuitIndicator=\"" +
+            moLrShortCircuitIndicator + "\",\n " +
+            "periodicLDRInfo=\"" +
+            periodicLDRInfo;
     }
 
     @Override
     public void onProvideSubscriberLocationResponse(
             ProvideSubscriberLocationResponse provideSubscriberLocationResponseIndication) {
         if (!isStarted) {
-            logger.setLevel(Level.INFO);
+            Configurator.initialize(new DefaultConfiguration());
+            Configurator.setRootLevel(Level.INFO);
             String msg = "The tester is not started";
             logger.trace(msg);
         }
@@ -857,7 +847,7 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
             currentRequestDef += "Sent SLR Request;";
 
         } catch (MAPException e) {
-            return "Exception " + e.toString();
+            return "Exception " + e;
         }
 
         return "subscriberLocationReportResponse sent";
@@ -1108,15 +1098,13 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
     }
 
     private String createSLRResData(long dialogId, String naESRD, String naESRK) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("dialogId=");
-        sb.append(dialogId);
-        sb.append(", naESRD=\"");
-        sb.append(naESRD);
-        sb.append(", naESRK=\"");
-        sb.append(naESRK);
-        sb.append("\"");
-        return sb.toString();
+        return "dialogId=" +
+            dialogId +
+            ", naESRD=\"" +
+            naESRD +
+            ", naESRK=\"" +
+            naESRK +
+            "\"";
     }
 
     public void onSubscriberLocationReportRequest(SubscriberLocationReportRequest subscriberLocationReportRequestIndication) {
@@ -1184,6 +1172,117 @@ public class TestLcsClientMan extends TesterBase implements TestLcsClientManMBea
                                 subscriberLocationReportResponseIndication
                                         .getNaESRD().toString(), subscriberLocationReportResponseIndication
                                         .getNaESRK().toString()), Level.INFO);
+    }
+
+    private static AreaDefinition getAreaDefinition(int areaRand) throws MAPException {
+        ArrayList<Area> areaList = new ArrayList<>();
+        AreaType areaType;
+        AreaIdentification areaIdentification;
+        Area area1, area2, area3;
+
+        switch (areaRand) {
+            case 1:
+                areaType = AreaType.countryCode;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 0, 0, 0);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                break;
+            case 2:
+                areaType = AreaType.plmnId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 0, 0);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                break;
+            case 3:
+                areaType = AreaType.locationAreaId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 1201, 0);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                break;
+            case 4:
+                areaType = AreaType.routingAreaId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 102, 1263);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                break;
+            case 5:
+                areaType = AreaType.cellGlobalId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 104, 32047);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                break;
+            case 6:
+                areaType = AreaType.utranCellId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 7, 0, 134283263);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                break;
+            case 7:
+                areaType = AreaType.countryCode;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 0, 0, 0);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaType = AreaType.locationAreaId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 1201, 0);
+                area2 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                areaList.add(area2);
+                break;
+            case 8:
+                areaType = AreaType.locationAreaId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 1201, 0);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaType = AreaType.utranCellId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 7, 0, 134283263);
+                area2 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                areaList.add(area2);
+                break;
+            case 9:
+                areaType = AreaType.routingAreaId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 102, 1263);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaType = AreaType.cellGlobalId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 104, 32047);
+                area2 = new AreaImpl(areaType, areaIdentification);
+                areaType = AreaType.utranCellId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 7, 0, 134283263);
+                area3 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                areaList.add(area2);
+                areaList.add(area3);
+                break;
+            case 10:
+                areaType = AreaType.plmnId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 0, 0);
+                area1 = new AreaImpl(areaType, areaIdentification);
+                areaType = AreaType.locationAreaId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 1201, 0);
+                area2 = new AreaImpl(areaType, areaIdentification);
+                areaType = AreaType.routingAreaId;
+                areaIdentification = new AreaIdentificationImpl(areaType, 748, 1, 102, 1263);
+                area3 = new AreaImpl(areaType, areaIdentification);
+                areaList.add(area1);
+                areaList.add(area2);
+                areaList.add(area3);
+                break;
+        }
+        return new AreaDefinitionImpl(areaList);
+    }
+
+    private static ReportingPLMNList getReportingPLMNList() {
+        ArrayList<ReportingPLMN> reportingPLMNs = new ArrayList<>();
+        PlmnId plmnId1 = new PlmnIdImpl(748, 1);
+        RANTechnology rat1 = RANTechnology.umts;
+        boolean ranPeriodicLocationSupport1 = true;
+        PlmnId plmnId2 = new PlmnIdImpl(748, 7);
+        RANTechnology rat2 = RANTechnology.gsm;
+        boolean ranPeriodicLocationSupport2 = false;
+        ReportingPLMN rPlmn1 = new ReportingPLMNImpl(plmnId1, rat1, ranPeriodicLocationSupport1);
+        ReportingPLMN rPlmn2 = new ReportingPLMNImpl(plmnId2, rat2, ranPeriodicLocationSupport2);
+        reportingPLMNs.add(rPlmn1);
+        reportingPLMNs.add(rPlmn2);
+        boolean plmnListPrioritized = true;
+        return new ReportingPLMNListImpl(plmnListPrioritized, reportingPLMNs);
     }
 
     //**********************************************************//

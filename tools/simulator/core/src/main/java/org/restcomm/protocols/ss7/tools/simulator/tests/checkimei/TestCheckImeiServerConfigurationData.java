@@ -1,5 +1,4 @@
 
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.checkimei;
 
 import javolution.xml.XMLFormat;

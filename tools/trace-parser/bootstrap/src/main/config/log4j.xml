@@ -1,63 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<!-- Log4j2 Configuration -->
+<!-- status="WARN" controls the level of internal Log4j2 logging -->
+<Configuration status="WARN">
+	<Appenders>
+		<!-- Console appender configuration -->
+		<Console name="CONSOLE">
+			<!-- Pattern matches the original log4j format -->
+			<PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+			<ThresholdFilter level="INFO"/>
+		</Console>
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
-	debug="false">
+		<!-- Rolling File appender with improved capabilities over log4j 1.x -->
+		<RollingFile name="FILE"
+					 fileName="../log/server.log"
+					 filePattern="../log/server-%d{yyyy-MM-dd}-%i.log">
+			<!-- Pattern matches the original log4j format -->
+			<PatternLayout pattern="%d %-5p [%c{1}] (%t) %m%n"/>
+			<ThresholdFilter level="INFO"/>
+			<!-- Added rolling policies (not in log4j 1.x) -->
+			<Policies>
+				<!-- Roll over when file reaches 10MB -->
+				<SizeBasedTriggeringPolicy size="10 MB"/>
+			</Policies>
+			<!-- Keep at most 10 files -->
+			<DefaultRolloverStrategy max="10"/>
+		</RollingFile>
+	</Appenders>
 
+	<Loggers>
+		<!-- Logger configurations for specific packages -->
+		<Logger name="org.mobicents.media.server" level="INFO"/>
+		<Logger name="org.mobicents.media.server.impl.rtp" level="INFO"/>
 
-
-
-	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-		<param name="Target" value="System.out" />
-		<param name="Threshold" value="INFO" />
-
-		<layout class="org.apache.log4j.PatternLayout">
-			<!-- The default pattern: Date Priority [Category] Message\n -->
-			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
-			
-		</layout>
-	</appender>
-
-	<!-- A time/date based rolling appender -->
-	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
-		<!--  ADD HOME VAR HERE? -->
-		<param name="File" value="../log/server.log" />
-		<param name="Append" value="false" />
-		<param name="Threshold" value="INFO" />
-		
-		<layout class="org.apache.log4j.PatternLayout">
-			<!--
-				The default pattern: Date Priority [Category] (Thread) Message\n
-			-->
-			<param name="ConversionPattern" value="%d %-5p [%c{1}] (%t) %m%n" />
-
-			<!--
-				The full pattern: Date MS Priority [Category] (Thread:NDC) Message\n
-				<param name="ConversionPattern" value="%d %-5r %-5p [%c] (%t:%x)
-				%m%n"/>
-			-->
-		</layout>
-	</appender>
-
-	<category name="org.mobicents.media.server">
-            <priority value="INFO"/>
-        </category>
-	
-	<category name="org.mobicents.media.server.impl.rtp">
-            <priority value="INFO"/>
-        </category>
-	
-	
-	<root>
-		<!--
-			Set the root logger priority via a system property. Note this is
-			parsed by log4j, so the full JBoss system property format is not
-			supported; e.g. setting a default via
-			${jboss.server.log.threshold:WARN} will not work.
-		-->
-
-		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FILE" />
-	</root>
-
-</log4j:configuration>
+		<!-- Root logger configuration -->
+		<Root level="INFO">
+			<AppenderRef ref="CONSOLE"/>
+			<AppenderRef ref="FILE"/>
+		</Root>
+	</Loggers>
+</Configuration>

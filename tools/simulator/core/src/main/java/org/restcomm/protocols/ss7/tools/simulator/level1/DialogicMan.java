@@ -1,7 +1,7 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.level1;
 
-import org.apache.log4j.Level;import org.restcomm.protocols.ss7.mtp.Mtp3UserPart;
+import org.apache.logging.log4j.Level;
+import org.restcomm.protocols.ss7.mtp.Mtp3UserPart;
 import org.restcomm.protocols.ss7.tools.simulator.Stoppable;
 import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface;
 
@@ -55,11 +55,8 @@ public class DialogicMan implements DialogicManMBean, Stoppable {
 
     @Override
     public String getState() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("IsStarted: ");
-        sb.append(isStarted);
-
-        return sb.toString();
+        return "IsStarted: " +
+            isStarted;
     }
 
     public boolean start() {

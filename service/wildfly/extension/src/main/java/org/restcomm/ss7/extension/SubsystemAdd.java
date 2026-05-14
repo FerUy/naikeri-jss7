@@ -26,7 +26,7 @@ class SubsystemAdd extends AbstractBoottimeAddStepHandler {
 
   static final SubsystemAdd INSTANCE = new SubsystemAdd();
 
-  private final Logger log = Logger.getLogger(SubsystemAdd.class);
+  private final Logger logger = Logger.getLogger(SubsystemAdd.class);
 
   private SubsystemAdd() {
   }
@@ -34,7 +34,7 @@ class SubsystemAdd extends AbstractBoottimeAddStepHandler {
   /** {@inheritDoc} */
   @Override
   protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-    log.info("Populating the model: "+model);
+    logger.info("Populating the model: "+model);
     //model.setEmptyObject();
   }
 

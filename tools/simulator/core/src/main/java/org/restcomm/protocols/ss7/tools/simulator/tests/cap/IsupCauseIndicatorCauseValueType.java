@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.tests.cap;
 
 import java.util.Hashtable;
@@ -123,15 +122,15 @@ public class IsupCauseIndicatorCauseValueType extends EnumeratedBase {
     public IsupCauseIndicatorCauseValueType() {
     }
 
-    public IsupCauseIndicatorCauseValueType(int val) throws java.lang.IllegalArgumentException {
+    public IsupCauseIndicatorCauseValueType(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public IsupCauseIndicatorCauseValueType(Integer val) throws java.lang.IllegalArgumentException {
+    public IsupCauseIndicatorCauseValueType(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public IsupCauseIndicatorCauseValueType(String val) throws java.lang.IllegalArgumentException {
+    public IsupCauseIndicatorCauseValueType(String val) throws IllegalArgumentException {
         super(val);
     }
 

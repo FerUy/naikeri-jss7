@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulatorgui.tests.ussd;
 
 import java.awt.GridBagConstraints;
@@ -81,7 +80,7 @@ public class TestUssdClientForm extends TestingForm {
 
         btSendUnstructuredresponse = new JButton("Send UnstructuredResponse");
         btSendUnstructuredresponse.addActionListener(new ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 sendUnstructuredResponse();
             }
         });

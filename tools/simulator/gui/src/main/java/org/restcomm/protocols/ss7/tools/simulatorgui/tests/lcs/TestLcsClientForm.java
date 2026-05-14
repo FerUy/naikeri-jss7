@@ -67,7 +67,7 @@ public class TestLcsClientForm extends TestingForm {
 
         btnProvideSubscriberLocationRequest.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                provideSubsciberLocationRequest();
+                provideSubscriberLocationRequest();
             }
         });
 
@@ -122,7 +122,7 @@ public class TestLcsClientForm extends TestingForm {
         this.lbResult.setText(res);
     }
 
-    private void provideSubsciberLocationRequest() {
+    private void provideSubscriberLocationRequest() {
         this.lbMessage.setText("");
         String res = this.mapLcsClient.performProvideSubscriberLocationRequest();
         this.lbResult.setText(res);

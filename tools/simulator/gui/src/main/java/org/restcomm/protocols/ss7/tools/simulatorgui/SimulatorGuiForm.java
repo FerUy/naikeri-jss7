@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulatorgui;
 
 import java.awt.BorderLayout;
@@ -32,6 +31,7 @@ import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostInterface
 import org.restcomm.protocols.ss7.tools.simulator.management.TesterHostMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiClientManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.ati.TestAtiServerManMBean;
+import org.restcomm.protocols.ss7.tools.simulator.tests.ati_psi_lsm.TestServerManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapScfManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.cap.TestCapSsfManMBean;
 import org.restcomm.protocols.ss7.tools.simulator.tests.checkimei.TestCheckImeiClientManMBean;
@@ -47,6 +47,8 @@ import org.restcomm.protocols.ss7.tools.simulatorgui.tests.ati.TestAtiClientForm
 import org.restcomm.protocols.ss7.tools.simulatorgui.tests.ati.TestAtiClientParamForm;
 import org.restcomm.protocols.ss7.tools.simulatorgui.tests.ati.TestAtiServerForm;
 import org.restcomm.protocols.ss7.tools.simulatorgui.tests.ati.TestAtiServerParamForm;
+import org.restcomm.protocols.ss7.tools.simulatorgui.tests.ati_psi_lsm.TestServerForm;
+import org.restcomm.protocols.ss7.tools.simulatorgui.tests.ati_psi_lsm.TestServerParamForm;
 import org.restcomm.protocols.ss7.tools.simulatorgui.tests.cap.TestCapScfForm;
 import org.restcomm.protocols.ss7.tools.simulatorgui.tests.cap.TestCapScfParamForm;
 import org.restcomm.protocols.ss7.tools.simulatorgui.tests.cap.TestCapSsfForm;
@@ -77,7 +79,7 @@ import org.restcomm.protocols.ss7.tools.simulatorgui.tests.ussd.TestUssdServerPa
  */
 public class SimulatorGuiForm extends JFrame implements NotificationListener {
 
-    private static final long serialVersionUID = 3154289048277602010L;
+    private static final long serialVersionUID = 1L;
 
     private TesterHostInterface hostImpl;
     private TesterHostMBean host;
@@ -101,6 +103,7 @@ public class SimulatorGuiForm extends JFrame implements NotificationListener {
     private TestLcsClientManMBean lcsClient;
     private TestLcsServerManMBean lcsServer;
     private TestPsiServerManMBean psiServer;
+    private TestServerManMBean atiPsiLsmServer;
 
     private TestingForm testingForm;
 
@@ -217,13 +220,13 @@ public class SimulatorGuiForm extends JFrame implements NotificationListener {
                         frame.setData(m3ua);
                         frame.setVisible(true);
                     }
-                        break;
+                    break;
                     case Instance_L1.VAL_DIALOGIC: {
                         DialogicForm frame = new DialogicForm(getJFrame());
                         frame.setData(dialogic);
                         frame.setVisible(true);
                     }
-                        break;
+                    break;
                 }
             }
         });
@@ -239,11 +242,11 @@ public class SimulatorGuiForm extends JFrame implements NotificationListener {
                         frame.setData(sccp);
                         frame.setVisible(true);
                     }
-                        break;
+                    break;
                     case Instance_L2.VAL_ISUP: {
                         // TODO: L2 data edit - ISUP
                     }
-                        break;
+                    break;
                 }
             }
         });
@@ -259,17 +262,17 @@ public class SimulatorGuiForm extends JFrame implements NotificationListener {
                         frame.setData(map);
                         frame.setVisible(true);
                     }
-                        break;
+                    break;
                     case Instance_L3.VAL_CAP: {
                         CapForm frame = new CapForm(getJFrame());
                         frame.setData(cap);
                         frame.setVisible(true);
                     }
-                        break;
+                    break;
                     case Instance_L3.VAL_INAP: {
                         // TODO: implement it ......
                     }
-                        break;
+                    break;
                 }
             }
         });
@@ -358,8 +361,15 @@ public class SimulatorGuiForm extends JFrame implements NotificationListener {
                         frame.setVisible(true);
                     }
                     break;
+                    case Instance_TestTask.VAL_ATI_PSI_LSM_TEST_SERVER: {
+                        TestServerParamForm frame = new TestServerParamForm(getJFrame());
+                        frame.setData(atiPsiLsmServer);
+                        frame.setVisible(true);
+                    }
+                    break;
 
-                // TODO: other tests form options editing
+
+                    // TODO: other tests form options editing
                 }
             }
         });
@@ -462,7 +472,12 @@ public class SimulatorGuiForm extends JFrame implements NotificationListener {
                 dlg = testPsiServerForm;
             }
             break;
-
+            case Instance_TestTask.VAL_ATI_PSI_LSM_TEST_SERVER: {
+                TestServerForm testServerForm = new TestServerForm(getJFrame());
+                testServerForm.setData(atiPsiLsmServer);
+                dlg = testServerForm;
+            }
+            break;
 
         // TODO: other tests form options editing
         }
@@ -506,7 +521,7 @@ public class SimulatorGuiForm extends JFrame implements NotificationListener {
             TestSmsServerManMBean smsServer, TestCapScfManMBean capScf, TestCapSsfManMBean capSsf,
             TestAtiClientManMBean atiClient, TestAtiServerManMBean atiServer, TestCheckImeiClientManMBean checkImeiClient,
             TestCheckImeiServerManMBean checkImeiServer, TestLcsClientManMBean mapLcsClient, TestLcsServerManMBean mapLcsServer,
-            TestPsiServerManMBean psiServer) {
+            TestPsiServerManMBean psiServer, TestServerManMBean atiPsiLsmServer) {
         setTitle(getTitle() + appName);
 
         this.hostImpl = hostImpl;
@@ -529,6 +544,7 @@ public class SimulatorGuiForm extends JFrame implements NotificationListener {
         this.lcsClient = mapLcsClient;
         this.lcsServer = mapLcsServer;
         this.psiServer = psiServer;
+        this.atiPsiLsmServer = atiPsiLsmServer;
         this.isRemote = isRemote;
 
         this.btTermRemote.setEnabled(isRemote);

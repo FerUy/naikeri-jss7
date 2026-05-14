@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tools.simulator.management;
 
 import java.util.Hashtable;
@@ -33,15 +32,15 @@ public class Instance_L1 extends EnumeratedBase {
     public Instance_L1() {
     }
 
-    public Instance_L1(int val) throws java.lang.IllegalArgumentException {
+    public Instance_L1(int val) throws IllegalArgumentException {
         super(val);
     }
 
-    public Instance_L1(Integer val) throws java.lang.IllegalArgumentException {
+    public Instance_L1(Integer val) throws IllegalArgumentException {
         super(val);
     }
 
-    public Instance_L1(String val) throws java.lang.IllegalArgumentException {
+    public Instance_L1(String val) throws IllegalArgumentException {
         super(val);
     }
 
