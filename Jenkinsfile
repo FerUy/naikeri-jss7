@@ -2,8 +2,8 @@ pipeline {
 	agent any
 
 	tools {
-	    jdk 'JDK 11'
-        maven 'Maven_3.8.5'
+	    jdk 'jdk-11'
+        maven 'maven-3.9.12'
 	}
 	parameters {
 	    string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '9.0.0', description: 'The major version for Naikeri jSS7')
