@@ -13,14 +13,14 @@
 
     <!--Versions -->
     <property name="asn.version" value="2.2.0-143"/>
-    <property name="sctp.version" value="2.1.0-16"/>
-    <property name="release.version" value="8.5.0-SNAPSHOT"/>
+    <property name="sctp.version" value="2.1.0-32"/>
+    <property name="release.version" value="9.0.0-SNAPSHOT"/>
 
     <property name="checkout.asn.version" value="2.2.0-22"/>
     <property name="checkout.sctp.version" value="2.0.0-39"/>
 
 	<property name="github.url" value="https://github.com/RestComm" />
-    <property name="naikeri.url" value="http://ec2-15-229-74-89.sa-east-1.compute.amazonaws.com/NAIKERI" />
+    <property name="naikeri.url" value="https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/NAIKERI" />
 
 	<property name="jasn.download.distro.file" value="restcomm-jasn-${asn.version}.zip" />
 	<property name="jasn.download.url" value="${github.url}/jasn/releases/download/${asn.version}/${jasn.download.distro.file}" />
