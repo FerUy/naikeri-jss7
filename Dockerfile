@@ -1,7 +1,7 @@
 FROM amazoncorretto:11-alpine
 
 # maintainer
-MAINTAINER Fernando Mendioroz - fernando.mendioroz@naikeri.com
+MAINTAINER Fernando Mendioroz - fernando.mendioroz@gmail.com
 
 # install dependencies
 RUN apk add net-tools lksctp-tools supervisor lksctp-tools-dev
