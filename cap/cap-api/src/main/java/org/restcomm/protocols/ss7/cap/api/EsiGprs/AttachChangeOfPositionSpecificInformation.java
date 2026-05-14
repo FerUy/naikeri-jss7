@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.api.EsiGprs;
 
 import java.io.Serializable;

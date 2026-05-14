@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.gap;
 
 import static org.testng.Assert.assertEquals;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -30,6 +31,8 @@ import org.testng.annotations.Test;
 *
 */
 public class GapTreatmentTest {
+
+    private static final Logger logger = LogManager.getLogger(GapTreatmentTest.class.getName());
 
     public byte[] getData() {
         return new byte[] { (byte) 160, 8, (byte) 161, 6, (byte) 128, 1, 10, (byte) 129, 1, 20 };
@@ -76,7 +79,6 @@ public class GapTreatmentTest {
 
         assertTrue(Arrays.equals(aos.toByteArray(), this.getData()));
 
-
         // int codingStandard, int location, int recommendation, int causeValue, byte[] diagnostics
         CauseIndicators causeIndicators = new CauseIndicatorsImpl(2, 0, 0, 3, null);
         CauseCap releaseCause = new CauseCapImpl(causeIndicators);
@@ -105,7 +107,7 @@ public class GapTreatmentTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -129,7 +131,7 @@ public class GapTreatmentTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -142,13 +144,9 @@ public class GapTreatmentTest {
     private boolean isEqual(GapTreatmentImpl o1, GapTreatmentImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 
 }

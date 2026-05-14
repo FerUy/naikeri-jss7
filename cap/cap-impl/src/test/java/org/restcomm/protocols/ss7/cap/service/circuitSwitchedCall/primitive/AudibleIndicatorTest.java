@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.*;
@@ -10,6 +9,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -17,7 +18,6 @@ import org.restcomm.protocols.ss7.cap.api.primitives.Burst;
 import org.restcomm.protocols.ss7.cap.api.primitives.BurstList;
 import org.restcomm.protocols.ss7.cap.primitives.BurstImpl;
 import org.restcomm.protocols.ss7.cap.primitives.BurstListImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.AudibleIndicatorImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -26,6 +26,8 @@ import org.testng.annotations.Test;
 *
 */
 public class AudibleIndicatorTest {
+
+    private static final Logger logger = LogManager.getLogger(AudibleIndicatorTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 1, 1, 0 };
@@ -93,7 +95,7 @@ public class AudibleIndicatorTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -117,7 +119,7 @@ public class AudibleIndicatorTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

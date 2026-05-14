@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.*;
@@ -10,6 +9,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -24,6 +25,8 @@ import org.testng.annotations.Test;
 *
 */
 public class ContinueWithArgumentArgExtensionTest {
+
+    private static final Logger logger = LogManager.getLogger(ContinueWithArgumentArgExtensionTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 11, (byte) 128, 0, (byte) 129, 0, (byte) 130, 0, (byte) 163, 3, (byte) 128, 1, 12 };
@@ -95,7 +98,7 @@ public class ContinueWithArgumentArgExtensionTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -121,7 +124,7 @@ public class ContinueWithArgumentArgExtensionTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

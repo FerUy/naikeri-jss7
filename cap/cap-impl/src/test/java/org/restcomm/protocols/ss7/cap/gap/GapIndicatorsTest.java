@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.gap;
 
 import static org.testng.Assert.assertEquals;
@@ -11,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.gap.GapIndicatorsImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -23,6 +23,8 @@ import org.testng.annotations.Test;
 *
 */
 public class GapIndicatorsTest {
+
+    private static final Logger logger = LogManager.getLogger(GapIndicatorsTest.class.getName());
 
     public byte[] getData() {
         return new byte[] { 48, 6, (byte) 128, 1, 100, (byte) 129, 1, (byte) 255 };
@@ -68,7 +70,7 @@ public class GapIndicatorsTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -81,13 +83,9 @@ public class GapIndicatorsTest {
     private boolean isEqual(GapIndicatorsImpl o1, GapIndicatorsImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 
 }

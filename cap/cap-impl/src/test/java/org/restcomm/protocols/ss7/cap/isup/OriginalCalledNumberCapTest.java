@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.isup;
 
 import static org.testng.Assert.assertEquals;
@@ -11,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.isup.OriginalCalledNumberCapImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.OriginalCalledNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.OriginalCalledNumber;
 import org.testng.annotations.Test;
@@ -25,6 +25,8 @@ import org.testng.annotations.Test;
  *
  */
 public class OriginalCalledNumberCapTest {
+
+    private static final Logger logger = LogManager.getLogger(OriginalCalledNumberCapTest.class.getName());
 
     public byte[] getData() {
         return new byte[] { (byte) 140, 6, (byte) 131, 20, 7, 1, 9, 0 };
@@ -44,19 +46,19 @@ public class OriginalCalledNumberCapTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         OriginalCalledNumberCapImpl elem = new OriginalCalledNumberCapImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         OriginalCalledNumber ocn = elem.getOriginalCalledNumber();
         assertTrue(Arrays.equals(elem.getData(), this.getIntData()));
         assertEquals(ocn.getNatureOfAddressIndicator(), 3);
-        assertTrue(ocn.getAddress().equals("7010900"));
+        assertEquals(ocn.getAddress(), "7010900");
         assertEquals(ocn.getNumberingPlanIndicator(), 1);
         assertEquals(ocn.getAddressRepresentationRestrictedIndicator(), 1);
 
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new OriginalCalledNumberCapImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         ocn = elem.getOriginalCalledNumber();
         assertEquals(ocn.getNumberingPlanIndicator(), 1);
@@ -106,7 +108,7 @@ public class OriginalCalledNumberCapTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

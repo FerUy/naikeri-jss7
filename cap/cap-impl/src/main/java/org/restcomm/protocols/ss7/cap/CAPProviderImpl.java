@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap;
 
 import java.io.IOException;
@@ -11,8 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
@@ -99,7 +98,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.ReturnResultProblemType;
  */
 public class CAPProviderImpl implements CAPProvider, TCListener {
 
-    protected final transient Logger logger;
+    protected final transient Logger loger;
 
 
     private transient Collection<CAPDialogListener> dialogListeners = new FastList<CAPDialogListener>().shared();
@@ -124,7 +123,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
     public CAPProviderImpl(String name, TCAPProvider tcapProvider) {
         this.tcapProvider = tcapProvider;
 
-        this.logger = Logger.getLogger(CAPStackImpl.class.getCanonicalName() + "-" + name);
+        this.loger = LogManager.getLogger(CAPStackImpl.class.getCanonicalName() + "-" + name);
 
         this.capServices.add(this.capServiceCircuitSwitchedCall);
         this.capServices.add(this.capServiceGprs);
@@ -219,12 +218,12 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
         for (long l : acn.getOid()) {
             s.append(l).append(", ");
         }
-        logger.warn(s.toString());
+        loger.warn(s.toString());
 
         try {
             this.fireTCAbort(dialog, CAPGeneralAbortReason.ACNNotSupported, null, false);
         } catch (CAPException e1) {
-            logger.error("Error while firing TC-U-ABORT. ", e1);
+            loger.error("Error while firing TC-U-ABORT. ", e1);
         }
     }
 
@@ -235,17 +234,17 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
 
         // Checking UserData ObjectIdentifier
         if (!userInfo.isOid()) {
-            logger.warn("onTCBegin: userInfo.isOid() is null");
+            loger.warn("onTCBegin: userInfo.isOid() is null");
             return null;
         }
 
         if (!Arrays.equals(CAPGprsReferenceNumberImpl.CAP_Dialogue_OId, userInfo.getOidValue())) {
-            logger.warn("onTCBegin: userInfo.isOid() has bad value");
+            loger.warn("onTCBegin: userInfo.isOid() has bad value");
             return null;
         }
 
         if (!userInfo.isAsn()) {
-            logger.warn("onTCBegin: userInfo.isAsn() is null");
+            loger.warn("onTCBegin: userInfo.isAsn() is null");
             return null;
         }
 
@@ -258,19 +257,19 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
             int tag = ais.readTag();
             // It should be SEQUENCE Tag
             if (tag != Tag.SEQUENCE || ais.getTagClass() != Tag.CLASS_UNIVERSAL || ais.isTagPrimitive()) {
-                logger.warn("onTCBegin: Error parsing CAPGprsReferenceNumber: bad tag or tag class or is primitive");
+                loger.warn("onTCBegin: Error parsing CAPGprsReferenceNumber: bad tag or tag class or is primitive");
                 return null;
             }
 
             referenceNumber.decodeAll(ais);
         } catch (AsnException e) {
-            logger.error("AsnException when parsing CAP-OPEN Pdu: " + e.getMessage(), e);
+            loger.error("AsnException when parsing CAP-OPEN Pdu: " + e.getMessage(), e);
             return null;
         } catch (IOException e) {
-            logger.error("IOException when parsing CAP-OPEN Pdu: " + e.getMessage(), e);
+            loger.error("IOException when parsing CAP-OPEN Pdu: " + e.getMessage(), e);
             return null;
         } catch (CAPParsingComponentException e) {
-            logger.error("CAPParsingComponentException when parsing CAP-OPEN Pdu: " + e.getMessage(), e);
+            loger.error("CAPParsingComponentException when parsing CAP-OPEN Pdu: " + e.getMessage(), e);
             return null;
         }
 
@@ -284,13 +283,13 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
 
         // ACN must be present in CAMEL
         if (acn == null) {
-            logger.warn("onTCBegin: Received TCBeginIndication without application context name");
+            loger.warn("onTCBegin: Received TCBeginIndication without application context name");
 
             try {
                 this.fireTCAbort(tcBeginIndication.getDialog(), CAPGeneralAbortReason.UserSpecific,
                         CAPUserAbortReason.abnormal_processing, false);
             } catch (CAPException e) {
-                logger.error("Error while firing TC-U-ABORT. ", e);
+                loger.error("Error while firing TC-U-ABORT. ", e);
             }
             return;
         }
@@ -313,7 +312,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
                     this.fireTCAbort(tcBeginIndication.getDialog(), CAPGeneralAbortReason.UserSpecific,
                             CAPUserAbortReason.abnormal_processing, false);
                 } catch (CAPException e) {
-                    logger.error("Error while firing TC-U-ABORT. ", e);
+                    loger.error("Error while firing TC-U-ABORT. ", e);
                 }
 
                 return;
@@ -406,7 +405,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
                     break;
             }
         } catch (CAPException e) {
-            logger.error("Error while finishComponentProcessingState, delayedAreaState=" + capDialogImpl.delayedAreaState, e);
+            loger.error("Error while finishComponentProcessingState, delayedAreaState=" + capDialogImpl.delayedAreaState, e);
         }
 
         capDialogImpl.delayedAreaState = null;
@@ -424,12 +423,12 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
         }
 
         if (capDialogImpl == null) {
-            logger.warn("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
+            loger.warn("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
             try {
                 this.fireTCAbort(tcContinueIndication.getDialog(), CAPGeneralAbortReason.UserSpecific,
                         CAPUserAbortReason.abnormal_processing, false);
             } catch (CAPException e) {
-                logger.error("Error while firing TC-U-ABORT. ", e);
+                loger.error("Error while firing TC-U-ABORT. ", e);
             }
             return;
         }
@@ -461,12 +460,12 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
                     ApplicationContextName acn = tcContinueIndication.getApplicationContextName();
 
                     if (acn == null) {
-                        logger.warn("CAP Dialog is in InitialSent state but no application context name is received");
+                        loger.warn("CAP Dialog is in InitialSent state but no application context name is received");
                         try {
                             this.fireTCAbort(tcContinueIndication.getDialog(), CAPGeneralAbortReason.UserSpecific,
                                     CAPUserAbortReason.abnormal_processing, capDialogImpl.getReturnMessageOnError());
                         } catch (CAPException e) {
-                            logger.error("Error while firing TC-U-ABORT. ", e);
+                            loger.error("Error while firing TC-U-ABORT. ", e);
                         }
 
                         this.deliverDialogNotice(capDialogImpl, CAPNoticeProblemDiagnostic.AbnormalDialogAction);
@@ -477,14 +476,14 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
 
                     CAPApplicationContext capAcn = CAPApplicationContext.getInstance(acn.getOid());
                     if (capAcn == null || !capAcn.equals(capDialogImpl.getApplicationContext())) {
-                        logger.warn(String
+                        loger.warn(String
                                 .format("Received first TC-CONTINUE. But the received ACN is not the equal to the original ACN"));
 
                         try {
                             this.fireTCAbort(tcContinueIndication.getDialog(), CAPGeneralAbortReason.UserSpecific,
                                     CAPUserAbortReason.abnormal_processing, capDialogImpl.getReturnMessageOnError());
                         } catch (CAPException e) {
-                            logger.error("Error while firing TC-U-ABORT. ", e);
+                            loger.error("Error while firing TC-U-ABORT. ", e);
                         }
 
                         this.deliverDialogNotice(capDialogImpl, CAPNoticeProblemDiagnostic.AbnormalDialogAction);
@@ -524,7 +523,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
                     }
                 } else {
                     // This should never happen
-                    logger.error(String.format("Received TC-CONTINUE. CAPDialog=%s. But state is not Active", capDialogImpl));
+                    loger.error(String.format("Received TC-CONTINUE. CAPDialog=%s. But state is not Active", capDialogImpl));
                 }
 
                 this.deliverDialogDelimiter(capDialogImpl);
@@ -548,7 +547,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
         }
 
         if (capDialogImpl == null) {
-            logger.warn("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
+            loger.warn("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
             return;
         }
         capDialogImpl.tcapMessageType = MessageType.End;
@@ -586,7 +585,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
                     ApplicationContextName acn = tcEndIndication.getApplicationContextName();
 
                     if (acn == null) {
-                        logger.warn("CAP Dialog is in InitialSent state but no application context name is received");
+                        loger.warn("CAP Dialog is in InitialSent state but no application context name is received");
 
                         this.deliverDialogNotice(capDialogImpl, CAPNoticeProblemDiagnostic.AbnormalDialogAction);
                         capDialogImpl.setState(CAPDialogState.Expunged);
@@ -597,7 +596,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
                     CAPApplicationContext capAcn = CAPApplicationContext.getInstance(acn.getOid());
 
                     if (capAcn == null || !capAcn.equals(capDialogImpl.getApplicationContext())) {
-                        logger.error(String.format("Received first TC-END. CAPDialog=%s. But CAPApplicationContext=%s",
+                        loger.error(String.format("Received first TC-END. CAPDialog=%s. But CAPApplicationContext=%s",
                                 capDialogImpl, capAcn));
 
                         // capDialogImpl.setNormalDialogShutDown();
@@ -718,7 +717,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
         }
 
         if (capDialogImpl == null) {
-            logger.warn("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
+            loger.warn("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
             return;
         }
         capDialogImpl.tcapMessageType = MessageType.Abort;
@@ -747,7 +746,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
         }
 
         if (capDialogImpl == null) {
-            logger.error("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
+            loger.error("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
             return;
         }
         capDialogImpl.tcapMessageType = MessageType.Abort;
@@ -777,12 +776,12 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
                 if (userInfo != null) {
                     // Checking userInfo.Oid==CAPUserAbortPrimitiveImpl.CAP_AbortReason_OId
                     if (!userInfo.isOid()) {
-                        logger.warn("When parsing TCUserAbortIndication indication: userInfo.isOid() is null");
+                        loger.warn("When parsing TCUserAbortIndication indication: userInfo.isOid() is null");
                     } else {
                         if (!Arrays.equals(userInfo.getOidValue(), CAPUserAbortPrimitiveImpl.CAP_AbortReason_OId)) {
-                            logger.warn("When parsing TCUserAbortIndication indication: userInfo.getOidValue() must be CAPUserAbortPrimitiveImpl.CAP_AbortReason_OId");
+                            loger.warn("When parsing TCUserAbortIndication indication: userInfo.getOidValue() must be CAPUserAbortPrimitiveImpl.CAP_AbortReason_OId");
                         } else if (!userInfo.isAsn()) {
-                            logger.warn("When parsing TCUserAbortIndication indication: userInfo.isAsn() check failed");
+                            loger.warn("When parsing TCUserAbortIndication indication: userInfo.isAsn() check failed");
                         } else {
                             try {
                                 byte[] asnData = userInfo.getEncodeType();
@@ -791,7 +790,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
 
                                 int tag = ais.readTag();
                                 if (tag != Tag.ENUMERATED || ais.getTagClass() != Tag.CLASS_UNIVERSAL || !ais.isTagPrimitive()) {
-                                    logger.warn("When parsing TCUserAbortIndication indication: userInfo has bad tag or tagClass or is not primitive");
+                                    loger.warn("When parsing TCUserAbortIndication indication: userInfo has bad tag or tagClass or is not primitive");
                                 } else {
                                     CAPUserAbortPrimitiveImpl capUserAbortPrimitive = new CAPUserAbortPrimitiveImpl();
                                     capUserAbortPrimitive.decodeAll(ais);
@@ -799,11 +798,11 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
                                     userReason = capUserAbortPrimitive.getCAPUserAbortReason();
                                 }
                             } catch (AsnException e) {
-                                logger.warn("When parsing TCUserAbortIndication indication: AsnException" + e.getMessage(), e);
+                                loger.warn("When parsing TCUserAbortIndication indication: AsnException" + e.getMessage(), e);
                             } catch (IOException e) {
-                                logger.warn("When parsing TCUserAbortIndication indication: IOException" + e.getMessage(), e);
+                                loger.warn("When parsing TCUserAbortIndication indication: IOException" + e.getMessage(), e);
                             } catch (CAPParsingComponentException e) {
-                                logger.warn(
+                                loger.warn(
                                         "When parsing TCUserAbortIndication indication: CAPParsingComponentException"
                                                 + e.getMessage(), e);
                             }
@@ -832,7 +831,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
         CAPDialogImpl capDialogImpl = (CAPDialogImpl) this.getCAPDialog(tcapDialog.getLocalDialogId());
 
         if (capDialogImpl == null) {
-            logger.error("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
+            loger.error("CAP Dialog not found for Dialog Id " + tcapDialog.getLocalDialogId());
             return;
         }
 
@@ -995,7 +994,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
 
             } catch (CAPParsingComponentException e) {
 
-                logger.error(
+                loger.error(
                         "CAPParsingComponentException when parsing components: " + e.getReason().toString() + " - "
                                 + e.getMessage(), e);
 
@@ -1037,7 +1036,7 @@ public class CAPProviderImpl implements CAPProvider, TCListener {
 
             }
         } catch (CAPException e) {
-            logger.error("Error processing a Component: " + e.getMessage() + "\nComponent" + component, e);
+            loger.error("Error processing a Component: " + e.getMessage() + "\nComponent" + component, e);
         }
     }
 

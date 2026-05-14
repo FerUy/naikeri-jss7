@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.functional;
 
 import static org.testng.Assert.assertEquals;
@@ -6,7 +5,8 @@ import static org.testng.Assert.assertNull;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.cap.CAPDialogImpl;
 import org.restcomm.protocols.ss7.cap.CAPProviderImpl;
 import org.restcomm.protocols.ss7.cap.api.CAPApplicationContext;
@@ -96,7 +96,7 @@ import org.restcomm.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest;
  */
 public class Client extends EventTestHarness {
 
-    private static Logger logger = Logger.getLogger(Client.class);
+    private static Logger logger = LogManager.getLogger(Client.class);
 
     // private CAPFunctionalTest runningTestCase;
     private SccpAddress thisAddress;
@@ -166,7 +166,7 @@ public class Client extends EventTestHarness {
                 initialDp.getCalledPartyBCDNumber(), initialDp.getTimeAndTimezone(), initialDp.getCallForwardingSSPending(),
                 initialDp.getInitialDPArgExtension());
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
         clientCscDialog.send();
     }
 
@@ -179,7 +179,7 @@ public class Client extends EventTestHarness {
         genericNumber.setAddress("333111222");
         genericNumber.setAddressRepresentationRestrictedIndicator(GenericNumber._APRI_ALLOWED);
         genericNumber.setNatureOfAddresIndicator(NAINumber._NAI_INTERNATIONAL_NUMBER);
-        // genericNumber.setNumberIncompleter(GenericNumber._NI_COMPLETE);
+        // genericNumber.setNumberIncomplete(GenericNumber._NI_COMPLETE);
         genericNumber.setNumberingPlanIndicator(GenericNumber._NPI_ISDN);
         genericNumber.setNumberQualifierIndicator(GenericNumber._NQIA_CALLED_NUMBER);
         genericNumber.setScreeningIndicator(GenericNumber._SI_NETWORK_PROVIDED);
@@ -187,7 +187,7 @@ public class Client extends EventTestHarness {
         IPSSPCapabilities ipSSPCapabilities = this.capParameterFactory.createIPSSPCapabilities(true, false, true, false, false,
                 null);
         clientCscDialog.addAssistRequestInstructionsRequest(correlationID, ipSSPCapabilities, null);
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.AssistRequestInstructionsRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.AssistRequestInstructionsRequest, null, sequence++));
         clientCscDialog.send();
     }
 
@@ -200,22 +200,22 @@ public class Client extends EventTestHarness {
         genericNumber.setAddress("333111222");
         genericNumber.setAddressRepresentationRestrictedIndicator(GenericNumber._APRI_ALLOWED);
         genericNumber.setNatureOfAddresIndicator(NAINumber._NAI_INTERNATIONAL_NUMBER);
-        // genericNumber.setNumberIncompleter(GenericNumber._NI_COMPLETE);
+        // genericNumber.setNumberIncomplete(GenericNumber._NI_COMPLETE);
         genericNumber.setNumberingPlanIndicator(GenericNumber._NPI_ISDN);
         genericNumber.setNumberQualifierIndicator(GenericNumber._NQIA_CALLED_NUMBER);
         genericNumber.setScreeningIndicator(GenericNumber._SI_NETWORK_PROVIDED);
         Digits assistingSSPIPRoutingAddress = this.capParameterFactory.createDigits_GenericNumber(genericNumber);
         clientCscDialog.addEstablishTemporaryConnectionRequest(assistingSSPIPRoutingAddress, null, null, null, null, null,
                 null, null, null, null, null);
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.EstablishTemporaryConnectionRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.EstablishTemporaryConnectionRequest, null, sequence++));
 
         ArrayList<RequestedInformationType> requestedInformationTypeList = new ArrayList<RequestedInformationType>();
         requestedInformationTypeList.add(RequestedInformationType.callStopTime);
         clientCscDialog.addCallInformationRequestRequest(requestedInformationTypeList, null, null);
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.CallInformationRequestRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.CallInformationRequestRequest, null, sequence++));
 
         clientCscDialog.addCollectInformationRequest();
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.CollectInformationRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.CollectInformationRequest, null, sequence++));
 
         clientCscDialog.send();
     }
@@ -226,7 +226,7 @@ public class Client extends EventTestHarness {
                 CAPApplicationContext.CapV2_assistGsmSSF_to_gsmSCF, this.thisAddress, this.remoteAddress);
 
         clientCscDialog.addActivityTestRequest(invokeTimeout);
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivityTestRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivityTestRequest, null, sequence++));
         clientCscDialog.send();
     }
 
@@ -245,7 +245,7 @@ public class Client extends EventTestHarness {
         clientCscDialog.addEventReportBCSMRequest(EventTypeBCSM.oDisconnect, eventSpecificInformationBCSM, legID, miscCallInfo,
                 null);
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportBCSMRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportBCSMRequest, null, sequence++));
         clientCscDialog.send();
     }
 
@@ -265,7 +265,7 @@ public class Client extends EventTestHarness {
         }
     }
 
-    public void sendReferensedNumber() throws CAPException {
+    public void sendReferencedNumber() throws CAPException {
 
         clientGprsDialog = this.capProvider.getCAPServiceGprs().createNewDialog(CAPApplicationContext.CapV3_gsmSCF_gprsSSF,
                 this.thisAddress, this.remoteAddress);
@@ -284,7 +284,7 @@ public class Client extends EventTestHarness {
         genericNumber.setAddress("333111222");
         genericNumber.setAddressRepresentationRestrictedIndicator(GenericNumber._APRI_ALLOWED);
         genericNumber.setNatureOfAddresIndicator(NAINumber._NAI_INTERNATIONAL_NUMBER);
-        // genericNumber.setNumberIncompleter(GenericNumber._NI_COMPLETE);
+        // genericNumber.setNumberIncomplete(GenericNumber._NI_COMPLETE);
         genericNumber.setNumberingPlanIndicator(GenericNumber._NPI_ISDN);
         genericNumber.setNumberQualifierIndicator(GenericNumber._NQIA_CALLED_NUMBER);
         genericNumber.setScreeningIndicator(GenericNumber._SI_NETWORK_PROVIDED);
@@ -292,16 +292,16 @@ public class Client extends EventTestHarness {
         IPSSPCapabilities ipSSPCapabilities = this.capParameterFactory.createIPSSPCapabilities(true, false, true, false, false,
                 null);
         clientCscDialog.addAssistRequestInstructionsRequest(correlationID, ipSSPCapabilities, null);
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.AssistRequestInstructionsRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.AssistRequestInstructionsRequest, null, sequence++));
 
         int i1 = clientCscDialog.getMessageUserDataLengthOnSend();
         assertEquals(i1, 65);
 
-        // this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        // this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
         // clientCscDialog.send();
     }
 
-    // public void sendReferensedNumber2() throws CAPException {
+    // public void sendReferencedNumber2() throws CAPException {
     //
     // clientGprsDialog = this.capProvider.getCAPServiceGprs().createNewDialog(CAPApplicationContext.CapV3_gsmSCF_gprsSSF,
     // this.thisAddress,
@@ -482,8 +482,8 @@ public class Client extends EventTestHarness {
                 initialDp.getCalledPartyBCDNumber(), initialDp.getTimeAndTimezone(), initialDp.getCallForwardingSSPending(),
                 initialDp.getInitialDPArgExtension());
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
         clientCscDialog.send();
     }
 
@@ -517,8 +517,8 @@ public class Client extends EventTestHarness {
                 initialDp.getCalledPartyBCDNumber(), initialDp.getTimeAndTimezone(), initialDp.getCallForwardingSSPending(),
                 initialDp.getInitialDPArgExtension());
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
         clientCscDialog.send();
     }
 
@@ -545,8 +545,8 @@ public class Client extends EventTestHarness {
         InformationToSend informationToSend = this.capParameterFactory.createInformationToSend(tone);
         clientCscDialog.addPlayAnnouncementRequest(1000000, informationToSend, null, null, null, null, null);
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.PlayAnnouncementRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.PlayAnnouncementRequest, null, sequence++));
         clientCscDialog.send();
     }
 
@@ -597,14 +597,14 @@ public class Client extends EventTestHarness {
         clientCscDialog.addReleaseCallRequest(releaseCause);
         clientCscDialog.addReleaseCallRequest(releaseCause);
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.PromptAndCollectUserInformationRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.PromptAndCollectUserInformationRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivityTestRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivityTestRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReleaseCallRequest, null, sequence++));
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReleaseCallRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.PromptAndCollectUserInformationRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.PromptAndCollectUserInformationRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivityTestRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivityTestRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.ReleaseCallRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.ReleaseCallRequest, null, sequence++));
 
         clientCscDialog.send();
     }
@@ -655,7 +655,7 @@ public class Client extends EventTestHarness {
                 initialDp.getLocationInformationGPRS(), initialDp.getPDPInitiationType(), initialDp.getExtensions(),
                 initialDp.getGSNAddress(), initialDp.getSecondaryPDPContext(), initialDp.getImei());
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDpGprsRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDpGprsRequest, null, sequence++));
         clientGprsDialog.send();
     }
 
@@ -719,11 +719,11 @@ public class Client extends EventTestHarness {
     }
 
     public void sendApplyChargingReportGPRSRequest() throws CAPException {
-        ElapsedTimeImpl elapsedTime = new ElapsedTimeImpl(new Integer(5320));
+        ElapsedTimeImpl elapsedTime = new ElapsedTimeImpl(5320);
         ChargingResult chargingResult = new ChargingResultImpl(elapsedTime);
         boolean active = true;
         clientGprsDialog.addApplyChargingReportGPRSRequest(chargingResult, null, active, null, null);
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingReportGPRSRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingReportGPRSRequest, null, sequence++));
         clientGprsDialog.send();
     }
 
@@ -731,7 +731,7 @@ public class Client extends EventTestHarness {
 
         clientGprsDialog = this.capProvider.getCAPServiceGprs().createNewDialog(appCnt, this.thisAddress, this.remoteAddress);
         clientGprsDialog.addActivityTestGPRSRequest();
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivityTestGPRSRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivityTestGPRSRequest, null, sequence++));
         clientGprsDialog.send();
     }
 
@@ -760,7 +760,7 @@ public class Client extends EventTestHarness {
         PDPID pdpID = new PDPIDImpl(1);
         clientGprsDialog.addEventReportGPRSRequest(gprsEventType, miscGPRSInfo, gprsEventSpecificInformation, pdpID);
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSRequest, null, sequence++));
         clientGprsDialog.send();
     }
 
@@ -770,7 +770,7 @@ public class Client extends EventTestHarness {
         GPRSCause gprsCause = new GPRSCauseImpl(5);
         PDPID pdpID = new PDPIDImpl(2);
         clientGprsDialog.addReleaseGPRSRequest(gprsCause, pdpID);
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReleaseGPRSRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.ReleaseGPRSRequest, null, sequence++));
         clientGprsDialog.send();
     }
 
@@ -784,7 +784,7 @@ public class Client extends EventTestHarness {
         IMSI imsi = this.mapParameterFactory.createIMSI("12345678901234");
         clientSmsDialog.addInitialDPSMSRequest(15, destinationSubscriberNumber, callingPartyNumber, EventTypeSMS.smsDeliveryRequested, imsi, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null);
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitialDPSMSRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitialDPSMSRequest, null, sequence++));
 
         clientSmsDialog.send();
     }
@@ -794,7 +794,7 @@ public class Client extends EventTestHarness {
         clientCscDialog = this.capProvider.getCAPServiceCircuitSwitchedCall().createNewDialog(CAPApplicationContext.CapV4_scf_gsmSSFGeneric, this.thisAddress,
                 this.remoteAddress);
 
-        ArrayList<CalledPartyNumberCap> calledPartyNumberArr = new ArrayList<CalledPartyNumberCap>();
+        ArrayList<CalledPartyNumberCap> calledPartyNumberArr = new ArrayList<>();
         CalledPartyNumber cpn = this.isupParameterFactory.createCalledPartyNumber();
         cpn.setNatureOfAddresIndicator(3);
         cpn.setAddress("1113330");
@@ -803,7 +803,7 @@ public class Client extends EventTestHarness {
         DestinationRoutingAddress destinationRoutingAddress = this.capParameterFactory.createDestinationRoutingAddress(calledPartyNumberArr);
         clientCscDialog.addInitiateCallAttemptRequest(destinationRoutingAddress, null, null, null, null, null, null, false);
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitiateCallAttemptRequest, null, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitiateCallAttemptRequest, null, sequence++));
         clientCscDialog.send();
     }
 
@@ -813,7 +813,7 @@ public class Client extends EventTestHarness {
 //                this.remoteAddress);
 //        RPCause rpCause = new RPCauseImpl(3);
 //        clientSmsDialog.addReleaseSMSRequest(rpCause);
-//        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReleaseSMSRequest, null, sequence++));
+//        this.observedEvents.add(TestEvent.createSentEvent(EventType.ReleaseSMSRequest, null, sequence++));
 //        clientSmsDialog.send();
 //    }
 

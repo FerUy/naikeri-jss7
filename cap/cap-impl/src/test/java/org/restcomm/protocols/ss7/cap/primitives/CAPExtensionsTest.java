@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.primitives;
 
 import static org.testng.Assert.assertEquals;
@@ -13,13 +12,13 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.primitives.CAPExtensions;
 import org.restcomm.protocols.ss7.cap.api.primitives.CriticalityType;
 import org.restcomm.protocols.ss7.cap.api.primitives.ExtensionField;
-import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsImpl;
-import org.restcomm.protocols.ss7.cap.primitives.ExtensionFieldImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -28,6 +27,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CAPExtensionsTest {
+
+    private static final Logger logger = LogManager.getLogger(CAPExtensionsTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 18, 48, 5, 2, 1, 2, (byte) 129, 0, 48, 9, 2, 1, 3, 10, 1, 1, (byte) 129, 1, (byte) 255 };
@@ -39,7 +40,7 @@ public class CAPExtensionsTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         CAPExtensionsImpl elem = new CAPExtensionsImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertTrue(checkTestCAPExtensions(elem));
     }
@@ -62,14 +63,13 @@ public class CAPExtensionsTest {
             aos.writeBooleanData(true);
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         ExtensionFieldImpl a2 = new ExtensionFieldImpl(3, CriticalityType.typeAbort, aos.toByteArray());
-        ArrayList<ExtensionField> flds = new ArrayList<ExtensionField>();
+        ArrayList<ExtensionField> flds = new ArrayList<>();
         flds.add(a1);
         flds.add(a2);
-        CAPExtensionsImpl elem = new CAPExtensionsImpl(flds);
-        return elem;
+        return new CAPExtensionsImpl(flds);
     }
 
     public static boolean checkTestCAPExtensions(CAPExtensions elem) {
@@ -84,10 +84,7 @@ public class CAPExtensionsTest {
             return false;
         if (a1.getData() == null || a1.getData().length != 0)
             return false;
-        if (a2.getData() == null || a2.getData().length != 1 || (a2.getData()[0]) != -1)
-            return false;
-
-        return true;
+        return a2.getData() != null && a2.getData().length == 1 && (a2.getData()[0]) == -1;
     }
 
     private byte[] getDataSer() {
@@ -101,7 +98,7 @@ public class CAPExtensionsTest {
     @Test(groups = { "functional.xml.serialize", "primitives" })
     public void testXMLSerialize() throws Exception {
 
-        ArrayList<ExtensionField> fieldsList = new ArrayList<ExtensionField>();
+        ArrayList<ExtensionField> fieldsList = new ArrayList<>();
         fieldsList.add(new ExtensionFieldImpl(234, CriticalityType.typeIgnore, getDataSer()));
         fieldsList.add(new ExtensionFieldImpl(getDataOid(), null, getDataSer()));
         CAPExtensionsImpl original = new CAPExtensionsImpl(fieldsList);
@@ -117,7 +114,7 @@ public class CAPExtensionsTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -152,7 +149,7 @@ public class CAPExtensionsTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

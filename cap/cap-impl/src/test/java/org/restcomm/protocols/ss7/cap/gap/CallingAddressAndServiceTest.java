@@ -1,13 +1,13 @@
-
 package org.restcomm.protocols.ss7.cap.gap;
 
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.isup.Digits;
-import org.restcomm.protocols.ss7.cap.gap.CallingAddressAndServiceImpl;
 import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.GenericNumber;
@@ -27,6 +27,7 @@ import static org.testng.Assert.assertTrue;
  */
 public class CallingAddressAndServiceTest {
 
+    private static final Logger logger = LogManager.getLogger(CallingAddressAndServiceTest.class.getName());
     public static final int SERVICE_KEY = 821;
 
     public byte[] getData() {
@@ -43,7 +44,7 @@ public class CallingAddressAndServiceTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         CallingAddressAndServiceImpl elem = new CallingAddressAndServiceImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getCallingAddressValue().getData(), getDigitsData());
@@ -82,7 +83,7 @@ public class CallingAddressAndServiceTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -95,13 +96,9 @@ public class CallingAddressAndServiceTest {
     private boolean isEqual(CallingAddressAndServiceImpl o1, CallingAddressAndServiceImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 
 }

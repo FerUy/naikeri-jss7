@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.sms.primitive;
 
 import java.io.IOException;

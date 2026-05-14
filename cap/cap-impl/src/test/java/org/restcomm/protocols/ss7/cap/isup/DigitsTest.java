@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.isup;
 
 import static org.testng.Assert.assertEquals;
@@ -11,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericDigitsImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.GenericDigits;
@@ -27,6 +27,8 @@ import org.testng.annotations.Test;
  *
  */
 public class DigitsTest {
+
+    private static final Logger logger = LogManager.getLogger(DigitsTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 157, 5, 65, 5, 6, 7, 8 };
@@ -64,7 +66,7 @@ public class DigitsTest {
         elem.setIsGenericNumber();
         GenericNumber gn = elem.getGenericNumber();
         assertEquals(gn.getNatureOfAddressIndicator(), 4);
-        assertTrue(gn.getAddress().equals("7010900"));
+        assertEquals(gn.getAddress(), "7010900");
         assertEquals(gn.getNumberQualifierIndicator(), 3);
         assertEquals(gn.getNumberingPlanIndicator(), 2);
         assertEquals(gn.getAddressRepresentationRestrictedIndicator(), 0);
@@ -113,7 +115,7 @@ public class DigitsTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -142,7 +144,7 @@ public class DigitsTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

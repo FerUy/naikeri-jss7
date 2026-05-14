@@ -1,8 +1,6 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -13,18 +11,13 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.api.isup.Digits;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.VariablePart;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.VariablePartTime;
-import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.VariableMessageImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.VariablePartImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.VariablePartTimeImpl;
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericDigitsImpl;
-import org.restcomm.protocols.ss7.isup.message.parameter.GenericDigits;
 import org.testng.annotations.Test;
 
 /**
@@ -33,6 +26,8 @@ import org.testng.annotations.Test;
  *
  */
 public class VariableMessageTest {
+
+    private static final Logger logger = LogManager.getLogger(VariableMessageTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 13, (byte) 128, 2, 3, 32, (byte) 161, 7, (byte) 128, 1, 111, (byte) 130, 2, 50, (byte) 149 };
@@ -50,14 +45,14 @@ public class VariableMessageTest {
         assertEquals(elem.getElementaryMessageID(), 800);
         assertEquals(elem.getVariableParts().size(), 2);
         assertEquals((int) elem.getVariableParts().get(0).getInteger(), 111);
-        assertEquals((int) elem.getVariableParts().get(1).getTime().getHour(), 23);
-        assertEquals((int) elem.getVariableParts().get(1).getTime().getMinute(), 59);
+        assertEquals(elem.getVariableParts().get(1).getTime().getHour(), 23);
+        assertEquals(elem.getVariableParts().get(1).getTime().getMinute(), 59);
     }
 
     @Test(groups = { "functional.encode", "circuitSwitchedCall.primitive" })
     public void testEncode() throws Exception {
 
-        ArrayList<VariablePart> variableParts = new ArrayList<VariablePart>();
+        ArrayList<VariablePart> variableParts = new ArrayList<>();
         VariablePartImpl vp = new VariablePartImpl(111);
         variableParts.add(vp);
         VariablePartTimeImpl time = new VariablePartTimeImpl(23, 59);
@@ -76,7 +71,7 @@ public class VariableMessageTest {
     public void testXMLSerialize() throws Exception {
 
         int elementaryMessageID = 2;
-        ArrayList<VariablePart> variableParts = new ArrayList<VariablePart>();
+        ArrayList<VariablePart> variableParts = new ArrayList<>();
         int integer = 14;
         VariablePart vp = new VariablePartImpl(integer);
         variableParts.add(vp);
@@ -97,7 +92,7 @@ public class VariableMessageTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.EsiBcsm;
 
 import static org.testng.Assert.assertEquals;
@@ -11,9 +10,10 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.OAbandonSpecificInfoImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -22,6 +22,8 @@ import org.testng.annotations.Test;
  *
  */
 public class OAbandonSpecificInfoTest {
+
+    private static final Logger logger = LogManager.getLogger(OAbandonSpecificInfoTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 48, 3, (byte) 159, 50, 0 };
@@ -33,7 +35,7 @@ public class OAbandonSpecificInfoTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         OAbandonSpecificInfoImpl elem = new OAbandonSpecificInfoImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertTrue(elem.getRouteNotPermitted());
     }
@@ -63,7 +65,7 @@ public class OAbandonSpecificInfoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.EsiBcsm;
 
 import static org.testng.Assert.*;
@@ -9,11 +8,11 @@ import java.io.ByteArrayOutputStream;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.ChargeIndicatorImpl;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.TAnswerSpecificInfoImpl;
 import org.restcomm.protocols.ss7.cap.api.EsiBcsm.ChargeIndicator;
 import org.restcomm.protocols.ss7.cap.api.EsiBcsm.ChargeIndicatorValue;
 import org.restcomm.protocols.ss7.cap.isup.CalledPartyNumberCapImpl;
@@ -30,6 +29,8 @@ import org.testng.annotations.Test;
  *
  */
 public class TAnswerSpecificInfoTest {
+
+    private static final Logger logger = LogManager.getLogger(TAnswerSpecificInfoTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 25, (byte) 159, 50, 7, (byte) 128, (byte) 144, 17, 33, 34, 51, 3, (byte) 159, 52, 0, (byte) 191, 54, 3, (byte) 131, 1, 16,
@@ -125,7 +126,7 @@ public class TAnswerSpecificInfoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -155,7 +156,7 @@ public class TAnswerSpecificInfoTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

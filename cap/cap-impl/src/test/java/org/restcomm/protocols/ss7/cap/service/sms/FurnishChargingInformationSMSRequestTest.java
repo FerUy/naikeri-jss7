@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.sms;
 
 import java.io.ByteArrayInputStream;
@@ -8,13 +7,14 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.api.primitives.AppendFreeFormatData;
 import org.restcomm.protocols.ss7.cap.api.service.sms.primitive.FCIBCCCAMELsequence1SMS;
 import org.restcomm.protocols.ss7.cap.api.service.sms.primitive.FreeFormatDataSMS;
-import org.restcomm.protocols.ss7.cap.service.sms.FurnishChargingInformationSMSRequestImpl;
 import org.restcomm.protocols.ss7.cap.service.sms.primitive.FCIBCCCAMELsequence1SMSImpl;
 import org.restcomm.protocols.ss7.cap.service.sms.primitive.FreeFormatDataSMSImpl;
 import org.testng.annotations.Test;
@@ -28,14 +28,15 @@ import static org.testng.Assert.*;
  */
 public class FurnishChargingInformationSMSRequestTest {
 
+    private static final Logger logger = LogManager.getLogger(FurnishChargingInformationSMSRequestTest.class.getName());
+
     public byte[] getData() {
         return new byte[] { 4, 15, -96, 13, -128, 8, 48, 6, -128, 1, 3, -118, 1, 1, -127, 1, 1 };
-//        return new byte[] { 4, 17, 48, 15, -96, 13, -128, 8, 48, 6, -128, 1, 3, -118, 1, 1, -127, 1, 1 };
-    };
+    }
 
     public byte[] getFreeFormatData() {
         return new byte[] { 48, 6, -128, 1, 3, -118, 1, 1 };
-    };
+    }
 
     @Test(groups = { "functional.decode", "primitives" })
     public void testDecode() throws Exception {
@@ -85,7 +86,7 @@ public class FurnishChargingInformationSMSRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

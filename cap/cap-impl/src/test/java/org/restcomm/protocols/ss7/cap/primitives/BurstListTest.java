@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.primitives;
 
 import static org.testng.Assert.*;
@@ -10,11 +9,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.primitives.BurstImpl;
-import org.restcomm.protocols.ss7.cap.primitives.BurstListImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -23,6 +22,8 @@ import org.testng.annotations.Test;
 *
 */
 public class BurstListTest {
+
+    private static final Logger logger = LogManager.getLogger(BurstListTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 8, (byte) 128, 1, 101, (byte) 161, 3, (byte) 129, 1, 10 };
@@ -68,7 +69,7 @@ public class BurstListTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

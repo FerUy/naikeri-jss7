@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -13,15 +12,13 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.MessageIDText;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.VariableMessage;
 import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.VariablePart;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.MessageIDImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.MessageIDTextImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.VariableMessageImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.VariablePartImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -30,6 +27,8 @@ import org.testng.annotations.Test;
  *
  */
 public class MessageIDTest {
+
+    private static final Logger logger = LogManager.getLogger(MessageIDTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 128, 1, 123 };
@@ -68,7 +67,7 @@ public class MessageIDTest {
         assertEquals(tag, 1);
         elem.decodeAll(ais);
         assertNull(elem.getElementaryMessageID());
-        assertTrue(elem.getText().getMessageContent().equals("Today"));
+        assertEquals(elem.getText().getMessageContent(), "Today");
         assertNull(elem.getText().getAttributes());
         assertNull(elem.getElementaryMessageIDs());
         assertNull(elem.getVariableMessage());
@@ -114,7 +113,7 @@ public class MessageIDTest {
         elem.encodeAll(aos);
         assertTrue(Arrays.equals(aos.toByteArray(), this.getData2()));
 
-        ArrayList<Integer> elementaryMessageIDs = new ArrayList<Integer>();
+        ArrayList<Integer> elementaryMessageIDs = new ArrayList<>();
         elementaryMessageIDs.add(0);
         elementaryMessageIDs.add(-1);
         elem = new MessageIDImpl(elementaryMessageIDs);
@@ -122,7 +121,7 @@ public class MessageIDTest {
         elem.encodeAll(aos);
         assertTrue(Arrays.equals(aos.toByteArray(), this.getData3()));
 
-        ArrayList<VariablePart> variableParts = new ArrayList<VariablePart>();
+        ArrayList<VariablePart> variableParts = new ArrayList<>();
         VariablePartImpl vp = new VariablePartImpl(28);
         variableParts.add(vp);
         VariableMessageImpl vm = new VariableMessageImpl(99, variableParts);
@@ -149,7 +148,7 @@ public class MessageIDTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -175,7 +174,7 @@ public class MessageIDTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -188,7 +187,7 @@ public class MessageIDTest {
         assertNull(copy.getVariableMessage());
 
 
-        ArrayList<Integer> elementaryMessageIDs = new ArrayList<Integer>();
+        ArrayList<Integer> elementaryMessageIDs = new ArrayList<>();
         elementaryMessageIDs.add(12);
         elementaryMessageIDs.add(13);
         original = new MessageIDImpl(elementaryMessageIDs);
@@ -203,7 +202,7 @@ public class MessageIDTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -219,7 +218,7 @@ public class MessageIDTest {
 
 
         int elementaryMessageID_2 = 3;
-        ArrayList<VariablePart> variableParts = new ArrayList<VariablePart>();
+        ArrayList<VariablePart> variableParts = new ArrayList<>();
         VariablePart variablePart = new VariablePartImpl(18);
         variableParts.add(variablePart);
         VariableMessage variableMessage = new VariableMessageImpl(elementaryMessageID_2, variableParts);
@@ -235,7 +234,7 @@ public class MessageIDTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

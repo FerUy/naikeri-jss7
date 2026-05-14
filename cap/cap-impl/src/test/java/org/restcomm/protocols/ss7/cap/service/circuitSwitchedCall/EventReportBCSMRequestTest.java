@@ -11,6 +11,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.EsiBcsm.RouteSelectFailureSpecificInfoImpl;
@@ -31,6 +33,8 @@ import org.testng.annotations.Test;
  *
  */
 public class EventReportBCSMRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(EventReportBCSMRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 13, (byte) 128, 1, 9, (byte) 163, 3, (byte) 129, 1, 1, (byte) 164, 3, (byte) 128, 1, 0 };
@@ -57,7 +61,7 @@ public class EventReportBCSMRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         EventReportBCSMRequestImpl elem = new EventReportBCSMRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getEventTypeBCSM(), EventTypeBCSM.oDisconnect);
         assertEquals(elem.getLegID().getReceivingSideID(), LegType.leg1);
@@ -68,7 +72,7 @@ public class EventReportBCSMRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new EventReportBCSMRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getEventTypeBCSM(), EventTypeBCSM.routeSelectFailure);
         assertTrue(Arrays.equals(elem.getEventSpecificInformationBCSM().getRouteSelectFailureSpecificInfo().getFailureCause()
@@ -80,7 +84,7 @@ public class EventReportBCSMRequestTest {
         data = this.getData3();
         ais = new AsnInputStream(data);
         elem = new EventReportBCSMRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getEventTypeBCSM(), EventTypeBCSM.routeSelectFailure);
         assertTrue(Arrays.equals(elem.getEventSpecificInformationBCSM().getRouteSelectFailureSpecificInfo().getFailureCause()
@@ -150,7 +154,7 @@ public class EventReportBCSMRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.testng.annotations.Test;
@@ -22,6 +23,8 @@ import org.testng.annotations.Test;
  */
 public class NAOliInfoTest {
 
+    private static final Logger logger = LogManager.getLogger(NAOliInfoTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 4, 1, 0x3D };
     }
@@ -32,7 +35,7 @@ public class NAOliInfoTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         NAOliInfoImpl elem = new NAOliInfoImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getData(), 0x3D);
     }
@@ -62,7 +65,7 @@ public class NAOliInfoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

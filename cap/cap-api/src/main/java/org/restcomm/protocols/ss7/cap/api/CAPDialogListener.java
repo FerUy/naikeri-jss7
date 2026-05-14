@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.api;
 
 import org.restcomm.protocols.ss7.cap.api.dialog.CAPGeneralAbortReason;

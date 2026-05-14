@@ -11,6 +11,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.testng.annotations.Test;
@@ -22,6 +24,8 @@ import org.testng.annotations.Test;
  *
  */
 public class SpecializedResourceReportRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(SpecializedResourceReportRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 159, 50, 0 };
@@ -40,7 +44,7 @@ public class SpecializedResourceReportRequestTest {
 
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
-        int tag = ais.readTag();
+        ais.readTag();
         SpecializedResourceReportRequestImpl elem = new SpecializedResourceReportRequestImpl(true);
         elem.decodeAll(ais);
         assertTrue(elem.getAllAnnouncementsComplete());
@@ -48,7 +52,7 @@ public class SpecializedResourceReportRequestTest {
 
         data = this.getData2();
         ais = new AsnInputStream(data);
-        tag = ais.readTag();
+        ais.readTag();
         elem = new SpecializedResourceReportRequestImpl(true);
         elem.decodeAll(ais);
         assertFalse(elem.getAllAnnouncementsComplete());
@@ -57,7 +61,7 @@ public class SpecializedResourceReportRequestTest {
         data = this.getData3();
         ais = new AsnInputStream(data);
         elem = new SpecializedResourceReportRequestImpl(false);
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertFalse(elem.getAllAnnouncementsComplete());
         assertFalse(elem.getFirstAnnouncementStarted());
@@ -99,7 +103,7 @@ public class SpecializedResourceReportRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
         System.out.flush();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
@@ -115,13 +119,9 @@ public class SpecializedResourceReportRequestTest {
     private boolean isEqual(SpecializedResourceReportRequestImpl o1, SpecializedResourceReportRequestImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 
 }

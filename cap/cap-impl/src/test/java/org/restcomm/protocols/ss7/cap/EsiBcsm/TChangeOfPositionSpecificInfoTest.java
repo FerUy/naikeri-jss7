@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.EsiBcsm;
 
 import static org.testng.Assert.*;
@@ -10,11 +9,11 @@ import java.util.ArrayList;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.MetDPCriterionImpl;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.TChangeOfPositionSpecificInfoImpl;
 import org.restcomm.protocols.ss7.cap.api.EsiBcsm.MetDPCriterion;
 import org.restcomm.protocols.ss7.map.api.primitives.LAIFixedLength;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LocationInformation;
@@ -28,6 +27,8 @@ import org.testng.annotations.Test;
 *
 */
 public class TChangeOfPositionSpecificInfoTest {
+
+    private static final Logger logger = LogManager.getLogger(TChangeOfPositionSpecificInfoTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 7, (byte) 191, 50, 4, 2, 2, 0, (byte) 200 };
@@ -51,7 +52,6 @@ public class TChangeOfPositionSpecificInfoTest {
         elem.decodeAll(ais);
         assertEquals((int) elem.getLocationInformation().getAgeOfLocationInformation(), 200);
         assertNull(elem.getMetDPCriteriaList());
-
 
         data = this.getData2();
         ais = new AsnInputStream(data);
@@ -78,7 +78,7 @@ public class TChangeOfPositionSpecificInfoTest {
         assertEquals(aos.toByteArray(), this.getData1());
 
 
-        ArrayList<MetDPCriterion> metDPCriteriaList = new ArrayList<MetDPCriterion>();
+        ArrayList<MetDPCriterion> metDPCriteriaList = new ArrayList<>();
         LAIFixedLength value = new LAIFixedLengthImpl(250, 1, 33000);
         MetDPCriterion met1 = new MetDPCriterionImpl(value, MetDPCriterionImpl.LAIFixedLength_Option.leavingLocationAreaId);
         metDPCriteriaList.add(met1);
@@ -105,7 +105,7 @@ public class TChangeOfPositionSpecificInfoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -115,7 +115,7 @@ public class TChangeOfPositionSpecificInfoTest {
         assertNull(copy.getMetDPCriteriaList());
 
 
-        ArrayList<MetDPCriterion> metDPCriteriaList = new ArrayList<MetDPCriterion>();
+        ArrayList<MetDPCriterion> metDPCriteriaList = new ArrayList<>();
         LAIFixedLength value = new LAIFixedLengthImpl(250, 1, 33000);
         MetDPCriterion met1 = new MetDPCriterionImpl(value, MetDPCriterionImpl.LAIFixedLength_Option.leavingLocationAreaId);
         metDPCriteriaList.add(met1);
@@ -133,7 +133,7 @@ public class TChangeOfPositionSpecificInfoTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

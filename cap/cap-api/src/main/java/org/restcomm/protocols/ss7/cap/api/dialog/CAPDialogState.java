@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.api.dialog;
 
 /**
@@ -14,5 +13,5 @@ public enum CAPDialogState {
     Active,
 
     // additional state to mark removal
-    Expunged;
+    Expunged
 }

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.sms;
 
 import org.mobicents.protocols.asn.AsnInputStream;

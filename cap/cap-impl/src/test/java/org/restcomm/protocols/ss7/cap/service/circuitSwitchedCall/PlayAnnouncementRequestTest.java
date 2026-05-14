@@ -9,6 +9,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -33,6 +35,8 @@ import javolution.xml.XMLObjectWriter;
  *
  */
 public class PlayAnnouncementRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(PlayAnnouncementRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 43, (byte) 160, 8, (byte) 161, 6, (byte) 128, 1, 10, (byte) 129, 1, 100, (byte) 129, 1,
@@ -79,17 +83,17 @@ public class PlayAnnouncementRequestTest {
     @Test(groups = { "functional.xml.serialize", "circuitSwitchedCall" })
     public void testXMLSerialize() throws Exception {
 
-        ArrayList<VariablePart> aL = new ArrayList<VariablePart>();
+        ArrayList<VariablePart> aL = new ArrayList<>();
         aL.add(new VariablePartImpl(new VariablePartDateImpl(2015, 6, 27)));
         aL.add(new VariablePartImpl(new VariablePartTimeImpl(15, 10)));
-        aL.add(new VariablePartImpl(new Integer(145)));
+        aL.add(new VariablePartImpl(145));
         VariableMessageImpl vm = new VariableMessageImpl(145, aL);
         MessageIDImpl mi = new MessageIDImpl(vm);
-        InbandInfoImpl inbandInfo = new InbandInfoImpl(mi, new Integer(5), new Integer(8), new Integer(2));
+        InbandInfoImpl inbandInfo = new InbandInfoImpl(mi, 5, 8, 2);
         InformationToSendImpl informationToSend = new InformationToSendImpl(inbandInfo);
 
         PlayAnnouncementRequestImpl original = new PlayAnnouncementRequestImpl(informationToSend, Boolean.TRUE, Boolean.TRUE,
-                null, new Integer(1), Boolean.FALSE);
+                null, 1, Boolean.FALSE);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLObjectWriter writer = XMLObjectWriter.newInstance(baos);
         // writer.setBinding(binding); // Optional.
@@ -101,7 +105,7 @@ public class PlayAnnouncementRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -113,12 +117,8 @@ public class PlayAnnouncementRequestTest {
     private boolean isEqual(PlayAnnouncementRequestImpl o1, PlayAnnouncementRequestImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 }

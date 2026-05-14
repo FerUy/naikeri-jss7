@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.assertEquals;
@@ -9,7 +8,8 @@ import java.io.ByteArrayOutputStream;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.ActivityTestRequestImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.annotations.Test;
 
 /**
@@ -18,6 +18,8 @@ import org.testng.annotations.Test;
 *
 */
 public class ActivityTestRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(ActivityTestRequestTest.class.getName());
 
     @Test(groups = { "functional.xml.serialize", "circuitSwitchedCall" })
     public void testXMLSerializaion() throws Exception {
@@ -34,7 +36,7 @@ public class ActivityTestRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

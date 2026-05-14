@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.*;
@@ -10,6 +9,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsTest;
@@ -22,6 +23,8 @@ import org.testng.annotations.Test;
  */
 public class DisconnectForwardConnectionWithArgumentRequestTest {
 
+    private static final Logger logger = LogManager.getLogger(DisconnectForwardConnectionWithArgumentRequestTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 23, (byte) 129, 1, 40, (byte) 162, 18, 48, 5, 2, 1, 2, (byte) 129, 0, 48, 9, 2, 1, 3, 10, 1, 1, (byte) 129, 1, (byte) 255 };
     }
@@ -32,7 +35,7 @@ public class DisconnectForwardConnectionWithArgumentRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         DisconnectForwardConnectionWithArgumentRequestImpl elem = new DisconnectForwardConnectionWithArgumentRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals((int)elem.getCallSegmentID(), 40);
@@ -68,7 +71,7 @@ public class DisconnectForwardConnectionWithArgumentRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

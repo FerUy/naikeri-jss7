@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.assertEquals;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsTest;
@@ -24,7 +25,9 @@ import org.testng.annotations.Test;
  *
  */
 public class SplitLegRequestTest {
-    
+
+    private static final Logger logger = LogManager.getLogger(SplitLegRequestTest.class.getName());
+
     public byte[] getData() {
         return new byte[] { 48, 28, -96, 3, -128, 1, 1, -127, 1, 1, -94, 18, 
                 48, 5, 2, 1, 2, -127, 0, 48, 9, 2, 1, 3, 10, 1, 1, -127, 1, -1};
@@ -36,10 +39,10 @@ public class SplitLegRequestTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         SplitLegRequestImpl elem = new SplitLegRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
-        assertTrue(elem.getLegToBeSplit().getSendingSideID().equals(LegType.leg1));
-        assertEquals(elem.getNewCallSegment(), new Integer(1));
+        assertEquals(elem.getLegToBeSplit().getSendingSideID(), LegType.leg1);
+        assertEquals(elem.getNewCallSegment(), Integer.valueOf(1));
         assertTrue(CAPExtensionsTest.checkTestCAPExtensions(elem.getExtensions()));
     }
 
@@ -72,7 +75,7 @@ public class SplitLegRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

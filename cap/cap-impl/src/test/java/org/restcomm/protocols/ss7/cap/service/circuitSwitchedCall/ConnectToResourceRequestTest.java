@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.assertEquals;
@@ -13,6 +12,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.isup.CalledPartyNumberCapImpl;
@@ -28,6 +29,8 @@ import org.testng.annotations.Test;
  *
  */
 public class ConnectToResourceRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(ConnectToResourceRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 16, (byte) 128, 5, (byte) 131, (byte) 160, (byte) 137, 103, 5, (byte) 167, 3, (byte) 130, 1, 0,
@@ -45,7 +48,7 @@ public class ConnectToResourceRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         ConnectToResourceRequestImpl elem = new ConnectToResourceRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getResourceAddress_IPRoutingAddress().getCalledPartyNumber().getNatureOfAddressIndicator(), 3);
         assertTrue(elem.getResourceAddress_IPRoutingAddress().getCalledPartyNumber().getAddress().endsWith("98765"));
@@ -60,7 +63,7 @@ public class ConnectToResourceRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new ConnectToResourceRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertNull(elem.getResourceAddress_IPRoutingAddress());
         assertTrue(elem.getResourceAddress_Null());
@@ -119,7 +122,7 @@ public class ConnectToResourceRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -151,7 +154,7 @@ public class ConnectToResourceRequestTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

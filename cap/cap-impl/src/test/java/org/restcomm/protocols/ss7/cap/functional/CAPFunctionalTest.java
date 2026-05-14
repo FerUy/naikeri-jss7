@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.functional;
 
 import static org.testng.Assert.assertEquals;
@@ -8,17 +7,19 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.restcomm.protocols.ss7.cap.CAPProviderImpl;
 import org.restcomm.protocols.ss7.cap.CAPStackImpl;
 import org.restcomm.protocols.ss7.cap.api.CAPApplicationContext;
@@ -216,7 +217,7 @@ import org.testng.annotations.Test;
  */
 public class CAPFunctionalTest extends SccpHarness {
 
-    private static Logger logger = Logger.getLogger(CAPFunctionalTest.class);
+    private static final Logger logger = LogManager.getLogger(CAPFunctionalTest.class);
     private static final int _WAIT_TIMEOUT = 500;
     private static final int _TCAP_DIALOG_RELEASE_TIMEOUT = 0;
 
@@ -240,12 +241,12 @@ public class CAPFunctionalTest extends SccpHarness {
     @BeforeClass
     public void setUpClass() throws Exception {
 
-        System.out.println("setUpClass");
+        logger.debug("setUpClass");
     }
 
     @AfterClass
     public void tearDownClass() throws Exception {
-        System.out.println("tearDownClass");
+        logger.debug("tearDownClass");
     }
 
     /*
@@ -256,7 +257,7 @@ public class CAPFunctionalTest extends SccpHarness {
     @BeforeMethod
     public void setUp() throws Exception {
         // this.setupLog4j();
-        System.out.println("setUpTest");
+        logger.debug("setUpTest");
 
         this.sccpStack1Name = "CAPFunctionalTestSccpStack1";
         this.sccpStack2Name = "CAPFunctionalTestSccpStack2";
@@ -289,25 +290,21 @@ public class CAPFunctionalTest extends SccpHarness {
 
     @AfterMethod
     public void tearDown() {
-        System.out.println("tearDownTest");
+        logger.debug("tearDownTest");
         this.stack1.stop();
         this.stack2.stop();
         super.tearDown();
     }
 
-    private void setupLog4j() {
-
-        InputStream inStreamLog4j = getClass().getResourceAsStream("/log4j.properties");
-
-        Properties propertiesLog4j = new Properties();
-
-        try {
-            propertiesLog4j.load(inStreamLog4j);
-            PropertyConfigurator.configure(propertiesLog4j);
-        } catch (Exception e) {
-            e.printStackTrace();
-            BasicConfigurator.configure();
+    private void setupLog4j() throws URISyntaxException {
+        URL resourcePropertiesUrl = CAPFunctionalTest.class.getResource("/log4j2.properties");
+        if (resourcePropertiesUrl != null){
+            ConfigurationFactory.getInstance().getConfiguration(null, null, resourcePropertiesUrl.toURI());
+        } else {
+            Configurator.initialize(new DefaultConfiguration());
+            Configurator.setRootLevel(Level.INFO);
         }
+
 
         logger.debug("log4j configured");
 
@@ -315,7 +312,7 @@ public class CAPFunctionalTest extends SccpHarness {
 
     /**
      * InitialDP + Error message SystemFailure ACN=CAP-v1-gsmSSF-to-gsmSCF
-     *
+
      * TC-BEGIN + InitialDPRequest TC-END + Error message SystemFailure
      */
     @Test(groups = { "functional.flow", "dialog" })
@@ -336,7 +333,7 @@ public class CAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             private int dialogStep;
-            private long processUnstructuredSSRequestInvokeId = 0l;
+            private long processUnstructuredSSRequestInvokeId = 0L;
 
             @Override
             public void onInitialDPRequest(InitialDPRequest ind) {
@@ -344,7 +341,7 @@ public class CAPFunctionalTest extends SccpHarness {
 
                 assertTrue(Client.checkTestInitialDp(ind));
 
-                this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
                 CAPErrorMessage capErrorMessage = this.capErrorMessageFactory
                         .createCAPErrorMessageSystemFailure(UnavailableNetworkResource.endUserFailure);
                 try {
@@ -369,7 +366,7 @@ public class CAPFunctionalTest extends SccpHarness {
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -387,7 +384,7 @@ public class CAPFunctionalTest extends SccpHarness {
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -412,7 +409,7 @@ public class CAPFunctionalTest extends SccpHarness {
 
     /**
 <code>
-Circuit switch call simple messageflow 1 ACN=CAP-v2-gsmSSF-to-gsmSCF
+Circuit switch call simple message flow 1 ACN=CAP-v2-gsmSSF-to-gsmSCF
 
 TC-BEGIN + InitialDPRequest
   TC-CONTINUE + RequestReportBCSMEventRequest
@@ -474,12 +471,11 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
                     assertEquals(ind.getDestinationRoutingAddress().getCalledPartyNumber().size(), 1);
                     CalledPartyNumber calledPartyNumber = ind.getDestinationRoutingAddress().getCalledPartyNumber().get(0)
                             .getCalledPartyNumber();
-                    assertTrue(calledPartyNumber.getAddress().equals("5599999988"));
+                    assertEquals(calledPartyNumber.getAddress(), "5599999988");
                     assertEquals(calledPartyNumber.getNatureOfAddressIndicator(), NAINumber._NAI_INTERNATIONAL_NUMBER);
                     assertEquals(calledPartyNumber.getNumberingPlanIndicator(), CalledPartyNumber._NPI_ISDN);
                     assertEquals(calledPartyNumber.getInternalNetworkNumberIndicator(), CalledPartyNumber._INN_ROUTING_ALLOWED);
                 } catch (CAPException e) {
-                    e.printStackTrace();
                     fail("Exception while checking ConnectRequest imdication", e);
                 }
                 assertNull(ind.getAlertingPattern());
@@ -543,7 +539,7 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
                                     .createEventSpecificInformationBCSM(oAnswerSpecificInfo);
                             dlg.addEventReportBCSMRequest(EventTypeBCSM.oAnswer, eventSpecificInformationBCSM, legID,
                                     miscCallInfo, null);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportBCSMRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportBCSMRequest, null,
                                     sequence++));
                             dlg.send();
 
@@ -552,7 +548,7 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
                             TimeDurationChargingResult timeDurationChargingResult = this.capParameterFactory
                                     .createTimeDurationChargingResult(partyToCharge, timeInformation, true, false, null, null);
                             dlg.addApplyChargingReportRequest(timeDurationChargingResult);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingReportRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingReportRequest, null,
                                     sequence++));
                             dlg.send();
 
@@ -562,7 +558,7 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
 
                         case 2: // after ActivityTestRequest
                             dlg.addActivityTestResponse(activityTestInvokeId);
-                            this.observerdEvents.add(TestEvent
+                            this.observedEvents.add(TestEvent
                                     .createSentEvent(EventType.ActivityTestResponse, null, sequence++));
                             dlg.send();
 
@@ -652,7 +648,7 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
 
                             RequestReportBCSMEventRequest rrc = this.getRequestReportBCSMEventRequest();
                             dlg.addRequestReportBCSMEventRequest(rrc.getBCSMEventList(), rrc.getExtensions());
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.RequestReportBCSMEventRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.RequestReportBCSMEventRequest, null,
                                     sequence++));
                             dlg.send();
 
@@ -663,17 +659,17 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
                                     ffd, partyToCharge1, AppendFreeFormatData.append);
                             dlg.addFurnishChargingInformationRequest(FCIBCCCAMELsequence1);
                             dlg.send();
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.FurnishChargingInformationRequest,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.FurnishChargingInformationRequest,
                                     null, sequence++));
 
                             CAMELAChBillingChargingCharacteristics aChBillingChargingCharacteristics = this.capParameterFactory
                                     .createCAMELAChBillingChargingCharacteristics(1000, true, null, null, null, 2);
                             SendingSideID partyToCharge = this.capParameterFactory.createSendingSideID(LegType.leg1);
                             dlg.addApplyChargingRequest(aChBillingChargingCharacteristics, partyToCharge, null, null);
-                            this.observerdEvents.add(TestEvent
+                            this.observedEvents.add(TestEvent
                                     .createSentEvent(EventType.ApplyChargingRequest, null, sequence++));
 
-                            ArrayList<CalledPartyNumberCap> calledPartyNumber = new ArrayList<CalledPartyNumberCap>();
+                            ArrayList<CalledPartyNumberCap> calledPartyNumber = new ArrayList<>();
                             CalledPartyNumber cpn = this.isupParameterFactory.createCalledPartyNumber();
                             cpn.setAddress("5599999988");
                             cpn.setNatureOfAddresIndicator(NAINumber._NAI_INTERNATIONAL_NUMBER);
@@ -685,11 +681,11 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
                                     .createDestinationRoutingAddress(calledPartyNumber);
                             dlg.addConnectRequest(destinationRoutingAddress, null, null, null, null, null, null, null, null,
                                     null, null, null, null, false, false, false, null, false, false);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ConnectRequest, null, sequence++));
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ConnectRequest, null, sequence++));
                             dlg.send();
 
                             dlg.addContinueRequest();
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ContinueRequest, null, sequence++));
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ContinueRequest, null, sequence++));
                             dlg.send();
 
                             CAI_GSM0224 aocInitial = this.capParameterFactory
@@ -699,7 +695,7 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
                                     .createSCIBillingChargingCharacteristics(aocBeforeAnswer);
                             SendingSideID partyToCharge2 = this.capParameterFactory.createSendingSideID(LegType.leg2);
                             dlg.addSendChargingInformationRequest(sciBillingChargingCharacteristics, partyToCharge2, null);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendChargingInformationRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.SendChargingInformationRequest, null,
                                     sequence++));
                             dlg.send();
 
@@ -731,7 +727,7 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
                 } catch (CAPException e) {
                     this.error("Error while trying to send ActivityTestRequest", e);
                 }
-                this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivityTestRequest, null, sequence++));
+                this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivityTestRequest, null, sequence++));
             }
         };
 
@@ -740,7 +736,7 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -807,7 +803,7 @@ TC-CONTINUE + EventReportBCSMRequest (ODisconnect)
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -906,7 +902,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
 </code>
      */
     @Test(groups = { "functional.flow", "dialog" })
-    public void testPlayAnnouncment() throws Exception {
+    public void testPlayAnnouncement() throws Exception {
 
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
             private int dialogStep;
@@ -924,7 +920,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
 
                 try {
                     CalledPartyNumber cpn = ind.getResourceAddress_IPRoutingAddress().getCalledPartyNumber();
-                    assertTrue(cpn.getAddress().equals("111222333"));
+                    assertEquals(cpn.getAddress(), "111222333");
                     assertEquals(cpn.getInternalNetworkNumberIndicator(), CalledPartyNumber._INN_ROUTING_NOT_ALLOWED);
                     assertEquals(cpn.getNatureOfAddressIndicator(), NAINumber._NAI_INTERNATIONAL_NUMBER);
                     assertEquals(cpn.getNumberingPlanIndicator(), CalledPartyNumber._NPI_ISDN);
@@ -938,7 +934,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
                 ind.getCAPDialog().processInvokeWithoutAnswer(ind.getInvokeId());
             }
 
-            private long playAnnounsmentInvokeId;
+            private long playAnnouncementInvokeId;
 
             public void onPlayAnnouncementRequest(PlayAnnouncementRequest ind) {
                 super.onPlayAnnouncementRequest(ind);
@@ -951,7 +947,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
                 assertNull(ind.getCallSegmentID());
                 assertNull(ind.getExtensions());
 
-                playAnnounsmentInvokeId = ind.getInvokeId();
+                playAnnouncementInvokeId = ind.getInvokeId();
 
                 dialogStep = 1;
                 ind.getCAPDialog().processInvokeWithoutAnswer(ind.getInvokeId());
@@ -986,8 +982,8 @@ TC-CONTINUE + SpecializedResourceReportRequest
                 try {
                     switch (dialogStep) {
                         case 1: // after PlayAnnouncementRequest
-                            dlg.addSpecializedResourceReportRequest_CapV23(playAnnounsmentInvokeId);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest,
+                            dlg.addSpecializedResourceReportRequest_CapV23(playAnnouncementInvokeId);
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest,
                                     null, sequence++));
                             dlg.send();
 
@@ -1041,7 +1037,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
                         case 1: // after InitialDp
                             RequestReportBCSMEventRequest rrc = this.getRequestReportBCSMEventRequest();
                             dlg.addRequestReportBCSMEventRequest(rrc.getBCSMEventList(), rrc.getExtensions());
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.RequestReportBCSMEventRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.RequestReportBCSMEventRequest, null,
                                     sequence++));
                             dlg.send();
 
@@ -1053,7 +1049,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
                             CalledPartyNumberCap resourceAddress_IPRoutingAddress = this.capParameterFactory
                                     .createCalledPartyNumberCap(calledPartyNumber);
                             dlg.addConnectToResourceRequest(resourceAddress_IPRoutingAddress, false, null, null, null);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ConnectToResourceRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ConnectToResourceRequest, null,
                                     sequence++));
                             dlg.send();
 
@@ -1062,7 +1058,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
 
                             playAnnounsmentInvokeId = dlg.addPlayAnnouncementRequest(informationToSend, true, true, null, null,
                                     invokeTimeoutSuppressed);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.PlayAnnouncementRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.PlayAnnouncementRequest, null,
                                     sequence++));
                             dlg.send();
 
@@ -1072,7 +1068,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
 
                         case 2: // after SpecializedResourceReportRequest
                             dlg.addDisconnectForwardConnectionRequest();
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.DisconnectForwardConnectionRequest,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.DisconnectForwardConnectionRequest,
                                     null, sequence++));
                             dlg.send();
 
@@ -1083,7 +1079,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
                             causeIndicators.setLocation(CauseIndicators._LOCATION_INTERNATIONAL_NETWORK);
                             CauseCap cause = this.capParameterFactory.createCauseCap(causeIndicators);
                             dlg.addReleaseCallRequest(cause);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReleaseCallRequest, null, sequence++));
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ReleaseCallRequest, null, sequence++));
                             dlg.close(false);
 
                             dialogStep = 0;
@@ -1099,7 +1095,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1144,7 +1140,7 @@ TC-CONTINUE + SpecializedResourceReportRequest
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1264,7 +1260,7 @@ TC-CONTINUE + PromptAndCollectUserInformationResponse
                     switch (dialogStep) {
                         case 1: // after PromptAndCollectUserInformationRequest
                             dlg.addSpecializedResourceReportRequest_CapV4(promptAndCollectUserInformationInvokeId, false, true);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest,
                                     null, sequence++));
                             dlg.send();
 
@@ -1278,7 +1274,7 @@ TC-CONTINUE + PromptAndCollectUserInformationResponse
                             Digits digitsResponse = this.capParameterFactory.createDigits_GenericNumber(genericNumber);
                             dlg.addPromptAndCollectUserInformationResponse_DigitsResponse(
                                     promptAndCollectUserInformationInvokeId, digitsResponse);
-                            this.observerdEvents.add(TestEvent.createSentEvent(
+                            this.observedEvents.add(TestEvent.createSentEvent(
                                     EventType.PromptAndCollectUserInformationResponse, null, sequence++));
                             dlg.send();
 
@@ -1365,7 +1361,7 @@ TC-CONTINUE + PromptAndCollectUserInformationResponse
                     switch (dialogStep) {
                         case 1: // after AssistRequestInstructionsRequest
                             dlg.addResetTimerRequest(TimerID.tssf, 1001, null, null);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ResetTimerRequest, null, sequence++));
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ResetTimerRequest, null, sequence++));
                             dlg.send();
 
                             CollectedDigits collectedDigits = this.capParameterFactory.createCollectedDigits(1, 11, null, null,
@@ -1373,7 +1369,7 @@ TC-CONTINUE + PromptAndCollectUserInformationResponse
                             CollectedInfo collectedInfo = this.capParameterFactory.createCollectedInfo(collectedDigits);
                             PromptAndCollectUserInformationRequestInvokeId = dlg.addPromptAndCollectUserInformationRequest(
                                     collectedInfo, true, null, null, null, null);
-                            this.observerdEvents.add(TestEvent.createSentEvent(
+                            this.observedEvents.add(TestEvent.createSentEvent(
                                     EventType.PromptAndCollectUserInformationRequest, null, sequence++));
                             dlg.send();
 
@@ -1383,11 +1379,11 @@ TC-CONTINUE + PromptAndCollectUserInformationResponse
 
                         case 2: // after SpecializedResourceReportRequest
                             dlg.addCancelRequest_AllRequests();
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelRequest, null, sequence++));
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.CancelRequest, null, sequence++));
                             dlg.send();
 
                             dlg.addCancelRequest_InvokeId(10);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelRequest, null, sequence++));
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.CancelRequest, null, sequence++));
                             dlg.close(false);
 
                             dialogStep = 0;
@@ -1403,7 +1399,7 @@ TC-CONTINUE + PromptAndCollectUserInformationResponse
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.AssistRequestInstructionsRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1445,7 +1441,7 @@ TC-CONTINUE + PromptAndCollectUserInformationResponse
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1536,7 +1532,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                 try {
                     GenericNumber gn = ind.getAssistingSSPIPRoutingAddress().getGenericNumber();
-                    assertTrue(gn.getAddress().equals("333111222"));
+                    assertEquals(gn.getAddress(), "333111222");
                     assertEquals(gn.getAddressRepresentationRestrictedIndicator(), GenericNumber._APRI_ALLOWED);
                     assertEquals(gn.getNatureOfAddressIndicator(), NAINumber._NAI_INTERNATIONAL_NUMBER);
                     assertEquals(gn.getNumberingPlanIndicator(), GenericNumber._NPI_ISDN);
@@ -1591,7 +1587,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                             RequestedInformation ri = this.capParameterFactory.createRequestedInformation_CallStopTime(dt);
                             requestedInformationList.add(ri);
                             dlg.addCallInformationReportRequest(requestedInformationList, null, null);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.CallInformationReportRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.CallInformationReportRequest, null,
                                     sequence++));
                             dlg.close(false);
 
@@ -1608,7 +1604,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.EstablishTemporaryConnectionRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1632,7 +1628,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1664,7 +1660,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      * Abnormal test ACN = CAP-v2-assist-gsmSSF-to-gsmSCF
-     *
+
      * TC-BEGIN + ActivityTestRequest TC-CONTINUE <no ActivityTestResponse> resetInvokeTimer() before InvokeTimeout
      * InvokeTimeout TC-CONTINUE + CancelRequest + cancelInvocation() -> CancelRequest will not go to Server TC-CONTINUE +
      * ResetTimerRequest reject ResetTimerRequest DialogUserAbort: AbortReason=missing_reference
@@ -1683,12 +1679,12 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                 try {
                     long invId = dlg.addCancelRequest_AllRequests();
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelRequest, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CancelRequest, null, sequence++));
                     dlg.cancelInvocation(invId);
                     dlg.send();
 
                     resetTimerRequestInvokeId = dlg.addResetTimerRequest(TimerID.tssf, 2222, null, null);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ResetTimerRequest, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ResetTimerRequest, null, sequence++));
                     dlg.send();
                 } catch (CAPException e) {
                     this.error("Error while checking CancelRequest or ResetTimerRequest", e);
@@ -1714,14 +1710,11 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                 CAPDialogCircuitSwitchedCall dlg = (CAPDialogCircuitSwitchedCall) capDialog;
                 try {
-                    switch (dialogStep) {
-                        case 1: // after RejectComponent
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.DialogUserAbort, null, sequence++));
-                            dlg.abort(CAPUserAbortReason.missing_reference);
+                    if (dialogStep == 1) { // after RejectComponent
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.DialogUserAbort, null, sequence++));
+                        dlg.abort(CAPUserAbortReason.missing_reference);
 
-                            dialogStep = 0;
-
-                            break;
+                        dialogStep = 0;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to send/close() Dialog", e);
@@ -1779,7 +1772,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                             Problem problem = this.capParameterFactory.createProblemInvoke(InvokeProblemType.MistypedParameter);
                             try {
                                 dlg.sendRejectComponent(resetTimerRequestInvokeId, problem);
-                                this.observerdEvents
+                                this.observedEvents
                                         .add(TestEvent.createSentEvent(EventType.RejectComponent, null, sequence++));
                             } catch (CAPException e) {
                                 this.error("Error while sending reject", e);
@@ -1801,7 +1794,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ActivityTestRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1835,7 +1828,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -1875,7 +1868,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      * DialogTimeout test ACN=CAP-v3-gsmSSF-to-gsmSCF
-     *
+
      * TC-BEGIN + InitialDPRequest TC-CONTINUE empty (no answer - DialogTimeout at both sides)
      */
     @Test(groups = { "functional.flow", "dialog" })
@@ -1917,13 +1910,10 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogCircuitSwitchedCall dlg = (CAPDialogCircuitSwitchedCall) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                        case 1: // after InitialDpRequest
-                            dlg.send();
+                    if (dialogStep == 1) { // after InitialDpRequest
+                        dlg.send();
 
-                            dialogStep = 0;
-
-                            break;
+                        dialogStep = 0;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to send/close() Dialog", e);
@@ -1940,7 +1930,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -1962,7 +1952,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2000,12 +1990,12 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * ACNNotSuported test ACN=CAP-v3-gsmSSF-to-gsmSCF
-     *
-     * TC-BEGIN + InitialDPRequest (Server service is down -> ACN not supported) TC-ABORT + ACNNotSuported
+     * ACNNotSupported test ACN=CAP-v3-gsmSSF-to-gsmSCF
+
+     * TC-BEGIN + InitialDPRequest (Server service is down -> ACN not supported) TC-ABORT + ACNNotSupported
      */
     @Test(groups = { "functional.flow", "dialog" })
-    public void testACNNotSuported() throws Exception {
+    public void testACNNotSupported() throws Exception {
 
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
 
@@ -2044,7 +2034,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2056,7 +2046,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         server.capProvider.getCAPServiceCircuitSwitchedCall().deactivate();
 
@@ -2071,8 +2061,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      * Bad data sending at TC-BEGIN test - no ACN
-     *
-     *
+
      * TC-BEGIN + no ACN TC-ABORT + BadReceivedData
      */
     @Test(groups = { "functional.flow", "dialog" })
@@ -2115,7 +2104,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.DialogUserAbort, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2124,7 +2113,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         client.sendBadDataNoAcn();
 
@@ -2137,9 +2126,8 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      * TC-CONTINUE from Server after dialogRelease at Client
-     *
-     *
-     * TC-BEGIN + InitialDP relaseDialog TC-CONTINUE ProviderAbort
+
+     * TC-BEGIN + InitialDP releaseDialog TC-CONTINUE ProviderAbort
      */
     @Test(groups = { "functional.flow", "dialog" })
     public void testProviderAbort() throws Exception {
@@ -2184,7 +2172,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2193,7 +2181,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2223,13 +2211,12 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * referensedNumber
-     *
-     *
-     * TC-BEGIN + referensedNumber TC-END + referensedNumber
+     * referencedNumber
+
+     * TC-BEGIN + referencedNumber TC-END + referencedNumber
      */
     @Test(groups = { "functional.flow", "dialog" })
-    public void testReferensedNumber() throws Exception {
+    public void testReferencedNumber() throws Exception {
 
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
             private int dialogSteps = 0;
@@ -2289,7 +2276,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.DialogAccept, null, count++, (stamp));
         clientExpectedEvents.add(te);
 
@@ -2301,7 +2288,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -2311,7 +2298,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, count++, (stamp + _TCAP_DIALOG_RELEASE_TIMEOUT));
         serverExpectedEvents.add(te);
 
-        client.sendReferensedNumber();
+        client.sendReferencedNumber();
 
         waitForEnd();
 
@@ -2321,13 +2308,13 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * broken referensedNumber
+     * broken referencedNumber
      *
      *
-     * TC-BEGIN + broken referensedNumber TC-ABORT
+     * TC-BEGIN + broken referencedNumber TC-ABORT
      */
     @Test(groups = { "functional.flow", "dialog" })
-    public void testReferensedNumber_BadVal() throws Exception {
+    public void testReferencedNumber_BadVal() throws Exception {
 
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
             private int dialogSteps = 0;
@@ -2366,7 +2353,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.DialogUserAbort, null, count++, (stamp));
         clientExpectedEvents.add(te);
 
@@ -2375,10 +2362,10 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         ((CAPProviderImplWrapper) server.capProvider).setTestMode(1);
-        client.sendReferensedNumber();
+        client.sendReferencedNumber();
 
         waitForEnd();
 
@@ -2389,7 +2376,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      *
-     * TC-BEGIN + broken referensedNumber TC-ABORT
+     * TC-BEGIN + broken referencedNumber TC-ABORT
      */
     @Test(groups = { "functional.flow", "dialog" })
     public void testMessageUserDataLength() throws Exception {
@@ -2423,7 +2410,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.DialogUserAbort, null, count++, (stamp));
         clientExpectedEvents.add(te);
 
@@ -2432,7 +2419,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         client.testMessageUserDataLength();
 
@@ -2444,8 +2431,8 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * Some not real test for testing: - sendDelayed() / closeDelayed() - getTCAPMessageType() - saving origReferense,
-     * destReference, extContainer in MAPDialog TC-BEGIN + referensedNumber + initialDPRequest + initialDPRequest TC-CONTINUE +
+     * Some not real test for testing: - sendDelayed() / closeDelayed() - getTCAPMessageType() - saving origReference,
+     * destReference, extContainer in MAPDialog TC-BEGIN + referencedNumber + initialDPRequest + initialDPRequest TC-CONTINUE +
      * sendDelayed(ContinueRequest) + sendDelayed(ContinueRequest) TC-END + closeDelayed(CancelRequest) +
      * sendDelayed(CancelRequest)
      */
@@ -2481,12 +2468,12 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                         d.sendDelayed();
                     }
                     dialogStep++;
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelRequest, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CancelRequest, null, sequence++));
                 } catch (CAPException e) {
                     this.error("Error while adding CancelRequest/sending", e);
                     fail("Error while adding CancelRequest/sending");
                 }
-            };
+            }
         };
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
@@ -2519,7 +2506,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     try {
                         d.addContinueRequest();
                         d.sendDelayed();
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ContinueRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ContinueRequest, null, sequence++));
                     } catch (CAPException e) {
                         this.error("Error while adding ContinueRequest/sending", e);
                         fail("Error while adding ContinueRequest/sending");
@@ -2536,7 +2523,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2566,7 +2553,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp));
         serverExpectedEvents.add(te);
 
@@ -2650,7 +2637,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                         d.sendDelayed();
                     else
                         d.closeDelayed(true);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ContinueRequest, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ContinueRequest, null, sequence++));
                 } catch (CAPException e) {
                     this.error("Error while adding ContinueRequest/sending", e);
                     fail("Error while adding ContinueRequest/sending");
@@ -2664,7 +2651,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2682,7 +2669,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp));
         serverExpectedEvents.add(te);
 
@@ -2716,10 +2703,10 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     /**
      * Testing for some special error cases: - linkedId to an operation that does not support linked operations - linkedId to a
      * missed operation
-     *
+
      * TC-BEGIN + initialDPRequest + playAnnouncement TC-CONTINUE + SpecializedResourceReportRequest to initialDPRequest (->
      * LinkedResponseUnexpected) + SpecializedResourceReportRequest to a missed operation (linkedId==bad==50 ->
-     * UnrechognizedLinkedID) + ContinueRequest to a playAnnouncement operation (-> UnexpectedLinkedOperation) +
+     * UnrecognizedLinkedID) + ContinueRequest to a playAnnouncement operation (-> UnexpectedLinkedOperation) +
      * SpecializedResourceReportRequest to a playAnnouncement operation (-> normal case) TC-END
      */
     @Test(groups = { "functional.flow", "dialog" })
@@ -2834,12 +2821,12 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                     outInvokeId4 = dlg.addSpecializedResourceReportRequest_CapV23(invokeId2);
 
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest, null,
                             sequence++));
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest, null,
                             sequence++));
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ContinueRequest, null, sequence++));
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ContinueRequest, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SpecializedResourceReportRequest, null,
                             sequence++));
 
                     dlg.send();
@@ -2852,7 +2839,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -2882,7 +2869,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp));
         serverExpectedEvents.add(te);
 
@@ -2930,12 +2917,12 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      * ReturnResultLast & ReturnError for operation classes 1, 2, 3, 4
-     *
+
      * TC-BEGIN + initialDPRequest (class2, invokeId==1) + initialDPRequest (class2, invokeId==2) +
      * promptAndCollectUserInformationRequest (class1, invokeId==3) + promptAndCollectUserInformationRequest (class1,
      * invokeId==4) + + activityTestRequest (class3, invokeId==5) + activityTestRequest (class3, invokeId==6) +
      * releaseCallRequest (class4, invokeId==7) + releaseCallRequest (class4, invokeId==7)
-     *
+
      * TC-CONTINUE + ReturnResultLast (initialDP, invokeId==1 -> ReturnResultUnexpected) + SystemFailureError (initialDP,
      * invokeId==2 -> OK) + promptAndCollectUserInformationResponse (invokeId==3 -> OK) + SystemFailureError
      * (promptAndCollectUserInformation, invokeId==4 -> OK) + activityTestResponse (invokeId==5 -> OK) + SystemFailureError
@@ -3108,7 +3095,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     CAPErrorMessage mem = this.capErrorMessageFactory
                             .createCAPErrorMessageSystemFailure(UnavailableNetworkResource.endUserFailure);
                     dlg.sendErrorComponent(invokeId2, mem);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
 
                     GenericNumber genericNumber = this.isupParameterFactory.createGenericNumber();
                     genericNumber.setAddress("444422220000");
@@ -3119,21 +3106,21 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     genericNumber.setScreeningIndicator(GenericNumber._SI_USER_PROVIDED_VERIFIED_FAILED);
                     Digits digitsResponse = this.capParameterFactory.createDigits_GenericNumber(genericNumber);
                     dlg.addPromptAndCollectUserInformationResponse_DigitsResponse(invokeId3, digitsResponse);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.PromptAndCollectUserInformationResponse, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.PromptAndCollectUserInformationResponse, null,
                             sequence++));
 
                     mem = this.capErrorMessageFactory
                             .createCAPErrorMessageSystemFailure(UnavailableNetworkResource.resourceStatusFailure);
                     dlg.sendErrorComponent(invokeId4, mem);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
 
                     dlg.addActivityTestResponse(invokeId5);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivityTestResponse, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivityTestResponse, null, sequence++));
 
                     mem = this.capErrorMessageFactory
                             .createCAPErrorMessageSystemFailure(UnavailableNetworkResource.resourceStatusFailure);
                     dlg.sendErrorComponent(invokeId6, mem);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
 
                     rrl = ((CAPProviderImpl) dlg.getService().getCAPProvider()).getTCAPProvider()
                             .getComponentPrimitiveFactory().createTCResultLastRequest();
@@ -3146,7 +3133,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     mem = this.capErrorMessageFactory
                             .createCAPErrorMessageSystemFailure(UnavailableNetworkResource.resourceStatusFailure);
                     dlg.sendErrorComponent(invokeId8, mem);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
 
                     dlg.send();
                 } catch (CAPException e) {
@@ -3158,7 +3145,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3218,7 +3205,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, (stamp));
         serverExpectedEvents.add(te);
 
@@ -3313,7 +3300,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.DialogProviderAbort, null, count++, (stamp));
         clientExpectedEvents.add(te);
 
@@ -3322,7 +3309,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         // sending a dummy message to a bad address for a dialog starting
         client.sendDummyMessage();
@@ -3360,7 +3347,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.DialogNotice, null, count++, (stamp));
         clientExpectedEvents.add(te);
 
@@ -3369,7 +3356,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
 
         client.actionB();
 
@@ -3383,8 +3370,8 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * GPSR messageflow 1 ACN=cap3-gprssf-scf
-     *
+     * GPRS message flow 1 ACN=cap3-gprssf-scf
+
      * TC-BEGIN + InitialDPGPRSRequest + originationReference=1001 TC-CONTINUE + requestReportGPRSEventRequest +
      * destinationReference=1001 + originationReference=2001 TC-CONTINUE + furnishChargingInformationGPRSRequest TC-CONTINUE +
      * eventReportGPRSRequest TC-CONTINUE + eventReportGPRSResponse TC-CONTINUE + resetTimerGPRSRequest TC-CONTINUE +
@@ -3490,17 +3477,17 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                             PDPID pdpID = new PDPIDImpl(1);
                             dlg.addEventReportGPRSRequest(gprsEventType, miscGPRSInfo, gprsEventSpecificInformation, pdpID);
 
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSRequest, null,
                                     sequence++));
                             dlg.send();
                             dialogStep = 0;
                             break;
                         case 2: // after ConnectRequest
-                            ElapsedTimeImpl elapsedTime = new ElapsedTimeImpl(new Integer(5320));
+                            ElapsedTimeImpl elapsedTime = new ElapsedTimeImpl(5320);
                             ChargingResult chargingResult = new ChargingResultImpl(elapsedTime);
                             boolean active = true;
                             dlg.addApplyChargingReportGPRSRequest(chargingResult, null, active, null, null);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingReportGPRSRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingReportGPRSRequest, null,
                                     sequence++));
                             dlg.send();
                             dialogStep = 0;
@@ -3566,7 +3553,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                             RequestReportGPRSEventRequest rrc = this.getRequestReportGPRSEventRequest();
                             dlg.addRequestReportGPRSEventRequest(rrc.getGPRSEvent(), rrc.getPDPID());
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.RequestReportGPRSEventRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.RequestReportGPRSEventRequest, null,
                                     sequence++));
                             dlg.send();
 
@@ -3582,7 +3569,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                             dlg.addFurnishChargingInformationGPRSRequest(fciGPRSBillingChargingCharacteristics);
                             dlg.send();
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.FurnishChargingInformationGPRSRequest,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.FurnishChargingInformationGPRSRequest,
                                     null, sequence++));
 
                             dialogStep = 0;
@@ -3591,33 +3578,33 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                         case 2: // after eventReportGPRSRequest
                             dlg.addEventReportGPRSResponse(eventReportGPRSResponse);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSResponse, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSResponse, null,
                                     sequence++));
                             dlg.send();
 
                             dlg.addResetTimerGPRSRequest(TimerID.tssf, 12);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ResetTimerGPRSRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ResetTimerGPRSRequest, null,
                                     sequence++));
                             dlg.send();
 
                             ChargingCharacteristics chargingCharacteristics = new ChargingCharacteristicsImpl(200L);
-                            ;
-                            Integer tariffSwitchInterval = new Integer(24);
+
+                            Integer tariffSwitchInterval = 24;
                             PDPID pdpIDApplyCharging = new PDPIDImpl(2);
                             dlg.addApplyChargingGPRSRequest(chargingCharacteristics, tariffSwitchInterval, pdpIDApplyCharging);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingGPRSRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingGPRSRequest, null,
                                     sequence++));
 
                             AccessPointName accessPointName = new AccessPointNameImpl(new byte[] { 52, 20, 30 });
                             PDPID pdpIDConnectRequest = new PDPIDImpl(2);
                             dlg.addConnectGPRSRequest(accessPointName, pdpIDConnectRequest);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ConnectGPRSRequest, null, sequence++));
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ConnectGPRSRequest, null, sequence++));
                             dlg.send();
                             dialogStep = 0;
                             break;
                         case 3:
                             dlg.addApplyChargingReportGPRSResponse(applyChargingReportGPRSResponse);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingReportGPRSResponse, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ApplyChargingReportGPRSResponse, null,
                                     sequence++));
                             dlg.close(false);
                             dialogStep = 0;
@@ -3633,7 +3620,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpGprsRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3690,7 +3677,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -3747,8 +3734,8 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * GPSR messageflow 2 ACN=cap3-gsmscf-gprsssf
-     *
+     * GPRS message flow 2 ACN=cap3-gsmscf-gprsssf
+
      * TC-BEGIN + activityTestGPRSSRequest + destinationReference=1001 + originationReference=2001 TC-CONTINUE +
      * activityTestGPRSSResponse + destinationReference=2001 + originationReference=1001 TC-CONTINUE +
      * furnishChargingInformationGPRSRequest + continueGPRSRequest TC-CONTINUE + eventReportGPRSRequest TC-END +
@@ -3797,11 +3784,11 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                                     fcIBCCCAMELsequence1);
 
                             dlg.addFurnishChargingInformationGPRSRequest(fciGPRSBillingChargingCharacteristics);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.FurnishChargingInformationGPRSRequest,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.FurnishChargingInformationGPRSRequest,
                                     null, sequence++));
 
                             dlg.addContinueGPRSRequest(pdpID);
-                            this.observerdEvents
+                            this.observedEvents
                                     .add(TestEvent.createSentEvent(EventType.ContinueGPRSRequest, null, sequence++));
 
                             dlg.send();
@@ -3810,12 +3797,12 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                             break;
                         case 2:
                             dlg.addEventReportGPRSResponse(eventReportGPRSResponse);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSResponse, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSResponse, null,
                                     sequence++));
 
                             PDPID pdpIDCancelGPRS = new PDPIDImpl(2);
                             dlg.addCancelGPRSRequest(pdpIDCancelGPRS);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelGPRSRequest, null, sequence++));
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.CancelGPRSRequest, null, sequence++));
                             dlg.close(false);
                             dialogStep = 0;
 
@@ -3877,7 +3864,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                         case 1: // after ActivityTestGPRS
                             dlg.addActivityTestGPRSResponse(activityTestGPRSRequest);
                             dlg.send();
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivityTestGPRSResponse, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivityTestGPRSResponse, null,
                                     sequence++));
 
                             dialogStep = 0;
@@ -3909,7 +3896,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                             PDPID pdpID = new PDPIDImpl(1);
                             dlg.addEventReportGPRSRequest(gprsEventType, miscGPRSInfo, gprsEventSpecificInformation, pdpID);
 
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSRequest, null,
+                            this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSRequest, null,
                                     sequence++));
                             dlg.send();
                             dialogStep = 0;
@@ -3925,7 +3912,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ActivityTestGPRSRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -3961,7 +3948,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -4009,8 +3996,8 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * GPSR messageflow 3 ACN=cap3-gprssf-scf
-     *
+     * GPRS message flow 3 ACN=cap3-gprssf-scf
+
      * TC-BEGIN + eventReportGPRSRequest + destinationReference=2001 + originationReference=1001 TC-END +
      * eventReportGPRSResponse + connectGPRSRequest + sendChargingInformationGPRSRequest + destinationReference=1001 +
      * originationReference=2001
@@ -4084,33 +4071,29 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogGprs dlg = (CAPDialogGprs) capDialog;
 
                 try {
-                    switch (dialogStep) {
+                    if (dialogStep == 1) {
+                        dlg.addEventReportGPRSResponse(eventReportGPRSResponse);
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSResponse, null,
+                                sequence++));
 
-                        case 1:
-                            dlg.addEventReportGPRSResponse(eventReportGPRSResponse);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportGPRSResponse, null,
-                                    sequence++));
+                        AccessPointName accessPointName = new AccessPointNameImpl(new byte[]{52, 20, 30});
+                        PDPID pdpIDConnectRequest = new PDPIDImpl(2);
+                        dlg.addConnectGPRSRequest(accessPointName, pdpIDConnectRequest);
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ConnectGPRSRequest, null, sequence++));
 
-                            AccessPointName accessPointName = new AccessPointNameImpl(new byte[] { 52, 20, 30 });
-                            PDPID pdpIDConnectRequest = new PDPIDImpl(2);
-                            dlg.addConnectGPRSRequest(accessPointName, pdpIDConnectRequest);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ConnectGPRSRequest, null, sequence++));
+                        CAI_GSM0224 aocInitial = new CAI_GSM0224Impl(1, 2, 3, 4, 5, 6, 7);
+                        CAI_GSM0224Impl cai_GSM0224 = new CAI_GSM0224Impl(null, null, null, 4, 5, null, null);
+                        AOCSubsequent aocSubsequent = new AOCSubsequentImpl(cai_GSM0224, 222);
+                        AOCGPRS aocGPRS = new AOCGPRSImpl(aocInitial, aocSubsequent);
+                        PDPID pdpID = new PDPIDImpl(1);
+                        CAMELSCIGPRSBillingChargingCharacteristics sciGPRSBillingChargingCharacteristics = new CAMELSCIGPRSBillingChargingCharacteristicsImpl(
+                                aocGPRS, pdpID);
+                        dlg.addSendChargingInformationGPRSRequest(sciGPRSBillingChargingCharacteristics);
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.SendChargingInformationGPRSRequest,
+                                null, sequence++));
 
-                            CAI_GSM0224 aocInitial = new CAI_GSM0224Impl(1, 2, 3, 4, 5, 6, 7);
-                            CAI_GSM0224Impl cai_GSM0224 = new CAI_GSM0224Impl(null, null, null, 4, 5, null, null);
-                            AOCSubsequent aocSubsequent = new AOCSubsequentImpl(cai_GSM0224, 222);
-                            AOCGPRS aocGPRS = new AOCGPRSImpl(aocInitial, aocSubsequent);
-                            PDPID pdpID = new PDPIDImpl(1);
-                            CAMELSCIGPRSBillingChargingCharacteristics sciGPRSBillingChargingCharacteristics = new CAMELSCIGPRSBillingChargingCharacteristicsImpl(
-                                    aocGPRS, pdpID);
-                            dlg.addSendChargingInformationGPRSRequest(sciGPRSBillingChargingCharacteristics);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendChargingInformationGPRSRequest,
-                                    null, sequence++));
-
-                            dlg.close(false);
-                            dialogStep = 0;
-
-                            break;
+                        dlg.close(false);
+                        dialogStep = 0;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to close() Dialog", e);
@@ -4122,7 +4105,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
 
         TestEvent te = TestEvent.createSentEvent(EventType.EventReportGPRSRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
@@ -4147,7 +4130,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -4180,8 +4163,8 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * GPSR messageflow 4 ACN=cap3-gsmscf-gprsssf
-     *
+     * GPRS message flow 4 ACN=cap3-gsmscf-gprsssf
+
      * TC-BEGIN + releaseGPRSRequest + destinationReference=1001 + originationReference=2001 TC-END + destinationReference=2001
      * + originationReference=1001
      */
@@ -4215,11 +4198,9 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogGprs dlg = (CAPDialogGprs) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                        case 1:
-                            dlg.close(false);
-                            dialogStep = 0;
-                            break;
+                    if (dialogStep == 1) {
+                        dlg.close(false);
+                        dialogStep = 0;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to close() Dialog", e);
@@ -4231,7 +4212,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.ReleaseGPRSRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4246,7 +4227,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -4272,14 +4253,13 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     private byte[] freeFD = new byte[] { 1, 2, 3, 4, 5 };
 
     /**
-     * SMS test messageflow 1 ACN=CapV3_cap3_sms
+     * SMS test message flow 1 ACN=CapV3_cap3_sms
 
--> initialDPSMSRequest
-<- resetTimerSMS + requestReportSMSEventRequest
--> eventReportSMSRequest
-<- furnishChargingInformationSMS
-<- connectSMS (TC-END)
-
+     * -> initialDPSMSRequest
+     * <- resetTimerSMS + requestReportSMSEventRequest
+     * -> eventReportSMSRequest
+     * <- furnishChargingInformationSMS
+     * <- connectSMS (TC-END)
      */
     @Test(groups = { "functional.flow", "dialog" })
     public void testSMS1() throws Exception {
@@ -4349,17 +4329,15 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogSms dlg = (CAPDialogSms) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                    case 1:
+                    if (dialogStep == 1) {
                         OSmsFailureSpecificInfo oSmsFailureSpecificInfo = this.capParameterFactory
                                 .createOSmsFailureSpecificInfo(MOSMSCause.releaseFromRadioInterface);
                         EventSpecificInformationSMS eventSpecificInformationSMS = this.capParameterFactory
                                 .createEventSpecificInformationSMSImpl(oSmsFailureSpecificInfo);
                         dlg.addEventReportSMSRequest(EventTypeSMS.oSmsFailure, eventSpecificInformationSMS, null, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.EventReportSMSRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.EventReportSMSRequest, null, sequence++));
 
                         dlg.send();
-                        break;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to close() Dialog", e);
@@ -4408,16 +4386,16 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     switch (dialogStep) {
                     case 1:
                         dlg.addResetTimerSMSRequest(TimerID.tssf, 3000, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ResetTimerSMSRequest,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ResetTimerSMSRequest,
                                 null, sequence++));
 
-                        ArrayList<SMSEvent> smsEvents = new ArrayList<SMSEvent>();
+                        ArrayList<SMSEvent> smsEvents = new ArrayList<>();
                         SMSEvent smsEvent = this.capParameterFactory.createSMSEvent(EventTypeSMS.tSmsDelivery, MonitorMode.transparent);
                         smsEvents.add(smsEvent);
                         smsEvent = this.capParameterFactory.createSMSEvent(EventTypeSMS.oSmsFailure, MonitorMode.notifyAndContinue);
                         smsEvents.add(smsEvent);
                         dlg.addRequestReportSMSEventRequest(smsEvents, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.RequestReportSMSEventRequest,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.RequestReportSMSEventRequest,
                                 null, sequence++));
 
                         dlg.send();
@@ -4427,7 +4405,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                         FreeFormatDataSMS freeFormatData = this.capParameterFactory.createFreeFormatDataSMS(freeFD);
                         FCIBCCCAMELsequence1SMS fciBCCCAMELsequence1 = this.capParameterFactory.createFCIBCCCAMELsequence1(freeFormatData, null);
                         dlg.addFurnishChargingInformationSMSRequest(fciBCCCAMELsequence1);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.FurnishChargingInformationSMSRequest,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.FurnishChargingInformationSMSRequest,
                                 null, sequence++));
 
                         dlg.send();
@@ -4439,7 +4417,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                         ISDNAddressString smscAddress = this.mapParameterFactory.createISDNAddressString(AddressNature.international_number,
                                 NumberingPlan.ISDN, "1111155555");
                         dlg.addConnectSMSRequest(callingPartysNumber, destinationSubscriberNumber, smscAddress, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ConnectSMSRequest,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ConnectSMSRequest,
                                 null, sequence++));
 
                         dlg.close(false);
@@ -4455,7 +4433,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDPSMSRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4493,7 +4471,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -4536,7 +4514,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * SMS test messageflow 2 ACN=CapV4_cap4_sms
+     * SMS test message flow 2 ACN=CapV4_cap4_sms
 
 -> initialDPSMSRequest
 <- continueSMS
@@ -4593,13 +4571,11 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogSms dlg = (CAPDialogSms) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                    case 1:
+                    if (dialogStep == 1) {
                         dlg.addContinueSMSRequest();
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ContinueSMSRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ContinueSMSRequest, null, sequence++));
 
                         dlg.close(false);
-                        break;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to close() Dialog", e);
@@ -4611,7 +4587,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDPSMSRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4630,7 +4606,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -4658,7 +4634,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
     }
 
     /**
-     * SMS test messageflow 3 ACN=CapV4_cap4_sms
+     * SMS test message flow 3 ACN=CapV4_cap4_sms
 
 -> initialDPSMSRequest
 <- releaseSMS
@@ -4717,14 +4693,12 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogSms dlg = (CAPDialogSms) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                    case 1:
+                    if (dialogStep == 1) {
                         RPCause rpCause = this.capParameterFactory.createRPCause(8);
                         dlg.addReleaseSMSRequest(rpCause);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReleaseSMSRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ReleaseSMSRequest, null, sequence++));
 
                         dlg.close(false);
-                        break;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to close() Dialog", e);
@@ -4736,7 +4710,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDPSMSRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -4755,7 +4729,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -4784,7 +4758,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      * ACN = capscf-ssfGenericAC V4
-     *
+
      * TC-BEGIN + InitiateCallAttemptRequest
      *   TC-CONTINUE + InitiateCallAttemptResponse
      * TC-CONTINUE + SplitLegRequest
@@ -4844,14 +4818,14 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     case 1: // after InitiateCallAttemptResponse
                         LegID logIDToSplit = this.inapParameterFactory.createLegID(false, LegType.leg1);
                         dlg.addSplitLegRequest(logIDToSplit, 1, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.SplitLegRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.SplitLegRequest, null, sequence++));
                         dlg.send();
                         break;
 
                     case 2: // after SplitLegResponse
                         LegID logIDToMove = this.inapParameterFactory.createLegID(false, LegType.leg1);
                         dlg.addMoveLegRequest(logIDToMove, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.MoveLegRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.MoveLegRequest, null, sequence++));
                         dlg.send();
                         break;
 
@@ -4861,13 +4835,13 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                         causeIndicators.setCauseValue(3);
                         CauseCap causeCap = this.capParameterFactory.createCauseCap(causeIndicators);
                         dlg.addDisconnectLegRequest(logToBeReleased, causeCap, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.DisconnectLegRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.DisconnectLegRequest, null, sequence++));
                         dlg.send();
                         break;
 
                     case 4: // after MoveLegResponse
                         dlg.addDisconnectForwardConnectionWithArgumentRequest(15, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.DisconnectForwardConnectionWithArgumentRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.DisconnectForwardConnectionWithArgumentRequest, null, sequence++));
                         dlg.close(false);
                         break;
                     }
@@ -4894,7 +4868,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     assertEquals(ind.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress(), "1113330");
                 } catch (CAPException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
 
                 dialogStep = 1;
@@ -4930,7 +4904,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     assertEquals(ind.getReleaseCause().getCauseIndicators().getCauseValue(), 3);
                 } catch (CAPException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
 
                 dialogStep = 4;
@@ -4959,7 +4933,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                     case 1: // after InitiateCallAttempt
                         SupportedCamelPhases supportedCamelPhases = this.mapParameterFactory.createSupportedCamelPhases(true, true, true, false);
                         dlg.addInitiateCallAttemptResponse(invokeIdInitiateCallAttempt, supportedCamelPhases, null, null, false);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.InitiateCallAttemptResponse, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.InitiateCallAttemptResponse, null, sequence++));
                         dlg.send();
 
                         dialogStep = 0;
@@ -4967,7 +4941,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                     case 2: // after SplitLegRequest
                         dlg.addSplitLegResponse(invokeIdSplitLeg);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.SplitLegResponse, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.SplitLegResponse, null, sequence++));
                         dlg.send();
 
                         dialogStep = 0;
@@ -4975,7 +4949,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                     case 3: // after MoveLegRequest
                         dlg.addMoveLegResponse(invokeIdMoveLeg);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.MoveLegResponse, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.MoveLegResponse, null, sequence++));
                         dlg.send();
 
                         dialogStep = 0;
@@ -4983,7 +4957,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
                     case 4: // after DisconnectLegRequest
                         dlg.addDisconnectLegResponse(invokeIdDisconnectLeg);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.DisconnectLegResponse, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.DisconnectLegResponse, null, sequence++));
                         dlg.send();
 
                         dialogStep = 0;
@@ -4998,7 +4972,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitiateCallAttemptRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5046,7 +5020,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -5105,7 +5079,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      * ACN = capscf-ssfGenericAC V4
-     *
+
      * TC-BEGIN + InitiateDPRequest
      *   TC-CONTINUE + ContinueWithArgumentRequest
      * TC-END 
@@ -5132,13 +5106,9 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogCircuitSwitchedCall dlg = (CAPDialogCircuitSwitchedCall) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                        case 1: // after ContinueWithArgumentRequest
-                            dlg.close(false);
-
-                            dialogStep = 0;
-
-                            break;
+                    if (dialogStep == 1) { // after ContinueWithArgumentRequest
+                        dlg.close(false);
+                        dialogStep = 0;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to close() Dialog", e);
@@ -5166,17 +5136,14 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogCircuitSwitchedCall dlg = (CAPDialogCircuitSwitchedCall) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                    case 1: // after InitialDp
+                    if (dialogStep == 1) { // after InitialDp
                         AlertingPattern ap = new AlertingPatternImpl(AlertingLevel.Level1);
                         AlertingPatternCap alertingPattern = this.capParameterFactory.createAlertingPatternCap(ap);
                         dlg.addContinueWithArgumentRequest(alertingPattern, null, null, null, null, null, false, null, null, false, null, false, false, null);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ContinueWithArgumentRequest, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ContinueWithArgumentRequest, null, sequence++));
                         dlg.send();
 
                         dialogStep = 0;
-
-                        break;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to close() Dialog", e);
@@ -5187,7 +5154,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         long stamp = System.currentTimeMillis();
         int count = 0;
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5205,7 +5172,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 
@@ -5234,7 +5201,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
     /**
      * ACN = capscf-ssfGenericAC V4
-     *
+
      * TC-BEGIN + InitiateDPRequest
      *   TC-CONTINUE + callGap
      * TC-END 
@@ -5268,13 +5235,9 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogCircuitSwitchedCall dlg = (CAPDialogCircuitSwitchedCall) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                        case 1: // after onCallGapRequest
-                            dlg.close(false);
-
-                            dialogStep = 0;
-
-                            break;
+                    if (dialogStep == 1) { // after onCallGapRequest
+                        dlg.close(false);
+                        dialogStep = 0;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to close() Dialog", e);
@@ -5300,20 +5263,19 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
                 CAPDialogCircuitSwitchedCall dlg = (CAPDialogCircuitSwitchedCall) capDialog;
 
                 try {
-                    switch (dialogStep) {
-                        case 1: // after InitialDp
-                            GenericNumber genericNumber = capProvider.getISUPParameterFactory().createGenericNumber();
-                            genericNumber.setAddress("501090500");
-                            Digits digits = capProvider.getCAPParameterFactory().createDigits_GenericNumber(genericNumber);
+                    if (dialogStep == 1) { // after InitialDp
+                        GenericNumber genericNumber = capProvider.getISUPParameterFactory().createGenericNumber();
+                        genericNumber.setAddress("501090500");
+                        Digits digits = capProvider.getCAPParameterFactory().createDigits_GenericNumber(genericNumber);
 
-                            CalledAddressAndService calledAddressAndService = new CalledAddressAndServiceImpl(digits, 100);
-                            BasicGapCriteria basicGapCriteria = new BasicGapCriteriaImpl(calledAddressAndService);
-                            GapCriteria gapCriteria = new GapCriteriaImpl(basicGapCriteria);
-                            GapIndicators gapIndicators = new GapIndicatorsImpl(60, -1);
+                        CalledAddressAndService calledAddressAndService = new CalledAddressAndServiceImpl(digits, 100);
+                        BasicGapCriteria basicGapCriteria = new BasicGapCriteriaImpl(calledAddressAndService);
+                        GapCriteria gapCriteria = new GapCriteriaImpl(basicGapCriteria);
+                        GapIndicators gapIndicators = new GapIndicatorsImpl(60, -1);
 
-                            dlg.addCallGapRequest(gapCriteria, gapIndicators, null, null, null);
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.CallGapRequest, null, sequence++));
-                            dlg.send();
+                        dlg.addCallGapRequest(gapCriteria, gapIndicators, null, null, null);
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.CallGapRequest, null, sequence++));
+                        dlg.send();
 
 //                            GenericNumber genericNumber = capProvider.getISUPParameterFactory().createGenericNumber();
 //                            genericNumber.setAddress("501090500");
@@ -5335,12 +5297,10 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 //                            GapTreatment gapTreatment = new GapTreatmentImpl(informationToSend);
 //
 //                            dlg.addCallGapRequest(gapCriteria, gapIndicators, ControlType.sCPOverloaded, gapTreatment, null);
-//                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.CallGapRequest, null, sequence++));
+//                            this.observedEvents.add(TestEvent.createSentEvent(EventType.CallGapRequest, null, sequence++));
 //                            dlg.send();
 
-                            dialogStep = 0;
-
-                            break;
+                        dialogStep = 0;
                     }
                 } catch (CAPException e) {
                     this.error("Error while trying to send Response CallGapRequests", e);
@@ -5352,7 +5312,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
         int count = 0;
 
         // Client side events
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.InitialDpRequest, null, count++, stamp);
         clientExpectedEvents.add(te);
 
@@ -5371,7 +5331,7 @@ TC-BEGIN + establishTemporaryConnection + callInformationRequest + collectInform
 
         count = 0;
         // Server side events
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.DialogRequest, null, count++, stamp);
         serverExpectedEvents.add(te);
 

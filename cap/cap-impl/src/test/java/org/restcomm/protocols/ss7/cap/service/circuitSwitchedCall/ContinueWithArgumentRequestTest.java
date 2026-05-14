@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.*;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.isup.GenericNumberCap;
@@ -40,6 +41,8 @@ import org.testng.annotations.Test;
  */
 public class ContinueWithArgumentRequestTest {
 
+    private static final Logger logger = LogManager.getLogger(ContinueWithArgumentRequestTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 49, (byte) 129, 3, 0, 0, 2, (byte) 166, 18, 48, 5, 2, 1, 2, (byte) 129, 0, 48, 9, 2, 1, 3, 10, 1, 1, (byte) 129, 1, (byte) 255,
                 (byte) 167, 3, (byte) 130, 1, 1, (byte) 140, 1, 4, (byte) 176, 8, 4, 6, 0, 0, 0, 17, 33, 34, (byte) 145, 4, 1, 2, 3, 4 };
@@ -66,7 +69,7 @@ public class ContinueWithArgumentRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         ContinueWithArgumentRequestImpl elem = new ContinueWithArgumentRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getAlertingPattern().getAlertingPattern().getAlertingLevel(), AlertingLevel.Level2);
@@ -89,7 +92,7 @@ public class ContinueWithArgumentRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new ContinueWithArgumentRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getAlertingPattern().getAlertingPattern().getAlertingLevel(), AlertingLevel.Level2);
@@ -104,7 +107,7 @@ public class ContinueWithArgumentRequestTest {
         assertEquals(elem.getChargeNumber().getLocationNumber().getAddress(), "222333");
         assertEquals(elem.getCarrier().getData(), getCarrier());
         assertTrue(elem.getSuppressionOfAnnouncement());
-        assertEquals((int) elem.getNaOliInfo().getData(), 11);
+        assertEquals(elem.getNaOliInfo().getData(), 11);
         assertTrue(elem.getBorInterrogationRequested());
         assertTrue(elem.getSuppressOCsi());
         assertTrue(elem.getContinueWithArgumentArgExtension().getSuppressDCsi());
@@ -121,7 +124,7 @@ public class ContinueWithArgumentRequestTest {
                 BothwayThroughConnectionInd.bothwayPathNotRequired, null, false, null, null, null);
         AlertingPatternImpl alertingPattern = new AlertingPatternImpl(AlertingLevel.Level2);
         AlertingPatternCapImpl alertingPatternCap = new AlertingPatternCapImpl(alertingPattern);
-        ArrayList<GenericNumberCap> genericNumbers = new ArrayList<GenericNumberCap>();
+        ArrayList<GenericNumberCap> genericNumbers = new ArrayList<>();
         GenericNumberImpl genericNumber = new GenericNumberImpl();
         genericNumber.setAddress("111222");
         GenericNumberCapImpl gn = new GenericNumberCapImpl(genericNumber);
@@ -170,7 +173,7 @@ public class ContinueWithArgumentRequestTest {
                 BothwayThroughConnectionInd.bothwayPathNotRequired, null, false, null, null, null);
         AlertingPatternImpl alertingPattern = new AlertingPatternImpl(AlertingLevel.Level2);
         AlertingPatternCapImpl alertingPatternCap = new AlertingPatternCapImpl(alertingPattern);
-        ArrayList<GenericNumberCap> genericNumbers = new ArrayList<GenericNumberCap>();
+        ArrayList<GenericNumberCap> genericNumbers = new ArrayList<>();
         GenericNumberImpl genericNumber = new GenericNumberImpl();
         genericNumber.setAddress("111222");
         GenericNumberCapImpl gn = new GenericNumberCapImpl(genericNumber);
@@ -198,7 +201,7 @@ public class ContinueWithArgumentRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -220,7 +223,7 @@ public class ContinueWithArgumentRequestTest {
         assertEquals(original.getChargeNumber().getLocationNumber().getAddress(), copy.getChargeNumber().getLocationNumber().getAddress());
 //        assertEquals(original.getCarrier().getData(), copy.getCarrier().getData());
         assertEquals(original.getSuppressionOfAnnouncement(), copy.getSuppressionOfAnnouncement());
-        assertEquals((int) original.getNaOliInfo().getData(), (int) copy.getNaOliInfo().getData());
+        assertEquals(original.getNaOliInfo().getData(), copy.getNaOliInfo().getData());
         assertEquals(original.getBorInterrogationRequested(), copy.getBorInterrogationRequested());
         assertEquals(original.getSuppressOCsi(), copy.getSuppressOCsi());
         assertEquals(original.getContinueWithArgumentArgExtension().getSuppressDCsi(), copy.getContinueWithArgumentArgExtension().getSuppressDCsi());

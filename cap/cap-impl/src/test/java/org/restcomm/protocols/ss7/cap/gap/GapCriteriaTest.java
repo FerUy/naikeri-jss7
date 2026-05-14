@@ -1,20 +1,16 @@
-
 package org.restcomm.protocols.ss7.cap.gap;
 
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.api.gap.*;
 import org.restcomm.protocols.ss7.cap.api.isup.Digits;
 import org.restcomm.protocols.ss7.cap.api.primitives.ScfID;
-import org.restcomm.protocols.ss7.cap.gap.BasicGapCriteriaImpl;
-import org.restcomm.protocols.ss7.cap.gap.CalledAddressAndServiceImpl;
-import org.restcomm.protocols.ss7.cap.gap.CompoundCriteriaImpl;
-import org.restcomm.protocols.ss7.cap.gap.GapCriteriaImpl;
-import org.restcomm.protocols.ss7.cap.gap.GapOnServiceImpl;
 import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
 import org.restcomm.protocols.ss7.cap.primitives.ScfIDImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericNumberImpl;
@@ -35,7 +31,10 @@ import static org.testng.Assert.assertTrue;
  */
 public class GapCriteriaTest {
 
+    private static final Logger logger = LogManager.getLogger(GapCriteriaTest.class.getName());
+
     public static final int SERVICE_KEY = 821;
+    //public static final int _ID_gapCriteria = 0;
 
     // choice BasicGapCriteria -> CalledAddressValue
     public byte[] getData() {
@@ -73,8 +72,6 @@ public class GapCriteriaTest {
 
         assertEquals(elem.getBasicGapCriteria().getCalledAddressValue().getData(), getDigitsData());
     }
-
-    public static final int _ID_gapCriteria = 0;
 
     @Test(groups = { "functional.encode", "gap" })
     public void testEncode_CalledAddressValue() throws Exception {
@@ -173,7 +170,7 @@ public class GapCriteriaTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -195,7 +192,7 @@ public class GapCriteriaTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -208,13 +205,9 @@ public class GapCriteriaTest {
     private boolean isEqual(GapCriteriaImpl o1, GapCriteriaImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 
 }

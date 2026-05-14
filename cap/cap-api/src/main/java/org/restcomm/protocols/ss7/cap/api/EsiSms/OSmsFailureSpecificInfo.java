@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.api.EsiSms;
 
 import java.io.Serializable;

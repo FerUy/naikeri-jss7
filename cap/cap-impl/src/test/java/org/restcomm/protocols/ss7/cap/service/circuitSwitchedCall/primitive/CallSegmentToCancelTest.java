@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -23,6 +24,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CallSegmentToCancelTest {
+
+    private static final Logger logger = LogManager.getLogger(CallSegmentToCancelTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 6, (byte) 128, 1, 3, (byte) 129, 1, 5 };
@@ -66,7 +69,7 @@ public class CallSegmentToCancelTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

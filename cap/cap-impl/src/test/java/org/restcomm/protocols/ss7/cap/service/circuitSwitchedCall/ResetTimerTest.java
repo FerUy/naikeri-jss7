@@ -7,11 +7,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.primitives.TimerID;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsTest;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.ResetTimerRequestImpl;
 import org.testng.annotations.Test;
 
 import javolution.xml.XMLObjectReader;
@@ -24,6 +25,8 @@ import javolution.xml.XMLObjectWriter;
  */
 public class ResetTimerTest {
 
+    private static final Logger logger = LogManager.getLogger(ResetTimerTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 30, (byte) 128, 1, 0, (byte) 129, 2, 3, (byte) 232, (byte) 162, 18, 48, 5, 2, 1, 2, (byte) 129,
                 0, 48, 9, 2, 1, 3, 10, 1, 1, (byte) 129, 1, (byte) 255, (byte) 131, 1, 100 };
@@ -35,7 +38,7 @@ public class ResetTimerTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         ResetTimerRequestImpl elem = new ResetTimerRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getTimerID(), TimerID.tssf);
         assertEquals(elem.getTimerValue(), 1000);
@@ -66,8 +69,8 @@ public class ResetTimerTest {
 
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
-        System.out.println("ResetTimerTest.testXMLSerialize(): ");
-        System.out.println(serializedEvent);
+        logger.debug("ResetTimerTest.testXMLSerialize(): ");
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -79,12 +82,8 @@ public class ResetTimerTest {
     private boolean isEqual(ResetTimerRequestImpl o1, ResetTimerRequestImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 }

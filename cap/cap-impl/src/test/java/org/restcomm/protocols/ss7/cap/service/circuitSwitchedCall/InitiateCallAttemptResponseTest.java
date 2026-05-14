@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.*;
@@ -10,6 +9,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.primitives.CAPExtensionsTest;
@@ -24,6 +25,8 @@ import org.testng.annotations.Test;
  */
 public class InitiateCallAttemptResponseTest {
 
+    private static final Logger logger = LogManager.getLogger(InitiateCallAttemptResponseTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 32, (byte) 128, 2, 4, (byte) 224, (byte) 162, 18, 48, 5, 2, 1, 2, (byte) 129, 0, 48, 9, 2, 1, 3, 10, 1, 1, (byte) 129, 1,
                 (byte) 255, (byte) 129, 4, 4, (byte) 128, 0, 0, (byte) 131, 0 };
@@ -35,7 +38,7 @@ public class InitiateCallAttemptResponseTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         InitiateCallAttemptResponseImpl elem = new InitiateCallAttemptResponseImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertTrue(elem.getSupportedCamelPhases().getPhase1Supported());
@@ -86,7 +89,7 @@ public class InitiateCallAttemptResponseTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

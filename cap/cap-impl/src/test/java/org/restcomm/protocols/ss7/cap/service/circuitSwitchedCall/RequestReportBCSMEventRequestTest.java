@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.assertEquals;
@@ -12,6 +11,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.primitives.BCSMEvent;
@@ -29,6 +30,8 @@ import org.testng.annotations.Test;
  *
  */
 public class RequestReportBCSMEventRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(RequestReportBCSMEventRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 93, (byte) 160, 91, 48, 11, (byte) 128, 1, 4, (byte) 129, 1, 0, (byte) 162, 3, (byte) 128, 1,
@@ -55,7 +58,7 @@ public class RequestReportBCSMEventRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         RequestReportBCSMEventRequestImpl elem = new RequestReportBCSMEventRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getBCSMEventList().size(), 7);
         assertEquals(elem.getBCSMEventList().get(0).getEventTypeBCSM(), EventTypeBCSM.routeSelectFailure);
@@ -83,7 +86,7 @@ public class RequestReportBCSMEventRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new RequestReportBCSMEventRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getBCSMEventList().size(), 7);
         assertEquals(elem.getBCSMEventList().get(0).getEventTypeBCSM(), EventTypeBCSM.routeSelectFailure);
@@ -113,7 +116,7 @@ public class RequestReportBCSMEventRequestTest {
     @Test(groups = { "functional.encode", "circuitSwitchedCall" })
     public void testEncode() throws Exception {
 
-        ArrayList<BCSMEvent> bcsmEventList = new ArrayList<BCSMEvent>();
+        ArrayList<BCSMEvent> bcsmEventList = new ArrayList<>();
         LegIDImpl legID = new LegIDImpl(true, LegType.leg2);
         BCSMEventImpl be = new BCSMEventImpl(EventTypeBCSM.routeSelectFailure, MonitorMode.interrupted, legID, null, false);
         bcsmEventList.add(be);
@@ -152,7 +155,7 @@ public class RequestReportBCSMEventRequestTest {
     @Test(groups = { "functional.xml.serialize", "circuitSwitchedCall" })
     public void testXMLSerialize() throws Exception {
 
-        ArrayList<BCSMEvent> bcsmEventList = new ArrayList<BCSMEvent>();
+        ArrayList<BCSMEvent> bcsmEventList = new ArrayList<>();
         LegIDImpl legID = new LegIDImpl(true, LegType.leg2);
         BCSMEventImpl be = new BCSMEventImpl(EventTypeBCSM.routeSelectFailure, MonitorMode.interrupted, legID, null, false);
         bcsmEventList.add(be);
@@ -190,7 +193,7 @@ public class RequestReportBCSMEventRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

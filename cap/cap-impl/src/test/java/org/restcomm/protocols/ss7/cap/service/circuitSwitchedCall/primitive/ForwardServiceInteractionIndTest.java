@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.*;
@@ -10,6 +9,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -25,6 +26,8 @@ import org.testng.annotations.Test;
 */
 public class ForwardServiceInteractionIndTest {
 
+    private static final Logger logger = LogManager.getLogger(ForwardServiceInteractionIndTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 9, (byte) 129, 1, 2, (byte) 130, 1, 1, (byte) 132, 1, 2 };
     }
@@ -35,7 +38,7 @@ public class ForwardServiceInteractionIndTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         ForwardServiceInteractionIndImpl elem = new ForwardServiceInteractionIndImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         assertEquals(ais.getTag(), Tag.SEQUENCE);
         assertEquals(ais.getTagClass(), Tag.CLASS_UNIVERSAL);
 
@@ -76,7 +79,7 @@ public class ForwardServiceInteractionIndTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

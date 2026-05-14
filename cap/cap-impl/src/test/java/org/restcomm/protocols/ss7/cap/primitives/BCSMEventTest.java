@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.primitives;
 
 import static org.testng.Assert.assertEquals;
@@ -13,6 +12,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.primitives.EventTypeBCSM;
@@ -29,6 +30,8 @@ import org.testng.annotations.Test;
  */
 public class BCSMEventTest {
 
+    private static final Logger logger = LogManager.getLogger(BCSMEventTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 11, (byte) 128, 1, 6, (byte) 129, 1, 0, (byte) 162, 3, (byte) 128, 1, 2 };
     }
@@ -44,7 +47,7 @@ public class BCSMEventTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         BCSMEventImpl elem = new BCSMEventImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getEventTypeBCSM(), EventTypeBCSM.oNoAnswer);
         assertEquals(elem.getMonitorMode(), MonitorMode.interrupted);
@@ -55,7 +58,7 @@ public class BCSMEventTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new BCSMEventImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getEventTypeBCSM(), EventTypeBCSM.oCalledPartyBusy);
         assertEquals(elem.getMonitorMode(), MonitorMode.notifyAndContinue);
@@ -101,7 +104,7 @@ public class BCSMEventTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -127,7 +130,7 @@ public class BCSMEventTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

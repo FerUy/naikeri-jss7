@@ -1,18 +1,15 @@
-
 package org.restcomm.protocols.ss7.cap.gap;
 
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.api.gap.*;
 import org.restcomm.protocols.ss7.cap.api.isup.Digits;
-import org.restcomm.protocols.ss7.cap.gap.BasicGapCriteriaImpl;
-import org.restcomm.protocols.ss7.cap.gap.CalledAddressAndServiceImpl;
-import org.restcomm.protocols.ss7.cap.gap.CallingAddressAndServiceImpl;
-import org.restcomm.protocols.ss7.cap.gap.GapOnServiceImpl;
 import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.GenericNumber;
@@ -31,6 +28,8 @@ import static org.testng.Assert.assertTrue;
  *
  */
 public class BasicGapCriteriaTest {
+
+    private static final Logger logger = LogManager.getLogger(BasicGapCriteriaTest.class.getName());
 
     public static final int SERVICE_KEY = 821;
 
@@ -217,7 +216,7 @@ public class BasicGapCriteriaTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -230,13 +229,9 @@ public class BasicGapCriteriaTest {
     private boolean isEqual(BasicGapCriteriaImpl o1, BasicGapCriteriaImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 
 }

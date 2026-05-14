@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.*;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -23,6 +24,8 @@ import org.testng.annotations.Test;
 *
 */
 public class DpSpecificCriteriaAltTest {
+
+    private static final Logger logger = LogManager.getLogger(DpSpecificCriteriaAltTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 7, (byte) 160, 2, (byte) 132, 0, (byte) 129, 1, 15 };
@@ -47,7 +50,7 @@ public class DpSpecificCriteriaAltTest {
     @Test(groups = { "functional.encode", "circuitSwitchedCall.primitive" })
     public void testEncode() throws Exception {
 
-        ArrayList<ChangeOfLocation> changeOfPositionControlInfo = new ArrayList<ChangeOfLocation>();
+        ArrayList<ChangeOfLocation> changeOfPositionControlInfo = new ArrayList<>();
         ChangeOfLocation changeOfLocation = new ChangeOfLocationImpl(ChangeOfLocationImpl.Boolean_Option.interPLMNHandOver);
         changeOfPositionControlInfo.add(changeOfLocation);
         DpSpecificCriteriaAltImpl elem = new DpSpecificCriteriaAltImpl(changeOfPositionControlInfo, 15);
@@ -60,7 +63,7 @@ public class DpSpecificCriteriaAltTest {
     @Test(groups = { "functional.xml.serialize", "circuitSwitchedCall" })
     public void testXMLSerialize() throws Exception {
 
-        ArrayList<ChangeOfLocation> changeOfPositionControlInfo = new ArrayList<ChangeOfLocation>();
+        ArrayList<ChangeOfLocation> changeOfPositionControlInfo = new ArrayList<>();
         ChangeOfLocation changeOfLocation = new ChangeOfLocationImpl(ChangeOfLocationImpl.Boolean_Option.interPLMNHandOver);
         changeOfPositionControlInfo.add(changeOfLocation);
         DpSpecificCriteriaAltImpl original = new DpSpecificCriteriaAltImpl(changeOfPositionControlInfo, 15);
@@ -75,7 +78,7 @@ public class DpSpecificCriteriaAltTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

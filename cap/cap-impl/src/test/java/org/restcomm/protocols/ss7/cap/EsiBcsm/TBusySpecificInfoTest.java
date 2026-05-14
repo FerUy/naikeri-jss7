@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.EsiBcsm;
 
 import static org.testng.Assert.assertEquals;
@@ -11,9 +10,10 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.TBusySpecificInfoImpl;
 import org.restcomm.protocols.ss7.cap.api.isup.CalledPartyNumberCap;
 import org.restcomm.protocols.ss7.cap.api.isup.CauseCap;
 import org.restcomm.protocols.ss7.cap.isup.CalledPartyNumberCapImpl;
@@ -32,6 +32,8 @@ import org.testng.annotations.Test;
  */
 public class TBusySpecificInfoTest {
 
+    private static final Logger logger = LogManager.getLogger(TBusySpecificInfoTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { (byte) 168, 20, (byte) 128, 2, (byte) 132, (byte) 144, (byte) 159, 50, 0, (byte) 159, 51, 0,
                 (byte) 159, 52, 7, (byte) 128, (byte) 144, 17, 33, 34, 51, 3 };
@@ -43,7 +45,7 @@ public class TBusySpecificInfoTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         EventSpecificInformationBCSMImpl elem = new EventSpecificInformationBCSMImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         CauseIndicators ci = elem.getTBusySpecificInfo().getBusyCause().getCauseIndicators();
         assertEquals(ci.getCauseValue(), 16);
@@ -98,7 +100,7 @@ public class TBusySpecificInfoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

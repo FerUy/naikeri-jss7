@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.sms.primitive;
 
 import org.restcomm.protocols.ss7.cap.api.service.sms.primitive.RPCause;

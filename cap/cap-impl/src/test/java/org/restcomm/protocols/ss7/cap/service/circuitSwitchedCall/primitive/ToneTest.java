@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -12,11 +11,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall.primitive.MessageID;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.ToneImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -25,6 +24,8 @@ import org.testng.annotations.Test;
  *
  */
 public class ToneTest {
+
+    private static final Logger logger = LogManager.getLogger(ToneTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 6, (byte) 128, 1, 10, (byte) 129, 1, 20 };
@@ -67,7 +68,7 @@ public class ToneTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -89,7 +90,7 @@ public class ToneTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

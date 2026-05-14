@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.primitives.AlertingCategory;
@@ -24,6 +25,8 @@ import org.testng.annotations.Test;
  *
  */
 public class AlertingPatternCapTest {
+
+    private static final Logger logger = LogManager.getLogger(AlertingPatternCapTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 4, 3, 0, 0, 1 };
@@ -39,14 +42,14 @@ public class AlertingPatternCapTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         AlertingPatternCapImpl elem = new AlertingPatternCapImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getAlertingPattern().getAlertingLevel(), AlertingLevel.Level1);
 
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new AlertingPatternCapImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getAlertingPattern().getAlertingCategory(), AlertingCategory.Category2);
     }
@@ -84,7 +87,7 @@ public class AlertingPatternCapTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.CAPDialogImpl;
@@ -35,7 +34,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Parameter;
  */
 public class CAPServiceCircuitSwitchedCallImpl extends CAPServiceBaseImpl implements CAPServiceCircuitSwitchedCall {
 
-    protected Logger logger = Logger.getLogger(CAPServiceCircuitSwitchedCallImpl.class);
+    protected Logger logger = LogManager.getLogger(CAPServiceCircuitSwitchedCallImpl.class);
 
     public CAPServiceCircuitSwitchedCallImpl(CAPProviderImpl capProviderImpl) {
         super(capProviderImpl);

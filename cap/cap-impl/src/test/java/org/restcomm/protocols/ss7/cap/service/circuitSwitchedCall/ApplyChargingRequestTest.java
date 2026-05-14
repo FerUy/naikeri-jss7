@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.assertEquals;
@@ -13,6 +12,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.primitives.AChChargingAddress;
@@ -30,6 +31,8 @@ import org.testng.annotations.Test;
  *
  */
 public class ApplyChargingRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(ApplyChargingRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 14, (byte) 128, 7, (byte) 160, 5, (byte) 128, 3, 0, (byte) 140, (byte) 160, (byte) 162, 3,
@@ -52,10 +55,10 @@ public class ApplyChargingRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         ApplyChargingRequestImpl elem = new ApplyChargingRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
-        assertEquals((long) elem.getAChBillingChargingCharacteristics().getMaxCallPeriodDuration(), 36000);
+        assertEquals(elem.getAChBillingChargingCharacteristics().getMaxCallPeriodDuration(), 36000);
         assertNull(elem.getAChBillingChargingCharacteristics().getAudibleIndicator());
         assertNull(elem.getAChBillingChargingCharacteristics().getExtensions());
         assertFalse(elem.getAChBillingChargingCharacteristics().getReleaseIfDurationExceeded());
@@ -68,10 +71,10 @@ public class ApplyChargingRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new ApplyChargingRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
-        assertEquals((long) elem.getAChBillingChargingCharacteristics().getMaxCallPeriodDuration(), 36000);
+        assertEquals(elem.getAChBillingChargingCharacteristics().getMaxCallPeriodDuration(), 36000);
         assertNull(elem.getAChBillingChargingCharacteristics().getAudibleIndicator());
         assertNull(elem.getAChBillingChargingCharacteristics().getExtensions());
         assertFalse(elem.getAChBillingChargingCharacteristics().getReleaseIfDurationExceeded());
@@ -84,10 +87,10 @@ public class ApplyChargingRequestTest {
         data = this.getData3();
         ais = new AsnInputStream(data);
         elem = new ApplyChargingRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
-        assertEquals((long) elem.getAChBillingChargingCharacteristics().getMaxCallPeriodDuration(), 36000);
+        assertEquals(elem.getAChBillingChargingCharacteristics().getMaxCallPeriodDuration(), 36000);
         assertNull(elem.getAChBillingChargingCharacteristics().getAudibleIndicator());
         assertNull(elem.getAChBillingChargingCharacteristics().getExtensions());
         assertFalse(elem.getAChBillingChargingCharacteristics().getReleaseIfDurationExceeded());
@@ -116,7 +119,6 @@ public class ApplyChargingRequestTest {
         // CAMELAChBillingChargingCharacteristics
         // aChBillingChargingCharacteristics, SendingSideID partyToCharge,
         // CAPExtensions extensions, AChChargingAddress aChChargingAddress
-
 
         elem = new ApplyChargingRequestImpl(aChBillingChargingCharacteristics, partyToCharge,
                 CAPExtensionsTest.createTestCAPExtensions(), null);
@@ -151,7 +153,7 @@ public class ApplyChargingRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -165,7 +167,6 @@ public class ApplyChargingRequestTest {
         assertEquals(copy.getPartyToCharge().getSendingSideID(), original.getPartyToCharge().getSendingSideID());
         assertTrue(CAPExtensionsTest.checkTestCAPExtensions(copy.getExtensions()));
         assertNull(copy.getAChChargingAddress());
-
 
         AChChargingAddress aChChargingAddress = new AChChargingAddressImpl(10);
         original = new ApplyChargingRequestImpl(aChBillingChargingCharacteristics, null, null, aChChargingAddress);
@@ -181,7 +182,7 @@ public class ApplyChargingRequestTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

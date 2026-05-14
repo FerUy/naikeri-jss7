@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -12,6 +11,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -24,6 +25,8 @@ import org.testng.annotations.Test;
  *
  */
 public class InbandInfoTest {
+
+    private static final Logger logger = LogManager.getLogger(InbandInfoTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 5, (byte) 160, 3, (byte) 128, 1, 11 };
@@ -54,7 +57,7 @@ public class InbandInfoTest {
         tag = ais.readTag();
         assertEquals(tag, Tag.SEQUENCE);
         elem.decodeAll(ais);
-        assertTrue(elem.getMessageID().getText().getMessageContent().equals("Info"));
+        assertEquals(elem.getMessageID().getText().getMessageContent(), "Info");
         assertEquals((int) elem.getNumberOfRepetitions(), 3);
         assertEquals((int) elem.getDuration(), 2);
         assertEquals((int) elem.getInterval(), 1);
@@ -95,7 +98,7 @@ public class InbandInfoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -119,7 +122,7 @@ public class InbandInfoTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

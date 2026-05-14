@@ -1,7 +1,7 @@
 package org.restcomm.protocols.ss7.cap.service.gprs;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.CAPDialogImpl;
@@ -34,7 +34,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Parameter;
  */
 public class CAPServiceGprsImpl extends CAPServiceBaseImpl implements CAPServiceGprs {
 
-    protected Logger logger = Logger.getLogger(CAPServiceGprsImpl.class);
+    protected Logger logger = LogManager.getLogger(CAPServiceGprsImpl.class);
 
     public CAPServiceGprsImpl(CAPProviderImpl capProviderImpl) {
         super(capProviderImpl);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -13,11 +12,12 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.api.primitives.ErrorTreatment;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.CollectedDigitsImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -26,6 +26,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CollectedDigitsTest {
+
+    private static final Logger logger = LogManager.getLogger(CollectedDigitsTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 34, (byte) 128, 1, 15, (byte) 129, 1, 30, (byte) 130, 1, 1, (byte) 131, 2, 2, 2, (byte) 132, 1,
@@ -55,16 +57,16 @@ public class CollectedDigitsTest {
         assertEquals(tag, Tag.SEQUENCE);
         elem.decodeAll(ais);
         assertEquals((int) elem.getMinimumNumberOfDigits(), 15);
-        assertEquals((int) elem.getMaximumNumberOfDigits(), 30);
+        assertEquals(elem.getMaximumNumberOfDigits(), 30);
         assertTrue(Arrays.equals(elem.getEndOfReplyDigit(), getEndOfReplyDigit()));
         assertTrue(Arrays.equals(elem.getCancelDigit(), getCancelDigit()));
         assertTrue(Arrays.equals(elem.getStartDigit(), getStartDigit()));
         assertEquals((int) elem.getFirstDigitTimeOut(), 100);
         assertEquals((int) elem.getInterDigitTimeOut(), 101);
         assertEquals(elem.getErrorTreatment(), ErrorTreatment.repeatPrompt);
-        assertFalse((boolean) elem.getInterruptableAnnouncementIndicator());
-        assertTrue((boolean) elem.getVoiceInformation());
-        assertFalse((boolean) elem.getVoiceBack());
+        assertFalse(elem.getInterruptableAnnouncementIndicator());
+        assertTrue(elem.getVoiceInformation());
+        assertFalse(elem.getVoiceBack());
     }
 
     @Test(groups = { "functional.encode", "circuitSwitchedCall.primitive" })
@@ -98,7 +100,7 @@ public class CollectedDigitsTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -129,7 +131,7 @@ public class CollectedDigitsTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

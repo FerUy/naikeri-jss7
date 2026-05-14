@@ -1,6 +1,7 @@
 package org.restcomm.ss7.congestion;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javolution.util.FastList;
 
@@ -10,10 +11,9 @@ import javolution.util.FastList;
  *
  */
 public abstract class BaseCongestionMonitor implements CongestionMonitor {
+    protected static final Logger logger = LogManager.getLogger(BaseCongestionMonitor.class);
 
-    protected static final Logger logger = Logger.getLogger(BaseCongestionMonitor.class);
-
-    private final FastList<CongestionListener> listeners = new FastList<CongestionListener>();
+    private final FastList<CongestionListener> listeners = new FastList<>();
 
     /*
      * (non-Javadoc)
@@ -75,7 +75,7 @@ public abstract class BaseCongestionMonitor implements CongestionMonitor {
             else
                 logger.warn(msg);
 
-            // Lets notify the listeners
+            // Let's notify the listeners
             CongestionTicketImpl ticket = generateTicket();
             for (FastList.Node<CongestionListener> n = listeners.head(), end = listeners.tail(); (n = n.getNext()) != end;) {
                 CongestionListener listener = n.getValue();
@@ -90,7 +90,7 @@ public abstract class BaseCongestionMonitor implements CongestionMonitor {
             else
                 logger.warn(msg);
 
-            // Lets notify the listeners
+            // Let's notify the listeners
             CongestionTicketImpl ticket = generateTicket();
             for (FastList.Node<CongestionListener> n = listeners.head(), end = listeners.tail(); (n = n.getNext()) != end;) {
                 CongestionListener listener = n.getValue();

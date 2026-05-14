@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.*;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.isup.CalledPartyNumberCap;
@@ -35,6 +36,8 @@ import org.testng.annotations.Test;
  */
 public class InitiateCallAttemptRequestTest {
 
+    private static final Logger logger = LogManager.getLogger(InitiateCallAttemptRequestTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 10, (byte) 160, 8, 4, 6, (byte) 129, 0, 34, 66, 68, 4 };
     }
@@ -55,7 +58,7 @@ public class InitiateCallAttemptRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         InitiateCallAttemptRequestImpl elem = new InitiateCallAttemptRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().size(), 1);
@@ -74,7 +77,7 @@ public class InitiateCallAttemptRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new InitiateCallAttemptRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().size(), 1);
@@ -98,7 +101,7 @@ public class InitiateCallAttemptRequestTest {
 //        int natureOfAddresIndicator, String address, int numberingPlanIndicator,
 //        int internalNetworkNumberIndicator
         CalledPartyNumberCapImpl cpn = new CalledPartyNumberCapImpl(calledPartyNumber);
-        ArrayList<CalledPartyNumberCap> calledPartyNumberArr = new ArrayList<CalledPartyNumberCap>();
+        ArrayList<CalledPartyNumberCap> calledPartyNumberArr = new ArrayList<>();
         calledPartyNumberArr.add(cpn);
         DestinationRoutingAddressImpl destinationRoutingAddress = new DestinationRoutingAddressImpl(calledPartyNumberArr);
         InitiateCallAttemptRequestImpl elem = new InitiateCallAttemptRequestImpl(destinationRoutingAddress, null, null, null, null, null, null, false);
@@ -130,7 +133,7 @@ public class InitiateCallAttemptRequestTest {
     public void testXMLSerialize() throws Exception {
         CalledPartyNumberImpl calledPartyNumber = new CalledPartyNumberImpl(1, "2224444", 0, 0);
         CalledPartyNumberCapImpl cpn = new CalledPartyNumberCapImpl(calledPartyNumber);
-        ArrayList<CalledPartyNumberCap> calledPartyNumberArr = new ArrayList<CalledPartyNumberCap>();
+        ArrayList<CalledPartyNumberCap> calledPartyNumberArr = new ArrayList<>();
         calledPartyNumberArr.add(cpn);
         DestinationRoutingAddressImpl destinationRoutingAddress = new DestinationRoutingAddressImpl(calledPartyNumberArr);
         LegIDImpl legToBeCreated = new LegIDImpl(false, LegType.leg6);
@@ -153,7 +156,7 @@ public class InitiateCallAttemptRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

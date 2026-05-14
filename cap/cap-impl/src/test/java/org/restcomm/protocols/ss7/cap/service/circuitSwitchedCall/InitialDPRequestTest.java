@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.assertEquals;
@@ -13,6 +12,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.isup.CalledPartyNumberCap;
@@ -75,6 +76,8 @@ import org.testng.annotations.Test;
  *
  */
 public class InitialDPRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(InitialDPRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 107, (byte) 128, 1, 110, (byte) 130, 8, (byte) 131, (byte) 144, 33, 114, 16, (byte) 144, 0, 0,
@@ -168,7 +171,7 @@ public class InitialDPRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         InitialDPRequestImpl elem = new InitialDPRequestImpl(false);
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getServiceKey(), 110);
         assertTrue(Arrays.equals(elem.getCalledPartyNumber().getData(), getDataCalledPartyNumber()));
@@ -179,12 +182,12 @@ public class InitialDPRequestTest {
         assertEquals(elem.getEventTypeBCSM(), EventTypeBCSM.collectedInfo);
         assertTrue(Arrays.equals(elem.getRedirectingPartyID().getData(), getRedirectingPartyID()));
         assertTrue(Arrays.equals(elem.getRedirectionInformation().getData(), getRedirectionInformation()));
-        assertTrue(elem.getIMSI().getData().equals("607029900140199"));
+        assertEquals(elem.getIMSI().getData(), "607029900140199");
         assertTrue(Arrays.equals(elem.getExtBasicServiceCode().getExtTeleservice().getData(), getExtBasicServiceCode()));
         assertTrue(Arrays.equals(elem.getCallReferenceNumber().getData(), getCallReferenceNumber()));
         assertEquals(elem.getMscAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(elem.getMscAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(elem.getMscAddress().getAddress().equals("2207750007"));
+        assertEquals(elem.getMscAddress().getAddress(), "2207750007");
         assertEquals(elem.getTimeAndTimezone().getYear(), 2005);
         assertEquals(elem.getTimeAndTimezone().getMonth(), 11);
         assertEquals(elem.getTimeAndTimezone().getDay(), 24);
@@ -194,7 +197,7 @@ public class InitialDPRequestTest {
         assertEquals(elem.getTimeAndTimezone().getTimeZone(), 0);
         assertEquals(elem.getInitialDPArgExtension().getGmscAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(elem.getInitialDPArgExtension().getGmscAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(elem.getInitialDPArgExtension().getGmscAddress().getAddress().equals("2207750007"));
+        assertEquals(elem.getInitialDPArgExtension().getGmscAddress().getAddress(), "2207750007");
         assertFalse(elem.getCallForwardingSSPending());
         assertNull(elem.getCGEncountered());
         assertNull(elem.getCause());
@@ -208,7 +211,7 @@ public class InitialDPRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new InitialDPRequestImpl(false);
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getServiceKey(), 110);
         assertTrue(Arrays.equals(elem.getCalledPartyNumber().getData(), getDataCalledPartyNumber()));
@@ -219,12 +222,12 @@ public class InitialDPRequestTest {
         assertEquals(elem.getEventTypeBCSM(), EventTypeBCSM.collectedInfo);
         assertTrue(Arrays.equals(elem.getRedirectingPartyID().getData(), getRedirectingPartyID()));
         assertTrue(Arrays.equals(elem.getRedirectionInformation().getData(), getRedirectionInformation()));
-        assertTrue(elem.getIMSI().getData().equals("607029900140199"));
+        assertEquals(elem.getIMSI().getData(), "607029900140199");
         assertTrue(Arrays.equals(elem.getExtBasicServiceCode().getExtTeleservice().getData(), getExtBasicServiceCode()));
         assertTrue(Arrays.equals(elem.getCallReferenceNumber().getData(), getCallReferenceNumber()));
         assertEquals(elem.getMscAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(elem.getMscAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(elem.getMscAddress().getAddress().equals("2207750007"));
+        assertEquals(elem.getMscAddress().getAddress(), "2207750007");
         assertEquals(elem.getTimeAndTimezone().getYear(), 2005);
         assertEquals(elem.getTimeAndTimezone().getMonth(), 11);
         assertEquals(elem.getTimeAndTimezone().getDay(), 24);
@@ -234,7 +237,7 @@ public class InitialDPRequestTest {
         assertEquals(elem.getTimeAndTimezone().getTimeZone(), 0);
         assertEquals(elem.getInitialDPArgExtension().getGmscAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(elem.getInitialDPArgExtension().getGmscAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(elem.getInitialDPArgExtension().getGmscAddress().getAddress().equals("2207750007"));
+        assertEquals(elem.getInitialDPArgExtension().getGmscAddress().getAddress(), "2207750007");
 
         assertTrue(elem.getIPSSPCapabilities().getIPRoutingAddressSupported());
         assertTrue(elem.getIPSSPCapabilities().getVoiceBackSupported());
@@ -264,7 +267,7 @@ public class InitialDPRequestTest {
         data = this.getData3();
         ais = new AsnInputStream(data);
         elem = new InitialDPRequestImpl(false);
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getServiceKey(), 110);
 
@@ -476,7 +479,7 @@ public class InitialDPRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -536,7 +539,7 @@ public class InitialDPRequestTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -584,7 +587,7 @@ public class InitialDPRequestTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

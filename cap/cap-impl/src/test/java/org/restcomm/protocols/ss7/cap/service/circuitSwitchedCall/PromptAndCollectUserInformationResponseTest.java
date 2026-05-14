@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.assertEquals;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.isup.Digits;
@@ -26,6 +27,8 @@ import org.testng.annotations.Test;
  *
  */
 public class PromptAndCollectUserInformationResponseTest {
+
+    private static final Logger logger = LogManager.getLogger(PromptAndCollectUserInformationResponseTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 128, 4, 65, 44, 55, 66 };
@@ -84,7 +87,7 @@ public class PromptAndCollectUserInformationResponseTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.isup;
 
 import static org.testng.Assert.assertEquals;
@@ -12,8 +11,9 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
-import org.restcomm.protocols.ss7.cap.isup.CauseCapImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.CauseIndicatorsImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.CauseIndicators;
 import org.testng.annotations.Test;
@@ -25,6 +25,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CauseCapTest {
+
+    private static final Logger logger = LogManager.getLogger(CauseCapTest.class.getName());
 
     public byte[] getData() {
         return new byte[] { (byte) 128, 2, (byte) 132, (byte) 144 };
@@ -40,7 +42,7 @@ public class CauseCapTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         CauseCapImpl elem = new CauseCapImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertTrue(Arrays.equals(elem.getData(), this.getIntData()));
         CauseIndicators ci = elem.getCauseIndicators();
@@ -68,7 +70,7 @@ public class CauseCapTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -101,7 +103,7 @@ public class CauseCapTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

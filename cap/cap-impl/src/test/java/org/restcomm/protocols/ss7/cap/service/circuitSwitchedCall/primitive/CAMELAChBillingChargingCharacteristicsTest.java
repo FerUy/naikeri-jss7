@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -14,6 +13,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -29,6 +30,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CAMELAChBillingChargingCharacteristicsTest {
+
+    private static final Logger logger = LogManager.getLogger(CAMELAChBillingChargingCharacteristicsTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 128, 11, (byte) 160, 9, (byte) 128, 2, 46, (byte) 224, (byte) 161, 3, 1, 1, (byte) 255 };
@@ -64,7 +67,7 @@ public class CAMELAChBillingChargingCharacteristicsTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         CAMELAChBillingChargingCharacteristicsImpl elem = new CAMELAChBillingChargingCharacteristicsImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getMaxCallPeriodDuration(), 12000);
         assertTrue(elem.getReleaseIfDurationExceeded());
@@ -75,7 +78,7 @@ public class CAMELAChBillingChargingCharacteristicsTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new CAMELAChBillingChargingCharacteristicsImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getMaxCallPeriodDuration(), 10000);
         assertTrue(elem.getReleaseIfDurationExceeded());
@@ -87,7 +90,7 @@ public class CAMELAChBillingChargingCharacteristicsTest {
         data = this.getData3();
         ais = new AsnInputStream(data);
         elem = new CAMELAChBillingChargingCharacteristicsImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getMaxCallPeriodDuration(), 10000);
         assertTrue(elem.getReleaseIfDurationExceeded());
@@ -99,7 +102,7 @@ public class CAMELAChBillingChargingCharacteristicsTest {
         data = this.getData4();
         ais = new AsnInputStream(data);
         elem = new CAMELAChBillingChargingCharacteristicsImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getMaxCallPeriodDuration(), 10000);
         assertTrue(elem.getReleaseIfDurationExceeded());
@@ -110,7 +113,7 @@ public class CAMELAChBillingChargingCharacteristicsTest {
         data = this.getData5();
         ais = new AsnInputStream(data);
         elem = new CAMELAChBillingChargingCharacteristicsImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getMaxCallPeriodDuration(), 12000);
         assertTrue(elem.getReleaseIfDurationExceeded());
@@ -123,7 +126,7 @@ public class CAMELAChBillingChargingCharacteristicsTest {
         data = this.getData6();
         ais = new AsnInputStream(data);
         elem = new CAMELAChBillingChargingCharacteristicsImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getMaxCallPeriodDuration(), 10000);
         assertFalse(elem.getReleaseIfDurationExceeded());
@@ -196,7 +199,7 @@ public class CAMELAChBillingChargingCharacteristicsTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -223,7 +226,7 @@ public class CAMELAChBillingChargingCharacteristicsTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.*;
@@ -9,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -29,6 +30,8 @@ import org.testng.annotations.Test;
  */
 public class ServiceInteractionIndicatorsTwoTest {
 
+    private static final Logger logger = LogManager.getLogger(ServiceInteractionIndicatorsTwoTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 3, (byte) 130, 1, 0 };
     }
@@ -45,7 +48,7 @@ public class ServiceInteractionIndicatorsTwoTest {
         AsnInputStream ais = new AsnInputStream(data);
         ServiceInteractionIndicatorsTwoImpl elem = new ServiceInteractionIndicatorsTwoImpl();
 
-        int tag = ais.readTag();
+        ais.readTag();
         assertEquals(ais.getTag(), Tag.SEQUENCE);
         assertEquals(ais.getTagClass(), Tag.CLASS_UNIVERSAL);
         elem.decodeAll(ais);
@@ -65,7 +68,7 @@ public class ServiceInteractionIndicatorsTwoTest {
         ais = new AsnInputStream(data);
         elem = new ServiceInteractionIndicatorsTwoImpl();
 
-        tag = ais.readTag();
+        ais.readTag();
         assertEquals(ais.getTag(), Tag.SEQUENCE);
         assertEquals(ais.getTagClass(), Tag.CLASS_UNIVERSAL);
         elem.decodeAll(ais);
@@ -132,7 +135,7 @@ public class ServiceInteractionIndicatorsTwoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

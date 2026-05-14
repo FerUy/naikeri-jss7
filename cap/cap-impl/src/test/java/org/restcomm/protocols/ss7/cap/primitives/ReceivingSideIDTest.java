@@ -10,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.primitives.ReceivingSideIDImpl;
 import org.restcomm.protocols.ss7.inap.api.primitives.LegType;
 import org.testng.annotations.Test;
 
@@ -23,6 +24,8 @@ import org.testng.annotations.Test;
  *
  */
 public class ReceivingSideIDTest {
+
+    private static final Logger logger = LogManager.getLogger(ReceivingSideIDTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 129, 1, 2 };
@@ -34,7 +37,7 @@ public class ReceivingSideIDTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         ReceivingSideIDImpl elem = new ReceivingSideIDImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getReceivingSideID(), LegType.leg2);
     }
@@ -64,7 +67,7 @@ public class ReceivingSideIDTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

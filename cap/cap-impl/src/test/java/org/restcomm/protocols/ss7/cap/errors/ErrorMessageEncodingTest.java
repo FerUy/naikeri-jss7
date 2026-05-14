@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.errors;
 
 import static org.testng.Assert.assertEquals;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -19,14 +20,6 @@ import org.restcomm.protocols.ss7.cap.api.errors.CancelProblem;
 import org.restcomm.protocols.ss7.cap.api.errors.RequestedInfoErrorParameter;
 import org.restcomm.protocols.ss7.cap.api.errors.TaskRefusedParameter;
 import org.restcomm.protocols.ss7.cap.api.errors.UnavailableNetworkResource;
-import org.restcomm.protocols.ss7.cap.errors.CAPErrorMessageCancelFailedImpl;
-import org.restcomm.protocols.ss7.cap.errors.CAPErrorMessageParameterlessImpl;
-import org.restcomm.protocols.ss7.cap.errors.CAPErrorMessageRequestedInfoErrorImpl;
-import org.restcomm.protocols.ss7.cap.errors.CAPErrorMessageSystemFailureImpl;
-import org.restcomm.protocols.ss7.cap.errors.CAPErrorMessageTaskRefusedImpl;
-import org.restcomm.protocols.ss7.cap.isup.BearerCapImpl;
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.UserServiceInformationImpl;
-import org.restcomm.protocols.ss7.isup.message.parameter.UserServiceInformation;
 import org.testng.annotations.Test;
 
 /**
@@ -35,6 +28,8 @@ import org.testng.annotations.Test;
  *
  */
 public class ErrorMessageEncodingTest {
+
+    private static final Logger logger = LogManager.getLogger(ErrorMessageEncodingTest.class.getName());
 
     public byte[] getDataTaskRefused() {
         return new byte[] { 10, 1, 2 };
@@ -130,7 +125,7 @@ public class ErrorMessageEncodingTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -157,7 +152,7 @@ public class ErrorMessageEncodingTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -184,7 +179,7 @@ public class ErrorMessageEncodingTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -212,7 +207,7 @@ public class ErrorMessageEncodingTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -239,7 +234,7 @@ public class ErrorMessageEncodingTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

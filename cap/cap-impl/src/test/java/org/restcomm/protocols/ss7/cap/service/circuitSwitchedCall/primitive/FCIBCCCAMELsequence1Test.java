@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -12,6 +11,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.primitives.AppendFreeFormatData;
@@ -27,6 +28,8 @@ import org.testng.annotations.Test;
  */
 public class FCIBCCCAMELsequence1Test {
 
+    private static final Logger logger = LogManager.getLogger(FCIBCCCAMELsequence1Test.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 14, (byte) 128, 4, 4, 5, 6, 7, (byte) 161, 3, (byte) 128, 1, 2, (byte) 130, 1, 1 };
     }
@@ -41,7 +44,7 @@ public class FCIBCCCAMELsequence1Test {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         FCIBCCCAMELsequence1Impl elem = new FCIBCCCAMELsequence1Impl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertTrue(Arrays.equals(elem.getFreeFormatData().getData(), this.getDataFFD()));
         assertEquals(elem.getPartyToCharge().getSendingSideID(), LegType.leg2);
@@ -78,7 +81,7 @@ public class FCIBCCCAMELsequence1Test {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -100,7 +103,7 @@ public class FCIBCCCAMELsequence1Test {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

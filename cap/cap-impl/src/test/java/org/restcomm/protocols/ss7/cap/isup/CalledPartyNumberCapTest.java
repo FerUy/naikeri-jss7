@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.isup;
 
 import static org.testng.Assert.assertEquals;
@@ -12,10 +11,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.isup.CalledPartyNumberCapImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.CalledPartyNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.CalledPartyNumber;
 import org.testng.annotations.Test;
@@ -26,6 +26,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CalledPartyNumberCapTest {
+
+    private static final Logger logger = LogManager.getLogger(CalledPartyNumberCapTest.class.getName());
 
     public byte[] getData() {
         return new byte[] { (byte) 130, 7, 3, (byte) 144, 33, 114, 16, (byte) 144, 0 };
@@ -41,7 +43,7 @@ public class CalledPartyNumberCapTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         CalledPartyNumberCapImpl elem = new CalledPartyNumberCapImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         CalledPartyNumber cpn = elem.getCalledPartyNumber();
         assertTrue(Arrays.equals(elem.getData(), this.getIntData()));
@@ -49,7 +51,7 @@ public class CalledPartyNumberCapTest {
         assertEquals(cpn.getNumberingPlanIndicator(), 1);
         assertEquals(cpn.getInternalNetworkNumberIndicator(), 1);
         assertEquals(cpn.getNatureOfAddressIndicator(), 3);
-        assertTrue(cpn.getAddress().equals("1227010900"));
+        assertEquals(cpn.getAddress(), "1227010900");
     }
 
     @Test(groups = { "functional.encode", "isup" })
@@ -87,7 +89,7 @@ public class CalledPartyNumberCapTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

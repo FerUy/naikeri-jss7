@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -14,6 +13,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.EsiBcsm.CallAcceptedSpecificInfoImpl;
@@ -51,7 +52,6 @@ import org.restcomm.protocols.ss7.cap.api.isup.Digits;
 import org.restcomm.protocols.ss7.cap.isup.CalledPartyNumberCapImpl;
 import org.restcomm.protocols.ss7.cap.isup.CauseCapImpl;
 import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.EventSpecificInformationBCSMImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.CalledPartyNumberImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.CauseIndicatorsImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericDigitsImpl;
@@ -73,6 +73,8 @@ import org.testng.annotations.Test;
  *
  */
 public class EventSpecificInformationBCSMTest {
+
+    private static final Logger logger = LogManager.getLogger(EventSpecificInformationBCSMTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 162, 4, (byte) 128, 2, (byte) 132, (byte) 144 };
@@ -152,7 +154,7 @@ public class EventSpecificInformationBCSMTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         EventSpecificInformationBCSMImpl elem = new EventSpecificInformationBCSMImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         CauseIndicators ci = elem.getRouteSelectFailureSpecificInfo().getFailureCause().getCauseIndicators();
         assertEquals(ci.getCauseValue(), 16);
@@ -162,7 +164,7 @@ public class EventSpecificInformationBCSMTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         ci = elem.getOCalledPartyBusySpecificInfo().getBusyCause().getCauseIndicators();
         assertEquals(ci.getCauseValue(), 16);
@@ -172,21 +174,21 @@ public class EventSpecificInformationBCSMTest {
         data = this.getData3();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertNotNull(elem.getONoAnswerSpecificInfo());
 
         data = this.getData4();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertNotNull(elem.getOAnswerSpecificInfo());
 
         data = this.getData5();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         ci = elem.getODisconnectSpecificInfo().getReleaseCause().getCauseIndicators();
         assertEquals(ci.getCauseValue(), 16);
@@ -196,7 +198,7 @@ public class EventSpecificInformationBCSMTest {
         data = this.getData6();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         ci = elem.getTBusySpecificInfo().getBusyCause().getCauseIndicators();
         assertEquals(ci.getCauseValue(), 16);
@@ -209,7 +211,7 @@ public class EventSpecificInformationBCSMTest {
         data = this.getData7();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertTrue(elem.getTNoAnswerSpecificInfo().getCallForwarded());
         CalledPartyNumber cpn = elem.getTNoAnswerSpecificInfo().getForwardingDestinationNumber().getCalledPartyNumber();
@@ -217,19 +219,19 @@ public class EventSpecificInformationBCSMTest {
         assertEquals(cpn.getNumberingPlanIndicator(), 1);
         assertEquals(cpn.getInternalNetworkNumberIndicator(), 1);
         assertEquals(cpn.getNatureOfAddressIndicator(), 3);
-        assertTrue(cpn.getAddress().equals("1227010900"));
+        assertEquals(cpn.getAddress(), "1227010900");
 
         data = this.getData8();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertNotNull(elem.getTAnswerSpecificInfo());
 
         data = this.getData9();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         ci = elem.getTDisconnectSpecificInfo().getReleaseCause().getCauseIndicators();
         assertEquals(ci.getCauseValue(), 16);
@@ -239,56 +241,56 @@ public class EventSpecificInformationBCSMTest {
         data = this.getData10();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertTrue(elem.getOAbandonSpecificInfo().getRouteNotPermitted());
 
         data = this.getData11();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getOMidCallSpecificInfo().getMidCallEvents().getDTMFDigitsCompleted().getGenericDigits().getEncodedDigits(), getDigitsData());
 
         data = this.getData12();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getTMidCallSpecificInfo().getMidCallEvents().getDTMFDigitsCompleted().getGenericDigits().getEncodedDigits(), getDigitsData());
 
         data = this.getData13();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals((int) elem.getOTermSeizedSpecificInfo().getLocationInformation().getAgeOfLocationInformation(), 135);
 
         data = this.getData14();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals((int) elem.getCallAcceptedSpecificInfo().getLocationInformation().getAgeOfLocationInformation(), 135);
 
         data = this.getData15();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals((int) elem.getOChangeOfPositionSpecificInfo().getLocationInformation().getAgeOfLocationInformation(), 135);
 
         data = this.getData16();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals((int) elem.getTChangeOfPositionSpecificInfo().getLocationInformation().getAgeOfLocationInformation(), 135);
 
         data = this.getData17();
         ais = new AsnInputStream(data);
         elem = new EventSpecificInformationBCSMImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getDpSpecificInfoAlt().getOServiceChangeSpecificInfo().getExtBasicServiceCode().getExtBearerService().getBearerServiceCodeValue(),
                 BearerServiceCodeValue.padAccessCA_9600bps);
@@ -441,7 +443,7 @@ public class EventSpecificInformationBCSMTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -468,7 +470,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -492,7 +494,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -515,7 +517,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -540,7 +542,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -566,7 +568,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -594,7 +596,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -628,7 +630,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -656,7 +658,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -680,7 +682,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -706,7 +708,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -729,7 +731,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -753,7 +755,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -776,7 +778,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -799,7 +801,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -822,7 +824,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -848,7 +850,7 @@ public class EventSpecificInformationBCSMTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

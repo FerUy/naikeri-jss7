@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.primitives;
 
 import static org.testng.Assert.assertEquals;
@@ -11,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.primitives.TimeAndTimezoneImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -23,6 +23,8 @@ import org.testng.annotations.Test;
  *
  */
 public class TimeAndTimezoneTest {
+
+    private static final Logger logger = LogManager.getLogger(TimeAndTimezoneTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 159, 57, 8, 2, 17, 33, 3, 1, 112, (byte) 129, 35 };
@@ -38,7 +40,7 @@ public class TimeAndTimezoneTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         TimeAndTimezoneImpl elem = new TimeAndTimezoneImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getYear(), 2011);
         assertEquals(elem.getMonth(), 12);
@@ -51,7 +53,7 @@ public class TimeAndTimezoneTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new TimeAndTimezoneImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getYear(), 2011);
         assertEquals(elem.getMonth(), 12);
@@ -92,7 +94,7 @@ public class TimeAndTimezoneTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

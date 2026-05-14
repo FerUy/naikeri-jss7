@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.dialog;
 
 import org.restcomm.protocols.ss7.cap.api.dialog.ServingCheckData;

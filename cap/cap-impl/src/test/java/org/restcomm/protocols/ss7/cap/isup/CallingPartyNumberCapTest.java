@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.isup;
 
 import static org.testng.Assert.assertEquals;
@@ -11,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.isup.CallingPartyNumberCapImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.CallingPartyNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.CallingPartyNumber;
 import org.restcomm.protocols.ss7.isup.message.parameter.NAINumber;
@@ -26,6 +26,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CallingPartyNumberCapTest {
+
+    private static final Logger logger = LogManager.getLogger(CallingPartyNumberCapTest.class.getName());
 
     public byte[] getData() {
         return new byte[] { (byte) 131, 8, (byte) 132, 17, 20, (byte) 135, 9, 80, 64, (byte) 7 }; // 247
@@ -41,7 +43,7 @@ public class CallingPartyNumberCapTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         CallingPartyNumberCapImpl elem = new CallingPartyNumberCapImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         CallingPartyNumber cpn = elem.getCallingPartyNumber();
         assertTrue(Arrays.equals(elem.getData(), this.getIntData()));
@@ -51,7 +53,7 @@ public class CallingPartyNumberCapTest {
         assertEquals(cpn.getAddressRepresentationRestrictedIndicator(), 0);
         assertEquals(cpn.getNumberIncompleteIndicator(), 0);
         assertEquals(cpn.getNatureOfAddressIndicator(), 4);
-        assertTrue(cpn.getAddress().equals("41789005047"));
+        assertEquals(cpn.getAddress(), "41789005047");
     }
 
     @Test(groups = { "functional.encode", "isup" })
@@ -91,7 +93,7 @@ public class CallingPartyNumberCapTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

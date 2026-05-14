@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.*;
@@ -10,6 +9,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -55,6 +56,8 @@ import org.testng.annotations.Test;
  */
 public class InitialDPArgExtensionTest {
 
+    private static final Logger logger = LogManager.getLogger(InitialDPArgExtensionTest.class.getName());
+
     public byte[] getData1() {
         return new byte[] { 48, 8, (byte) 129, 6, (byte) 145, 34, 112, 87, 0, 112 };
     }
@@ -94,7 +97,7 @@ public class InitialDPArgExtensionTest {
         elem.decodeAll(ais);
         assertEquals(elem.getGmscAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(elem.getGmscAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(elem.getGmscAddress().getAddress().equals("2207750007"));
+        assertEquals(elem.getGmscAddress().getAddress(), "2207750007");
         assertNull(elem.getForwardingDestinationNumber());
 
         assertNull(elem.getMSClassmark2());
@@ -119,9 +122,9 @@ public class InitialDPArgExtensionTest {
         elem.decodeAll(ais);
         assertEquals(elem.getGmscAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(elem.getGmscAddress().getNumberingPlan(), NumberingPlan.national);
-        assertTrue(elem.getGmscAddress().getAddress().equals("111111"));
+        assertEquals(elem.getGmscAddress().getAddress(), "111111");
         CalledPartyNumber cpn = elem.getForwardingDestinationNumber().getCalledPartyNumber();
-        assertTrue(cpn.getAddress().equals("2222"));
+        assertEquals(cpn.getAddress(), "2222");
         assertEquals(cpn.getInternalNetworkNumberIndicator(), 0);
         assertEquals(cpn.getNatureOfAddressIndicator(), 1);
         assertEquals(cpn.getNumberingPlanIndicator(), 1);
@@ -252,7 +255,7 @@ public class InitialDPArgExtensionTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -311,7 +314,7 @@ public class InitialDPArgExtensionTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

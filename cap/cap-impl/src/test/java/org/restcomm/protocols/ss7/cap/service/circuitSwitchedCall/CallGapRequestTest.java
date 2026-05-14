@@ -1,9 +1,10 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.gap.*;
@@ -36,6 +37,8 @@ import static org.testng.Assert.*;
  *
  */
 public class CallGapRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(CallGapRequestTest.class.getName());
 
     public static final int SERVICE_KEY = 821;
     public static final int DURATION = 60;
@@ -80,7 +83,7 @@ public class CallGapRequestTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         CallGapRequestImpl elem = new CallGapRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getGapCriteria().getCompoundGapCriteria().getBasicGapCriteria().getCalledAddressAndService().getServiceKey(), SERVICE_KEY);
@@ -105,7 +108,7 @@ public class CallGapRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new CallGapRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getGapCriteria().getBasicGapCriteria().getCalledAddressAndService().getServiceKey(), SERVICE_KEY);
@@ -184,7 +187,7 @@ public class CallGapRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -203,20 +206,21 @@ public class CallGapRequestTest {
         CalledAddressAndServiceImpl calledAddressAndService = new CalledAddressAndServiceImpl(digits, SERVICE_KEY);
 //        GapOnService gapOnService = new GapOnServiceImpl(SERVICE_KEY);
         basicGapCriteria = new BasicGapCriteriaImpl(calledAddressAndService);
-        byte[] data2 = new byte[]{12, 32, 23, 56};
+        byte[] data2 = new byte[] {12, 32, 23, 56};
         ScfIDImpl scfId = new ScfIDImpl(data2);
+        logger.info(scfId);
         CompoundCriteriaImpl compoundCriteria = new CompoundCriteriaImpl(basicGapCriteria, null);
         gapCriteria = new GapCriteriaImpl(compoundCriteria);
 
         gapIndicators = new GapIndicatorsImpl(60, -1);
 
-        ArrayList<VariablePart> aL = new ArrayList<VariablePart>();
+        ArrayList<VariablePart> aL = new ArrayList<>();
         aL.add(new VariablePartImpl(new VariablePartDateImpl(2015, 6, 27)));
         aL.add(new VariablePartImpl(new VariablePartTimeImpl(15, 10)));
-        aL.add(new VariablePartImpl(new Integer(145)));
+        aL.add(new VariablePartImpl(145));
         VariableMessageImpl vm = new VariableMessageImpl(145, aL);
         MessageIDImpl mi = new MessageIDImpl(vm);
-        InbandInfoImpl inbandInfo = new InbandInfoImpl(mi, new Integer(5), new Integer(8), new Integer(2));
+        InbandInfoImpl inbandInfo = new InbandInfoImpl(mi, 5, 8, 2);
         InformationToSendImpl informationToSend = new InformationToSendImpl(inbandInfo);
         GapTreatmentImpl gapTreatment = new GapTreatmentImpl(informationToSend);
 
@@ -239,7 +243,7 @@ public class CallGapRequestTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -252,12 +256,8 @@ public class CallGapRequestTest {
     private boolean isEqual(CallGapRequestImpl o1, CallGapRequestImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 }

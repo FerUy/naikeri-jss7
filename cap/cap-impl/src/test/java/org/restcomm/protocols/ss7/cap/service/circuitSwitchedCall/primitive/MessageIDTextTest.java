@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive;
 
 import static org.testng.Assert.assertEquals;
@@ -11,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall.primitive.MessageIDTextImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -23,6 +23,8 @@ import org.testng.annotations.Test;
  *
  */
 public class MessageIDTextTest {
+
+    private static final Logger logger = LogManager.getLogger(MessageIDTextTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 17, (byte) 128, 9, 72, 101, 108, 108, 111, 32, 33, 33, 33, (byte) 129, 4, 1, 2, 3, 4 };
@@ -41,7 +43,7 @@ public class MessageIDTextTest {
         int tag = ais.readTag();
         assertEquals(tag, Tag.SEQUENCE);
         elem.decodeAll(ais);
-        assertTrue(elem.getMessageContent().equals("Hello !!!"));
+        assertEquals(elem.getMessageContent(), "Hello !!!");
         assertTrue(Arrays.equals(elem.getAttributes(), this.getDataInt()));
     }
 
@@ -73,7 +75,7 @@ public class MessageIDTextTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.EsiBcsm;
 
 import static org.testng.Assert.*;
@@ -9,12 +8,11 @@ import java.io.ByteArrayOutputStream;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.MidCallEventsImpl;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.OMidCallSpecificInfoImpl;
-import org.restcomm.protocols.ss7.cap.EsiBcsm.TMidCallSpecificInfoImpl;
 import org.restcomm.protocols.ss7.cap.api.EsiBcsm.MidCallEvents;
 import org.restcomm.protocols.ss7.cap.api.isup.Digits;
 import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
@@ -29,6 +27,8 @@ import org.testng.annotations.Test;
 *
 */
 public class TMidCallSpecificInfoTest {
+
+    private static final Logger logger = LogManager.getLogger(TMidCallSpecificInfoTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 171, 9, (byte) 161, 7, (byte) 131, 5, 99, 1, 2, 3, 4 };
@@ -84,7 +84,7 @@ public class TMidCallSpecificInfoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

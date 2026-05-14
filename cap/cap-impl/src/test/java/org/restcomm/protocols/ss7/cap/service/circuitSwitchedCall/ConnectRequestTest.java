@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.service.circuitSwitchedCall;
 
 import static org.testng.Assert.*;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.isup.CalledPartyNumberCap;
@@ -52,6 +53,8 @@ import org.testng.annotations.Test;
  *
  */
 public class ConnectRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(ConnectRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 9, (byte) 160, 7, 4, 5, 2, 16, 121, 34, 16 };
@@ -108,7 +111,7 @@ public class ConnectRequestTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         ConnectRequestImpl elem = new ConnectRequestImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().size(), 1);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber()
@@ -117,8 +120,7 @@ public class ConnectRequestTest {
                 .getNatureOfAddressIndicator(), 2);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber()
                 .getNumberingPlanIndicator(), 1);
-        assertTrue(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress()
-                .equals("972201"));
+        assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress(), "972201");
         assertNull(elem.getCarrier());
         assertNull(elem.getServiceInteractionIndicatorsTwo());
         assertNull(elem.getChargeNumber());
@@ -132,7 +134,7 @@ public class ConnectRequestTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new ConnectRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().size(), 1);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber()
@@ -141,8 +143,7 @@ public class ConnectRequestTest {
                 .getNatureOfAddressIndicator(), 2);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber()
                 .getNumberingPlanIndicator(), 1);
-        assertTrue(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress()
-                .equals("972201"));
+        assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress(), "972201");
         assertEquals(elem.getGenericNumbers().size(), 1);
         assertTrue(Arrays.equals(elem.getGenericNumbers().get(0).getData(), getDataGenericNumber()));
         assertNull(elem.getCarrier());
@@ -158,7 +159,7 @@ public class ConnectRequestTest {
         data = this.getData3();
         ais = new AsnInputStream(data);
         elem = new ConnectRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().size(), 1);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber()
@@ -167,8 +168,7 @@ public class ConnectRequestTest {
                 .getNatureOfAddressIndicator(), 2);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber()
                 .getNumberingPlanIndicator(), 1);
-        assertTrue(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress()
-                .equals("972201"));
+        assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress(), "972201");
         assertEquals(elem.getGenericNumbers().size(), 1);
         assertTrue(Arrays.equals(elem.getGenericNumbers().get(0).getData(), getDataGenericNumber()));
         assertEquals(elem.getAlertingPattern().getAlertingPattern().getAlertingCategory(), AlertingCategory.Category5);
@@ -179,7 +179,7 @@ public class ConnectRequestTest {
         assertTrue(Arrays.equals(elem.getRedirectionInformation().getData(), getRedirectionInformation()));
         assertTrue(elem.getSuppressionOfAnnouncement());
         assertTrue(elem.getOCSIApplicable());
-        assertEquals((int) elem.getNAOliInfo().getData(), 40);
+        assertEquals(elem.getNAOliInfo().getData(), 40);
         assertNull(elem.getCarrier());
         assertNull(elem.getServiceInteractionIndicatorsTwo());
         assertNull(elem.getChargeNumber());
@@ -192,7 +192,7 @@ public class ConnectRequestTest {
         data = this.getData4();
         ais = new AsnInputStream(data);
         elem = new ConnectRequestImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().size(), 1);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber()
@@ -201,8 +201,7 @@ public class ConnectRequestTest {
                 .getNatureOfAddressIndicator(), 2);
         assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber()
                 .getNumberingPlanIndicator(), 1);
-        assertTrue(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress()
-                .equals("972201"));
+        assertEquals(elem.getDestinationRoutingAddress().getCalledPartyNumber().get(0).getCalledPartyNumber().getAddress(), "972201");
 
         assertNull(elem.getGenericNumbers());
         assertNull(elem.getAlertingPattern());
@@ -228,7 +227,7 @@ public class ConnectRequestTest {
     @Test(groups = { "functional.encode", "circuitSwitchedCall" })
     public void testEncode() throws Exception {
 
-        ArrayList<CalledPartyNumberCap> calledPartyNumbers = new ArrayList<CalledPartyNumberCap>();
+        ArrayList<CalledPartyNumberCap> calledPartyNumbers = new ArrayList<>();
         CalledPartyNumberImpl cpn = new CalledPartyNumberImpl(2, "972201", 1, 2);
         CalledPartyNumberCapImpl calledPartyNumber = new CalledPartyNumberCapImpl(cpn);
         calledPartyNumbers.add(calledPartyNumber);
@@ -240,7 +239,7 @@ public class ConnectRequestTest {
         elem.encodeAll(aos);
         assertTrue(Arrays.equals(aos.toByteArray(), this.getData1()));
 
-        ArrayList<GenericNumberCap> genericNumbers = new ArrayList<GenericNumberCap>();
+        ArrayList<GenericNumberCap> genericNumbers = new ArrayList<>();
         GenericNumberCapImpl genericNumberCap = new GenericNumberCapImpl(getDataGenericNumber());
         genericNumbers.add(genericNumberCap);
         elem = new ConnectRequestImpl(destinationRoutingAddress, null, null, null, null, null, null, null, genericNumbers,
@@ -296,13 +295,13 @@ public class ConnectRequestTest {
     @Test(groups = { "functional.xml.serialize", "circuitSwitchedCall" })
     public void testXMLSerialize() throws Exception {
 
-        ArrayList<CalledPartyNumberCap> calledPartyNumbers = new ArrayList<CalledPartyNumberCap>();
+        ArrayList<CalledPartyNumberCap> calledPartyNumbers = new ArrayList<>();
         CalledPartyNumberImpl cpn = new CalledPartyNumberImpl(2, "972201", 1, 2);
         CalledPartyNumberCapImpl calledPartyNumber = new CalledPartyNumberCapImpl(cpn);
         calledPartyNumbers.add(calledPartyNumber);
         DestinationRoutingAddressImpl destinationRoutingAddress = new DestinationRoutingAddressImpl(calledPartyNumbers);
 
-        ArrayList<GenericNumberCap> genericNumbers = new ArrayList<GenericNumberCap>();
+        ArrayList<GenericNumberCap> genericNumbers = new ArrayList<>();
         GenericNumberCapImpl genericNumberCap = new GenericNumberCapImpl(getDataGenericNumber());
         genericNumbers.add(genericNumberCap);
 
@@ -331,7 +330,7 @@ public class ConnectRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -384,7 +383,7 @@ public class ConnectRequestTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

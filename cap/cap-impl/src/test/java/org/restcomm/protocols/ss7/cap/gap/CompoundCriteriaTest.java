@@ -1,19 +1,15 @@
-
 package org.restcomm.protocols.ss7.cap.gap;
 
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.cap.api.gap.*;
 import org.restcomm.protocols.ss7.cap.api.isup.Digits;
 import org.restcomm.protocols.ss7.cap.api.primitives.ScfID;
-import org.restcomm.protocols.ss7.cap.gap.BasicGapCriteriaImpl;
-import org.restcomm.protocols.ss7.cap.gap.CalledAddressAndServiceImpl;
-import org.restcomm.protocols.ss7.cap.gap.CallingAddressAndServiceImpl;
-import org.restcomm.protocols.ss7.cap.gap.CompoundCriteriaImpl;
-import org.restcomm.protocols.ss7.cap.gap.GapOnServiceImpl;
 import org.restcomm.protocols.ss7.cap.isup.DigitsImpl;
 import org.restcomm.protocols.ss7.cap.primitives.ScfIDImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericNumberImpl;
@@ -33,6 +29,8 @@ import static org.testng.Assert.assertTrue;
  *
  */
 public class CompoundCriteriaTest {
+
+    private static final Logger logger = LogManager.getLogger(CompoundCriteriaTest.class.getName());
 
     public static final int SERVICE_KEY = 821;
 
@@ -54,7 +52,7 @@ public class CompoundCriteriaTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         CompoundCriteriaImpl elem = new CompoundCriteriaImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getBasicGapCriteria().getCalledAddressAndService().getServiceKey(), SERVICE_KEY);
@@ -133,7 +131,7 @@ public class CompoundCriteriaTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.debug(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -146,13 +144,9 @@ public class CompoundCriteriaTest {
     private boolean isEqual(CompoundCriteriaImpl o1, CompoundCriteriaImpl o2) {
         if (o1 == o2)
             return true;
-        if (o1 == null && o2 != null || o1 != null && o2 == null)
+        if (o1 == null || o2 == null)
             return false;
-        if (o1 == null && o2 == null)
-            return true;
-        if (!o1.toString().equals(o2.toString()))
-            return false;
-        return true;
+        return o1.toString().equals(o2.toString());
     }
 
 

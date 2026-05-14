@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.cap.service.sms;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.cap.CAPDialogImpl;
@@ -35,7 +34,7 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Parameter;
  */
 public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceSms {
 
-    protected Logger logger = Logger.getLogger(CAPServiceSmsImpl.class);
+    protected Logger loger = LogManager.getLogger(CAPServiceSmsImpl.class);
 
     public CAPServiceSmsImpl(CAPProviderImpl capProviderImpl) {
         super(capProviderImpl);
@@ -189,7 +188,7 @@ public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceS
                 serLis.onCAPMessage(connectSMSRequestIndication);
                 ((CAPServiceSmsListener) serLis).onConnectSMSRequest(connectSMSRequestIndication);
             } catch (Exception e) {
-                logger.error("Error processing connectSMSRequest: " + e.getMessage(), e);
+                loger.error("Error processing connectSMSRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -219,7 +218,7 @@ public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceS
                 serLis.onCAPMessage(eventReportSMSRequestIndication);
                 ((CAPServiceSmsListener) serLis).onEventReportSMSRequest(eventReportSMSRequestIndication);
             } catch (Exception e) {
-                logger.error("Error processing EventReportSMSRequest: " + e.getMessage(), e);
+                loger.error("Error processing EventReportSMSRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -249,7 +248,7 @@ public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceS
                 serLis.onCAPMessage(furnishChargingInformationSMSRequestIndication);
                 ((CAPServiceSmsListener) serLis).onFurnishChargingInformationSMSRequest(furnishChargingInformationSMSRequestIndication);
             } catch (Exception e) {
-                logger.error("Error processing FurnishChargingInformationSMSRequest: " + e.getMessage(), e);
+                loger.error("Error processing FurnishChargingInformationSMSRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -279,7 +278,7 @@ public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceS
                 serLis.onCAPMessage(initialDPSMSRequestIndication);
                 ((CAPServiceSmsListener) serLis).onInitialDPSMSRequest(initialDPSMSRequestIndication);
             } catch (Exception e) {
-                logger.error("Error processing InitialDPSMSRequest: " + e.getMessage(), e);
+                loger.error("Error processing InitialDPSMSRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -308,7 +307,7 @@ public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceS
                 serLis.onCAPMessage(releaseSMSRequestIndication);
                 ((CAPServiceSmsListener) serLis).onReleaseSMSRequest(releaseSMSRequestIndication);
             } catch (Exception e) {
-                logger.error("Error processing ReleaseSMSRequest: " + e.getMessage(), e);
+                loger.error("Error processing ReleaseSMSRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -338,7 +337,7 @@ public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceS
                 serLis.onCAPMessage(requestReportSMSEventRequestIndication);
                 ((CAPServiceSmsListener) serLis).onRequestReportSMSEventRequest(requestReportSMSEventRequestIndication);
             } catch (Exception e) {
-                logger.error("Error processing RequestReportSMSEventRequest: " + e.getMessage(), e);
+                loger.error("Error processing RequestReportSMSEventRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -367,7 +366,7 @@ public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceS
                 serLis.onCAPMessage(resetTimerSMSRequestIndication);
                 ((CAPServiceSmsListener) serLis).onResetTimerSMSRequest(resetTimerSMSRequestIndication);
             } catch (Exception e) {
-                logger.error("Error processing ResetTimerSMSRequest: " + e.getMessage(), e);
+                loger.error("Error processing ResetTimerSMSRequest: " + e.getMessage(), e);
             }
         }
     }
@@ -385,7 +384,7 @@ public class CAPServiceSmsImpl extends CAPServiceBaseImpl implements CAPServiceS
                 serLis.onCAPMessage(ind);
                 ((CAPServiceSmsListener) serLis).onContinueSMSRequest(ind);
             } catch (Exception e) {
-                logger.error("Error processing continueSMSRequest: " + e.getMessage(), e);
+                loger.error("Error processing continueSMSRequest: " + e.getMessage(), e);
             }
         }
     }

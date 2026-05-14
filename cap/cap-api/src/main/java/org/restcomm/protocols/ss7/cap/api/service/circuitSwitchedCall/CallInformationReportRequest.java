@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.api.service.circuitSwitchedCall;
 
 import java.util.ArrayList;

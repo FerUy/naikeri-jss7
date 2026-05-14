@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.cap.primitives;
 
 import static org.testng.Assert.assertEquals;
@@ -12,10 +11,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.cap.primitives.CalledPartyBCDNumberImpl;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.testng.annotations.Test;
@@ -26,6 +26,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CalledPartyBCDNumberTest {
+
+    private static final Logger logger = LogManager.getLogger(CalledPartyBCDNumberTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { (byte) 159, 56, 7, (byte) 145, 20, (byte) 135, 8, 80, 64, (byte) 247 };
@@ -45,24 +47,24 @@ public class CalledPartyBCDNumberTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         CalledPartyBCDNumberImpl elem = new CalledPartyBCDNumberImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertTrue(Arrays.equals(elem.getData(), this.getIntData1()));
         assertEquals(elem.getAddressNature(), AddressNature.international_number);
         assertEquals(elem.getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(elem.getAddress().equals("41788005047"));
+        assertEquals(elem.getAddress(), "41788005047");
         assertFalse(elem.isExtension());
 
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new CalledPartyBCDNumberImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
 
         assertEquals(elem.getAddressNature(), AddressNature.international_number);
         assertEquals(elem.getNumberingPlan(), NumberingPlan.spare_5);
-        assertTrue(elem.getAddress().equals("hello"));
+        assertEquals(elem.getAddress(), "hello");
         assertFalse(elem.isExtension());
     }
 
@@ -103,7 +105,7 @@ public class CalledPartyBCDNumberTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

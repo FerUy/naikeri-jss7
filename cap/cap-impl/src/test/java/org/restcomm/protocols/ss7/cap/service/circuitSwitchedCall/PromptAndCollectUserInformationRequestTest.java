@@ -12,6 +12,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -32,6 +34,8 @@ import org.testng.annotations.Test;
  *
  */
 public class PromptAndCollectUserInformationRequestTest {
+
+    private static final Logger logger = LogManager.getLogger(PromptAndCollectUserInformationRequestTest.class.getName());
 
     public byte[] getData1() {
         return new byte[] { 48, 47, (byte) 160, 5, (byte) 160, 3, (byte) 129, 1, 10, (byte) 129, 1, 0, (byte) 162, 8,
@@ -119,7 +123,7 @@ public class PromptAndCollectUserInformationRequestTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -150,7 +154,7 @@ public class PromptAndCollectUserInformationRequestTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
