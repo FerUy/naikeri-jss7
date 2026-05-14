@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import org.restcomm.protocols.ss7.map.api.primitives.AddressString;
@@ -22,7 +21,6 @@ AnyTimeModificationRes ::= SEQUENCE {
   serviceCentreAddress     [9] AddressString OPTIONAL
 }
 </code>
- *
  *
  * @author sergey vetyutnev
  *

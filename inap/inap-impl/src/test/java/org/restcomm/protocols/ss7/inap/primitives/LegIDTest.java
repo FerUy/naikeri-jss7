@@ -12,10 +12,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.inap.api.primitives.LegType;
-import org.restcomm.protocols.ss7.inap.primitives.LegIDImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -24,6 +25,8 @@ import org.testng.annotations.Test;
  *
  */
 public class LegIDTest {
+
+    private static final Logger logger = LogManager.getLogger(LegIDTest.class.getName());
 
     private byte[] getData1() {
         return new byte[] { (byte) 128, 1, 2 };
@@ -39,7 +42,7 @@ public class LegIDTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         LegIDImpl legId = new LegIDImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         legId.decodeAll(ais);
         assertNotNull(legId.getSendingSideID());
         assertNull(legId.getReceivingSideID());
@@ -48,7 +51,7 @@ public class LegIDTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         legId = new LegIDImpl();
-        tag = ais.readTag();
+        ais.readTag();
         legId.decodeAll(ais);
         assertNull(legId.getSendingSideID());
         assertNotNull(legId.getReceivingSideID());
@@ -87,7 +90,7 @@ public class LegIDTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -109,7 +112,7 @@ public class LegIDTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

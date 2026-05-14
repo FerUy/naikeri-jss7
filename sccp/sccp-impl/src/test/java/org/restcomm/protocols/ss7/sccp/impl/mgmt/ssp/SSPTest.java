@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.mgmt.ssp;
 
 import static org.testng.Assert.assertEquals;

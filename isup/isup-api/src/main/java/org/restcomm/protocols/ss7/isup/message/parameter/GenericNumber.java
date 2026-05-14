@@ -7,6 +7,7 @@ package org.restcomm.protocols.ss7.isup.message.parameter;
  * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
  */
 public interface GenericNumber extends NAINumber, Number, ISUPParameter {
+
     int _PARAMETER_CODE = 0xC0;
 
     /**
@@ -76,20 +77,20 @@ public interface GenericNumber extends NAINumber, Number, ISUPParameter {
     int _APRI_SPARE = 3;
 
     /**
-     * screening indicator indicator value. See Q.763 - 3.26g
+     * screening indicator value. See Q.763 - 3.26g
      */
     int _SI_USER_PROVIDED_NVERIFIED_PASSED = 0;
     /**
-     * screening indicator indicator value. See Q.763 - 3.26g
+     * screening indicator value. See Q.763 - 3.26g
      */
     int _SI_USER_PROVIDED_VERIFIED_PASSED = 1;
     /**
-     * screening indicator indicator value. See Q.763 - 3.26g
+     * screening indicator value. See Q.763 - 3.26g
      */
     int _SI_USER_PROVIDED_VERIFIED_FAILED = 2;
 
     /**
-     * screening indicator indicator value. See Q.763 - 3.26g
+     * screening indicator value. See Q.763 - 3.26g
      */
     int _SI_NETWORK_PROVIDED = 3;
 
@@ -103,11 +104,11 @@ public interface GenericNumber extends NAINumber, Number, ISUPParameter {
 
     int getAddressRepresentationRestrictedIndicator();
 
-    void setAddressRepresentationRestrictedIndicator(int addressRepresentationREstrictedIndicator);
+    void setAddressRepresentationRestrictedIndicator(int addressRepresentationRestrictedIndicator);
 
     boolean isNumberIncomplete();
 
-    void setNumberIncompleter(boolean numberIncomplete);
+    void setNumberIncomplete(boolean numberIncomplete);
 
     int getScreeningIndicator();
 

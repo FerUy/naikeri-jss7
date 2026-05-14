@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.map.loadService;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
@@ -59,7 +58,7 @@ import com.google.common.util.concurrent.RateLimiter;
 
 /**
  * @author sergey vetyutnev
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupplementaryListener {
 
@@ -86,7 +85,7 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
     public MapServiceUssdClient(MAPStack mapStack) {
         this.mapStack = mapStack;
 
-        this.logger = Logger.getLogger(MapServiceUssdClient.class.getCanonicalName());
+        this.logger = LogManager.getLogger(MapServiceUssdClient.class.getCanonicalName());
     }
 
     public void start() throws Exception {
@@ -122,7 +121,7 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
         try {
             // delay before starting of work
 
-            Thread.sleep(1000 * getDelayBeforeLoad());
+            Thread.sleep(1000L * getDelayBeforeLoad());
 
             while (endCount < getNumberOfDialogs() && !stopped) {
 
@@ -135,7 +134,7 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
                 initiateUSSD();
             }
         } catch (Exception e) {
-            logger.error("General MapServerUssdClient executing Exception: " + e.getMessage(), e);
+            logger.error("General MapServerUssdClient executing Exception: {}", e.getMessage(), e);
         }
     }
 
@@ -145,13 +144,12 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
         if (!(networkIdState == null || networkIdState.isAvailable() && networkIdState.getCongLevel() <= 0
                 && executorCongestionLevel <= 0)) {
             // congestion or unavailable
-            logger.warn("**** Outgoing congestion control: MAP load test client: networkIdState=" + networkIdState
-                    + ", executorCongestionLevel=" + executorCongestionLevel);
+            logger.warn("**** Outgoing congestion control: MAP load test client: networkIdState={}, executorCongestionLevel={}", networkIdState, executorCongestionLevel);
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 
@@ -193,19 +191,17 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
 
     @Override
     public void onErrorComponent(MAPDialog mapDialog, Long invokeId, MAPErrorMessage mapErrorMessage) {
-        logger.error(String.format("onErrorComponent for Dialog=%d and invokeId=%d MAPErrorMessage=%s",
-                mapDialog.getLocalDialogId(), invokeId, mapErrorMessage));
+        logger.error("onErrorComponent for Dialog={} and invokeId={} MAPErrorMessage={}", mapDialog.getLocalDialogId(), invokeId, mapErrorMessage);
     }
 
     @Override
     public void onRejectComponent(MAPDialog mapDialog, Long invokeId, Problem problem, boolean isLocalOriginated) {
-        logger.error(String.format("onRejectComponent for Dialog=%d and invokeId=%d Problem=%s isLocalOriginated=%s",
-                mapDialog.getLocalDialogId(), invokeId, problem, isLocalOriginated));
+        logger.error("onRejectComponent for Dialog={} and invokeId={} Problem={} isLocalOriginated={}", mapDialog.getLocalDialogId(), invokeId, problem, isLocalOriginated);
     }
 
     @Override
     public void onInvokeTimeout(MAPDialog mapDialog, Long invokeId) {
-        logger.error(String.format("onInvokeTimeout for Dialog=%d and invokeId=%d", mapDialog.getLocalDialogId(), invokeId));
+        logger.error("onInvokeTimeout for Dialog={} and invokeId={}", mapDialog.getLocalDialogId(), invokeId);
 
     }
 
@@ -303,21 +299,21 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
     public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
         // This is an error condition.
         // Client should never receive a ProcessUnstructuredSSRequestIndication
-        logger.error(String.format("onProcessUnstructuredSSRequestIndication for Dialog=%d and invokeId=%d", processUnstructuredSSRequest
-                .getMAPDialog().getLocalDialogId(), processUnstructuredSSRequest.getInvokeId()));
+        logger.error("onProcessUnstructuredSSRequestIndication for Dialog={} and invokeId={}", processUnstructuredSSRequest
+                .getMAPDialog().getLocalDialogId(), processUnstructuredSSRequest.getInvokeId());
     }
 
     @Override
     public void onProcessUnstructuredSSResponse(ProcessUnstructuredSSResponse processUnstructuredSSResponse) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Rx ProcessUnstructuredSSResponseIndication.  USSD String=%s", processUnstructuredSSResponse.getUSSDString()));
+            logger.debug("Rx ProcessUnstructuredSSResponseIndication.  USSD String={}", processUnstructuredSSResponse.getUSSDString());
         }
     }
 
     @Override
     public void onUnstructuredSSRequest(UnstructuredSSRequest unstructuredSSRequest) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Rx UnstructuredSSRequestIndication. USSD String=%s ", unstructuredSSRequest.getUSSDString()));
+            logger.debug("Rx UnstructuredSSRequestIndication. USSD String={} ", unstructuredSSRequest.getUSSDString());
         }
 
         MAPDialogSupplementary mapDialog = unstructuredSSRequest.getMAPDialog();
@@ -334,7 +330,7 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
             mapDialog.send();
 
         } catch (MAPException e) {
-            logger.error(String.format("Error while sending UnstructuredSSResponse for Dialog=%d", mapDialog.getLocalDialogId()));
+            logger.error("Error while sending UnstructuredSSResponse for Dialog={}", mapDialog.getLocalDialogId());
         }
     }
 
@@ -342,16 +338,16 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
     public void onUnstructuredSSResponse(UnstructuredSSResponse unstructuredSSResponse) {
         // This is an error condition.
         // Client should never receive an UnstructuredSSResponseIndication
-        logger.error(String.format("onUnstructuredSSResponseIndication for Dialog=%d and invokeId=%d", unstructuredSSResponse
-                .getMAPDialog().getLocalDialogId(), unstructuredSSResponse.getInvokeId()));
+        logger.error("onUnstructuredSSResponseIndication for Dialog={} and invokeId={}", unstructuredSSResponse
+                .getMAPDialog().getLocalDialogId(), unstructuredSSResponse.getInvokeId());
     }
 
     @Override
     public void onUnstructuredSSNotifyRequest(UnstructuredSSNotifyRequest unstructuredSSNotifyRequest) {
         // This is an error condition.
         // Client should never receive an UnstructuredSSNotifyRequestIndication
-        logger.error(String.format("onUnstructuredSSNotifyRequestIndication for Dialog=%d and invokeId=%d", unstructuredSSNotifyRequest
-                .getMAPDialog().getLocalDialogId(), unstructuredSSNotifyRequest.getInvokeId()));
+        logger.error("onUnstructuredSSNotifyRequestIndication for Dialog={} and invokeId={}", unstructuredSSNotifyRequest
+                .getMAPDialog().getLocalDialogId(), unstructuredSSNotifyRequest.getInvokeId());
     }
 
     @Override
@@ -363,7 +359,7 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
     @Override
     public void onDialogDelimiter(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogDelimiter for DialogId=%d", mapDialog.getLocalDialogId()));
+            logger.debug("onDialogDelimiter for DialogId={}", mapDialog.getLocalDialogId());
         }
     }
 
@@ -371,9 +367,7 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
     public void onDialogRequest(MAPDialog mapDialog, AddressString destReference, AddressString origReference,
             MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format(
-                    "onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s MAPExtensionContainer=%s",
-                    mapDialog.getLocalDialogId(), destReference, origReference, extensionContainer));
+            logger.debug("onDialogRequest for DialogId={} DestinationReference={} OriginReference={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), destReference, origReference, extensionContainer);
         }
     }
 
@@ -381,57 +375,50 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
     public void onDialogRequestEricsson(MAPDialog mapDialog, AddressString destReference, AddressString origReference,
             AddressString eriImsi, AddressString eriVlrNo) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s ",
-                    mapDialog.getLocalDialogId(), destReference, origReference));
+            logger.debug("onDialogRequest for DialogId={} DestinationReference={} OriginReference={} ", mapDialog.getLocalDialogId(), destReference, origReference);
         }
     }
 
     @Override
     public void onDialogAccept(MAPDialog mapDialog, MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogAccept for DialogId=%d MAPExtensionContainer=%s", mapDialog.getLocalDialogId(), extensionContainer));
+            logger.debug("onDialogAccept for DialogId={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), extensionContainer);
         }
     }
 
     @Override
     public void onDialogReject(MAPDialog mapDialog, MAPRefuseReason refuseReason, ApplicationContextName alternativeApplicationContext,
                                MAPExtensionContainer extensionContainer) {
-        logger.error(String.format(
-                "onDialogReject for DialogId=%d MAPRefuseReason=%s ApplicationContextName=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), refuseReason, alternativeApplicationContext, extensionContainer));
+        logger.error("onDialogReject for DialogId={} MAPRefuseReason={} ApplicationContextName={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), refuseReason, alternativeApplicationContext, extensionContainer);
     }
 
     @Override
     public void onDialogUserAbort(MAPDialog mapDialog, MAPUserAbortChoice userReason, MAPExtensionContainer extensionContainer) {
-        logger.error(String.format("onDialogUserAbort for DialogId=%d MAPUserAbortChoice=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), userReason, extensionContainer));
+        logger.error("onDialogUserAbort for DialogId={} MAPUserAbortChoice={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), userReason, extensionContainer);
     }
 
     @Override
     public void onDialogProviderAbort(MAPDialog mapDialog, MAPAbortProviderReason abortProviderReason,
             MAPAbortSource abortSource, MAPExtensionContainer extensionContainer) {
-        logger.error(String.format(
-                "onDialogProviderAbort for DialogId=%d MAPAbortProviderReason=%s MAPAbortSource=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), abortProviderReason, abortSource, extensionContainer));
+        logger.error("onDialogProviderAbort for DialogId={} MAPAbortProviderReason={} MAPAbortSource={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), abortProviderReason, abortSource, extensionContainer);
     }
 
     @Override
     public void onDialogClose(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("DialogClose for Dialog=%d", mapDialog.getLocalDialogId()));
+            logger.debug("DialogClose for Dialog={}", mapDialog.getLocalDialogId());
         }
     }
 
     @Override
     public void onDialogNotice(MAPDialog mapDialog, MAPNoticeProblemDiagnostic noticeProblemDiagnostic) {
-        logger.error(String.format("onDialogNotice for DialogId=%d MAPNoticeProblemDiagnostic=%s ",
-                mapDialog.getLocalDialogId(), noticeProblemDiagnostic));
+        logger.error("onDialogNotice for DialogId={} MAPNoticeProblemDiagnostic={} ", mapDialog.getLocalDialogId(), noticeProblemDiagnostic);
     }
 
     @Override
     public void onDialogRelease(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogRelease for DialogId=%d", mapDialog.getLocalDialogId()));
+            logger.debug("onDialogRelease for DialogId={}", mapDialog.getLocalDialogId());
         }
 
         this.endCount++;
@@ -441,24 +428,24 @@ public class MapServiceUssdClient implements MAPDialogListener, MAPServiceSupple
                 long current = System.currentTimeMillis();
                 float sec = (float) (current - prev) / 1000f;
                 prev = current;
-                logger.warn("Completed 2000 Dialogs, dlg per a sec: " + (float) (2000 / sec));
+                logger.warn("Completed 2000 Dialogs, dlg per a sec: {}", 2000 / sec);
             }
         } else {
             if (this.endCount == getNumberOfDialogs()) {
                 long current = System.currentTimeMillis();
-                logger.warn("Start Time = " + start);
-                logger.warn("Current Time = " + current);
+                logger.warn("Start Time = {}", start);
+                logger.warn("Current Time = {}", current);
                 float sec = (float) (current - start) / 1000f;
 
-                logger.warn("Total time in sec = " + sec);
-                logger.warn("Throughput = " + (float) (getNumberOfDialogs() / sec));
+                logger.warn("Total time in sec = {}", sec);
+                logger.warn("Throughput = {}", getNumberOfDialogs() / sec);
             }
         }
     }
 
     @Override
     public void onDialogTimeout(MAPDialog mapDialog) {
-        logger.error(String.format("onDialogTimeout for DialogId=%d", mapDialog.getLocalDialogId()));
+        logger.error("onDialogTimeout for DialogId={}", mapDialog.getLocalDialogId());
     }
 
     public int getDelayBeforeLoad() {

@@ -1,7 +1,6 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.message;
 
-import org.apache.log4j.Level;import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
@@ -130,7 +129,7 @@ public class SccpConnCrMessageImpl extends SccpAddressedMessageImpl implements S
                 throw new IOException("Not enough data in buffer");
             }
 
-            int paramCode = 0;
+            int paramCode;
             // EOP
             while ((paramCode = in.read() & 0xFF) != 0) {
                 if (paramCode != Credit.PARAMETER_CODE
@@ -187,7 +186,7 @@ public class SccpConnCrMessageImpl extends SccpAddressedMessageImpl implements S
                 availLen = 130;
 
             if (bf.length > availLen) {
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn(String.format(
                             "Failure when sending a CR message: message is too long. SccpMessageSegment=%s", this));
                 }
@@ -237,7 +236,7 @@ public class SccpConnCrMessageImpl extends SccpAddressedMessageImpl implements S
             }
             if (hopCounter != null) {
                 out.write(HopCounter.PARAMETER_CODE);
-                byte[] b = ((HopCounterImpl)hopCounter).encode(removeSPC, sccpProtocolVersion);
+                byte[] b = (hopCounter).encode(removeSPC, sccpProtocolVersion);
                 out.write(b.length);
                 out.write(b);
             }
@@ -283,8 +282,7 @@ public class SccpConnCrMessageImpl extends SccpAddressedMessageImpl implements S
                 break;
 
             case HopCounter.PARAMETER_CODE:
-                HopCounterImpl counter = new HopCounterImpl(buffer[0]);
-                hopCounter = counter;
+                hopCounter = new HopCounterImpl(buffer[0]);
                 break;
 
             case Importance.PARAMETER_CODE:
@@ -310,9 +308,8 @@ public class SccpConnCrMessageImpl extends SccpAddressedMessageImpl implements S
             if (--val <= 0) {
                 val = 0;
             }
-            ((HopCounterImpl)this.hopCounter).setValue(val);
-            if (val == 0)
-                return false;
+            this.hopCounter.setValue(val);
+            return val != 0;
         }
         return true;
     }

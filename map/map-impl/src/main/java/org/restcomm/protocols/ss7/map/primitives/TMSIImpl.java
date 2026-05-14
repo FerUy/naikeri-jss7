@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.primitives;
 
 import org.restcomm.protocols.ss7.map.api.primitives.TMSI;

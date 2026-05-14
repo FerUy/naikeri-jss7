@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.supplementary;
 
 import java.io.IOException;
@@ -66,6 +65,10 @@ public class ProcessUnstructuredSSRequestImpl extends SupplementaryMessageImpl i
      */
     public ISDNAddressString getMSISDNAddressString() {
         return this.msisdnAddressString;
+    }
+
+    public void setMSISDNAddressString(ISDNAddressString msisdnAddressString) {
+        this.msisdnAddressString = msisdnAddressString;
     }
 
     /*
@@ -229,11 +232,11 @@ public class ProcessUnstructuredSSRequestImpl extends SupplementaryMessageImpl i
 
         if (alertingPattern != null) {
             sb.append(", alertingPattern=");
-            sb.append(alertingPattern.toString());
+            sb.append(alertingPattern);
         }
         if (msisdnAddressString != null) {
             sb.append(", msisdn=");
-            sb.append(msisdnAddressString.toString());
+            sb.append(msisdnAddressString);
         }
 
         sb.append("]");
@@ -244,7 +247,7 @@ public class ProcessUnstructuredSSRequestImpl extends SupplementaryMessageImpl i
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<ProcessUnstructuredSSRequestImpl> PROCESS_UNSTRUCTURED_SS_REQUEST_XML = new XMLFormat<ProcessUnstructuredSSRequestImpl>(
+    protected static final XMLFormat<ProcessUnstructuredSSRequestImpl> PROCESS_UNSTRUCTURED_SS_REQUEST_XML = new XMLFormat<>(
             ProcessUnstructuredSSRequestImpl.class) {
 
         @Override

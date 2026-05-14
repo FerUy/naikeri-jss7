@@ -7,7 +7,7 @@
     </condition>
 
 
-    <property name="packageprefix" value="org.restcomm.protocols.ss7.map.load.mobility_management.gprs" />
+    <property name="packageprefix" value="org.restcomm.protocols.ss7.map.load.mobility_management.ps" />
     <!-- <property name="packageprefix" value="org.restcomm.protocols.ss7.map.loadDialogic" /> -->
 
     <property name="javac.source" value="11" />

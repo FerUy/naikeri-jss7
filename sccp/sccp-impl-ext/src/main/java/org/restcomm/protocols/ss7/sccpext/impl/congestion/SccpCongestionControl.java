@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl.congestion;
 
 import java.util.concurrent.TimeUnit;
@@ -9,9 +8,7 @@ import org.restcomm.protocols.ss7.sccp.impl.SccpManagement;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
 
 /**
- *
  * @author sergey vetyutnev
- *
  */
 public class SccpCongestionControl {
 

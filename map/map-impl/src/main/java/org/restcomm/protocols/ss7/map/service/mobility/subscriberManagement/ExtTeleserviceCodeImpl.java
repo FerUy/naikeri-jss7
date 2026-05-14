@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import javolution.xml.XMLFormat;
@@ -73,7 +72,7 @@ public class ExtTeleserviceCodeImpl extends OctetStringBase implements ExtTelese
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<ExtTeleserviceCodeImpl> EXT_BEARER_SERVICE_CODE_XML = new XMLFormat<ExtTeleserviceCodeImpl>(
+    protected static final XMLFormat<ExtTeleserviceCodeImpl> EXT_BEARER_SERVICE_CODE_XML = new XMLFormat<>(
             ExtTeleserviceCodeImpl.class) {
 
         @Override
@@ -83,11 +82,6 @@ public class ExtTeleserviceCodeImpl extends OctetStringBase implements ExtTelese
             if (val != null) {
                 extTeleserviceCode.setTeleserviceCode(Enum.valueOf(TeleserviceCodeValue.class, val));
             }
-
-            // Byte integ = xml.get(TELE_SERVICE_CODE_VALUE, Byte.class);
-            // if (integ != null) {
-            // extTeleserviceCode.data = new byte[] { integ };
-            // }
         }
 
         @Override
@@ -96,11 +90,6 @@ public class ExtTeleserviceCodeImpl extends OctetStringBase implements ExtTelese
             TeleserviceCodeValue val = extTeleserviceCode.getTeleserviceCodeValue();
             if (val != null)
                 xml.setAttribute(TELE_SERVICE_CODE_VALUE, val.toString());
-
-            // TeleserviceCodeValue bearerServiceCodeValue = extTeleserviceCode.getTeleserviceCodeValue();
-            // if (bearerServiceCodeValue != null) {
-            // xml.add((byte) bearerServiceCodeValue.getCode(), TELE_SERVICE_CODE_VALUE, Byte.class);
-            // }
         }
     };
 }

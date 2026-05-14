@@ -10,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.inap.isup.RedirectionInformationInapImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.RedirectionInformationImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.RedirectionInformation;
 import org.testng.annotations.Test;
@@ -24,6 +25,8 @@ import org.testng.annotations.Test;
  *
  */
 public class RedirectionInformationInapTest {
+
+    private static final Logger logger = LogManager.getLogger(RedirectionInformationInapTest.class.getName());
 
     public byte[] getData() {
         return new byte[] { (byte) 158, 2, 3, 97 };
@@ -39,7 +42,7 @@ public class RedirectionInformationInapTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         RedirectionInformationInapImpl elem = new RedirectionInformationInapImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         RedirectionInformation ri = elem.getRedirectionInformation();
         assertTrue(Arrays.equals(elem.getData(), this.getIntData()));
@@ -84,7 +87,7 @@ public class RedirectionInformationInapTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap.concurrent;
 
 import static org.testng.Assert.fail;
@@ -13,6 +12,7 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import junit.framework.Assert;
 
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.sccp.MaxConnectionCountReached;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
 import org.restcomm.protocols.ss7.sccp.SccpConnection;
@@ -49,7 +49,9 @@ import org.testng.annotations.Test;
 */
 public class DialogPreviewModeMngConcurrentTest {
 
-    private SccpHarnessPreview sccpProv = new SccpHarnessPreview();
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(DialogPreviewModeMngConcurrentTest.class.getName());
+
+    private final SccpHarnessPreview sccpProv = new SccpHarnessPreview();
     private TCAPStackImplWrapper tcapStack1;
     private static final int MAX_DIALOGS = 100;
     private static final int DPC = 100;
@@ -62,12 +64,12 @@ public class DialogPreviewModeMngConcurrentTest {
 
     @BeforeClass
     public void setUpClass() {
-        System.out.println("setUpClass");
+        logger.info("setUpClass");
     }
 
     @AfterClass
     public void tearDownClass() throws Exception {
-        System.out.println("tearDownClass");
+        logger.info("tearDownClass");
     }
 
     /*
@@ -77,7 +79,7 @@ public class DialogPreviewModeMngConcurrentTest {
      */
     @BeforeMethod
     public void setUp() throws Exception {
-        System.out.println("setUp");
+        logger.info("setUp");
 
         this.tcapStack1 = new TCAPStackImplWrapper(this.sccpProv, 8, "DialogMngConcurrentTest");
         this.tcapStack1.start();
@@ -91,7 +93,7 @@ public class DialogPreviewModeMngConcurrentTest {
      */
     @AfterMethod
     public void tearDown() {
-        System.out.println("tearDown");
+        logger.info("tearDown");
         this.tcapStack1.stop();
     }
 
@@ -99,7 +101,7 @@ public class DialogPreviewModeMngConcurrentTest {
     public void testMaxDialogConstraint() throws Exception {
         tcapStack1.setMaxDialogs(MAX_DIALOGS);
 
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < MAX_DIALOGS + 100; i++) {
             runnables.add(new Runnable() {
                 public void run() {
@@ -111,7 +113,7 @@ public class DialogPreviewModeMngConcurrentTest {
                         PreviewDialogData pdd = new PreviewDialogData(provider, previewDialogId);
                         provider.createPreviewDialog(ky, localAddress, remoteAddress, 0);
                     } catch (Exception e) {
-
+                        logger.error(e.getMessage());
                     }
                 }
             });
@@ -132,7 +134,7 @@ public class DialogPreviewModeMngConcurrentTest {
         final SccpAddress localAddress = new SccpAddressImpl();
         final SccpAddress remoteAddress = new SccpAddressImpl();
 
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             runnables.add(new Runnable() {
                 public void run() {
@@ -152,7 +154,7 @@ public class DialogPreviewModeMngConcurrentTest {
 
     @Test
     public void testInsertKeyConstraint2() throws Exception {
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             PreviewDialogDataKey ky = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
             runnables.add(new TestInsertKeyConstraint2Class(ky));
@@ -183,7 +185,7 @@ public class DialogPreviewModeMngConcurrentTest {
 
     @Test
     public void testInsertKeyConstraint3() throws Exception {
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             PreviewDialogDataKey ky = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
             runnables.add(new TestInsertKeyConstraint3Class(ky));
@@ -225,7 +227,7 @@ public class DialogPreviewModeMngConcurrentTest {
 
         final PreviewDialogDataKey ky2 = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
 
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             runnables.add(new Runnable() {
                 public void run() {
@@ -245,8 +247,8 @@ public class DialogPreviewModeMngConcurrentTest {
         // Long previewDialogId = provider.getAvailableTxIdPreview();
         // final PreviewDialogData pdd = new PreviewDialogData(provider, previewDialogId);
 
-        List<Runnable> runnables = new ArrayList<Runnable>();
-        List<Runnable> runnables2 = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
+        List<Runnable> runnables2 = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             PreviewDialogDataKey ky = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
             PreviewDialogDataKey ky2 = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
@@ -338,7 +340,7 @@ public class DialogPreviewModeMngConcurrentTest {
         Assert.assertEquals(0, provider.getDialogPreviewList().size());
     }
 
-    private class SccpHarnessPreview implements SccpProvider {
+    private static class SccpHarnessPreview implements SccpProvider {
 
         @Override
         public void deregisterSccpListener(int arg0) {
@@ -397,7 +399,7 @@ public class DialogPreviewModeMngConcurrentTest {
 
         @Override
         public FastMap<Integer, NetworkIdState> getNetworkIdStateList() {
-            return new FastMap<Integer, NetworkIdState>();
+            return new FastMap<>();
         }
 
         @Override

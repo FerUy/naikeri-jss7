@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import static org.testng.Assert.assertEquals;
@@ -28,10 +27,6 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCod
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
 import org.restcomm.protocols.ss7.map.service.lsm.LCSClientExternalIDImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSStatusImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExternalClientImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.LCSPrivacyClassImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ServiceTypeImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 import org.testng.annotations.Test;
 
@@ -54,7 +49,7 @@ public class LCSPrivacyClassTest {
                 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, (byte) 161, 3, 31, 32, 33, (byte) 165, 52, 48, 50, 2, 1, 1, (byte) 128, 1, 0, (byte) 129, 1, 3,
                 (byte) 162, 39, (byte) 160, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25,
                 26, (byte) 161, 3, 31, 32, 33 };
-    };
+    }
 
     @Test(groups = { "functional.decode", "primitives" })
     public void testDecode() throws Exception {
@@ -83,7 +78,7 @@ public class LCSPrivacyClassTest {
         MAPExtensionContainer extensionContainerExternalClient = externalClient.getExtensionContainer();
         LCSClientExternalID clientIdentity = externalClient.getClientIdentity();
         ISDNAddressString externalAddress = clientIdentity.getExternalAddress();
-        assertTrue(externalAddress.getAddress().equals("22228"));
+        assertEquals(externalAddress.getAddress(), "22228");
         assertEquals(externalAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(externalAddress.getNumberingPlan(), NumberingPlan.ISDN);
         assertNotNull(clientIdentity.getExtensionContainer());
@@ -106,7 +101,7 @@ public class LCSPrivacyClassTest {
         extensionContainerExternalClient = externalClient.getExtensionContainer();
         clientIdentity = externalClient.getClientIdentity();
         externalAddress = clientIdentity.getExternalAddress();
-        assertTrue(externalAddress.getAddress().equals("22228"));
+        assertEquals(externalAddress.getAddress(), "22228");
         assertEquals(externalAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(externalAddress.getNumberingPlan(), NumberingPlan.ISDN);
         assertNotNull(clientIdentity.getExtensionContainer());
@@ -138,7 +133,7 @@ public class LCSPrivacyClassTest {
         SSCode ssCode = new SSCodeImpl(SupplementaryCodeValue.cfu);
         ExtSSStatus ssStatus = new ExtSSStatusImpl(true, false, true, false);
         NotificationToMSUser notificationToMSUser = NotificationToMSUser.locationNotAllowed;
-        ArrayList<ExternalClient> externalClientList = new ArrayList<ExternalClient>();
+        ArrayList<ExternalClient> externalClientList = new ArrayList<>();
 
         MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
         ISDNAddressString externalAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
@@ -149,16 +144,16 @@ public class LCSPrivacyClassTest {
                 extensionContainer);
         externalClientList.add(externalClient);
 
-        ArrayList<LCSClientInternalID> plmnClientList = new ArrayList<LCSClientInternalID>();
+        ArrayList<LCSClientInternalID> plmnClientList = new ArrayList<>();
         LCSClientInternalID lcsClientInternalIdOne = LCSClientInternalID.broadcastService;
         LCSClientInternalID lcsClientInternalIdTwo = LCSClientInternalID.oandMHPLMN;
         plmnClientList.add(lcsClientInternalIdOne);
         plmnClientList.add(lcsClientInternalIdTwo);
 
-        ArrayList<ExternalClient> extExternalClientList = new ArrayList<ExternalClient>();
+        ArrayList<ExternalClient> extExternalClientList = new ArrayList<>();
         extExternalClientList.add(externalClient);
 
-        ArrayList<ServiceType> serviceTypeList = new ArrayList<ServiceType>();
+        ArrayList<ServiceType> serviceTypeList = new ArrayList<>();
         int serviceTypeIdentity = 1;
         ServiceType serviceType = new ServiceTypeImpl(serviceTypeIdentity, gmlcRestriction, notificationToMSUser,
                 extensionContainer);

@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl.router;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.NumberingPlan;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
@@ -188,7 +187,7 @@ public class NetworkIdTest extends BaseSccpListener implements SccpListener {
         SccpDataMessageImpl msg1 = (SccpDataMessageImpl) messageFactory.createDataMessageClass1(calledParty, callingParty, data, 0, 0, false, hc, imp);
         // calledParty, callingParty, data, sls, localSsn, returnMessageOnError,
         // hopCounter, importance
-        Logger logger = Logger.getLogger(SccpRoutingControl.class);
+        Logger logger = LogManager.getLogger(SccpRoutingControl.class);
         EncodingResultData erd = msg1.encode(this.testSccpStackImpl, LongMessageRuleType.LONG_MESSAGE_FORBBIDEN, 1000, logger, true, SccpProtocolVersion.ITU);
         // longMessageRuleType, maxMtp3UserDataLength, logger, removeSPC,
         // sccpProtocolVersion

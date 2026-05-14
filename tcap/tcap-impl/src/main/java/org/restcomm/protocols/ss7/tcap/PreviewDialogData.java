@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
 import java.util.concurrent.Future;
@@ -6,8 +5,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.tcap.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.restcomm.protocols.ss7.tcap.asn.InvokeImpl;
@@ -19,7 +18,7 @@ import org.restcomm.protocols.ss7.tcap.asn.InvokeImpl;
  */
 public class PreviewDialogData {
 
-    private static final Logger logger = Logger.getLogger(PreviewDialogData.class);
+    private static final Logger logger = LogManager.getLogger(PreviewDialogData.class);
 
     private ApplicationContextName lastACN;
     private InvokeImpl[] operationsSentA;

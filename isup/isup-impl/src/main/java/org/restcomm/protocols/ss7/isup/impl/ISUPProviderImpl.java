@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.isup.CircuitManager;
 import org.restcomm.protocols.ss7.isup.ISUPEvent;
 import org.restcomm.protocols.ss7.isup.ISUPListener;
@@ -29,16 +29,16 @@ import org.restcomm.protocols.ss7.scheduler.Scheduler;
  */
 public class ISUPProviderImpl implements ISUPProvider {
 
-    protected static final Logger logger = Logger.getLogger(ISUPProviderImpl.class);
+    protected static final Logger logger = LogManager.getLogger(ISUPProviderImpl.class);
 
-    protected final List<ISUPListener> listeners = new FastList<ISUPListener>();
+    protected final List<ISUPListener> listeners = new FastList<>();
 
     protected final transient ISUPStackImpl stack;
     protected final transient ISUPMessageFactory messageFactory;
     protected final transient ISUPParameterFactory parameterFactory;
     protected final transient Scheduler scheduler;
 
-    protected final transient ConcurrentHashMap<Long, Circuit> cic2Circuit = new ConcurrentHashMap<Long, Circuit>();
+    protected final transient ConcurrentHashMap<Long, Circuit> cic2Circuit = new ConcurrentHashMap<>();
     protected final int ni;
     protected final int localSpc;
     protected final boolean automaticTimerMessages;
@@ -90,7 +90,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     /*
      * (non-Javadoc)
      *
-     * @seeorg.mobicents.isup.ISUPProvider#removeListener(org.mobicents.isup. ISUPListener)
+     * @see org.mobicents.isup.ISUPProvider#removeListener(org.mobicents.isup. ISUPListener)
      */
     public void removeListener(ISUPListener listener) {
         if (listener == null) {
@@ -187,10 +187,9 @@ public class ISUPProviderImpl implements ISUPProvider {
         }
     }
 
-    // --------- private methods and class defs.
+    // --------- private methods and class definitions.
     /**
-     * @param message
-     * @return
+     * @param message ISUP message
      */
     void receive(ISUPMessage message, int dpc) {
         Circuit c = getCircuit(message, dpc);
@@ -199,7 +198,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     private Circuit getCircuit(ISUPMessage message, int dpc) {
-        Circuit c = null;
+        Circuit c;
         int cic = message.getCircuitIdentificationCode().getCIC();
         long channelID = this.stack.getCircuitManager().getChannelID(cic, dpc);
         if (!this.stack.getCircuitManager().isCircuitPresent(cic, dpc)) {
@@ -208,7 +207,7 @@ public class ISUPProviderImpl implements ISUPProvider {
             }
 
             // what for do we need to throw this error , lets simply add a circuit and return it , we have all parameters anyway
-            // throw new IllegalArgumentException("Curcuit not defined, no route definition present!");
+            // throw new IllegalArgumentException("Circuit not defined, no route definition present!");
             this.stack.getCircuitManager().addCircuit(cic, dpc);
             c = new Circuit(cic, dpc, this, scheduler);
             cic2Circuit.put(channelID, c);
@@ -223,14 +222,14 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @param request
+     * @param event ISUP event
      */
     public void deliver(ISUPEvent event) {
         for (int index = 0; index < listeners.size(); index++) {
             try {
                 listeners.get(index).onEvent(event);
             } catch (Exception e) {
-                if (logger.isEnabledFor(Level.ERROR)) {
+                if (logger.isErrorEnabled()) {
                     logger.error("Exception thrown from listener.", e);
                 }
             }
@@ -246,7 +245,7 @@ public class ISUPProviderImpl implements ISUPProvider {
             try {
                 listeners.get(index).onTimeout(timeoutEvent);
             } catch (Exception e) {
-                if (logger.isEnabledFor(Level.ERROR)) {
+                if (logger.isErrorEnabled()) {
                     logger.error("Exception thrown from listener.", e);
                 }
             }
@@ -272,49 +271,49 @@ public class ISUPProviderImpl implements ISUPProvider {
     private long T33Timeout = ISUPTimeoutEvent.T33_DEFAULT;
 
     /**
-     * @return
+     * @return T1 timeout
      */
     long getT1Timeout() {
         return T1Timeout;
     }
 
     /**
-     * @return
+     * @return T5 timeout
      */
     long getT5Timeout() {
         return T5Timeout;
     }
 
     /**
-     * @return
+     * @return T7 timeout
      */
     long getT7Timeout() {
         return T7Timeout;
     }
 
     /**
-     * @return
+     * @return T12 timeout
      */
     long getT12Timeout() {
         return T12Timeout;
     }
 
     /**
-     * @return
+     * @return T13 timeout
      */
     long getT13Timeout() {
         return T13Timeout;
     }
 
     /**
-     * @return
+     * @return T14 timeout
      */
     long getT14Timeout() {
         return T14Timeout;
     }
 
     /**
-     * @return
+     * @return T15 timeout
      */
     long getT15Timeout() {
 
@@ -322,7 +321,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T16 timeout
      */
     long getT16Timeout() {
 
@@ -330,7 +329,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T17 timeout
      */
     long getT17Timeout() {
 
@@ -338,7 +337,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T18 timeout
      */
     long getT18Timeout() {
 
@@ -346,7 +345,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T19 timeout
      */
     long getT19Timeout() {
 
@@ -354,7 +353,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T20 timeout
      */
     long getT20Timeout() {
 
@@ -362,7 +361,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T21 timeout
      */
     long getT21Timeout() {
 
@@ -370,7 +369,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T22 timeout
      */
     long getT22Timeout() {
 
@@ -378,7 +377,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T23 timeout
      */
     long getT23Timeout() {
 
@@ -386,7 +385,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T28 timeout
      */
     long getT28Timeout() {
 
@@ -394,7 +393,7 @@ public class ISUPProviderImpl implements ISUPProvider {
     }
 
     /**
-     * @return
+     * @return T33 timeout
      */
     long getT33Timeout() {
 

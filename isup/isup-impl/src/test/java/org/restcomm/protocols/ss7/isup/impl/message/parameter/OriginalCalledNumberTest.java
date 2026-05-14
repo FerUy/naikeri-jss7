@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import static org.testng.Assert.assertEquals;
@@ -12,7 +11,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.OriginalCalledNumberImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.isup.message.parameter.CallingPartyNumber;
 import org.restcomm.protocols.ss7.isup.message.parameter.NAINumber;
 import org.restcomm.protocols.ss7.isup.message.parameter.OriginalCalledNumber;
@@ -28,6 +28,9 @@ import org.testng.annotations.Test;
  *
  */
 public class OriginalCalledNumberTest {
+
+    private static final Logger logger = LogManager.getLogger(OriginalCalledNumberTest.class.getName());
+
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
@@ -113,7 +116,7 @@ public class OriginalCalledNumberTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

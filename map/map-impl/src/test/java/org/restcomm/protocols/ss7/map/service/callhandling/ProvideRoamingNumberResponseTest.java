@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.callhandling;
 
 import static org.testng.Assert.assertEquals;
@@ -11,7 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.MAPParameterFactoryImpl;
@@ -22,7 +22,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.MAPPrivateExtension;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
-import org.restcomm.protocols.ss7.map.service.callhandling.ProvideRoamingNumberResponseImpl;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
@@ -36,7 +35,7 @@ import org.testng.annotations.Test;
  */
 public class ProvideRoamingNumberResponseTest {
 
-    Logger logger = Logger.getLogger(ProvideRoamingNumberResponseTest.class);
+    private final static Logger logger = LogManager.getLogger(ProvideRoamingNumberResponseTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -73,21 +72,19 @@ public class ProvideRoamingNumberResponseTest {
     public static MAPExtensionContainer GetTestExtensionContainer() {
         MAPParameterFactory mapServiceFactory = new MAPParameterFactoryImpl();
 
-        ArrayList<MAPPrivateExtension> al = new ArrayList<MAPPrivateExtension>();
+        ArrayList<MAPPrivateExtension> al = new ArrayList<>();
         al.add(mapServiceFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 4 }, new byte[] { 11, 12, 13, 14, 15 }));
         al.add(mapServiceFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 6 }, null));
         al.add(mapServiceFactory.createMAPPrivateExtension(new long[] { 1, 2, 3, 5 }, new byte[] { 21, 22, 23, 24, 25, 26 }));
 
-        MAPExtensionContainer cnt = mapServiceFactory.createMAPExtensionContainer(al, new byte[] { 31, 32, 33 });
-
-        return cnt;
+        return mapServiceFactory.createMAPExtensionContainer(al, new byte[] { 31, 32, 33 });
     }
 
     @Test(groups = { "functional.decode", "service.callhandling" })
     public void testDecode() throws Exception {
 
         AsnInputStream asn = new AsnInputStream(getEncodedData());
-        int tag = asn.readTag();
+        asn.readTag();
 
         ProvideRoamingNumberResponseImpl prn = new ProvideRoamingNumberResponseImpl(3);
         prn.decodeAll(asn);
@@ -112,7 +109,7 @@ public class ProvideRoamingNumberResponseTest {
         assertEquals(mapProtocolVersion, 3);
 
         asn = new AsnInputStream(getEncodedDataFull());
-        tag = asn.readTag();
+        asn.readTag();
 
         prn = new ProvideRoamingNumberResponseImpl(3);
         prn.decodeAll(asn);
@@ -135,9 +132,10 @@ public class ProvideRoamingNumberResponseTest {
         assertEquals(vmscAddress.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(vmscAddress.getAddress(), "29113123311");
         assertEquals(mapProtocolVersion, 3);
+        logger.info("Decode test success, mapProtocolVersion={}", mapProtocolVersion);
 
         asn = new AsnInputStream(getEncodedData1());
-        tag = asn.readTag();
+        asn.readTag();
 
         prn = new ProvideRoamingNumberResponseImpl(2);
         prn.decodeAll(asn);
@@ -157,7 +155,7 @@ public class ProvideRoamingNumberResponseTest {
         assertFalse(releaseResourcesSupported);
         assertNull(vmscAddress);
 
-        // System.out.println("Success");
+        logger.info("Decode test success, mapProtocolVersion={}", mapProtocolVersion);
     }
 
     @Test(groups = { "functional.encode", "service.callhandling" })
@@ -177,8 +175,9 @@ public class ProvideRoamingNumberResponseTest {
         AsnOutputStream asnOS = new AsnOutputStream();
         prn.encodeAll(asnOS);
         byte[] encodedData = asnOS.toByteArray();
-        // System.out.println("0   :   " + Arrays.toString(encodedData));
+        // logger.info("0   :   " + Arrays.toString(encodedData));
         assertTrue(Arrays.equals(getEncodedData(), encodedData));
+        logger.info("Encode test 0 success, PRN={}", prn);
 
         releaseResourcesSupported = true;
         prn = new ProvideRoamingNumberResponseImpl(roamingNumber, extensionContainer, releaseResourcesSupported, vmscAddress,
@@ -188,8 +187,9 @@ public class ProvideRoamingNumberResponseTest {
         prn.encodeAll(asnOS);
 
         encodedData = asnOS.toByteArray();
-        // System.out.println("0   :   " + Arrays.toString(encodedData));
+        // logger.info("0   :   " + Arrays.toString(encodedData));
         assertTrue(Arrays.equals(getEncodedDataFull(), encodedData));
+        logger.info("Encode test 1 success, PRN={}", prn);
 
         // 2
         mapProtocolVersion = 2;
@@ -199,8 +199,9 @@ public class ProvideRoamingNumberResponseTest {
         prn.encodeAll(asnOS);
 
         encodedData = asnOS.toByteArray();
-        // System.out.println("1   :   " + Arrays.toString(encodedData));
+        // logger.info("1   :   " + Arrays.toString(encodedData));
         assertTrue(Arrays.equals(getEncodedData1(), encodedData));
+        logger.info("Encode test 2 success, PRN={}", prn);
 
     }
 

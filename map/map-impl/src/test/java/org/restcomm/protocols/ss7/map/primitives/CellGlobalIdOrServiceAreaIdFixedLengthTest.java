@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.primitives;
 
 import static org.testng.Assert.assertEquals;
@@ -12,9 +11,10 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
-import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -24,17 +24,19 @@ import org.testng.annotations.Test;
  */
 public class CellGlobalIdOrServiceAreaIdFixedLengthTest {
 
+    private static final Logger logger = LogManager.getLogger(CellGlobalIdOrServiceAreaIdFixedLengthTest.class.getName());
+
     public byte[] getData() {
         return new byte[] { 4, 7, 82, (byte) 240, 16, 17, 92, 13, 5 };
-    };
+    }
 
     public byte[] getDataVal() {
         return new byte[] { 82, (byte) 240, 16, 17, 92, 13, 5 };
-    };
+    }
 
     public byte[] getData2() {
         return new byte[] { 4, 7, 16, 97, 66, 1, 77, 1, (byte) 188 };
-    };
+    }
 
     @Test(groups = { "functional.decode", "primitives" })
     public void testDecode() throws Exception {
@@ -42,7 +44,7 @@ public class CellGlobalIdOrServiceAreaIdFixedLengthTest {
         byte[] data = this.getData();
 
         AsnInputStream asn = new AsnInputStream(data);
-        int tag = asn.readTag();
+        asn.readTag();
 
         CellGlobalIdOrServiceAreaIdFixedLengthImpl prim = new CellGlobalIdOrServiceAreaIdFixedLengthImpl();
         prim.decodeAll(asn);
@@ -58,7 +60,7 @@ public class CellGlobalIdOrServiceAreaIdFixedLengthTest {
         data = this.getData2();
 
         asn = new AsnInputStream(data);
-        tag = asn.readTag();
+        asn.readTag();
 
         prim = new CellGlobalIdOrServiceAreaIdFixedLengthImpl();
         prim.decodeAll(asn);
@@ -112,7 +114,7 @@ public class CellGlobalIdOrServiceAreaIdFixedLengthTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

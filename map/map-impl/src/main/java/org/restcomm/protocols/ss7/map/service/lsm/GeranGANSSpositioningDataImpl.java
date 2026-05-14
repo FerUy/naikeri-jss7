@@ -1,11 +1,10 @@
-
 package org.restcomm.protocols.ss7.map.service.lsm;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.primitives.OctetStringBase;
-
-import java.util.HashMap;
 
 /**
  *
@@ -28,7 +27,7 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
     }
 
     @Override
-    public HashMap<String, String> getLocationGeneratedMethodsAndGANSSId() throws MAPException {
+    public Multimap<String, String> getGeranGANSSPositioningMethodsAndGANSSIds() throws MAPException {
         if (data == null)
             throw new MAPException("GeranGANSSpositioningData data must not be empty");
         if (data.length < 2)
@@ -36,13 +35,34 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
         if (data.length > 10)
             throw new MAPException("GeranGANSSpositioningData data length must not be higher than 10");
 
-        HashMap<String, String> methodsAndGANSSId = new HashMap<>();
+        Multimap<String, String> methodsAndGANSSId = LinkedHashMultimap.create();
+        String method;
+        String ganssId;
+
+        for (int i=1; i<data.length; i++) {
+            method = getGeranGanssPositioningMethod((data[i] & 0xC0) >> 6);
+            ganssId = getGANSSId((data[i] & 0x38) >> 3);
+            methodsAndGANSSId.put(method, ganssId);
+        }
+        return methodsAndGANSSId;
+    }
+
+    @Override
+    public Multimap<String, String> getLocationGeneratedMethodsAndGANSSIds() throws MAPException {
+        if (data == null)
+            throw new MAPException("GeranGANSSpositioningData data must not be empty");
+        if (data.length < 2)
+            throw new MAPException("GeranGANSSpositioningData data length must be at least 2");
+        if (data.length > 10)
+            throw new MAPException("GeranGANSSpositioningData data length must not be higher than 10");
+
+        Multimap<String, String> methodsAndGANSSId = LinkedHashMultimap.create();
         String method;
         String ganssId;
 
         for (int i=1; i<data.length; i++) {
             if ((data[i] & 0x07) == 3) {
-                method = getMethod((data[i] & 0xC0) >> 6);
+                method = getGeranGanssPositioningMethod((data[i] & 0xC0) >> 6);
                 ganssId = getGANSSId((data[i] & 0x38) >> 3);
                 methodsAndGANSSId.put(method, ganssId);
             }
@@ -50,13 +70,14 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
         return methodsAndGANSSId;
     }
 
-    private String getMethod(int code) {
+    @Override
+    public String getGeranGanssPositioningMethod(int code) {
         /*
          * Coding of Method (bits 8-7):
-         * 00   MS-Based
-         * 01   MS-Assisted
-         * 10   Conventional
-         * 11   Reserved
+         *  00   MS-Based
+         *  01   MS-Assisted
+         *  10   Conventional
+         *  11   Reserved
          */
         String method;
         switch (code) {
@@ -76,7 +97,8 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
         return method;
     }
 
-    private String getGANSSId(int code) throws MAPException {
+    @Override
+    public String getGANSSId(int code) throws MAPException {
         /*
          * Coding of the GANSS Id (bits 6-4) :
          *  000  Galileo
@@ -84,12 +106,12 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
          *  010  Modernized GPS
          *  011  Quasi Zenith Satellite System (QZSS)
          *  100  GLONASS
-         *  101  BDS
+         *  101  BeiDou Navigation Satellite System (BDS)
          */
-        if (code > 5)
-            throw new MAPException("GeranGANSSpositioningData GANSS Id must be an integer value between 0 and 5");
+        if (code > 7)
+            throw new MAPException("GeranGANSSpositioningData GANSS Id must be an integer value between 0 and 7");
 
-        String ganssId = null;
+        String ganssId;
         switch (code) {
             case 0:
                 ganssId = "Galileo";
@@ -109,11 +131,15 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
             case 5:
                 ganssId = "BDS";
                 break;
+            default:
+                ganssId = "Reserved";
+                break;
         }
         return ganssId;
     }
 
-    private String getUsage(int u) {
+    @Override
+    public String getUsage(byte[] geranGanssPositioningData, int index) {
         String usage = null;
         /*
          * Coding of usage (bits 3-1)
@@ -124,7 +150,7 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
          *  100    Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods
          *         used by the MS cannot be determined
          */
-        switch (u) {
+        switch (getUsageCode(geranGanssPositioningData, index)) {
             case 0:
                 usage = "Attempted unsuccessfully due to failure or interruption";
                 break;
@@ -145,15 +171,8 @@ public class GeranGANSSpositioningDataImpl extends OctetStringBase implements Ge
         return usage;
     }
 
-    /*public static void main(String[] args) throws MAPException {
-        byte[] data = new byte[] {0x00, 0x63, (byte) 0x8b, 0x02, 0x03};
-        GeranGANSSpositioningDataImpl geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(data);
-        HashMap<String, String> methodsAndGanssIds = geranGANSSpositioningData.getLocationGeneratedMethodsAndGANSSId();
-
-        for (HashMap.Entry<String, String> entry : methodsAndGanssIds.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            System.out.println("Method=" + key + ", GANSSId=" + value);
-        }
-    }*/
+    @Override
+    public int getUsageCode(byte[] utranGanssPositioningData, int index) {
+        return utranGanssPositioningData[index] & 0x07;
+    }
 }

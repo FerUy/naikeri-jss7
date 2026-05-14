@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcapAnsi.concurrent;
 
 import static org.testng.Assert.fail;
@@ -99,7 +98,7 @@ public class DialogPreviewModeMngConcurrentTest {
     public void testMaxDialogConstraint() throws Exception {
         tcapStack1.setMaxDialogs(MAX_DIALOGS);
 
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < MAX_DIALOGS + 100; i++) {
             runnables.add(new Runnable() {
                 public void run() {
@@ -111,7 +110,7 @@ public class DialogPreviewModeMngConcurrentTest {
                         PreviewDialogData pdd = new PreviewDialogData(provider, previewDialogId);
                         provider.createPreviewDialog(ky, localAddress, remoteAddress, 0);
                     } catch (Exception e) {
-
+                        e.printStackTrace();
                     }
                 }
             });
@@ -132,7 +131,7 @@ public class DialogPreviewModeMngConcurrentTest {
         final SccpAddress localAddress = new SccpAddressImpl();
         final SccpAddress remoteAddress = new SccpAddressImpl();
 
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             runnables.add(new Runnable() {
                 public void run() {
@@ -152,7 +151,7 @@ public class DialogPreviewModeMngConcurrentTest {
 
     @Test
     public void testInsertKeyConstraint2() throws Exception {
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             PreviewDialogDataKey ky = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
             runnables.add(new TestInsertKeyConstraint2Class(ky));
@@ -183,7 +182,7 @@ public class DialogPreviewModeMngConcurrentTest {
 
     @Test
     public void testInsertKeyConstraint3() throws Exception {
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             PreviewDialogDataKey ky = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
             runnables.add(new TestInsertKeyConstraint3Class(ky));
@@ -225,7 +224,7 @@ public class DialogPreviewModeMngConcurrentTest {
 
         final PreviewDialogDataKey ky2 = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
 
-        List<Runnable> runnables = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             runnables.add(new Runnable() {
                 public void run() {
@@ -245,8 +244,8 @@ public class DialogPreviewModeMngConcurrentTest {
         // Long previewDialogId = provider.getAvailableTxIdPreview();
         // final PreviewDialogData pdd = new PreviewDialogData(provider, previewDialogId);
 
-        List<Runnable> runnables = new ArrayList<Runnable>();
-        List<Runnable> runnables2 = new ArrayList<Runnable>();
+        List<Runnable> runnables = new ArrayList<>();
+        List<Runnable> runnables2 = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             PreviewDialogDataKey ky = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
             PreviewDialogDataKey ky2 = new PreviewDialogDataKey(DPC, SCCP_DIGITS, SSN, txSeq.incrementAndGet());
@@ -397,7 +396,7 @@ public class DialogPreviewModeMngConcurrentTest {
 
         @Override
         public FastMap<Integer, NetworkIdState> getNetworkIdStateList() {
-            return new FastMap<Integer, NetworkIdState>();
+            return new FastMap<>();
         }
 
         @Override

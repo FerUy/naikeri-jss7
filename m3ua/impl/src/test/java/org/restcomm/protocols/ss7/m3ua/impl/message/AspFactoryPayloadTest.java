@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl.message;
 
 import static org.testng.Assert.assertEquals;
@@ -54,9 +53,9 @@ public class AspFactoryPayloadTest {
 
         assertEquals(MessageType.PAYLOAD, messageImpl.getMessageType());
         PayloadData payloadData = (PayloadData) messageImpl;
-        assertEquals(0l, payloadData.getNetworkAppearance().getNetApp());
+        assertEquals(0, payloadData.getNetworkAppearance().getNetApp());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(25l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(25, payloadData.getRoutingContext().getRoutingContexts()[0]);
         ProtocolData protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(6045, protocolData.getOpc());
@@ -79,9 +78,9 @@ public class AspFactoryPayloadTest {
 
         assertEquals(MessageType.PAYLOAD, messageImpl.getMessageType());
         payloadData = (PayloadData) messageImpl;
-        assertEquals(0l, payloadData.getNetworkAppearance().getNetApp());
+        assertEquals(0, payloadData.getNetworkAppearance().getNetApp());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(25l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(25, payloadData.getRoutingContext().getRoutingContexts()[0]);
         protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(6045, protocolData.getOpc());
@@ -103,9 +102,9 @@ public class AspFactoryPayloadTest {
 
         assertEquals(MessageType.PAYLOAD, messageImpl.getMessageType());
         payloadData = (PayloadData) messageImpl;
-        assertEquals(0l, payloadData.getNetworkAppearance().getNetApp());
+        assertEquals(0, payloadData.getNetworkAppearance().getNetApp());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(25l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(25, payloadData.getRoutingContext().getRoutingContexts()[0]);
         protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(6045, protocolData.getOpc());
@@ -127,9 +126,9 @@ public class AspFactoryPayloadTest {
 
         assertEquals(MessageType.PAYLOAD, messageImpl.getMessageType());
         payloadData = (PayloadData) messageImpl;
-        assertEquals(0l, payloadData.getNetworkAppearance().getNetApp());
+        assertEquals(0, payloadData.getNetworkAppearance().getNetApp());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(25l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(25, payloadData.getRoutingContext().getRoutingContexts()[0]);
         protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(6045, protocolData.getOpc());
@@ -198,7 +197,7 @@ public class AspFactoryPayloadTest {
 
         assertEquals(aspFactory.lstReadMessage.size(), 0);
 
-        // Now lets read only first half of body and yet we have null
+        // Now lets read only first half of body, and yet we have null
         // messageImpl
         byteBuf = Unpooled.wrappedBuffer(bodyStart);
         pd = new org.mobicents.protocols.api.PayloadData(byteBuf.capacity(), byteBuf,
@@ -218,7 +217,7 @@ public class AspFactoryPayloadTest {
         PayloadData payloadData = (PayloadData) messageImpl;
         assertNull(payloadData.getNetworkAppearance());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(1l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(1, payloadData.getRoutingContext().getRoutingContexts()[0]);
         ProtocolData protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(2, protocolData.getOpc());
@@ -234,7 +233,7 @@ public class AspFactoryPayloadTest {
         payloadData = (PayloadData) messageImpl;
         assertNull(payloadData.getNetworkAppearance());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(1l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(1, payloadData.getRoutingContext().getRoutingContexts()[0]);
         protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(2, protocolData.getOpc());
@@ -263,8 +262,8 @@ public class AspFactoryPayloadTest {
         ParameterFactoryImpl parameterFactory = new ParameterFactoryImpl();
 
         PayloadDataImpl message = new PayloadDataImpl();
-        NetworkAppearance na = parameterFactory.createNetworkAppearance(0l);
-        RoutingContext rc = parameterFactory.createRoutingContext(new long[] { 25l });
+        NetworkAppearance na = parameterFactory.createNetworkAppearance(0);
+        RoutingContext rc = parameterFactory.createRoutingContext(new long[] { 25 });
         ProtocolData p = parameterFactory.createProtocolData(6045, 6172, 3, 3, 0, 2, plData);
         
         message.setNetworkAppearance(na);
@@ -284,8 +283,8 @@ public class AspFactoryPayloadTest {
         aspFactory.setAssociation(association);
 
         message = new PayloadDataImpl();
-        na = parameterFactory.createNetworkAppearance(0l);
-        rc = parameterFactory.createRoutingContext(new long[] { 25l });
+        na = parameterFactory.createNetworkAppearance(0);
+        rc = parameterFactory.createRoutingContext(new long[] { 25 });
         p = parameterFactory.createProtocolData(6045, 6172, 3, 3, 0, 2, plData);
 
         message.setNetworkAppearance(na);
@@ -300,7 +299,7 @@ public class AspFactoryPayloadTest {
     }
 
     private class AspFactoryImplProxy extends AspFactoryImpl {
-        protected ArrayList<M3UAMessage> lstReadMessage = new ArrayList<M3UAMessage>();
+        protected ArrayList<M3UAMessage> lstReadMessage = new ArrayList<>();
 
         public AspFactoryImplProxy(boolean nettySupport) {
             super("M3uaAspFact", 16, 1, false);
@@ -331,7 +330,7 @@ public class AspFactoryPayloadTest {
     }
 
     private class AssociationImplProxy extends AssociationImpl {
-        protected ArrayList<org.mobicents.protocols.api.PayloadData> lstWriteMessage = new ArrayList<org.mobicents.protocols.api.PayloadData>();
+        protected ArrayList<org.mobicents.protocols.api.PayloadData> lstWriteMessage = new ArrayList<>();
 
         public AssociationImplProxy() throws Exception {
             super("hostAddress", 1111, "peerAddress", 1112, "assocName", IpChannelType.SCTP, null);

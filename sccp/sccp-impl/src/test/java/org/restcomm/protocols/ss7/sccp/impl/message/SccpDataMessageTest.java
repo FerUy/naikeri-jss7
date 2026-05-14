@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.message;
 
 import static org.testng.Assert.assertEquals;
@@ -10,17 +9,13 @@ import static org.testng.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.Util;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
-import org.restcomm.protocols.ss7.sccp.impl.message.EncodingResult;
-import org.restcomm.protocols.ss7.sccp.impl.message.EncodingResultData;
-import org.restcomm.protocols.ss7.sccp.impl.message.MessageFactoryImpl;
-import org.restcomm.protocols.ss7.sccp.impl.message.SccpDataMessageImpl;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.HopCounterImpl;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.ImportanceImpl;
 import org.restcomm.protocols.ss7.sccp.message.SccpDataMessage;
@@ -38,15 +33,16 @@ import org.testng.annotations.Test;
  */
 public class SccpDataMessageTest {
 
-    private Logger logger;
-    private SccpStackImpl stack = new SccpStackImpl("SccpDataMessageTestStack", null);
+    private static Logger logger = LogManager.getLogger(SccpDataMessageTest.class.getName());
+
+    private final SccpStackImpl stack = new SccpStackImpl("SccpDataMessageTestStack", null);
     private MessageFactoryImpl messageFactory;
 
     @BeforeMethod
     public void setUp() {
         this.stack.setPersistDir(Util.getTmpTestDir());
         this.messageFactory = new MessageFactoryImpl(stack);
-        this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName());
+        logger = LogManager.getLogger(SccpStackImpl.class.getCanonicalName());
     }
 
     @AfterMethod
@@ -112,16 +108,16 @@ public class SccpDataMessageTest {
     }
 
     public byte[] getDataLudt1() {
-        return new byte[] { 19, 1, 10, 7, 00, 8, 00, 11, 00, 16, 00, 2, 66, 8, 4, 67, 1, 0, 6, 5, 00, 11, 12, 13, 14, 15, 16,
+        return new byte[] { 19, 1, 10, 7, 0, 8, 0, 11, 0, 16, 0, 2, 66, 8, 4, 67, 1, 0, 6, 5, 0, 11, 12, 13, 14, 15, 16,
                 4, (byte) 192, 1, 0, 0, 18, 1, 7, 0 };
     }
 
     public byte[] getDataLudt2() {
-        return new byte[] { 19, 1, 10, 7, 00, 8, 00, 11, 00, 00, 00, 2, 66, 8, 4, 67, 1, 0, 6, 5, 00, 11, 12, 13, 14, 15 };
+        return new byte[] { 19, 1, 10, 7, 0, 8, 0, 11, 0, 0, 0, 2, 66, 8, 4, 67, 1, 0, 6, 5, 0, 11, 12, 13, 14, 15 };
     }
 
     public byte[] getDataLudt3() {
-        return new byte[] { 19, 1, 10, 7, 00, 8, 00, 11, 00, 55, 01, 2, 66, 8, 4, 67, 1, 0, 6, 44, 01, 1, 2, 3, 4, 5, 6, 7, 8,
+        return new byte[] { 19, 1, 10, 7, 0, 8, 0, 11, 0, 55, 1, 2, 66, 8, 4, 67, 1, 0, 6, 44, 1, 1, 2, 3, 4, 5, 6, 7, 8,
                 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
                 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
                 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92,
@@ -160,7 +156,7 @@ public class SccpDataMessageTest {
         ByteArrayInputStream buf = new ByteArrayInputStream(b);
         int type = buf.read();
         SccpDataMessage testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
 
         SccpAddress calledAdd = testObjectDecoded.getCalledPartyAddress();
@@ -180,7 +176,7 @@ public class SccpDataMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
 
         calledAdd = testObjectDecoded.getCalledPartyAddress();
@@ -199,18 +195,18 @@ public class SccpDataMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
         calledAdd = testObjectDecoded.getCalledPartyAddress();
         assertNotNull(calledAdd);
         assertEquals(calledAdd.getSignalingPointCode(), 0);
         assertEquals(calledAdd.getSubsystemNumber(), 8);
-        assertTrue(calledAdd.getGlobalTitle().getDigits().equals("2348030000480"));
+        assertEquals(calledAdd.getGlobalTitle().getDigits(), "2348030000480");
         callingAdd = testObjectDecoded.getCallingPartyAddress();
         assertNotNull(callingAdd);
         assertEquals(callingAdd.getSignalingPointCode(), 0);
         assertEquals(callingAdd.getSubsystemNumber(), 8);
-        assertTrue(callingAdd.getGlobalTitle().getDigits().equals("2348030008180"));
+        assertEquals(callingAdd.getGlobalTitle().getDigits(), "2348030008180");
         assertNull(testObjectDecoded.getSegmentation());
         assertNull(testObjectDecoded.getImportance());
 
@@ -219,7 +215,7 @@ public class SccpDataMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
 
         assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
@@ -247,7 +243,7 @@ public class SccpDataMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
 
         assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
@@ -272,7 +268,7 @@ public class SccpDataMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
 
         assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
@@ -297,7 +293,7 @@ public class SccpDataMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
 
         assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
@@ -325,7 +321,7 @@ public class SccpDataMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
 
         assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
@@ -350,7 +346,7 @@ public class SccpDataMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         testObjectDecoded = (SccpDataMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(testObjectDecoded);
+        logger.info(testObjectDecoded);
         assertNotNull(testObjectDecoded);
 
         assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);

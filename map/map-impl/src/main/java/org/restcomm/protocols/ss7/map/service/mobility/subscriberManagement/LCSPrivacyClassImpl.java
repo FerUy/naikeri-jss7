@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -30,12 +29,12 @@ import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
  */
 public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass {
 
-    private static final int _TAG_notificationToMSUser = 0;
-    private static final int _TAG_externalClientList = 1;
-    private static final int _TAG_plmnClientList = 2;
-    private static final int _TAG_extensionContainer = 3;
-    private static final int _TAG_extExternalClientList = 4;
-    private static final int _TAG_serviceTypeList = 5;
+    private static final int _TAG_NOTIFICATION_TO_MS_USER = 0;
+    private static final int _TAG_EXTERNAL_CLIENT_LIST = 1;
+    private static final int _TAG_PLMN_CLIENT_LIST = 2;
+    private static final int _TAG_EXTENSION_CONTAINER = 3;
+    private static final int _TAG_EXT_EXTERNAL_CLIENT_LIST = 4;
+    private static final int _TAG_SERVICE_TYPE_LIST = 5;
 
     private SSCode ssCode;
     private ExtSSStatus ssStatus;
@@ -143,171 +142,166 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
                     ((ExtSSStatusImpl) this.ssStatus).decodeAll(ais);
                     break;
                 default:
-                    switch (ais.getTagClass()) {
-                        case Tag.CLASS_CONTEXT_SPECIFIC: {
-                            switch (tag) {
-                                case _TAG_notificationToMSUser:
-                                    if (!ais.isTagPrimitive())
+                    if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
+                        switch (tag) {
+                            case _TAG_NOTIFICATION_TO_MS_USER:
+                                if (!ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".notificationToMSUser: Parameter is not primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.notificationToMSUser = NotificationToMSUser.getInstance((int) ais.readInteger());
+                                break;
+                            case _TAG_EXTERNAL_CLIENT_LIST:
+                                if (ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".externalClientList: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+
+                                this.externalClientList = new ArrayList<>();
+
+                                AsnInputStream ais2 = ais.readSequenceStream();
+
+                                while (true) {
+                                    if (ais2.available() == 0)
+                                        break;
+
+                                    int tag2 = ais2.readTag();
+
+                                    if (tag2 != Tag.SEQUENCE || ais2.getTagClass() != Tag.CLASS_UNIVERSAL
+                                        || ais2.isTagPrimitive())
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                + ".notificationToMSUser: Parameter is not primitive",
-                                                MAPParsingComponentExceptionReason.MistypedParameter);
-                                    int i2 = (int) ais.readInteger();
-                                    this.notificationToMSUser = NotificationToMSUser.getInstance(i2);
-                                    break;
-                                case _TAG_externalClientList:
-                                    if (ais.isTagPrimitive())
+                                            + ": bad tag or tagClass or is primitive when decoding externalClientList",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+
+                                    ExternalClientImpl elem = new ExternalClientImpl();
+                                    elem.decodeAll(ais2);
+                                    this.externalClientList.add(elem);
+
+                                    if (this.externalClientList.size() > 5)
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                + ".externalClientList: Parameter is primitive",
-                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                            + ".externalClientList: elements count must be from 1 to 5, found: "
+                                            + this.externalClientList.size(),
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                }
+                                break;
+                            case _TAG_PLMN_CLIENT_LIST:
+                                if (ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".plmnClientList: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
 
-                                    this.externalClientList = new ArrayList<ExternalClient>();
+                                this.plmnClientList = new ArrayList<>();
 
-                                    AsnInputStream ais2 = ais.readSequenceStream();
+                                AsnInputStream ais3 = ais.readSequenceStream();
 
-                                    while (true) {
-                                        if (ais2.available() == 0)
-                                            break;
+                                while (true) {
+                                    if (ais3.available() == 0)
+                                        break;
 
-                                        int tag2 = ais2.readTag();
+                                    int tag2 = ais3.readTag();
 
-                                        if (tag2 != Tag.SEQUENCE || ais2.getTagClass() != Tag.CLASS_UNIVERSAL
-                                                || ais2.isTagPrimitive())
-                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                    + ": bad tag or tagClass or is primitive when decoding externalClientList",
-                                                    MAPParsingComponentExceptionReason.MistypedParameter);
-
-                                        ExternalClientImpl elem = new ExternalClientImpl();
-                                        ((ExternalClientImpl) elem).decodeAll(ais2);
-                                        this.externalClientList.add(elem);
-
-                                        if (this.externalClientList.size() < 0 || this.externalClientList.size() > 5)
-                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                    + ".externalClientList: elements count must be from 1 to 5, found: "
-                                                    + this.externalClientList.size(),
-                                                    MAPParsingComponentExceptionReason.MistypedParameter);
-                                    }
-                                    break;
-                                case _TAG_plmnClientList:
-                                    if (ais.isTagPrimitive())
+                                    if (tag2 != Tag.ENUMERATED || ais3.getTagClass() != Tag.CLASS_UNIVERSAL
+                                        || !ais3.isTagPrimitive())
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                + ".plmnClientList: Parameter is primitive",
-                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                            + ": bad tag or tagClass or is not primitive when decoding plmnClientList",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
 
-                                    this.plmnClientList = new ArrayList<LCSClientInternalID>();
+                                    int lcsId = (int) ais3.readInteger();
+                                    LCSClientInternalID elem = LCSClientInternalID.getLCSClientInternalID(lcsId);
 
-                                    AsnInputStream ais3 = ais.readSequenceStream();
+                                    this.plmnClientList.add(elem);
 
-                                    while (true) {
-                                        if (ais3.available() == 0)
-                                            break;
-
-                                        int tag2 = ais3.readTag();
-
-                                        if (tag2 != Tag.ENUMERATED || ais3.getTagClass() != Tag.CLASS_UNIVERSAL
-                                                || !ais3.isTagPrimitive())
-                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                    + ": bad tag or tagClass or is not primitive when decoding plmnClientList",
-                                                    MAPParsingComponentExceptionReason.MistypedParameter);
-
-                                        int lcsId = (int) ais3.readInteger();
-                                        LCSClientInternalID elem = LCSClientInternalID.getLCSClientInternalID(lcsId);
-
-                                        this.plmnClientList.add(elem);
-
-                                        if (this.plmnClientList.size() < 1 || this.plmnClientList.size() > 5)
-                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                    + ".plmnClientList: elements count must be from 1 to 5, found: "
-                                                    + this.plmnClientList.size(),
-                                                    MAPParsingComponentExceptionReason.MistypedParameter);
-                                    }
-                                    break;
-                                case _TAG_extensionContainer:
-                                    if (ais.isTagPrimitive())
+                                    if (this.plmnClientList.size() > 5)
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                + ".extensionContainer: Parameter is primitive",
-                                                MAPParsingComponentExceptionReason.MistypedParameter);
-                                    this.extensionContainer = new MAPExtensionContainerImpl();
-                                    ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
-                                    break;
-                                case _TAG_extExternalClientList:
-                                    if (ais.isTagPrimitive())
+                                            + ".plmnClientList: elements count must be from 1 to 5, found: "
+                                            + this.plmnClientList.size(),
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                }
+                                break;
+                            case _TAG_EXTENSION_CONTAINER:
+                                if (ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".extensionContainer: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                                this.extensionContainer = new MAPExtensionContainerImpl();
+                                ((MAPExtensionContainerImpl) this.extensionContainer).decodeAll(ais);
+                                break;
+                            case _TAG_EXT_EXTERNAL_CLIENT_LIST:
+                                if (ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".extExternalClientList: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
+
+                                this.extExternalClientList = new ArrayList<>();
+
+                                AsnInputStream ais4 = ais.readSequenceStream();
+
+                                while (true) {
+                                    if (ais4.available() == 0)
+                                        break;
+
+                                    int tag2 = ais4.readTag();
+
+                                    if (tag2 != Tag.SEQUENCE || ais4.getTagClass() != Tag.CLASS_UNIVERSAL
+                                        || ais4.isTagPrimitive())
+                                        throw new MAPParsingComponentException(
+                                            "Error while decoding "
+                                                + _PrimitiveName
+                                                + ": bad tag or tagClass or is primitive when decoding extExternalClientList",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+
+                                    ExternalClientImpl elem = new ExternalClientImpl();
+                                    elem.decodeAll(ais4);
+
+                                    this.extExternalClientList.add(elem);
+
+                                    if (this.extExternalClientList.size() > 35)
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                + ".extExternalClientList: Parameter is primitive",
-                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                            + ".extExternalClientList: elements count must be from 1 to 35, found: "
+                                            + this.extExternalClientList.size(),
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                }
+                                break;
+                            case _TAG_SERVICE_TYPE_LIST:
+                                if (ais.isTagPrimitive())
+                                    throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                        + ".plmnClientList: Parameter is primitive",
+                                        MAPParsingComponentExceptionReason.MistypedParameter);
 
-                                    this.extExternalClientList = new ArrayList<ExternalClient>();
+                                this.serviceTypeList = new ArrayList<>();
 
-                                    AsnInputStream ais4 = ais.readSequenceStream();
+                                AsnInputStream ais5 = ais.readSequenceStream();
 
-                                    while (true) {
-                                        if (ais4.available() == 0)
-                                            break;
+                                while (true) {
+                                    if (ais5.available() == 0)
+                                        break;
 
-                                        int tag2 = ais4.readTag();
+                                    int tag2 = ais5.readTag();
 
-                                        if (tag2 != Tag.SEQUENCE || ais4.getTagClass() != Tag.CLASS_UNIVERSAL
-                                                || ais4.isTagPrimitive())
-                                            throw new MAPParsingComponentException(
-                                                    "Error while decoding "
-                                                            + _PrimitiveName
-                                                            + ": bad tag or tagClass or is primitive when decoding extExternalClientList",
-                                                    MAPParsingComponentExceptionReason.MistypedParameter);
-
-                                        ExternalClientImpl elem = new ExternalClientImpl();
-                                        ((ExternalClientImpl) elem).decodeAll(ais4);
-
-                                        this.extExternalClientList.add(elem);
-
-                                        if (this.extExternalClientList.size() < 1 || this.extExternalClientList.size() > 35)
-                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                    + ".extExternalClientList: elements count must be from 1 to 35, found: "
-                                                    + this.extExternalClientList.size(),
-                                                    MAPParsingComponentExceptionReason.MistypedParameter);
-                                    }
-                                    break;
-                                case _TAG_serviceTypeList:
-                                    if (ais.isTagPrimitive())
+                                    if (tag2 != Tag.SEQUENCE || ais5.getTagClass() != Tag.CLASS_UNIVERSAL
+                                        || ais5.isTagPrimitive())
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                + ".plmnClientList: Parameter is primitive",
-                                                MAPParsingComponentExceptionReason.MistypedParameter);
+                                            + ": bad tag or tagClass or is primitive when decoding serviceTypeList",
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
 
-                                    this.serviceTypeList = new ArrayList<ServiceType>();
+                                    ServiceTypeImpl elem = new ServiceTypeImpl();
+                                    elem.decodeAll(ais5);
 
-                                    AsnInputStream ais5 = ais.readSequenceStream();
+                                    this.serviceTypeList.add(elem);
 
-                                    while (true) {
-                                        if (ais5.available() == 0)
-                                            break;
-
-                                        int tag2 = ais5.readTag();
-
-                                        if (tag2 != Tag.SEQUENCE || ais5.getTagClass() != Tag.CLASS_UNIVERSAL
-                                                || ais5.isTagPrimitive())
-                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                    + ": bad tag or tagClass or is primitive when decoding serviceTypeList",
-                                                    MAPParsingComponentExceptionReason.MistypedParameter);
-
-                                        ServiceTypeImpl elem = new ServiceTypeImpl();
-                                        ((ServiceTypeImpl) elem).decodeAll(ais5);
-
-                                        this.serviceTypeList.add(elem);
-
-                                        if (this.serviceTypeList.size() < 1 || this.serviceTypeList.size() > 32)
-                                            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                                    + ".serviceTypeList: elements count must be from 1 to 32, found: "
-                                                    + this.serviceTypeList.size(),
-                                                    MAPParsingComponentExceptionReason.MistypedParameter);
-                                    }
-                                    break;
-                                default:
-                                    ais.advanceElement();
-                                    break;
-                            }
+                                    if (this.serviceTypeList.size() > 32)
+                                        throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
+                                            + ".serviceTypeList: elements count must be from 1 to 32, found: "
+                                            + this.serviceTypeList.size(),
+                                            MAPParsingComponentExceptionReason.MistypedParameter);
+                                }
+                                break;
+                            default:
+                                ais.advanceElement();
+                                break;
                         }
-                            break;
-                        default:
-                            ais.advanceElement();
-                            break;
+                    } else {
+                        ais.advanceElement();
                     }
             }
 
@@ -316,11 +310,11 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
 
         if (this.ssCode == null) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Parament ssCode is mandatory but does not found", MAPParsingComponentExceptionReason.MistypedParameter);
+                    + ": Parameter ssCode is mandatory but not found", MAPParsingComponentExceptionReason.MistypedParameter);
         }
         if (this.ssStatus == null) {
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Parament ssStatus is mandatory but does not found",
+                    + ": Parameter ssStatus is mandatory but not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
 
@@ -335,7 +329,7 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
         if (this.ssStatus == null)
             throw new MAPException("Error while encoding" + _PrimitiveName + ": ssStatus must not be null");
 
-        if (this.externalClientList != null && (this.externalClientList.size() < 0 || this.externalClientList.size() > 5)) {
+        if (this.externalClientList != null && this.externalClientList.size() > 5) {
             throw new MAPException("Error while encoding " + _PrimitiveName
                     + ": Parameter externalClientList size must be from 1 to 5, found: " + this.externalClientList.size());
         }
@@ -364,10 +358,10 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
             ((ExtSSStatusImpl) this.ssStatus).encodeAll(asnOutputStream);
 
             if (this.notificationToMSUser != null)
-                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_notificationToMSUser, this.notificationToMSUser.getCode());
+                asnOutputStream.writeInteger(Tag.CLASS_CONTEXT_SPECIFIC, _TAG_NOTIFICATION_TO_MS_USER, this.notificationToMSUser.getCode());
 
             if (externalClientList != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_externalClientList);
+                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_EXTERNAL_CLIENT_LIST);
                 int pos = asnOutputStream.StartContentDefiniteLength();
                 for (ExternalClient be : this.externalClientList) {
                     ExternalClientImpl bee = (ExternalClientImpl) be;
@@ -377,7 +371,7 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
             }
 
             if (plmnClientList != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_plmnClientList);
+                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_PLMN_CLIENT_LIST);
                 int pos = asnOutputStream.StartContentDefiniteLength();
                 for (LCSClientInternalID be : this.plmnClientList) {
                     asnOutputStream.writeInteger(Tag.CLASS_UNIVERSAL, Tag.ENUMERATED, be.getId());
@@ -387,10 +381,10 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
 
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC,
-                        _TAG_extensionContainer);
+                    _TAG_EXTENSION_CONTAINER);
 
             if (extExternalClientList != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_extExternalClientList);
+                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_EXT_EXTERNAL_CLIENT_LIST);
                 int pos = asnOutputStream.StartContentDefiniteLength();
                 for (ExternalClient be : this.extExternalClientList) {
                     ExternalClientImpl bee = (ExternalClientImpl) be;
@@ -400,7 +394,7 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
             }
 
             if (serviceTypeList != null) {
-                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_serviceTypeList);
+                asnOutputStream.writeTag(Tag.CLASS_CONTEXT_SPECIFIC, false, _TAG_SERVICE_TYPE_LIST);
                 int pos = asnOutputStream.StartContentDefiniteLength();
                 for (ServiceType be : this.serviceTypeList) {
                     ServiceTypeImpl bee = (ServiceTypeImpl) be;
@@ -419,23 +413,23 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.ssCode != null) {
             sb.append("ssCode=");
-            sb.append(this.ssCode.toString());
+            sb.append(this.ssCode);
             sb.append(", ");
         }
 
         if (this.ssStatus != null) {
             sb.append("ssStatus=");
-            sb.append(this.ssStatus.toString());
+            sb.append(this.ssStatus);
             sb.append(", ");
         }
 
         if (this.notificationToMSUser != null) {
             sb.append("notificationToMSUser=");
-            sb.append(this.notificationToMSUser.toString());
+            sb.append(this.notificationToMSUser);
             sb.append(", ");
         }
 
@@ -467,7 +461,7 @@ public class LCSPrivacyClassImpl extends SequenceBase implements LCSPrivacyClass
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(", ");
         }
 

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -19,7 +18,6 @@ ModificationRequestFor-CSI ::= SEQUENCE {
 -- requestedCamel-SubscriptionInfo shall be discarded if
 -- additionalRequestedCAMEL-SubscriptionInfo is received
 </code>
- *
  *
  * @author sergey vetyutnev
  *

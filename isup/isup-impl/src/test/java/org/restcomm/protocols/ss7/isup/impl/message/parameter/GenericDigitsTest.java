@@ -1,10 +1,10 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.GenericDigitsImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.isup.message.parameter.GenericDigits;
 import org.restcomm.protocols.ss7.isup.util.BcdHelper;
 import org.testng.annotations.AfterClass;
@@ -26,6 +26,9 @@ import static org.testng.Assert.assertTrue;
  *
  */
 public class GenericDigitsTest {
+
+    private static final Logger logger = LogManager.getLogger(GenericDigitsTest.class.getName());
+
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
@@ -62,11 +65,7 @@ public class GenericDigitsTest {
         return new byte[] { 67, 65, 66, 97, 98, 49, 50 }; // "ABab12"
     }
 
-    private String digitsEvenString = "123456";
-
-    private String digitsOddString = "1234567";
-
-    private String digitsIA5String = "ABab12";
+    private final String digitsIA5String = "ABab12";
 
     @Test(groups = { "functional.decode", "parameter" })
     public void testDecodeEven() throws Exception {
@@ -133,17 +132,19 @@ public class GenericDigitsTest {
     public void testSetDecodedDigits() throws Exception {
 
         GenericDigitsImpl prim = new GenericDigitsImpl();
-        prim.setDecodedDigits(GenericDigits._ENCODING_SCHEME_BCD_EVEN, digitsEvenString );
+        String digitsEvenString = "123456";
+        prim.setDecodedDigits(GenericDigits._ENCODING_SCHEME_BCD_EVEN, digitsEvenString);
         prim.setTypeOfDigits(GenericDigits._TOD_BGCI);
-        assertTrue(digitsEvenString.equals(prim.getDecodedDigits()));
+        assertEquals(prim.getDecodedDigits(), digitsEvenString);
 
         byte[] data = getEvenData();
         byte[] encodedData = prim.encode();
         assertTrue(Arrays.equals(data, encodedData));
 
-        prim.setDecodedDigits(GenericDigits._ENCODING_SCHEME_BCD_ODD, digitsOddString );
+        String digitsOddString = "1234567";
+        prim.setDecodedDigits(GenericDigits._ENCODING_SCHEME_BCD_ODD, digitsOddString);
         prim.setTypeOfDigits(GenericDigits._TOD_BGCI);
-        assertTrue(digitsOddString.equals(prim.getDecodedDigits()));
+        assertEquals(prim.getDecodedDigits(), digitsOddString);
         data = getOddData();
         encodedData = prim.encode();
         assertTrue(Arrays.equals(data, encodedData));
@@ -152,14 +153,14 @@ public class GenericDigitsTest {
     @Test(groups = { "functional.decode", "parameter" })
     public void testSetDecodedHexDigits() throws Exception {
         String hexString = "0123456789abcdef*#";
-        System.out.println("Test input digits: " + hexString);
+        logger.info("Test input digits: {}", hexString);
         GenericDigitsImpl prim = new GenericDigitsImpl();
         prim.setDecodedDigits(GenericDigits._ENCODING_SCHEME_BCD_EVEN, hexString );
         prim.setTypeOfDigits(GenericDigits._TOD_BGCI);
         String decodedDigitsString = prim.getDecodedDigits();
-        System.out.println("Decoded  digits: " + decodedDigitsString);
+        logger.info("Decoded  digits: {}", decodedDigitsString);
         String convertedDigits = BcdHelper.convertTelcoCharsToHexDigits(decodedDigitsString);
-        assertTrue(BcdHelper.convertTelcoCharsToHexDigits(hexString).equals(convertedDigits));
+        assertEquals(convertedDigits, BcdHelper.convertTelcoCharsToHexDigits(hexString));
     }
 
     @Test(groups = { "functional.encode", "parameter" })
@@ -199,7 +200,7 @@ public class GenericDigitsTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

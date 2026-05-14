@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import java.io.ByteArrayInputStream;
@@ -41,13 +40,13 @@ public class GenericNumberImpl extends AbstractNAINumber implements GenericNumbe
     protected boolean numberIncomplete;
     protected int screeningIndicator;
 
-    public GenericNumberImpl(int natureOfAddresIndicator, String address, int numberQualifierIndicator,
-            int numberingPlanIndicator, int addressRepresentationREstrictedIndicator, boolean numberIncomplete,
+    public GenericNumberImpl(int natureOfAddressInd, String address, int numberQualifierIndicator,
+            int numberingPlanIndicator, int addressRepresentationRestrictedIndicator, boolean numberIncomplete,
             int screeningIndicator) {
-        super(natureOfAddresIndicator, address);
+        super(natureOfAddressInd, address);
         this.numberQualifierIndicator = numberQualifierIndicator;
         this.numberingPlanIndicator = numberingPlanIndicator;
-        this.addressRepresentationRestrictedIndicator = addressRepresentationREstrictedIndicator;
+        this.addressRepresentationRestrictedIndicator = addressRepresentationRestrictedIndicator;
         this.numberIncomplete = numberIncomplete;
         this.screeningIndicator = screeningIndicator;
     }
@@ -70,7 +69,7 @@ public class GenericNumberImpl extends AbstractNAINumber implements GenericNumbe
     /*
      * (non-Javadoc)
      *
-     * @seeorg.mobicents.isup.parameters.AbstractNumber#decodeBody(java.io. ByteArrayInputStream)
+     * @see org.mobicents.isup.parameters.AbstractNumber#decodeBody(java.io. ByteArrayInputStream)
      */
 
     public int decodeBody(ByteArrayInputStream bis) throws IllegalArgumentException {
@@ -92,8 +91,8 @@ public class GenericNumberImpl extends AbstractNAINumber implements GenericNumbe
             return;
         // NOTE 1 If the parameter is included and the address presentation
         // restricted indicator indicates
-        // address not available, octets 3 to n( this are digits.) are omitted,
-        // the subfields in items a - odd/evem, b -nai , c - ni and d -npi, are
+        // address not available, octets 3 to n (these are digits) are omitted,
+        // the sub-fields in items a - odd/even, b -nai , c - ni and d -npi, are
         // coded with
         // 0's, and the subfield f - filler, is coded with 11.
         this.oddFlag = 0;
@@ -108,7 +107,7 @@ public class GenericNumberImpl extends AbstractNAINumber implements GenericNumbe
     /*
      * (non-Javadoc)
      *
-     * @seeorg.mobicents.isup.parameters.AbstractNumber#encodeBody(java.io. ByteArrayOutputStream)
+     * @see org.mobicents.isup.parameters.AbstractNumber#encodeBody(java.io. ByteArrayOutputStream)
      */
 
     public int encodeBody(ByteArrayOutputStream bos) {
@@ -164,15 +163,15 @@ public class GenericNumberImpl extends AbstractNAINumber implements GenericNumbe
         return addressRepresentationRestrictedIndicator;
     }
 
-    public void setAddressRepresentationRestrictedIndicator(int addressRepresentationREstrictedIndicator) {
-        this.addressRepresentationRestrictedIndicator = addressRepresentationREstrictedIndicator & 0x03;
+    public void setAddressRepresentationRestrictedIndicator(int addressRepresentationRestrictedIndicator) {
+        this.addressRepresentationRestrictedIndicator = addressRepresentationRestrictedIndicator & 0x03;
     }
 
     public boolean isNumberIncomplete() {
         return numberIncomplete;
     }
 
-    public void setNumberIncompleter(boolean numberIncomplete) {
+    public void setNumberIncomplete(boolean numberIncomplete) {
         this.numberIncomplete = numberIncomplete;
     }
 
@@ -191,16 +190,16 @@ public class GenericNumberImpl extends AbstractNAINumber implements GenericNumbe
 
     public String toString() {
         return "GenericNumber [numberingPlanIndicator=" + numberingPlanIndicator + ", numberIncomplete=" + numberIncomplete
-                + ", addressRepresentationREstrictedIndicator=" + addressRepresentationRestrictedIndicator
+                + ", addressRepresentationRestrictedIndicator=" + addressRepresentationRestrictedIndicator
                 + ", screeningIndicator=" + screeningIndicator + ", numberQualifierIndicator=" + numberQualifierIndicator
-                + ", natureOfAddresIndicator=" + natureOfAddresIndicator + ", oddFlag=" + oddFlag + ", address=" + address
+                + ", natureOfAddressIndicator=" + natureOfAddresIndicator + ", oddFlag=" + oddFlag + ", address=" + address
                 + "]";
     }
 
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<GenericNumberImpl> ISUP_GENERIC_NUMBER_XML = new XMLFormat<GenericNumberImpl>(
+    protected static final XMLFormat<GenericNumberImpl> ISUP_GENERIC_NUMBER_XML = new XMLFormat<>(
             GenericNumberImpl.class) {
 
         @Override

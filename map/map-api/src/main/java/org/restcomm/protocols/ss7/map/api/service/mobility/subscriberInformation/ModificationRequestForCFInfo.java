@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -33,7 +32,6 @@ Ext-NoRepCondTime ::= INTEGER (1..100)
 -- values 31-100 shall be mapped on to value 30
 </code>
  *
- *
  * @author sergey vetyutnev
  *
  */
@@ -54,5 +52,6 @@ public interface ModificationRequestForCFInfo extends Serializable {
     ModificationInstruction getModifyNotificationToCSE();
 
     MAPExtensionContainer getExtensionContainer();
+
 
 }

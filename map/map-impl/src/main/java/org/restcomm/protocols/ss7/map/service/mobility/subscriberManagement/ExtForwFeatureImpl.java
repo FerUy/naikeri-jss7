@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -39,6 +38,8 @@ public class ExtForwFeatureImpl extends SequenceBase implements ExtForwFeature {
     private static final int _TAG_extensionContainer = 9;
     private static final int _TAG_longForwardedToNumber = 10;
 
+    public static final String _PrimitiveName = "ExtForwFeature";
+
     private ExtBasicServiceCode basicService = null;
     private ExtSSStatus ssStatus = null;
     private ISDNAddressString forwardedToNumber = null;
@@ -49,17 +50,13 @@ public class ExtForwFeatureImpl extends SequenceBase implements ExtForwFeature {
     private FTNAddressString longForwardedToNumber = null;
 
     public ExtForwFeatureImpl() {
-        super("ExtForwFeature");
+        super(_PrimitiveName);
     }
 
-    /**
-     *
-     */
     public ExtForwFeatureImpl(ExtBasicServiceCode basicService, ExtSSStatus ssStatus, ISDNAddressString forwardedToNumber,
             ISDNSubaddressString forwardedToSubaddress, ExtForwOptions forwardingOptions, Integer noReplyConditionTime,
             MAPExtensionContainer extensionContainer, FTNAddressString longForwardedToNumber) {
-        super("ExtForwFeature");
-
+        super(_PrimitiveName);
         this.basicService = basicService;
         this.ssStatus = ssStatus;
         this.forwardedToNumber = forwardedToNumber;
@@ -127,8 +124,7 @@ public class ExtForwFeatureImpl extends SequenceBase implements ExtForwFeature {
                         case ExtBasicServiceCodeImpl._ID_ext_Teleservice:
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".basicService: is not primitive",
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                                        + ".basicService: is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
                             this.basicService = new ExtBasicServiceCodeImpl();
                             ((ExtBasicServiceCodeImpl) this.basicService).decodeAll(ais);
                             break;
@@ -265,49 +261,49 @@ public class ExtForwFeatureImpl extends SequenceBase implements ExtForwFeature {
 
         if (this.basicService != null) {
             sb.append("basicService=");
-            sb.append(this.basicService.toString());
+            sb.append(this.basicService);
             sb.append(", ");
         }
 
         if (this.ssStatus != null) {
             sb.append("ssStatus=");
-            sb.append(this.ssStatus.toString());
+            sb.append(this.ssStatus);
             sb.append(", ");
         }
 
         if (this.forwardedToNumber != null) {
             sb.append("forwardedToNumber=");
-            sb.append(this.forwardedToNumber.toString());
+            sb.append(this.forwardedToNumber);
             sb.append(", ");
         }
 
         if (this.forwardedToSubaddress != null) {
             sb.append("forwardedToSubaddress=");
-            sb.append(this.forwardedToSubaddress.toString());
+            sb.append(this.forwardedToSubaddress);
             sb.append(", ");
         }
 
         if (this.forwardingOptions != null) {
             sb.append("forwardingOptions=");
-            sb.append(this.forwardingOptions.toString());
+            sb.append(this.forwardingOptions);
             sb.append(", ");
         }
 
         if (this.noReplyConditionTime != null) {
             sb.append("noReplyConditionTime=");
-            sb.append(this.noReplyConditionTime.toString());
+            sb.append(this.noReplyConditionTime);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(", ");
         }
 
         if (this.longForwardedToNumber != null) {
             sb.append("longForwardedToNumber=");
-            sb.append(this.longForwardedToNumber.toString());
+            sb.append(this.longForwardedToNumber);
         }
 
         sb.append("]");

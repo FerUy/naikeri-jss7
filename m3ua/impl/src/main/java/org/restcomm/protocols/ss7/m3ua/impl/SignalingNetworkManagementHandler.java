@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.m3ua.Functionality;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.restcomm.protocols.ss7.m3ua.message.ssnm.DestinationAvailable;
@@ -29,7 +28,7 @@ import org.restcomm.protocols.ss7.mtp.Mtp3StatusPrimitive;
  */
 public class SignalingNetworkManagementHandler extends MessageHandler {
 
-    private static final Logger logger = Logger.getLogger(SignalingNetworkManagementHandler.class);
+    private static final Logger logger = LogManager.getLogger(SignalingNetworkManagementHandler.class);
 
     public SignalingNetworkManagementHandler(AspFactoryImpl aspFactoryImpl) {
         super(aspFactoryImpl);
@@ -375,7 +374,7 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
                     AffectedPointCode affectedPcObjs = destinationUPUnavailable.getAffectedPointCode();
                     int[] affectedPcs = affectedPcObjs.getPointCodes();
 
-                    int cause = 0;
+                    int cause;
                     for (int i = 0; i < affectedPcs.length; i++) {
 
                         UserCause userCause = destinationUPUnavailable.getUserCause();
@@ -418,7 +417,7 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
                     if (aspState == AspState.ACTIVE) {
                         AffectedPointCode affectedPcObjs = destinationUPUnavailable.getAffectedPointCode();
                         int[] affectedPcs = affectedPcObjs.getPointCodes();
-                        int cause = 0;
+                        int cause;
                         for (int i = 0; i < affectedPcs.length; i++) {
 
                             UserCause userCause = destinationUPUnavailable.getUserCause();
@@ -448,8 +447,8 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
     public void handleDestinationRestricted(DestinationRestricted destinationRestricted) {
 
         if (aspFactoryImpl.getFunctionality() == Functionality.AS) {
-            if (logger.isEnabledFor(Level.WARN)) {
-                logger.warn(String.format("Received DRST message for AS side. Not implemented yet", destinationRestricted));
+            if (logger.isWarnEnabled()) {
+                logger.warn("Received DRST message for AS side. Not implemented yet: " + destinationRestricted);
             }
         } else {
             // TODP log error

@@ -2,8 +2,8 @@ package org.restcomm.protocols.ss7.m3ua.impl.scheduler;
 
 import javolution.util.FastList;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class M3UAScheduler implements Runnable {
-    private static final Logger logger = Logger.getLogger(M3UAScheduler.class);
+    private static final Logger logger = LogManager.getLogger(M3UAScheduler.class);
 
     // TODO : Synchronize tasks? Use Iterator?
     protected FastList<M3UATask> tasks = new FastList<M3UATask>();

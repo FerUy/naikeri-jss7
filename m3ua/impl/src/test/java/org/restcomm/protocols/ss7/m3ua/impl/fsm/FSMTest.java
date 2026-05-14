@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl.fsm;
 
 import static org.testng.Assert.assertEquals;
@@ -8,10 +7,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSM;
-import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSMState;
-import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSMStateEventHandler;
-import org.restcomm.protocols.ss7.m3ua.impl.fsm.TransitionHandler;
 import org.restcomm.protocols.ss7.m3ua.impl.scheduler.M3UAScheduler;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -26,7 +21,7 @@ import org.testng.annotations.Test;
  */
 public class FSMTest {
 
-    private M3UAScheduler m3uaScheduler = new M3UAScheduler();
+    private final M3UAScheduler m3uaScheduler = new M3UAScheduler();
     private ScheduledExecutorService scheduledExecutorService = null;
     private volatile boolean timedOut = false;
     private volatile boolean stateEntered = false;
@@ -217,7 +212,7 @@ public class FSMTest {
         fsm.setEnd("STATE3");
 
         fsm.createTransition("GoToSTATE2", "STATE1", "STATE2");
-        fsm.createTimeoutTransition("STATE2", "STATE2", 1000l).setHandler(new State2TimeoutTransition());
+        fsm.createTimeoutTransition("STATE2", "STATE2", 1000).setHandler(new State2TimeoutTransition());
 
         m3uaScheduler.execute(fsm);
 
@@ -304,7 +299,7 @@ public class FSMTest {
 
     }
 
-    class NoTransition implements TransitionHandler {
+    static class NoTransition implements TransitionHandler {
 
         @Override
         public boolean process(FSMState state) {

@@ -2,7 +2,6 @@ package org.restcomm.protocols.ss7.indicator;
 
 /**
  * Numbering Plan constants.
- *
  * Look at ITU-T Q.713 Page 11
  *
  * @author kulikov
@@ -24,7 +23,7 @@ public enum NumberingPlan {
     /** Recommendation E.214 */
     ISDN_MOBILE(7), SPARE_8(8), SPARE_9(9), SPARE_10(10), SPARE_11(11), SPARE_12(12), SPARE_13(13), PRIVATE(14), RESERVED(15);
 
-    private int numberingPlan;
+    private final int numberingPlan;
 
     NumberingPlan(int np) {
         this.numberingPlan = np;

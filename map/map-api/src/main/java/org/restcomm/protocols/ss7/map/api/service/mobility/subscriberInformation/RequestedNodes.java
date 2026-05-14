@@ -10,7 +10,6 @@ import java.io.Serializable;
  -- Other bits than listed above shall be discarded.
  </code>
  *
- *
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface RequestedNodes extends Serializable {

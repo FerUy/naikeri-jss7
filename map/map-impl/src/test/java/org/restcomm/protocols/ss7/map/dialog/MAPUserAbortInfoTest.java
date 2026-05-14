@@ -7,14 +7,14 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.Utils;
 import org.restcomm.protocols.ss7.map.api.dialog.MAPUserAbortChoice;
 import org.restcomm.protocols.ss7.map.api.dialog.ProcedureCancellationReason;
 import org.restcomm.protocols.ss7.map.api.dialog.ResourceUnavailableReason;
-import org.restcomm.protocols.ss7.map.dialog.MAPUserAbortChoiceImpl;
-import org.restcomm.protocols.ss7.map.dialog.MAPUserAbortInfoImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
 import org.testng.annotations.Test;
 
@@ -25,6 +25,8 @@ import org.testng.annotations.Test;
  *
  */
 public class MAPUserAbortInfoTest {
+
+    private static final Logger logger = LogManager.getLogger(MAPUserAbortInfoTest.class.getName());
 
     // TODO: to Amit: please check this commented tests. They contradict the specification and my live traces
     //
@@ -78,7 +80,7 @@ public class MAPUserAbortInfoTest {
     //
     // byte[] data = asnOS.toByteArray();
     //
-    // System.out.println(Utils.dump(data, data.length, false));
+    // logger.info(Utils.dump(data, data.length, false));
     //
     // assertTrue( (byte, 0x05,Arrays.equals(new byte[] { (byte) 0xA4) 0x02,
     // 0x03, 0x0A, 0x01, 0x01 }, data));
@@ -100,7 +102,7 @@ public class MAPUserAbortInfoTest {
     //
     // byte[] data = asnOS.toByteArray();
     //
-    // System.out.println(Utils.dump(data, data.length, false));
+    // logger.info(Utils.dump(data, data.length, false));
     //
     // assertTrue( (byte, 0x05,Arrays.equals(new byte[] { (byte) 0xA4) 0x03,
     // 0x03, 0x0A, 0x01, 0x04 }, data));
@@ -170,7 +172,7 @@ public class MAPUserAbortInfoTest {
 
         byte[] data = asnOS.toByteArray();
 
-        System.out.println(Utils.dump(data, data.length, false));
+        logger.info(Utils.dump(data, data.length, false));
 
         assertTrue(Arrays.equals(getDataUserSpecificReason(), data));
     }
@@ -213,7 +215,7 @@ public class MAPUserAbortInfoTest {
 
         byte[] data = asnOS.toByteArray();
 
-        System.out.println(Utils.dump(data, data.length, false));
+        logger.info(Utils.dump(data, data.length, false));
 
         assertTrue(Arrays.equals(getUserResourceLimitationReason(), data));
     }
@@ -258,7 +260,7 @@ public class MAPUserAbortInfoTest {
 
         byte[] data = asnOS.toByteArray();
 
-        System.out.println(Utils.dump(data, data.length, false));
+        logger.info(Utils.dump(data, data.length, false));
 
         assertTrue(Arrays.equals(getResourceUnavailableReason(), data));
     }
@@ -290,7 +292,7 @@ public class MAPUserAbortInfoTest {
 
         assertNotNull(procdCancellReasn);
 
-        assertEquals(ProcedureCancellationReason.associatedProcedureFailure, procdCancellReasn);
+        assertEquals(procdCancellReasn, ProcedureCancellationReason.associatedProcedureFailure);
 
     }
 
@@ -309,7 +311,7 @@ public class MAPUserAbortInfoTest {
 
         byte[] data = asnOS.toByteArray();
 
-        System.out.println(Utils.dump(data, data.length, false));
+        logger.info(Utils.dump(data, data.length, false));
 
         assertTrue(Arrays.equals(getProcedureCancellationReason(), data));
     }
@@ -341,7 +343,7 @@ public class MAPUserAbortInfoTest {
 
         assertNotNull(procdCancellReasn);
 
-        assertEquals(ProcedureCancellationReason.callRelease, procdCancellReasn);
+        assertEquals(procdCancellReasn, ProcedureCancellationReason.callRelease);
 
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(mapUserAbortInfo.getExtensionContainer()));
     }
@@ -362,7 +364,7 @@ public class MAPUserAbortInfoTest {
 
         byte[] data = asnOS.toByteArray();
 
-        System.out.println(Utils.dump(data, data.length, false));
+        logger.info(Utils.dump(data, data.length, false));
 
         assertTrue(Arrays.equals(getDataFull(), data));
     }

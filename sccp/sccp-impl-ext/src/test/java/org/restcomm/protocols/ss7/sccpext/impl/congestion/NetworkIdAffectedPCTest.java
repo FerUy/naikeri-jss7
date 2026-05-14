@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl.congestion;
 
 import javolution.util.FastMap;

@@ -1,7 +1,6 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.message;
 
-import org.apache.log4j.Level;import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
@@ -97,7 +96,7 @@ public class SccpConnRlsdMessageImpl extends SccpConnReferencedMessageImpl imple
                 throw new IOException("Not enough data in buffer");
             }
 
-            int paramCode = 0;
+            int paramCode;
             int len;
             // EOP
             while ((paramCode = in.read() & 0xFF) != 0) {
@@ -143,7 +142,7 @@ public class SccpConnRlsdMessageImpl extends SccpConnReferencedMessageImpl imple
                 availLen = 130;
 
             if (bf.length > availLen) { // message is too long
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn(String.format(
                             "Failure when sending a RLSD message: message is too long. SccpMessageSegment=%s", this));
                 }
@@ -161,7 +160,7 @@ public class SccpConnRlsdMessageImpl extends SccpConnReferencedMessageImpl imple
             out.write(slr);
             out.write(rel);
 
-            // we have 1 pointers (optionals), cdp starts after 1 octets then
+            // we have 1 pointer (optionals), cdp starts after 1 octet then
             int len = 1;
 
             boolean optionalPresent = false;

@@ -7,15 +7,21 @@ import org.restcomm.protocols.ss7.sccp.NetworkIdState;
 import org.restcomm.protocols.ss7.sccp.RemoteSccpStatus;
 import org.restcomm.protocols.ss7.sccp.SccpListener;
 import org.restcomm.protocols.ss7.sccp.SignallingPointStatus;
-import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.restcomm.protocols.ss7.sccp.impl.router.RouterImpl;
 import org.restcomm.protocols.ss7.sccp.message.SccpDataMessage;
 import org.restcomm.protocols.ss7.sccp.message.SccpNoticeMessage;
 import org.testng.annotations.Test;
 
+/**
+ * Test for XUDT message reassembly.
+ *
+ * @author sergey vetyutnev
+ * @author <a href="jarmex@gmail.com"> James Amo </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ */
 public class XudtReassemblingTest {
 
-    private byte data1[] = new byte[] { 0x11, (byte) 0x81, 0x0f, 0x04, 0x0d, 0x16, (byte) 0xff, 0x09, 0x0a, 0x06, 0x01, 0x09,
+    private final byte[] data1 = new byte[] { 0x11, (byte) 0x81, 0x0f, 0x04, 0x0d, 0x16, (byte) 0xff, 0x09, 0x0a, 0x06, 0x01, 0x09,
             0x00, 0x08, 0x00, 0x01, 0x20, 0x09, 0x0a, 0x07, 0x01, 0x09, 0x00, 0x08, 0x00, 0x02, 0x10, (byte) 0xe9, 0x62,
             (byte) 0x81, (byte) 0xff, 0x48, 0x04, 0x04, 0x00, 0x00, 0x29, 0x6b, 0x1a, 0x28, 0x18, 0x06, 0x07, 0x00, 0x11,
             (byte) 0x86, 0x05, 0x01, 0x01, 0x01, (byte) 0xa0, 0x0d, 0x60, 0x0b, (byte) 0xa1, 0x09, 0x06, 0x07, 0x04, 0x00,
@@ -29,29 +35,59 @@ public class XudtReassemblingTest {
             0x02, 0x05, (byte) 0xe0, 0x30, 0x3a, (byte) 0xa0, 0x38, 0x30, 0x36, 0x06, 0x02, 0x29, 0x01, (byte) 0x82, 0x30,
             (byte) 0x91, 0x19, (byte) 0x81, 0x01, 0x0e, (byte) 0x82, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x82, 0x00, (byte) 0x81,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x82, 0x00, (byte) 0x81,
             0x01, 0x00, (byte) 0xa3, 0x07, (byte) 0x81, 0x05, 0x01, 0x01, 0x01, 0x01, 0x01, (byte) 0x84, 0x00, (byte) 0x85,
             0x03, 0x00, 0x01, 0x01, (byte) 0x86, 0x03, 0x00, 0x01, 0x01, (byte) 0x87, 0x10, 0x04, (byte) 0x81, 0x04, 0x00,
             0x04, 0x00 };
 
-    private byte data2[] = new byte[] { 0x11, (byte) 0x81, 0x0f, 0x04, 0x0d, 0x16, 0x2f, 0x09, 0x0a, 0x06, 0x01, 0x09, 0x00,
+    private final byte[] data2 = new byte[] { 0x11, (byte) 0x81, 0x0f, 0x04, 0x0d, 0x16, 0x2f, 0x09, 0x0a, 0x06, 0x01, 0x09, 0x00,
             0x08, 0x00, 0x01, 0x20, 0x09, 0x0a, 0x07, 0x01, 0x09, 0x00, 0x08, 0x00, 0x02, 0x10, 0x19, 0x02, 0x00, 0x01,
             (byte) 0x88, 0x00, (byte) 0x89, 0x00, (byte) 0x8b, 0x00, (byte) 0x8c, 0x00, (byte) 0xad, 0x0a, (byte) 0x80, 0x08,
             0x53, (byte) 0x83, 0x61, 0x50, 0x01, 0x47, 0x33, (byte) 0xf0, (byte) 0x90, 0x00, 0x10, 0x04, 0x00, 0x04, 0x00,
             0x04, 0x00 };
 
+    // Simple test harness for this specific test
+    private static class SimpleTestHarness extends SccpHarness {
+        public SimpleTestHarness() {
+            this.onlyOneStack = true;
+            this.sccpStack1Name = "TestXudt";
+        }
+        
+        @Override
+        protected int getStack1PC() {
+            return 1;
+        }
+        
+        @Override
+        protected int getStack2PC() {
+            return 2;
+        }
+
+        @Override
+        public void setUp() throws Exception {
+            super.setUp();
+        }
+    }
+
     @Test
     public void testA() throws Exception {
-        SccpStackImpl sccpStack = new SccpStackImpl("TestUudt", null);
-        sccpStack.start();
+        // Create and set up the test harness
+        SimpleTestHarness simpleTestHarness = new SimpleTestHarness();
+        
+        // Initialize the test harness
+        simpleTestHarness.setUp();
+        
+        // Get the stack from the harness
+        SccpStackImpl sccpStack = simpleTestHarness.sccpStack1;
 
         SccpListenerProxy listenerProxy = new SccpListenerProxy();
         sccpStack.getSccpProvider().registerSccpListener(8, listenerProxy);
-        sccpStack.setMtp3UserPart(1, new Mtp3UserPartImpl(null));
+        sccpStack.setMtp3UserPart(1, new Mtp3UserPartImpl(simpleTestHarness));
 
         sccpStack.removeAllResources();
         RouterImpl router = (RouterImpl) sccpStack.getRouter();
         router.addMtp3ServiceAccessPoint(1, 1, 1002, 2, 0, null);
+        router.addMtp3Destination(1, 1, 1001, 1002, 0, 255, 255);
 
         Mtp3TransferPrimitiveFactory mtp3TransferPrimitiveFactory = new Mtp3TransferPrimitiveFactory(RoutingLabelFormat.ITU);
         Mtp3TransferPrimitive mtp3Msg = mtp3TransferPrimitiveFactory.createMtp3TransferPrimitive(3, 2, 0, 1001, 1002, 5, data1);
@@ -60,43 +96,42 @@ public class XudtReassemblingTest {
         mtp3TransferPrimitiveFactory = new Mtp3TransferPrimitiveFactory(RoutingLabelFormat.ITU);
         mtp3Msg = mtp3TransferPrimitiveFactory.createMtp3TransferPrimitive(3, 2, 0, 1001, 1002, 5, data2);
         sccpStack.onMtp3TransferMessage(mtp3Msg);
+        
+        // Clean up after the test
+        simpleTestHarness.tearDown();
     }
 
-    private class SccpListenerProxy extends BaseSccpListener implements SccpListener {
+    private static class SccpListenerProxy extends BaseSccpListener implements SccpListener {
 
         @Override
         public void onMessage(SccpDataMessage message) {
-            // TODO Auto-generated method stub
-            
+            // Message received
         }
 
         @Override
         public void onNotice(SccpNoticeMessage message) {
-            // TODO Auto-generated method stub
-            
+            // Notice received
         }
 
         @Override
         public void onCoordResponse(int ssn, int multiplicityIndicator) {
-            // TODO Auto-generated method stub
-            
+            // Coord response received
         }
 
         @Override
         public void onState(int dpc, int ssn, boolean inService, int multiplicityIndicator) {
-            // TODO Auto-generated method stub
-            
+            // State update received
         }
 
         @Override
         public void onPcState(int dpc, SignallingPointStatus status, Integer restrictedImportanceLevel,
                 RemoteSccpStatus remoteSccpStatus) {
-            // TODO Auto-generated method stub
+            // PC state update received
         }
 
         @Override
         public void onNetworkIdState(int networkId, NetworkIdState networkIdState) {
+            // Network ID state update received
         }
     }
-
 }

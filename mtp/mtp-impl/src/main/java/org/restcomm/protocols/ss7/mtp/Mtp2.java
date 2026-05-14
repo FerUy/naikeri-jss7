@@ -2,8 +2,8 @@ package org.restcomm.protocols.ss7.mtp;
 
 import java.io.IOException;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.mtp.Mtp3.SLTMTest;
 import org.restcomm.protocols.ss7.scheduler.Scheduler;
 import org.restcomm.protocols.ss7.scheduler.Task;
@@ -25,7 +25,7 @@ public class Mtp2 {
      */
     static final int MTP2_ALIGNED = 2;
     /**
-     * Third state, entered from ALIGNED on receival of N or E
+     * Third state, entered from ALIGNED on receive of N or E
      */
     static final int MTP2_PROVING = 3;
     /**
@@ -44,7 +44,7 @@ public class Mtp2 {
     private static final int T4_TIMEOUT_NORMAL = 82;
     private static final int T4_TIMEOUT_EMERGENCY = 5; // not a static, since it can change.
     private int T4_TIMEOUT = T4_TIMEOUT_NORMAL;
-    private int T7_TIMEOUT = 20; // see Q704 - after alignemtn failure we need to wait before we retry
+    private int T7_TIMEOUT = 20; // see Q704 - after alignment failure we need to wait before we retry
     // 800-1500.
     private static final int T17_TIMEOUT = 15;
     private static final int[] fcstab = new int[] { 0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf, 0x8c48,
@@ -67,7 +67,7 @@ public class Mtp2 {
             0x7acf, 0x4854, 0x59dd, 0x2d62, 0x3ceb, 0x0e70, 0x1ff9, 0xf78f, 0xe606, 0xd49d, 0xc514, 0xb1ab, 0xa022, 0x92b9,
             0x8330, 0x7bc7, 0x6a4e, 0x58d5, 0x495c, 0x3de3, 0x2c6a, 0x1ef1, 0x0f78 };
     /**
-     * status indicator of out of alignment (SIO). This condition occurs when a signal unit is received that has a ones-density
+     * status indicator of out of alignment (SIO). This condition occurs when a signal unit is received that has ones-density
      * violation (the data field simulated a flag) or the SIF has exceeded its maximum capacity of 272 octets. The SIO is sent
      * when a link has failed and the alignment procedure is initiated.
      */
@@ -104,7 +104,7 @@ public class Mtp2 {
     public static final int AERM_THRESHOLD_EMERGENCY = 1; // /////////////////////////////////////////////
     // States for MTP2, for now we merge IAC,LSC //
     // /////////////////////////////////////////////
-    // Some static vals used for debug.
+    // Some static values used for debug.
     private static final String[] STATE_NAMES;
 
     static {
@@ -112,7 +112,7 @@ public class Mtp2 {
 
     }
     // //////////////////
-    // MTP2/1 resoruces //
+    // MTP2/1 resources //
     // //////////////////
     protected SLTMTest sltmTest;
     /** MTP1 layer reference. */
@@ -177,9 +177,9 @@ public class Mtp2 {
     private Mtp2Buffer[] transmissionBuffer = new Mtp2Buffer[128];
     private static final int _OFF_RTR = -1;
     /**
-     * Determines posistion in transmissionBuffer. If != _OFF_RTR, it points next frame to be put into retransmission.
-     * Retransmission will occur until ticks wont get to point where buffer.isFree() == true. It also point to next MSU if
-     * scheduledby MTP3. This number is set as FSN.
+     * Determines position in transmissionBuffer. If != _OFF_RTR, it points next frame to be put into retransmission.
+     * Retransmission will occur until ticks won't get to point where buffer.isFree() == true. It also point to next MSU if
+     * scheduled by MTP3. This number is set as FSN.
      */
     private int retransmissionFSN = _OFF_RTR;
     /**
@@ -187,7 +187,7 @@ public class Mtp2 {
      */
     private int retransmissionFSN_LastAcked = 0;
     /**
-     * This is FSN we used as last for send SU. If we spin many times and it equals retransmissionFSN_LastAcked, it means we
+     * This is FSN we used as last for send SU. If we spin many times, and it equals retransmissionFSN_LastAcked, it means we
      * have queue full, and have to discard SU
      */
     private int retransmissionFSN_LastSent = 0;
@@ -198,7 +198,7 @@ public class Mtp2 {
      * if bsnErrors > 2, link fails. See Q.703 section 5.3.[1,2]
      */
     private int bsnErrors = 0;
-    protected String name; // AERM variables. We use eCounter for AERM errors
+    protected String name; // AERM variables. we use eCounter for AERM errors
     private static final int PROVING_ATTEMPTS_THRESHOLD = 5;
     private int aermThreshold;
     private boolean aermEnabled;
@@ -211,14 +211,14 @@ public class Mtp2 {
     /**
      * SLS, range is 0-15
      */
-    protected int sls = -1;
+    protected int sls;
     /**
      * Subservice field of mtp msg. See Q.704.14.2.2
      */
 
     protected Mtp2Listener mtp2Listener = null;
 
-    private static final Logger ROOT_LOGGER = Logger.getLogger(Mtp2.class);
+    private static final Logger ROOT_LOGGER = LogManager.getLogger(Mtp2.class);
     private final Logger logger; // actual logger.
 
     private Scheduler scheduler;
@@ -390,11 +390,11 @@ public class Mtp2 {
             logger.debug(String.format("(%s) Starting initial alignment", name));
         }
 
-        // Comment from Oleg: this is done initialy to setup correct spot in tx
+        // Comment from Oleg: this is done initially to setup correct spot in tx
         // buffer: dunno, I just believe, for now.
         if (resetTxOffset) {
             // txOffset = 3;
-            this.txFrame.offset = 3; // I really dont get this shift.
+            this.txFrame.offset = 3; // I really don't get this shift.
         }
 
         this.reset();
@@ -460,7 +460,7 @@ public class Mtp2 {
             // This means buffer is full;
             return false;
         }
-        // FSN and all that will be set before puting this into txFrame buffer.
+        // FSN and all that will be set before putting this into txFrame buffer.
         this.transmissionBuffer[possibleFSN].frame[0] = 0;
         this.transmissionBuffer[possibleFSN].frame[1] = 0;
         // LI: see Q.703 2.3.3, FIXME: add check for msg.length <3 ?
@@ -538,7 +538,7 @@ public class Mtp2 {
                     // in service, we need to check buffer, otherwise its RTR
                     if (this.retransmissionFSN != _OFF_RTR) {
                         Mtp2Buffer buffer = this.transmissionBuffer[this.retransmissionFSN];
-                        // we shoudl use getters, but its faster with "."
+                        // we should use getters, but it's faster with "."
                         this.txFrame = buffer;
                         this.txFrame.offset = 0;
                         this.txFrame.frame[0] = (byte) (this.sendBSN | (this.sendBIB << 7));
@@ -619,7 +619,7 @@ public class Mtp2 {
                     case FRAME_STATUS_INDICATION_N:
                         // 1. stop T3
                         stop_T3();
-                        // 2. determine threashold for AERM.
+                        // 2. determine threshold for AERM.
                         if (this.T4_TIMEOUT == Mtp2.T4_TIMEOUT_EMERGENCY) {
                             this.aermThreshold = Mtp2.AERM_THRESHOLD_EMERGENCY;
                         }
@@ -642,7 +642,7 @@ public class Mtp2 {
                         stop_T3();
                         // 2. ALI not possible, this will switch to OUT_OF_SERVICE(in
                         // IAC its IDLE.) state, possibly fire OS, set T17.
-                        alignmentNotPossible("Receievd SIOS in state ALIGNED");
+                        alignmentNotPossible("Received SIOS in state ALIGNED");
                         // 3. cancel E
                         this.emergency = false;
 
@@ -662,7 +662,7 @@ public class Mtp2 {
                         stopAERM();
                         // 3. start T3
                         start_T3();
-                        // 4. swithc state
+                        // 4. switch state
 
                         this.setState(MTP2_ALIGNED);
                         break;
@@ -693,7 +693,7 @@ public class Mtp2 {
                         // 1. stop T4
                         stop_T4();
                         // 2. action;
-                        // specs shows : == Aligment Complete ....
+                        // specs shows : == Alignment Complete ....
                         alignmentNotPossible("Received SIOS in state PROVING");
                         // 3. stop AERM
                         stopAERM();
@@ -821,7 +821,7 @@ public class Mtp2 {
                     this.retransmissionFSN_LastAcked = bsn;
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug(String.format("(%s) MTP now IN_SERVICE, Notifing layer 3", name));
+                        logger.debug(String.format("(%s) MTP now IN_SERVICE, Notifying layer 3", name));
                     }
                     this.setState(MTP2_INSERVICE);
                     mtp3.linkInService(this);
@@ -839,7 +839,7 @@ public class Mtp2 {
 
         // This means we have to check BSN if it falls into space available for
         // rtr
-        // its a bit complicated since we have "ring" buffer. where indexes are
+        // it's a bit complicated since we have "ring" buffer. where indexes are
         // reused.
 
         // CASE_I, buffer did not flip.
@@ -861,8 +861,7 @@ public class Mtp2 {
 
         this.bsnErrors = 0;
 
-        // Q.703, Section 5.3.1, T7. it is weird, its in positive section
-        // but it says "ACK", any?
+        // Q.703, Section 5.3.1, T7. it is weird, it's in positive section, but it says "ACK", any?
 
         if (bib == this.sendFIB) {
 
@@ -895,7 +894,7 @@ public class Mtp2 {
 
             if (fsn != this.sendBSN) {
 
-                // something is not correctm link lost msg?
+                // something is not correct, link lost msg?
                 // Q.703 section 5.2.2.a.ii
                 if (fib == this.sendBIB) {
 
@@ -904,7 +903,7 @@ public class Mtp2 {
                 }
             }
 
-            // thats it for FISU
+            // that's it for FISU
 
         } else {
 
@@ -946,7 +945,7 @@ public class Mtp2 {
     /**
      * Handles received data.
      *
-     * @param buff the buffer which conatins received data.
+     * @param buff the buffer which contains received data.
      * @param len the number of received bytes.
      */
     private void processRx(byte[] buff, int len) {
@@ -1055,7 +1054,7 @@ public class Mtp2 {
                     processRx(rxBuffer, bytesRead);
                 }
             } catch (Exception e) {
-                if (logger.isEnabledFor(Level.ERROR)) {
+                if (logger.isErrorEnabled()) {
                     logger.error(String.format("(%s) Can not read data from channel", name), e);
                 }
                 this.setState(MTP2_OUT_OF_SERVICE);
@@ -1072,7 +1071,7 @@ public class Mtp2 {
             processTx(this.ioBufferSize);
             channel.write(txBuffer, this.ioBufferSize);
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error(String.format("(%s) Can not write data to channel", name), e);
             }
             this.setState(MTP2_OUT_OF_SERVICE);
@@ -1171,13 +1170,13 @@ public class Mtp2 {
             case MTP2_PROVING:
                 if (this.aermEnabled) {
                     if (eCount >= aermThreshold) {
-                        // start T17 ? check for alignemtn count;
+                        // start T17 ? check for alignment count;
                         // see Q.703 p.55
                         this.provingAttempts++;
                         if (this.provingAttempts < PROVING_ATTEMPTS_THRESHOLD) {
                             this.futureProving = true;
 
-                            if (this.logger.isEnabledFor(Level.WARN)) {
+                            if (this.logger.isWarnEnabled()) {
                                 // FIXME: should this remain warn ?
                                 logger.warn("Exceeded AERM threshold[ " + aermThreshold + " ] errors[ " + eCount
                                         + " ], proving attempts[ " + provingAttempts + " ], continue...");
@@ -1204,7 +1203,7 @@ public class Mtp2 {
     }
 
     /**
-     * Increment number of received frames decrement error monitor countor for each 256 good frames.
+     * Increment number of received frames decrement error monitor counter for each 256 good frames.
      *
      */
     private void countFrame() {
@@ -1260,12 +1259,12 @@ public class Mtp2 {
                 alignmentNotPossible("T2 Expired.");
                 // 2. cancel E
                 emergency = false;
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     // FIXME: should this be debug ?
                     logger.warn("Timer T2 has expired, Alignment not possible. ");
                 }
             } else {
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn("T2 fired in state[ " + STATE_NAMES[tmpState] + " ]");
                 }
             }
@@ -1308,11 +1307,11 @@ public class Mtp2 {
                 alignmentNotPossible("T3 Expired.");
                 // 2.cancel E
                 emergency = false;
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn("Timer T3 has expired, Alignment not possible. ");
                 }
             } else {
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn("T3 fired in state[ " + STATE_NAMES[tmpState] + " ]");
                 }
             }
@@ -1366,7 +1365,7 @@ public class Mtp2 {
                 }
             } else {
 
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn("T4 fired in state[ " + STATE_NAMES[tmpState] + " ]");
                 }
             }
@@ -1433,7 +1432,7 @@ public class Mtp2 {
             }
 
             logger.info(String.format("(%s) Restarting initial alignment", name));
-            // there is somethin
+            // there is something
             // T17.cancel(true);
             // T17 = null;
             stop_T17();
@@ -1484,7 +1483,7 @@ public class Mtp2 {
         t7Action.cancel();
     }
 
-    // MTP3 actaully, its accessed by it, we just keep some state in mtp2
+    // MTP3 actually, it's accessed by it, we just keep some state in mtp2
     public void start_T17() {
         this.stop_T17();
         t17Action.start();
@@ -1504,7 +1503,7 @@ public class Mtp2 {
     }
 
     /**
-     * neat way to flip indicator regardles of value.
+     * neat way to flip indicator regardless of value.
      */
     private static int NEXT_INDICATOR(int x) {
         return (x + 1) % 2;

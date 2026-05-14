@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl;
 
 import java.util.ArrayList;
@@ -10,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.mtp.Mtp3StatusCause;
 import org.restcomm.protocols.ss7.sccp.ConcernedSignalingPointCode;
@@ -22,7 +21,6 @@ import org.restcomm.protocols.ss7.sccp.SccpListener;
 import org.restcomm.protocols.ss7.sccp.SccpManagementEventListener;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.impl.message.SccpDataMessageImpl;
-import org.restcomm.protocols.ss7.sccp.impl.message.SccpMessageImpl;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.SccpAddressImpl;
 import org.restcomm.protocols.ss7.sccp.message.SccpDataMessage;
 import org.restcomm.protocols.ss7.sccp.message.SccpMessage;
@@ -72,16 +70,16 @@ public class SccpManagement {
     private ScheduledExecutorService managementExecutors;
 
     // Keeps track of how many SST are running for given DPC
-    private final FastMap<Integer, FastList<SubSystemTest>> dpcVsSst = new FastMap<Integer, FastList<SubSystemTest>>();
+    private final FastMap<Integer, FastList<SubSystemTest>> dpcVsSst = new FastMap<>();
     // Keeps the time when the last SSP (after recdMsgForProhibitedSsn()) has
     // been sent
-    private final FastMap<DpcSsn, Long> dpcSspSent = new FastMap<DpcSsn, Long>();
+    private final FastMap<DpcSsn, Long> dpcSspSent = new FastMap<>();
 
     private final String name;
 
     public SccpManagement(String name, SccpProviderImpl sccpProviderImpl, SccpStackImpl sccpStackImpl) {
         this.name = name;
-        this.logger = Logger.getLogger(SccpManagement.class.getCanonicalName() + "-" + this.name);
+        this.logger = LogManager.getLogger(SccpManagement.class.getCanonicalName() + "-" + this.name);
         this.sccpProviderImpl = sccpProviderImpl;
         this.sccpStackImpl = sccpStackImpl;
     }
@@ -136,7 +134,7 @@ public class SccpManagement {
                 }
                 break;
             case SSP:
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn(String.format(
                             "Rx : SSP, Affected SSN=%d, Affected PC=%d, Subsystem Multiplicity Ind=%d SeqControl=%d",
                             affectedSsn, affectedPc, subsystemMultiplicity, message.getSls()));
@@ -181,12 +179,12 @@ public class SccpManagement {
 
                 break;
             case SOR:
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn("Received SOR. SOR not yet implemented, dropping message");
                 }
                 break;
             case SOG:
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn("Received SOG. SOG not yet implemented, dropping message");
                 }
                 break;
@@ -220,7 +218,7 @@ public class SccpManagement {
         SccpAddress calledAdd = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, dpc, 1);
         SccpAddress callingAdd = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, affectedPc, 1);
 
-        byte[] data = null;
+        byte[] data;
         if(messageTypeCode == SSC)
             data = createManagementMessageBody(messageTypeCode, affectedPc, affectedSsn, subsystemMultiplicityIndicator, congestionLevel);
         else
@@ -282,7 +280,7 @@ public class SccpManagement {
     }
 
     private void sendSSA(SccpMessage msg, int affectedSsn) {
-        this.sendManagementMessage(((SccpMessageImpl) msg).getIncomingOpc(), SSA, affectedSsn, 0 , null);
+        this.sendManagementMessage(msg.getIncomingOpc(), SSA, affectedSsn, 0 , null);
     }
 
     protected void broadcastChangedSsnState(int affectedSsn, boolean inService) {
@@ -309,8 +307,7 @@ public class SccpManagement {
 
     protected void recdMsgForProhibitedSsn(SccpMessage msg, int ssn) {
 
-        // we do not send new SSP's to the same DPC+SSN during the one second
-        // interval
+        // we do not send new SSPs to the same DPC+SSN during the one-second interval
         int dpc = msg.getIncomingOpc();
         DpcSsn key = new DpcSsn(dpc, ssn);
         long now = System.currentTimeMillis();
@@ -538,14 +535,14 @@ public class SccpManagement {
         }
     }
 
-    private void setRemoteSsnState(RemoteSubSystemImpl remoteSsn, boolean isEnabledFor) {
-        remoteSsn.setRemoteSsnProhibited(!isEnabledFor);
+    private void setRemoteSsnState(RemoteSubSystemImpl remoteSsn, boolean isEnabled) {
+        remoteSsn.setRemoteSsnProhibited(!isEnabled);
 
         FastMap<Integer, SccpListener> lstrs = this.sccpProviderImpl.getAllSccpListeners();
 
         for (FastMap.Entry<Integer, SccpListener> e1 = lstrs.head(), end1 = lstrs.tail(); (e1 = e1.getNext()) != end1;) {
             try {
-                e1.getValue().onState(remoteSsn.getRemoteSpc(), remoteSsn.getRemoteSsn(), isEnabledFor, 0);
+                e1.getValue().onState(remoteSsn.getRemoteSpc(), remoteSsn.getRemoteSsn(), isEnabled, 0);
             } catch (Exception ee) {
                 logger.error("Exception while invoking onState", ee);
             }
@@ -553,7 +550,7 @@ public class SccpManagement {
 
         for (SccpManagementEventListener lstr : this.sccpProviderImpl.managementEventListeners) {
             try {
-                if (isEnabledFor)
+                if (isEnabled)
                     lstr.onRemoteSubSystemUp(remoteSsn);
                 else
                     lstr.onRemoteSubSystemDown(remoteSsn);
@@ -610,7 +607,7 @@ public class SccpManagement {
         // cancel all SST if any
         FastList<SubSystemTest> ssts = this.getSubSystemTestListForAffectedDpc(affectedPc, false);
         if (ssts != null) {
-            ArrayList<SubSystemTest> arr = new ArrayList<SubSystemTest>();
+            ArrayList<SubSystemTest> arr = new ArrayList<>();
             synchronized (ssts) {
                 // TODO : Amit: Added n.getValue() != null check. Evaluate
                 // javolution.FastList as why for loop continues even after
@@ -641,7 +638,7 @@ public class SccpManagement {
             if (ssts != null || !createIfAbsent)
                 return ssts;
 
-            ssts = new FastList<SubSystemTest>();
+            ssts = new FastList<>();
             dpcVsSst.put(affectedPc, ssts);
             return ssts;
         }
@@ -699,8 +696,8 @@ public class SccpManagement {
                                                    // of this classes should be
                                                    // there.
 
-        private int ssn = 0;
-        private int affectedPc = 0;
+        private int ssn;
+        private int affectedPc;
 
         private int currentTimerDelay = sccpStackImpl.sstTimerDuration_Min;
 

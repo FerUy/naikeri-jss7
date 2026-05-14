@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap.tc.dialog.events;
 
 import org.restcomm.protocols.ss7.tcap.api.MessageType;

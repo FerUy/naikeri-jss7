@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.smstpdu;
 
 import static org.testng.Assert.*;

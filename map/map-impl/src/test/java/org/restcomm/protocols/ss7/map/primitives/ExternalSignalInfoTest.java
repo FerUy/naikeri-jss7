@@ -1,19 +1,15 @@
-
 package org.restcomm.protocols.ss7.map.primitives;
 
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Arrays;
 
-
-import org.apache.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.primitives.ProtocolId;
 import org.restcomm.protocols.ss7.map.api.primitives.SignalInfo;
-import org.restcomm.protocols.ss7.map.primitives.ExternalSignalInfoImpl;
-import org.restcomm.protocols.ss7.map.primitives.SignalInfoImpl;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
@@ -26,7 +22,6 @@ import org.testng.annotations.Test;
  *
  */
 public class ExternalSignalInfoTest {
-    Logger logger = Logger.getLogger(ExternalSignalInfoTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -50,7 +45,7 @@ public class ExternalSignalInfoTest {
         byte[] data_ = new byte[] { 10, 20, 30, 40 };
 
         AsnInputStream asn = new AsnInputStream(data);
-        int tag = asn.readTag();
+        asn.readTag();
 
         ExternalSignalInfoImpl extSignalInfo = new ExternalSignalInfoImpl();
         extSignalInfo.decodeAll(asn);
@@ -60,7 +55,7 @@ public class ExternalSignalInfoTest {
 
         assertTrue(Arrays.equals(data_, signalInfo));
         assertNotNull(protocolId);
-        assertTrue(protocolId == ProtocolId.gsm_0806);
+        assertSame(protocolId, ProtocolId.gsm_0806);
     }
 
     @Test(groups = { "functional.encode", "service.callhandling" })

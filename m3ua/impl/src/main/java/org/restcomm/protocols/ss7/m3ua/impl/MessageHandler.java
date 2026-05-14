@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
 import org.restcomm.protocols.ss7.m3ua.ExchangeType;

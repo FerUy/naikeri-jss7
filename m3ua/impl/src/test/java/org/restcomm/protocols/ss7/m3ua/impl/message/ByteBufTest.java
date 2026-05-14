@@ -11,7 +11,6 @@ public class ByteBufTest {
     public void testSingleAspInAs() throws Exception {
         try {
             CompositeByteBuf comp = Unpooled.compositeBuffer();
-            ByteBuf top = comp;
 
             ByteBuf b1 = Unpooled.buffer();
             ByteBuf b2 = Unpooled.buffer();

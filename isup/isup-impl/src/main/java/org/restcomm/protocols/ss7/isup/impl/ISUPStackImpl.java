@@ -2,8 +2,8 @@ package org.restcomm.protocols.ss7.isup.impl;
 
 import java.io.IOException;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.isup.CircuitManager;
 import org.restcomm.protocols.ss7.isup.ISUPMessageFactory;
 import org.restcomm.protocols.ss7.isup.ISUPParameterFactory;
@@ -29,7 +29,7 @@ import org.restcomm.protocols.ss7.scheduler.Scheduler;
  */
 public class ISUPStackImpl implements ISUPStack, Mtp3UserPartListener {
 
-    private Logger logger = Logger.getLogger(ISUPStackImpl.class);
+    private Logger logger = LogManager.getLogger(ISUPStackImpl.class);
 
     private State state = State.IDLE;
 

@@ -1,6 +1,7 @@
 package org.restcomm.protocols.ss7.map.load.sms.mo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
@@ -96,10 +97,8 @@ import java.util.Random;
  */
 public class Server extends TestHarnessSmsMo {
 
-    private static Logger logger = Logger.getLogger(Server.class);
+    private static final Logger logger = LogManager.getLogger(Server.class);
 
-    // MAP
-    private MAPStackImpl mapStack;
     private MAPProvider mapProvider;
 
     // TCAP
@@ -108,9 +107,6 @@ public class Server extends TestHarnessSmsMo {
     // SCCP
     SccpExtModuleImpl sccpExtModule;
     private SccpStackImpl sccpStack;
-    private SccpResource sccpResource;
-    private Router router;
-    private RouterExt routerExt;
 
     // M3UA
     private M3UAManagementImpl serverM3UAMgmt;
@@ -172,12 +168,15 @@ public class Server extends TestHarnessSmsMo {
         NetworkAppearance na = factory.createNetworkAppearance(102L);
         As as = this.serverM3UAMgmt.createAs("RAS1", Functionality.SGW, ExchangeType.SE, IPSPType.CLIENT, rc, trafficModeType,
                 1, na);
+        logger.info("AS={}", as);
 
         // Step 2 : Create ASP
-        AspFactory aspFactor = this.serverM3UAMgmt.createAspFactory("RASP1", SERVER_ASSOCIATION_NAME);
+        AspFactory aspFactory = this.serverM3UAMgmt.createAspFactory("RASP1", SERVER_ASSOCIATION_NAME);
+        logger.info("aspFactory={}", aspFactory);
 
         // Step3 : Assign ASP to AS
         Asp asp = this.serverM3UAMgmt.assignAspToAs("RAS1", "RASP1");
+        logger.info("ASP={}", asp);
 
         // Step 4: Add Route. Remote point code is 2
         this.serverM3UAMgmt.addRoute(CLIENT_SPC, -1, -1, "RAS1");
@@ -193,15 +192,15 @@ public class Server extends TestHarnessSmsMo {
         this.sccpStack.start();
         this.sccpStack.removeAllResources();
 
-        this.router = this.sccpStack.getRouter();
-        this.routerExt = sccpExtModule.getRouterExt();
-        this.sccpResource = this.sccpStack.getSccpResource();
+        Router router = this.sccpStack.getRouter();
+        RouterExt routerExt = sccpExtModule.getRouterExt();
+        SccpResource sccpResource = this.sccpStack.getSccpResource();
 
-        this.sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, CLIENT_SPC, SSN, 0, false);
+        sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
+        sccpResource.addRemoteSsn(0, CLIENT_SPC, SSN, 0, false);
 
-        this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
-        this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
+        router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
+        router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -210,16 +209,16 @@ public class Server extends TestHarnessSmsMo {
         GlobalTitle gt2 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
                 ec, NatureOfAddress.INTERNATIONAL);
         SccpAddress localAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt1, SERVER_SPC, 0);
-        this.routerExt.addRoutingAddress(1, localAddress);
+        routerExt.addRoutingAddress(1, localAddress);
         SccpAddress remoteAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, CLIENT_SPC, 0);
-        this.routerExt.addRoutingAddress(2, remoteAddress);
+        routerExt.addRoutingAddress(2, remoteAddress);
 
         GlobalTitle gt = fact.createGlobalTitle("*", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress pattern = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 0);
-        this.routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
+        routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
                 "K", 1, -1, null, 0, null);
-        this.routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern,
+        routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern,
                 "K", 2, -1, null, 0, null);
     }
 
@@ -232,15 +231,16 @@ public class Server extends TestHarnessSmsMo {
     }
 
     private void initMAP() throws Exception {
-        this.mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
-        this.mapProvider = this.mapStack.getMAPProvider();
+        // MAP
+        MAPStackImpl mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
+        this.mapProvider = mapStack.getMAPProvider();
 
         this.mapProvider.addMAPDialogListener(this);
         this.mapProvider.getMAPServiceSms().addMAPServiceListener(this);
 
         this.mapProvider.getMAPServiceSms().activate();
 
-        this.mapStack.start();
+        mapStack.start();
     }
 
     /*
@@ -252,7 +252,7 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onDialogDelimiter(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogDelimiter for DialogId=%d", mapDialog.getLocalDialogId()));
+            logger.debug("onDialogDelimiter for DialogId={}", mapDialog.getLocalDialogId());
         }
     }
 
@@ -268,9 +268,7 @@ public class Server extends TestHarnessSmsMo {
     public void onDialogRequest(MAPDialog mapDialog, AddressString destReference, AddressString origReference,
             MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format(
-                    "onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s MAPExtensionContainer=%s",
-                    mapDialog.getLocalDialogId(), destReference, origReference, extensionContainer));
+            logger.debug("onDialogRequest for DialogId={} DestinationReference={} OriginReference={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), destReference, origReference, extensionContainer);
         }
     }
 
@@ -278,8 +276,7 @@ public class Server extends TestHarnessSmsMo {
     public void onDialogRequestEricsson(MAPDialog mapDialog, AddressString destReference, AddressString origReference,
             AddressString imsi, AddressString vlr) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s ",
-                    mapDialog.getLocalDialogId(), destReference, origReference));
+            logger.debug("onDialogRequest for DialogId={} DestinationReference={} OriginReference={} ", mapDialog.getLocalDialogId(), destReference, origReference);
         }
     }
 
@@ -292,8 +289,7 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onDialogAccept(MAPDialog mapDialog, MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogAccept for DialogId=%d MAPExtensionContainer=%s", mapDialog.getLocalDialogId(),
-                    extensionContainer));
+            logger.debug("onDialogAccept for DialogId={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), extensionContainer);
         }
     }
 
@@ -308,9 +304,7 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onDialogReject(MAPDialog mapDialog, MAPRefuseReason refuseReason, ApplicationContextName alternativeApplicationContext,
                                MAPExtensionContainer extensionContainer) {
-        logger.error(String.format(
-                "onDialogReject for DialogId=%d MAPRefuseReason=%s ApplicationContextName=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), refuseReason, alternativeApplicationContext, extensionContainer));
+        logger.error("onDialogReject for DialogId={} MAPRefuseReason={} ApplicationContextName={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), refuseReason, alternativeApplicationContext, extensionContainer);
     }
 
     /*
@@ -322,8 +316,7 @@ public class Server extends TestHarnessSmsMo {
      */
     @Override
     public void onDialogUserAbort(MAPDialog mapDialog, MAPUserAbortChoice userReason, MAPExtensionContainer extensionContainer) {
-        logger.error(String.format("onDialogUserAbort for DialogId=%d MAPUserAbortChoice=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), userReason, extensionContainer));
+        logger.error("onDialogUserAbort for DialogId={} MAPUserAbortChoice={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), userReason, extensionContainer);
     }
 
     /*
@@ -337,9 +330,7 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onDialogProviderAbort(MAPDialog mapDialog, MAPAbortProviderReason abortProviderReason, MAPAbortSource abortSource,
                                       MAPExtensionContainer extensionContainer) {
-        logger.error(String.format(
-                "onDialogProviderAbort for DialogId=%d MAPAbortProviderReason=%s MAPAbortSource=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), abortProviderReason, abortSource, extensionContainer));
+        logger.error("onDialogProviderAbort for DialogId={} MAPAbortProviderReason={} MAPAbortSource={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), abortProviderReason, abortSource, extensionContainer);
     }
 
     /*
@@ -350,7 +341,7 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onDialogClose(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("DialogClose for Dialog=%d", mapDialog.getLocalDialogId()));
+            logger.debug("DialogClose for Dialog={}", mapDialog.getLocalDialogId());
         }
     }
 
@@ -362,8 +353,7 @@ public class Server extends TestHarnessSmsMo {
      */
     @Override
     public void onDialogNotice(MAPDialog mapDialog, MAPNoticeProblemDiagnostic noticeProblemDiagnostic) {
-        logger.error(String.format("onDialogNotice for DialogId=%d MAPNoticeProblemDiagnostic=%s ",
-                mapDialog.getLocalDialogId(), noticeProblemDiagnostic));
+        logger.error("onDialogNotice for DialogId={} MAPNoticeProblemDiagnostic={} ", mapDialog.getLocalDialogId(), noticeProblemDiagnostic);
     }
 
     /*
@@ -375,7 +365,7 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onDialogRelease(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogRelease for DialogId=%d", mapDialog.getLocalDialogId()));
+            logger.debug("onDialogRelease for DialogId={}", mapDialog.getLocalDialogId());
         }
 
         this.endCount++;
@@ -384,7 +374,7 @@ public class Server extends TestHarnessSmsMo {
             long currentTime = System.currentTimeMillis();
             long processingTime = currentTime - start;
             start = currentTime;
-            logger.warn("Completed 10000 Dialogs in " + processingTime + " milliseconds");
+            logger.warn("Completed 10000 Dialogs in {} milliseconds", processingTime);
         }
 
     }
@@ -397,7 +387,7 @@ public class Server extends TestHarnessSmsMo {
      */
     @Override
     public void onDialogTimeout(MAPDialog mapDialog) {
-        logger.error(String.format("onDialogTimeout for DialogId=%d", mapDialog.getLocalDialogId()));
+        logger.error("onDialogTimeout for DialogId={}", mapDialog.getLocalDialogId());
     }
 
     /*
@@ -409,8 +399,7 @@ public class Server extends TestHarnessSmsMo {
      */
     @Override
     public void onErrorComponent(MAPDialog mapDialog, Long invokeId, MAPErrorMessage mapErrorMessage) {
-        logger.error(String.format("onErrorComponent for Dialog=%d and invokeId=%d MAPErrorMessage=%s",
-                mapDialog.getLocalDialogId(), invokeId, mapErrorMessage));
+        logger.error("onErrorComponent for Dialog={} and invokeId={} MAPErrorMessage={}", mapDialog.getLocalDialogId(), invokeId, mapErrorMessage);
     }
 
     /*
@@ -421,8 +410,7 @@ public class Server extends TestHarnessSmsMo {
      */
     @Override
     public void onRejectComponent(MAPDialog mapDialog, Long invokeId, Problem problem, boolean isLocalOriginated) {
-        logger.error(String.format("onRejectComponent for Dialog=%d and invokeId=%d Problem=%s isLocalOriginated=%s",
-                mapDialog.getLocalDialogId(), invokeId, problem, isLocalOriginated));
+        logger.error("onRejectComponent for Dialog={} and invokeId={} Problem={} isLocalOriginated={}", mapDialog.getLocalDialogId(), invokeId, problem, isLocalOriginated);
     }
 
     /*
@@ -433,7 +421,7 @@ public class Server extends TestHarnessSmsMo {
      */
     @Override
     public void onInvokeTimeout(MAPDialog mapDialog, Long invokeId) {
-        logger.error(String.format("onInvokeTimeout for Dialog=%d and invokeId=%d", mapDialog.getLocalDialogId(), invokeId));
+        logger.error("onInvokeTimeout for Dialog={} and invokeId={}", mapDialog.getLocalDialogId(), invokeId);
     }
 
     public static void main(String[] args) {
@@ -441,62 +429,62 @@ public class Server extends TestHarnessSmsMo {
         if (args.length >= 1 && args[0].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
         }
-        System.out.println("IpChannelType="+ipChannelType);
+        logger.info("IpChannelType={}", ipChannelType);
 
         if (args.length >= 2) {
             TestHarnessSmsMo.CLIENT_IP = args[1];
         }
-        System.out.println("CLIENT_IP="+ TestHarnessSmsMo.CLIENT_IP);
+        logger.info("CLIENT_IP={}", TestHarnessSmsMo.CLIENT_IP);
 
         if (args.length >= 3) {
             TestHarnessSmsMo.CLIENT_PORT = Integer.parseInt(args[2]);
         }
-        System.out.println("CLIENT_PORT="+ TestHarnessSmsMo.CLIENT_PORT);
+        logger.info("CLIENT_PORT={}", TestHarnessSmsMo.CLIENT_PORT);
 
         if (args.length >= 4) {
             TestHarnessSmsMo.SERVER_IP = args[3];
         }
-        System.out.println("SERVER_IP="+ TestHarnessSmsMo.SERVER_IP);
+        logger.info("SERVER_IP={}", TestHarnessSmsMo.SERVER_IP);
 
         if (args.length >= 5) {
             TestHarnessSmsMo.SERVER_PORT = Integer.parseInt(args[4]);
         }
-        System.out.println("SERVER_PORT="+ TestHarnessSmsMo.SERVER_PORT);
+        logger.info("SERVER_PORT={}", TestHarnessSmsMo.SERVER_PORT);
 
         if (args.length >= 6) {
             TestHarnessSmsMo.CLIENT_SPC = Integer.parseInt(args[5]);
         }
-        System.out.println("CLIENT_SPC="+ TestHarnessSmsMo.CLIENT_SPC);
+        logger.info("CLIENT_SPC={}", TestHarnessSmsMo.CLIENT_SPC);
 
         if (args.length >= 7) {
             TestHarnessSmsMo.SERVER_SPC = Integer.parseInt(args[6]);
         }
-        System.out.println("SERVER_SPC="+ TestHarnessSmsMo.SERVER_SPC);
+        logger.info("SERVER_SPC={}", TestHarnessSmsMo.SERVER_SPC);
 
         if (args.length >= 8) {
             TestHarnessSmsMo.NETWORK_INDICATOR = Integer.parseInt(args[7]);
         }
-        System.out.println("NETWORK_INDICATOR="+ TestHarnessSmsMo.NETWORK_INDICATOR);
+        logger.info("NETWORK_INDICATOR={}", TestHarnessSmsMo.NETWORK_INDICATOR);
 
         if (args.length >= 9) {
             TestHarnessSmsMo.SERVICE_INDICATOR = Integer.parseInt(args[8]);
         }
-        System.out.println("SERVICE_INDICATOR="+ TestHarnessSmsMo.SERVICE_INDICATOR);
+        logger.info("SERVICE_INDICATOR={}", TestHarnessSmsMo.SERVICE_INDICATOR);
 
         if (args.length >= 10) {
             TestHarnessSmsMo.SSN = Integer.parseInt(args[9]);
         }
-        System.out.println("SSN="+ TestHarnessSmsMo.SSN);
+        logger.info("SSN={}", TestHarnessSmsMo.SSN);
 
         if (args.length >= 11) {
             TestHarnessSmsMo.ROUTING_CONTEXT = Integer.parseInt(args[10]);
         }
-        System.out.println("ROUTING_CONTEXT="+ TestHarnessSmsMo.ROUTING_CONTEXT);
+        logger.info("ROUTING_CONTEXT={}", TestHarnessSmsMo.ROUTING_CONTEXT);
 
         if(args.length >= 12){
             TestHarnessSmsMo.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[11]);
         }
-        System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT="+ TestHarnessSmsMo.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
+        logger.info("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT={}", TestHarnessSmsMo.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
 
         final Server server = new Server();
         try {
@@ -559,8 +547,8 @@ public class Server extends TestHarnessSmsMo {
     @Override
     public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwardShortMessageRequestIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onMoForwardShortMessageRequest for DialogId=%d", moForwardShortMessageRequestIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onMoForwardShortMessageRequest for DialogId={}", moForwardShortMessageRequestIndication
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             SmsSignalInfo sm_rp_ui = moForwardShortMessageRequestIndication.getSM_RP_UI();
@@ -614,11 +602,8 @@ public class Server extends TestHarnessSmsMo {
             }
 
             // the following applies only for debug purposes
-            logger.debug("onMoForwardShortMessageRequest for invokeId=%d" + moForwardShortMessageRequestIndication
-                    .getInvokeId() + ", sm_rp_ui= " + sm_rp_ui + ", smsTpduType=" + smsTpduType +
-                    ", message type=" + mt + ", SM_RP_OA: msisdn=" + msisdn + ", SC OA=" + scOA + ", SM_RP_DA: scDA=" + scDA +
-                    ", imsi=" + imsiRpDa + ", lmsi=" + lmsi + ", IMSI: imsi=" + imsi + ", CorrelationID: hlrId=" + hlrId +
-                    ", sipUriA=" + sipUriA + ", sipUriB=" + sipUriB + ", SMDeliveryOutcome code=" + smDeliveryOutcomeCode);
+            logger.debug("onMoForwardShortMessageRequest for invokeId=%d{}, sm_rp_ui= {}, smsTpduType={}, message type={}, SM_RP_OA: msisdn={}, SC OA={}, SM_RP_DA: scDA={}, imsi={}, lmsi={}, IMSI: imsi={}, CorrelationID: hlrId={}, sipUriA={}, sipUriB={}, SMDeliveryOutcome code={}", moForwardShortMessageRequestIndication
+                    .getInvokeId(), sm_rp_ui, smsTpduType, mt, msisdn, scOA, scDA, imsiRpDa, lmsi, imsi, hlrId, sipUriA, sipUriB, smDeliveryOutcomeCode);
 
             long invokeId = moForwardShortMessageRequestIndication.getInvokeId();
             MAPDialogSms mapDialogSmsMoFsmResp = moForwardShortMessageRequestIndication.getMAPDialog();

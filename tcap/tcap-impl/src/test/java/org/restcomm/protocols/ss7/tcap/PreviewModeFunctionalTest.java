@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
 import static org.testng.Assert.assertEquals;
@@ -11,6 +10,8 @@ import java.util.List;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.NumberingPlan;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
@@ -56,12 +57,15 @@ import org.testng.annotations.Test;
  *
  */
 public class PreviewModeFunctionalTest {
-    private SccpHarnessPreview sccpProv = new SccpHarnessPreview();
+
+    private static final Logger logger = LogManager.getLogger(PreviewModeFunctionalTest.class.getName());
+
+    private final SccpHarnessPreview sccpProv = new SccpHarnessPreview();
     private TCAPStackImplWrapper tcapStack1;
     private TCAPListenerHarness tcapListener;
     protected ParameterFactory parameterFactory;
     protected MessageFactory messageFactory;
-    protected List<TestEvent> observerdEvents;
+    protected List<TestEvent> observedEvents;
     protected int sequence;
     
     public PreviewModeFunctionalTest() {
@@ -71,7 +75,7 @@ public class PreviewModeFunctionalTest {
     public void setUpClass() {
         // this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
         // this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
-        System.out.println("setUpClass");
+        logger.info("setUpClass");
         SccpStackImpl stack = new SccpStackImpl("XXX", null);
         this.parameterFactory = stack.getSccpProvider().getParameterFactory();
         this.messageFactory = stack.getSccpProvider().getMessageFactory();
@@ -81,7 +85,7 @@ public class PreviewModeFunctionalTest {
     public void tearDownClass() throws Exception {
         this.parameterFactory = null;
         this.messageFactory = null;
-        System.out.println("tearDownClass");
+        logger.info("tearDownClass");
     }
 
     /*
@@ -91,7 +95,7 @@ public class PreviewModeFunctionalTest {
      */
     @BeforeMethod
     public void setUp() throws Exception {
-        System.out.println("setUp");
+        logger.info("setUp");
 
         this.tcapStack1 = new TCAPStackImplWrapper(this.sccpProv, 8, "PreviewModeFunctionalTest");
 
@@ -103,7 +107,7 @@ public class PreviewModeFunctionalTest {
         tcapListener = new TCAPListenerHarness();
         this.tcapStack1.getProvider().addTCListener(tcapListener);
 
-        observerdEvents = new ArrayList<TestEvent>();
+        observedEvents = new ArrayList<>();
         sequence = 0;
     }
 
@@ -142,7 +146,7 @@ public class PreviewModeFunctionalTest {
         // RoutingIndicator ri, int dpc, GlobalTitle gt, int ssn
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> expectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         expectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.Invoke, null, 1, stamp);
@@ -163,19 +167,16 @@ public class PreviewModeFunctionalTest {
         msg.setIncomingDpc(101);
         this.sccpProv.sccpListener.onMessage(msg);
 
-        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
      * Responses as ReturnResult (this case is simulated) and ReturnResultLast
-     *
      * TC-BEGIN + addProcessUnstructuredSSRequest TC-CONTINUE + ReturnResult (addProcessUnstructuredSSResponse) TC-CONTINUE
      * TC-END + ReturnResultLast (addProcessUnstructuredSSResponse)
      */
     @Test(groups = { "functional.flow" })
     public void beginContContEndTest() throws Exception {
-
-        
 
         byte[] m1 = new byte[] { 98, -127, -109, 72, 4, 0, 0, 0, 1, 107, 108, 40, 106, 6, 7, 0, 17, -122, 5, 1, 1, 1, -96, 95,
                 96, 93, -128, 2, 7, -128, -95, 9, 6, 7, 4, 0, 0, 1, 0, 19, 2, -66, 76, 40, 74, 6, 7, 4, 0, 0, 1, 1, 1, 1, -96,
@@ -197,7 +198,7 @@ public class PreviewModeFunctionalTest {
         SccpAddress addr2 = this.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, 0, 6); // 102
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> expectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         expectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.Invoke, null, 1, stamp);
@@ -232,7 +233,7 @@ public class PreviewModeFunctionalTest {
         msg.setIncomingDpc(101);
         this.sccpProv.sccpListener.onMessage(msg);
 
-        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -266,7 +267,7 @@ public class PreviewModeFunctionalTest {
         SccpAddress addr2 = this.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 102, 6);
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> expectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         expectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.Invoke, null, 1, stamp);
@@ -307,7 +308,7 @@ public class PreviewModeFunctionalTest {
         this.sccpProv.sccpListener.onMessage(msg);
         assertEquals(this.tcapStack1.getDialogPreviewList().size(), 0);
 
-        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -334,7 +335,7 @@ public class PreviewModeFunctionalTest {
         SccpAddress addr2 = this.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, 0, 6); // 102
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> expectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         expectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.Invoke, null, 1, stamp);
@@ -357,11 +358,11 @@ public class PreviewModeFunctionalTest {
 
         // ReturnResultLast without a Paramater: no oparation code i transmitted in ReturnResultLast - it must be obtained from
         // saved Invoke
-        Object o = observerdEvents.get(3).getEvent();
+        Object o = observedEvents.get(3).getEvent();
         ReturnResultLastImpl rrl = (ReturnResultLastImpl) o;
         assertEquals((long) rrl.getOperationCode().getLocalOperationCode(), 46);
 
-        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -388,7 +389,7 @@ public class PreviewModeFunctionalTest {
         SccpAddress addr2 = this.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, 0, 6); // 102
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> expectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         expectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.Invoke, null, 1, stamp);
@@ -407,7 +408,7 @@ public class PreviewModeFunctionalTest {
         msg.setIncomingDpc(101);
         this.sccpProv.sccpListener.onMessage(msg);
 
-        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -431,7 +432,7 @@ public class PreviewModeFunctionalTest {
         SccpAddress addr2 = this.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, 0, 6); // 102
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> expectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         expectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.Invoke, null, 1, stamp);
@@ -453,7 +454,7 @@ public class PreviewModeFunctionalTest {
         Thread.sleep(3000);
         assertEquals(this.tcapStack1.getDialogPreviewList().size(), 0);
 
-        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -483,7 +484,7 @@ public class PreviewModeFunctionalTest {
         SccpAddress addr2 = this.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, 0, 6); // 102
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> expectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         expectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.Invoke, null, 1, stamp);
@@ -510,10 +511,10 @@ public class PreviewModeFunctionalTest {
         this.sccpProv.sccpListener.onMessage(msg);
         assertEquals(this.tcapStack1.getDialogPreviewList().size(), 2);
 
-        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
-    private class SccpHarnessPreview implements SccpProvider {
+    private static class SccpHarnessPreview implements SccpProvider {
 
         @Override
         public void deregisterSccpListener(int arg0) {
@@ -571,7 +572,7 @@ public class PreviewModeFunctionalTest {
 
         @Override
         public FastMap<Integer, NetworkIdState> getNetworkIdStateList() {
-            return new FastMap<Integer, NetworkIdState>();
+            return new FastMap<>();
         }
 
         @Override
@@ -644,7 +645,7 @@ public class PreviewModeFunctionalTest {
 
                 if (et != null) {
                     TestEvent te = TestEvent.createReceivedEvent(et, comp, sequence++);
-                    observerdEvents.add(te);
+                    observedEvents.add(te);
                 }
             }
         }
@@ -652,7 +653,7 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCUni(TCUniIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.Uni, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
 
             opComponents(ind.getComponents());
         }
@@ -660,7 +661,7 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCBegin(TCBeginIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
 
             opComponents(ind.getComponents());
         }
@@ -668,7 +669,7 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCContinue(TCContinueIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.Continue, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
 
             opComponents(ind.getComponents());
         }
@@ -676,7 +677,7 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCEnd(TCEndIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.End, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
 
             opComponents(ind.getComponents());
         }
@@ -684,37 +685,37 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCUserAbort(TCUserAbortIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.UAbort, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onTCPAbort(TCPAbortIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.PAbort, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onTCNotice(TCNoticeIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.Notice, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onDialogReleased(Dialog d) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.DialogRelease, d, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onInvokeTimeout(Invoke tcInvokeRequest) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.InvokeTimeout, tcInvokeRequest, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onDialogTimeout(Dialog d) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.DialogTimeout, d, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
     }

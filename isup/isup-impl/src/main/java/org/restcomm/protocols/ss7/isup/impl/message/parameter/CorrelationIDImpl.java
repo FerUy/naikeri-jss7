@@ -22,8 +22,8 @@ public class CorrelationIDImpl extends GenericDigitsImpl implements CorrelationI
 
     }
 
-    public CorrelationIDImpl(int encodingScheme, int typeOfDigits, byte[] digits) {
-        super(encodingScheme, typeOfDigits, digits);
+    public CorrelationIDImpl(int encodignScheme, int typeOfDigits, byte[] digits) {
+        super(encodignScheme, typeOfDigits, digits);
 
     }
 

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.dialog.MAPProviderAbortReason;
-import org.restcomm.protocols.ss7.map.dialog.MAPProviderAbortInfoImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
 import org.testng.annotations.Test;
 
@@ -69,8 +68,6 @@ public class MAPProviderAbortInfoTest {
         mapProviderAbortInfo.encodeAll(asnOS);
 
         byte[] data = asnOS.toByteArray();
-
-        // System.out.println(dump(data, data.length, false));
 
         assertTrue(Arrays.equals(new byte[] { (byte) 0xA5, 0x03, (byte) 0x0A, 0x01, 0x01 }, data));
 

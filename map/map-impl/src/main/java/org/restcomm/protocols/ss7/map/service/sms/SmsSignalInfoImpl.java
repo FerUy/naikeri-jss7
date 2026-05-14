@@ -3,7 +3,8 @@ package org.restcomm.protocols.ss7.map.service.sms;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
@@ -25,7 +26,7 @@ public class SmsSignalInfoImpl implements SmsSignalInfo, MAPAsnPrimitive {
 
     public static final String _PrimitiveName = "SmsSignalInfo";
 
-    protected Logger logger = Logger.getLogger(SmsSignalInfoImpl.class);
+    protected Logger logger = LogManager.getLogger(SmsSignalInfoImpl.class);
 
     private byte[] data;
     private Charset gsm8Charset;

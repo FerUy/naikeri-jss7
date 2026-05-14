@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcapAnsi;
 
 import static org.testng.Assert.*;
@@ -9,7 +8,6 @@ import java.util.List;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.impl.SccpHarness;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
-import org.restcomm.protocols.ss7.tcapAnsi.TCAPStackImpl;
 import org.restcomm.protocols.ss7.tcapAnsi.api.TCListener;
 import org.restcomm.protocols.ss7.tcapAnsi.api.asn.comp.Invoke;
 import org.restcomm.protocols.ss7.tcapAnsi.api.asn.comp.ReturnResultLast;
@@ -109,7 +107,7 @@ public class TCAPFunctionalTest extends SccpHarness {
     public void simpleTCWithDialogTest() throws Exception {
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp);
         clientExpectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + WAIT_TIME);
@@ -120,7 +118,7 @@ public class TCAPFunctionalTest extends SccpHarness {
         te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + WAIT_TIME * 2);
         clientExpectedEvents.add(te);
 
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         serverExpectedEvents.add(te);
         te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + WAIT_TIME);
@@ -164,13 +162,13 @@ public class TCAPFunctionalTest extends SccpHarness {
     public void uniMsgTest() throws Exception {
 
         long stamp = System.currentTimeMillis();
-        List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> clientExpectedEvents = new ArrayList<>();
         TestEvent te = TestEvent.createSentEvent(EventType.Uni, null, 0, stamp);
         clientExpectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 1, stamp);
         clientExpectedEvents.add(te);
 
-        List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+        List<TestEvent> serverExpectedEvents = new ArrayList<>();
         te = TestEvent.createReceivedEvent(EventType.Uni, null, 0, stamp);
         serverExpectedEvents.add(te);
         te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 1, stamp);
@@ -218,7 +216,7 @@ public class TCAPFunctionalTest extends SccpHarness {
             assertEquals((long) rrl.getCorrelationId(), 0);
             assertEquals((long) rrl.getOperationCode().getPrivateOperationCode(), 12);
 
-            // second Invoke has its own operationCode and it has linkedId to the second sent Invoke
+            // second Invoke has its own operationCode, and it has linkedId to the second sent Invoke
             assertEquals((long) inv.getInvokeId(), 0);
             assertEquals((long) inv.getOperationCode().getPrivateOperationCode(), 14);
             assertEquals((long) inv.getCorrelationId(), 1);

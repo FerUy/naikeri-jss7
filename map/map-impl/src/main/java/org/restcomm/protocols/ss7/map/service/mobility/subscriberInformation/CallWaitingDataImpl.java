@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import org.mobicents.protocols.asn.AsnException;
@@ -163,7 +162,7 @@ public class CallWaitingDataImpl extends SequenceBase implements CallWaitingData
             sb.append("], ");
         }
         if (this.notificationToCSE) {
-            sb.append("isNotificationToCSE, ");
+            sb.append(", notificationToCSE");
         }
 
         sb.append("]");

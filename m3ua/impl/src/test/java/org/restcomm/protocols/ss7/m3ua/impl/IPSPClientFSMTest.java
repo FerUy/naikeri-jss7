@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
 import static org.testng.Assert.assertEquals;
@@ -62,8 +61,8 @@ import org.testng.annotations.Test;
  *
  */
 public class IPSPClientFSMTest {
-    private ParameterFactoryImpl parmFactory = new ParameterFactoryImpl();
-    private MessageFactoryImpl messageFactory = new MessageFactoryImpl();
+    private final ParameterFactoryImpl paramFactory = new ParameterFactoryImpl();
+    private final MessageFactoryImpl messageFactory = new MessageFactoryImpl();
     private M3UAManagementImpl clientM3UAMgmt = null;
     private Mtp3UserPartListenerimpl mtp3UserPartListener = null;
     private NettyTransportManagement transportManagement = null;
@@ -95,8 +94,14 @@ public class IPSPClientFSMTest {
 
     @AfterMethod
     public void tearDown() throws Exception {
-        clientM3UAMgmt.removeAllResources();
-        clientM3UAMgmt.stop();
+        try {
+            // Simply remove all resources and stop the management
+            clientM3UAMgmt.removeAllResources();
+            clientM3UAMgmt.stop();
+        } catch (Exception e) {
+            // Ignore exceptions during teardown
+            e.printStackTrace();
+        }
     }
 
     private AspState getAspState(FSM fsm) {
@@ -118,21 +123,21 @@ public class IPSPClientFSMTest {
         // 5.1.1. Single ASP in an Application Server ("1+0" sparing),
         this.transportManagement.addAssociation(null, 0, null, 0, "testAssoc1");
 
-        RoutingContext rc = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc = paramFactory.createRoutingContext(new long[] { 100 });
 
-        // As as = rsgw.createAppServer("testas", rc, rKey, trModType);
-        AsImpl asImpl = (AsImpl) this.clientM3UAMgmt.createAs("testas", Functionality.IPSP, ExchangeType.SE, null, rc, null, 1,
+        // Use unique names for AS and ASP
+        AsImpl asImpl = (AsImpl) this.clientM3UAMgmt.createAs("testClientAs1", Functionality.IPSP, ExchangeType.SE, null, rc, null, 1,
                 null);
 
-        AspFactoryImpl localAspFactory = (AspFactoryImpl) this.clientM3UAMgmt.createAspFactory("testasp", "testAssoc1", false);
+        AspFactoryImpl localAspFactory = (AspFactoryImpl) this.clientM3UAMgmt.createAspFactory("testClientAsp1", "testAssoc1", false);
         localAspFactory.start();
 
-        AspImpl aspImpl = this.clientM3UAMgmt.assignAspToAs("testas", "testasp");
+        AspImpl aspImpl = this.clientM3UAMgmt.assignAspToAs("testClientAs1", "testClientAsp1");
 
         // Create Route. Adding 3 routes
-        this.clientM3UAMgmt.addRoute(3, -1, -1, "testas");
-        this.clientM3UAMgmt.addRoute(2, 10, -1, "testas");
-        this.clientM3UAMgmt.addRoute(2, -1, -1, "testas");
+        this.clientM3UAMgmt.addRoute(3, -1, -1, "testClientAs1");
+        this.clientM3UAMgmt.addRoute(2, 10, -1, "testClientAs1");
+        this.clientM3UAMgmt.addRoute(2, -1, -1, "testClientAs1");
 
         // Signal for Communication UP
         TestAssociation testAssociation = (TestAssociation) this.transportManagement.getAssociation("testAssoc1");
@@ -214,7 +219,7 @@ public class IPSPClientFSMTest {
         assertNull(this.mtp3UserPartListener.rxMtp3PrimitivePoll());
         assertNull(this.mtp3UserPartListener.rxMtp3TransferPrimitivePoll());
 
-        // Make sure we don't have any more
+        // Make sure we don't have anymore
         assertNull(testAssociation.txPoll());
 
     }
@@ -307,7 +312,7 @@ public class IPSPClientFSMTest {
         assertNull(this.mtp3UserPartListener.rxMtp3PrimitivePoll());
         assertNull(this.mtp3UserPartListener.rxMtp3TransferPrimitivePoll());
 
-        // Make sure we don't have any more
+        // Make sure we don't have anymore
         assertNull(testAssociation.txPoll());
 
     }
@@ -318,19 +323,19 @@ public class IPSPClientFSMTest {
         TestAssociation testAssociation = (TestAssociation) this.transportManagement.addAssociation(null, 0, null, 0,
                 "testAssoc");
 
-        RoutingContext rc = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc = paramFactory.createRoutingContext(new long[] { 100 });
 
-        AsImpl asImpl = (AsImpl) this.clientM3UAMgmt.createAs("testas", Functionality.IPSP, ExchangeType.SE, null, rc, null, 1,
+        AsImpl asImpl = (AsImpl) this.clientM3UAMgmt.createAs("testClientAs2", Functionality.IPSP, ExchangeType.SE, null, rc, null, 1,
                 null);
         FSM asPeerFSM = asImpl.getPeerFSM();
 
-        AspFactoryImpl localAspFactory = (AspFactoryImpl) clientM3UAMgmt.createAspFactory("testasp", "testAssoc", false);
+        AspFactoryImpl localAspFactory = (AspFactoryImpl) clientM3UAMgmt.createAspFactory("testClientAsp2", "testAssoc", false);
         localAspFactory.start();
 
-        AspImpl aspImpl = clientM3UAMgmt.assignAspToAs("testas", "testasp");
+        AspImpl aspImpl = clientM3UAMgmt.assignAspToAs("testClientAs2", "testClientAsp2");
 
         // Create Route
-        this.clientM3UAMgmt.addRoute(2, -1, -1, "testas");
+        this.clientM3UAMgmt.addRoute(2, -1, -1, "testClientAs2");
 
         FSM aspLocalFSM = aspImpl.getLocalFSM();
 
@@ -390,7 +395,7 @@ public class IPSPClientFSMTest {
         // Now let's add some PayloadData
         PayloadDataImpl payload = (PayloadDataImpl) messageFactory.createMessage(MessageClass.TRANSFER_MESSAGES,
                 MessageType.PAYLOAD);
-        ProtocolDataImpl p1 = (ProtocolDataImpl) parmFactory.createProtocolData(1408, 123, 3, 1, 0, 1,
+        ProtocolDataImpl p1 = (ProtocolDataImpl) paramFactory.createProtocolData(1408, 123, 3, 1, 0, 1,
                 new byte[] { 1, 2, 3, 4 });
         payload.setRoutingContext(rc);
         payload.setData(p1);
@@ -433,7 +438,7 @@ public class IPSPClientFSMTest {
         assertNull(this.mtp3UserPartListener.rxMtp3PrimitivePoll());
         assertNull(this.mtp3UserPartListener.rxMtp3TransferPrimitivePoll());
 
-        // Make sure we don't have any more
+        // Make sure we don't have anymore
         assertNull(testAssociation.txPoll());
 
     }
@@ -449,7 +454,7 @@ public class IPSPClientFSMTest {
         // 5.1.1. Single ASP in an Application Server ("1+0" sparing),
         this.transportManagement.addAssociation(null, 0, null, 0, "testAssoc1");
 
-        RoutingContext rc = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc = paramFactory.createRoutingContext(new long[] { 100 });
 
         // As as = rsgw.createAppServer("testas", rc, rKey, trModType);
         AsImpl asImpl = (AsImpl) this.clientM3UAMgmt.createAs("testas", Functionality.IPSP, ExchangeType.DE, null, rc, null, 1,
@@ -556,21 +561,21 @@ public class IPSPClientFSMTest {
         assertNull(this.mtp3UserPartListener.rxMtp3PrimitivePoll());
         assertNull(this.mtp3UserPartListener.rxMtp3TransferPrimitivePoll());
 
-        // Make sure we don't have any more
+        // Make sure we don't have anymore
         assertNull(testAssociation.txPoll());
 
     }
 
     /**
-     * Validate that next message in Association queue if of Class and Type passed as argument. type and info are only for
-     * management messages
+     * Validate that next message in Association queue if of Class and Type passed as argument;
+     * type and info are only for management messages
      *
-     * @param testAssociation
-     * @param msgClass
-     * @param msgType
-     * @param type
-     * @param info
-     * @return
+     * @param testAssociation test association
+     * @param msgClass M3UA header field "Message Class"
+     * @param msgType M3UA header field "Message Type"
+     * @param type The type for Notify message Or Error Code for Error Messages
+     * @param info The Info for Notify message Or RoutingContext for Error Message
+     * @return true or false depending on the result of the validation
      */
     private boolean validateMessage(TestAssociation testAssociation, int msgClass, int msgType, int type, int info) {
         M3UAMessage message = testAssociation.txPoll();
@@ -585,11 +590,7 @@ public class IPSPClientFSMTest {
         if (message.getMessageClass() == MessageClass.MANAGEMENT) {
             if (message.getMessageType() == MessageType.NOTIFY) {
                 Status s = ((Notify) message).getStatus();
-                if (s.getType() != type || s.getInfo() != info) {
-                    return false;
-                } else {
-                    return true;
-                }
+                return s.getType() == type && s.getInfo() == info;
             }
 
             // TODO take care of Error?
@@ -603,11 +604,9 @@ public class IPSPClientFSMTest {
     class TestAssociation implements Association {
 
         private AssociationListener associationListener = null;
-        private String name = null;
-        private LinkedList<M3UAMessage> messageRxFromUserPart = new LinkedList<M3UAMessage>();
+        private final LinkedList<M3UAMessage> messageRxFromUserPart = new LinkedList<>();
 
         TestAssociation(String name) {
-            this.name = name;
         }
 
         M3UAMessage txPoll() {
@@ -741,7 +740,7 @@ public class IPSPClientFSMTest {
 
     class NettyTransportManagement implements Management {
 
-        private FastMap<String, Association> associations = new FastMap<String, Association>();
+        private final FastMap<String, Association> associations = new FastMap<>();
 
         @Override
         public Association addAssociation(String hostAddress, int hostPort, String peerAddress, int peerPort, String assocName)
@@ -1167,8 +1166,8 @@ public class IPSPClientFSMTest {
     }
 
     class Mtp3UserPartListenerimpl implements Mtp3UserPartListener {
-        private LinkedList<Mtp3Primitive> mtp3Primitives = new LinkedList<Mtp3Primitive>();
-        private LinkedList<Mtp3TransferPrimitive> mtp3TransferPrimitives = new LinkedList<Mtp3TransferPrimitive>();
+        private final LinkedList<Mtp3Primitive> mtp3Primitives = new LinkedList<>();
+        private final LinkedList<Mtp3TransferPrimitive> mtp3TransferPrimitives = new LinkedList<>();
 
         Mtp3Primitive rxMtp3PrimitivePoll() {
             return this.mtp3Primitives.poll();

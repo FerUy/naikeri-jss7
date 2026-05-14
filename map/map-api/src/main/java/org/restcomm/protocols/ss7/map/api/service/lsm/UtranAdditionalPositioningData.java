@@ -1,9 +1,9 @@
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
+import com.google.common.collect.Multimap;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 /**
  <code>
@@ -33,9 +33,10 @@ import java.util.HashMap;
  ...
  }
 
- GANSS-PositioningDataSet ::= SEQUENCE(SIZE(1..maxGANSSSet)) OF GANSS-PositioningMethodAndUsage
- maxGANSSSet INTEGER ::= 9
- GANSS-PositioningMethodAndUsage ::= OCTET STRING (SIZE(1))
+ Additional-PositioningDataSet ::= SEQUENCE(SIZE(1..maxAddPosSet)) OF Additional-PositioningMethodAndUsage
+ maxAddPosSet INTEGER ::= 8
+ Additional-PositioningMethodAndUsage ::= OCTET STRING (SIZE(1))
+
  </code>
  *
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
@@ -44,5 +45,15 @@ public interface UtranAdditionalPositioningData extends Serializable {
 
     byte[] getData();
 
-    HashMap<String, String> getUtranAdditionalPositioningDataSet() throws MAPException;
+    Multimap<String, String> getUtranAdditionalPositioningMethodsAndIds() throws MAPException;
+
+    Multimap<String, String> getLocationGeneratedMethodsAndAddPosIds() throws MAPException;
+
+    String getAdditionalPositioningMethod(int code);
+
+    String getAdditionalPositioningId(int id);
+
+    String getUsage(byte[] data, int index);
+
+    int getUsageCode(byte[] data, int index);
 }

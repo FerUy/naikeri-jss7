@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcapAnsi;
 
 import static org.testng.Assert.fail;
@@ -51,7 +50,7 @@ public class PreviewModeFunctionalTest {
     private SccpHarnessPreview sccpProv = new SccpHarnessPreview();
     private TCAPStackImplWrapper tcapStack1;
     private TCAPListenerHarness tcapListener;
-    protected List<TestEvent> observerdEvents;
+    protected List<TestEvent> observedEvents;
     protected int sequence;
 
     public PreviewModeFunctionalTest() {
@@ -88,7 +87,7 @@ public class PreviewModeFunctionalTest {
         tcapListener = new TCAPListenerHarness();
         this.tcapStack1.getProvider().addTCListener(tcapListener);
 
-        observerdEvents = new ArrayList<TestEvent>();
+        observedEvents = new ArrayList<>();
         sequence = 0;
     }
 
@@ -148,12 +147,12 @@ public class PreviewModeFunctionalTest {
 //        msg.setIncomingDpc(101);
 //        this.sccpProv.sccpListener.onMessage(msg);
 //
-//        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+//        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
      * Responses as ReturnResult (this case is simulated) and ReturnResultLast
-     *
+
      * TC-BEGIN + addProcessUnstructuredSSRequest TC-CONTINUE + ReturnResult (addProcessUnstructuredSSResponse) TC-CONTINUE
      * TC-END + ReturnResultLast (addProcessUnstructuredSSResponse)
      */
@@ -217,7 +216,7 @@ public class PreviewModeFunctionalTest {
 //        msg.setIncomingDpc(101);
 //        this.sccpProv.sccpListener.onMessage(msg);
 //
-//        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+//        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -292,7 +291,7 @@ public class PreviewModeFunctionalTest {
 //        this.sccpProv.sccpListener.onMessage(msg);
 //        assertEquals(this.tcapStack1.getDialogPreviewList().size(), 0);
 //
-//        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+//        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -342,11 +341,11 @@ public class PreviewModeFunctionalTest {
 //
 //        // ReturnResultLast without a Paramater: no oparation code i transmitted in ReturnResultLast - it must be obtained from
 //        // saved Invoke
-//        Object o = observerdEvents.get(3).getEvent();
+//        Object o = observedEvents.get(3).getEvent();
 //        ReturnResultLastImpl rrl = (ReturnResultLastImpl) o;
 //        assertEquals((long) rrl.getOperationCode().getLocalOperationCode(), 46);
 //
-//        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+//        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -392,7 +391,7 @@ public class PreviewModeFunctionalTest {
 //        msg.setIncomingDpc(101);
 //        this.sccpProv.sccpListener.onMessage(msg);
 //
-//        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+//        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -438,7 +437,7 @@ public class PreviewModeFunctionalTest {
 //        Thread.sleep(3000);
 //        assertEquals(this.tcapStack1.getDialogPreviewList().size(), 0);
 //
-//        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+//        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     /**
@@ -495,7 +494,7 @@ public class PreviewModeFunctionalTest {
 //        this.sccpProv.sccpListener.onMessage(msg);
 //        assertEquals(this.tcapStack1.getDialogPreviewList().size(), 2);
 //
-//        EventTestHarness.doCompareEvents(observerdEvents, expectedEvents);
+//        EventTestHarness.doCompareEvents(observedEvents, expectedEvents);
     }
 
     private class SccpHarnessPreview implements SccpProvider {
@@ -558,7 +557,7 @@ public class PreviewModeFunctionalTest {
 
         @Override
         public FastMap<Integer, NetworkIdState> getNetworkIdStateList() {
-            return new FastMap<Integer, NetworkIdState>();
+            return new FastMap<>();
         }
 
         @Override
@@ -634,7 +633,7 @@ public class PreviewModeFunctionalTest {
 
                 if (et != null) {
                     TestEvent te = TestEvent.createReceivedEvent(et, comp, sequence++);
-                    observerdEvents.add(te);
+                    observedEvents.add(te);
                 }
             }
         }
@@ -642,7 +641,7 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCUni(TCUniIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.Uni, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
 
             opComponents(ind.getComponents());
         }
@@ -650,7 +649,7 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCQuery(TCQueryIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
 
             opComponents(ind.getComponents());
         }
@@ -658,7 +657,7 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCConversation(TCConversationIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.Continue, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
 
             opComponents(ind.getComponents());
         }
@@ -666,7 +665,7 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCResponse(TCResponseIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.End, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
 
             opComponents(ind.getComponents());
         }
@@ -674,37 +673,37 @@ public class PreviewModeFunctionalTest {
         @Override
         public void onTCUserAbort(TCUserAbortIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.UAbort, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onTCPAbort(TCPAbortIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.PAbort, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onTCNotice(TCNoticeIndication ind) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.Notice, ind, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onDialogReleased(Dialog d) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.DialogRelease, d, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onInvokeTimeout(Invoke tcInvokeRequest) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.InvokeTimeout, tcInvokeRequest, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
         @Override
         public void onDialogTimeout(Dialog d) {
             TestEvent te = TestEvent.createReceivedEvent(EventType.DialogTimeout, d, sequence++);
-            observerdEvents.add(te);
+            observedEvents.add(te);
         }
 
     }

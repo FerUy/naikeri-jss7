@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.primitives;
 
 import javolution.xml.XMLFormat;
@@ -30,7 +29,7 @@ public class IMSIImpl extends TbcdString implements IMSI {
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<IMSIImpl> IMSI_XML = new XMLFormat<IMSIImpl>(IMSIImpl.class) {
+    protected static final XMLFormat<IMSIImpl> IMSI_XML = new XMLFormat<>(IMSIImpl.class) {
 
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, IMSIImpl imsi) throws XMLStreamException {

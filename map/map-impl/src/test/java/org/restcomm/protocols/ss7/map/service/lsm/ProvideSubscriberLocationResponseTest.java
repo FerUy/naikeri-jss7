@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.lsm;
 
 import static org.testng.Assert.assertEquals;
@@ -14,7 +13,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import com.google.common.collect.Multimap;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -60,7 +61,7 @@ import org.testng.annotations.Test;
 public class ProvideSubscriberLocationResponseTest {
 
     MAPParameterFactory mapParameterFactory = new MAPParameterFactoryImpl();
-    private static final Logger logger = Logger.getLogger(ProvideSubscriberLocationResponseTest.class);
+    private static final Logger logger = LogManager.getLogger(ProvideSubscriberLocationResponseTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -582,7 +583,7 @@ public class ProvideSubscriberLocationResponseTest {
         assertTrue(Math.abs(locationEstimate.getUncertainty() - 271.03) < 0.01);
         assertEquals(geranPositioningData.getLocationGeneratedPositioningMethods().size(), 1);
         assertEquals(geranPositioningData.getLocationGeneratedPositioningMethods().get(0), "Timing Advance");
-        assertEquals(geranPositioningData.getPositioningMethodsAndUsage().get("Timing Advance").intValue(), 3);
+        assertEquals(geranPositioningData.getPositioningDataSet().get("Timing Advance").intValue(), 3);
         assertNull(utranPositioningData);
         assertEquals(ageOfLocationEstimate.intValue(), 0);
         assertNull(additionalLocationEstimate);
@@ -714,7 +715,7 @@ public class ProvideSubscriberLocationResponseTest {
         assertTrue(moLrShortCircuitIndicator);
         assertNull(geranGANSSpositioningData);
         UtranGANSSpositioningDataImpl utranGanssPositioningData = new UtranGANSSpositioningDataImpl(utranGANSSpositioningData.getData());
-        HashMap<String, String> methodsAndGanssIds = utranGanssPositioningData.getLocationGeneratedMethodsAndGANSSId();
+        Multimap<String, String> methodsAndGanssIds = utranGanssPositioningData.getLocationGeneratedMethodsAndGANSSIds();
         Set<String> utranGanssMethods = methodsAndGanssIds.keySet();
         Collection<String> utranGanssIds = methodsAndGanssIds.values();
         assertTrue(utranGanssMethods.contains("MS-Based"));
@@ -733,7 +734,7 @@ public class ProvideSubscriberLocationResponseTest {
         assertEquals(targetServingNodeForHandover.getMscNumber().getAddress(), "491710460015");
         assertFalse(targetServingNodeForHandover.getMscNumber().isExtension());
         UtranAdditionalPositioningDataImpl utranAdditionalPositioningDataImpl = new UtranAdditionalPositioningDataImpl(utranAdditionalPositioningData.getData());
-        HashMap<String, String> methodsAndAddPosIds = utranAdditionalPositioningDataImpl.getUtranAdditionalPositioningDataSet();
+        Multimap<String, String> methodsAndAddPosIds = utranAdditionalPositioningDataImpl.getUtranAdditionalPositioningMethodsAndIds();
         Set<String> utranAddMethods = methodsAndAddPosIds.keySet();
         Collection<String> utranAddPosIds = methodsAndAddPosIds.values();
         assertTrue(utranAddMethods.contains("Standalone"));
@@ -820,7 +821,7 @@ public class ProvideSubscriberLocationResponseTest {
         assertTrue(Math.abs(locationEstimate.getLatitude() - (0.00000)) < 0.00001);
         assertTrue(Math.abs(locationEstimate.getLongitude() - (0.00000)) < 0.00001);
         PositioningDataInformationImpl positioningData = new PositioningDataInformationImpl(geranPositioningData.getData());
-        HashMap<String, Integer> geranMethodsAndUsage = positioningData.getPositioningMethodsAndUsage();
+        HashMap<String, Integer> geranMethodsAndUsage = positioningData.getPositioningDataSet();
         assertNotNull(geranMethodsAndUsage.get("Mobile Based E-OTD"));
         assertNotNull(geranMethodsAndUsage.get("Mobile Assisted E-OTD"));
         assertNotNull(geranMethodsAndUsage.get("U-TDOA"));
@@ -869,7 +870,7 @@ public class ProvideSubscriberLocationResponseTest {
         assertEquals(velocityEstimate.getUncertaintyVerticalSpeed(), 1);
         assertTrue(moLrShortCircuitIndicator);
         GeranGANSSpositioningDataImpl geranGansspositioningData = new GeranGANSSpositioningDataImpl(geranGANSSpositioningData.getData());
-        HashMap<String, String> geranGanssMethodsAndGanssIds = geranGansspositioningData.getLocationGeneratedMethodsAndGANSSId();
+        Multimap<String, String> geranGanssMethodsAndGanssIds = geranGansspositioningData.getLocationGeneratedMethodsAndGANSSIds();
         Set<String> geranGanssMethods = geranGanssMethodsAndGanssIds.keySet();
         Collection<String> geranGanssIds = geranGanssMethodsAndGanssIds.values();
         assertTrue(geranGanssMethods.contains("MS-Based"));

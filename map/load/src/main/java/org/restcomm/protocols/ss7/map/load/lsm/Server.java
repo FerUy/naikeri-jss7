@@ -1,7 +1,8 @@
 package org.restcomm.protocols.ss7.map.load.lsm;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
@@ -138,21 +139,20 @@ import org.restcomm.protocols.ss7.tcap.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 
+import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
-import static org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent.emergencyCallOrigination;
-import static org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent.emergencyCallRelease;
-import static org.restcomm.protocols.ss7.map.api.service.lsm.LCSEvent.molr;
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
+/**
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ */
 public class Server extends TestHarnessLocationServicesManagement {
 
-    private static Logger logger = Logger.getLogger(Server.class);
+    private static final Logger logger = LogManager.getLogger(Server.class.getName());
 
-    // MAP
-    private MAPStackImpl mapStack;
     private static MAPProvider mapProvider;
 
     // TCAP
@@ -161,9 +161,6 @@ public class Server extends TestHarnessLocationServicesManagement {
     // SCCP
     SccpExtModuleImpl sccpExtModule;
     private SccpStackImpl sccpStack;
-    private SccpResource sccpResource;
-    private Router router;
-    private RouterExt routerExt;
 
     // M3UA
     private M3UAManagementImpl serverM3UAMgmt;
@@ -225,12 +222,15 @@ public class Server extends TestHarnessLocationServicesManagement {
         NetworkAppearance na = factory.createNetworkAppearance(102L);
         As as = this.serverM3UAMgmt.createAs("RAS1", Functionality.SGW, ExchangeType.SE, IPSPType.CLIENT, rc, trafficModeType,
                 1, na);
+        logger.info("AS={}", as);
 
         // Step 2 : Create ASP
-        AspFactory aspFactor = this.serverM3UAMgmt.createAspFactory("RASP1", SERVER_ASSOCIATION_NAME);
+        AspFactory aspFactory = this.serverM3UAMgmt.createAspFactory("RASP1", SERVER_ASSOCIATION_NAME);
+        logger.info("ASP Factory={}", aspFactory);
 
         // Step3 : Assign ASP to AS
         Asp asp = this.serverM3UAMgmt.assignAspToAs("RAS1", "RASP1");
+        logger.info("ASP={}", asp);
 
         // Step 4: Add Route. Remote point code is 2
         this.serverM3UAMgmt.addRoute(CLIENT_SPC, -1, -1, "RAS1");
@@ -246,19 +246,19 @@ public class Server extends TestHarnessLocationServicesManagement {
         this.sccpStack.start();
         this.sccpStack.removeAllResources();
 
-        this.router = this.sccpStack.getRouter();
-        this.routerExt = sccpExtModule.getRouterExt();
-        this.sccpResource = this.sccpStack.getSccpResource();
+        Router router = this.sccpStack.getRouter();
+        RouterExt routerExt = sccpExtModule.getRouterExt();
+        SccpResource sccpResource = this.sccpStack.getSccpResource();
 
-        this.sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, CLIENT_SPC, CLIENT_SSN, 0, false);
-        this.sccpResource.addRemoteSsn(1, CLIENT_SPC, HLR_SSN, 0, false);
-        this.sccpResource.addRemoteSsn(2, CLIENT_SPC, MSC_SSN, 0, false);
-        this.sccpResource.addRemoteSsn(3, CLIENT_SPC, SGSN_SSN, 0, false);
+        sccpResource.addRemoteSpc(0, CLIENT_SPC, 0, 0);
+        sccpResource.addRemoteSsn(0, CLIENT_SPC, CLIENT_SSN, 0, false);
+        sccpResource.addRemoteSsn(1, CLIENT_SPC, HLR_SSN, 0, false);
+        sccpResource.addRemoteSsn(2, CLIENT_SPC, MSC_SSN, 0, false);
+        sccpResource.addRemoteSsn(3, CLIENT_SPC, SGSN_SSN, 0, false);
 
-        this.router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
-        this.router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
-        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
+        router.addMtp3ServiceAccessPoint(1, 1, SERVER_SPC, NETWORK_INDICATOR, 0, null);
+        router.addMtp3Destination(1, 1, CLIENT_SPC, CLIENT_SPC, 0, 255, 255);
+        router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
@@ -267,16 +267,16 @@ public class Server extends TestHarnessLocationServicesManagement {
         GlobalTitle gt2 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY,
                 ec, NatureOfAddress.INTERNATIONAL);
         SccpAddress localAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt1, SERVER_SPC, 0);
-        this.routerExt.addRoutingAddress(1, localAddress);
+        routerExt.addRoutingAddress(1, localAddress);
         SccpAddress remoteAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, CLIENT_SPC, 0);
-        this.routerExt.addRoutingAddress(2, remoteAddress);
+        routerExt.addRoutingAddress(2, remoteAddress);
 
         GlobalTitle gt = fact.createGlobalTitle("*", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress pattern = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 0);
-        this.routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
+        routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
                 "K", 1, -1, null, 0, null);
-        this.routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern,
+        routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern,
                 "K", 2, -1, null, 0, null);
     }
 
@@ -289,14 +289,15 @@ public class Server extends TestHarnessLocationServicesManagement {
     }
 
     private void initMAP() throws Exception {
-        this.mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
-        mapProvider = this.mapStack.getMAPProvider();
+        // MAP
+        MAPStackImpl mapStack = new MAPStackImpl("TestServer", this.tcapStack.getProvider());
+        mapProvider = mapStack.getMAPProvider();
 
         mapProvider.addMAPDialogListener(this);
         mapProvider.getMAPServiceLsm().addMAPServiceListener(this);
         mapProvider.getMAPServiceLsm().activate();
 
-        this.mapStack.start();
+        mapStack.start();
     }
 
     private static SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, int ssn, String address) {
@@ -314,62 +315,62 @@ public class Server extends TestHarnessLocationServicesManagement {
         if (args.length >= 1 && args[0].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
         }
-        System.out.println("IpChannelType="+ipChannelType);
+        logger.info("IpChannelType={}", ipChannelType);
 
         if (args.length >= 2) {
             TestHarnessLocationServicesManagement.CLIENT_IP = args[1];
         }
-        System.out.println("CLIENT_IP="+ TestHarnessLocationServicesManagement.CLIENT_IP);
+        logger.info("CLIENT_IP={}", TestHarnessLocationServicesManagement.CLIENT_IP);
 
         if (args.length >= 3) {
             TestHarnessLocationServicesManagement.CLIENT_PORT = Integer.parseInt(args[2]);
         }
-        System.out.println("CLIENT_PORT="+ TestHarnessLocationServicesManagement.CLIENT_PORT);
+        logger.info("CLIENT_PORT={}", TestHarnessLocationServicesManagement.CLIENT_PORT);
 
         if (args.length >= 4) {
             TestHarnessLocationServicesManagement.SERVER_IP = args[3];
         }
-        System.out.println("SERVER_IP="+ TestHarnessLocationServicesManagement.SERVER_IP);
+        logger.info("SERVER_IP={}", TestHarnessLocationServicesManagement.SERVER_IP);
 
         if (args.length >= 5) {
             TestHarnessLocationServicesManagement.SERVER_PORT = Integer.parseInt(args[4]);
         }
-        System.out.println("SERVER_PORT="+ TestHarnessLocationServicesManagement.SERVER_PORT);
+        logger.info("SERVER_PORT={}", TestHarnessLocationServicesManagement.SERVER_PORT);
 
         if (args.length >= 6) {
             TestHarnessLocationServicesManagement.CLIENT_SPC = Integer.parseInt(args[5]);
         }
-        System.out.println("CLIENT_SPC="+ TestHarnessLocationServicesManagement.CLIENT_SPC);
+        logger.info("CLIENT_SPC={}", TestHarnessLocationServicesManagement.CLIENT_SPC);
 
         if (args.length >= 7) {
             TestHarnessLocationServicesManagement.SERVER_SPC = Integer.parseInt(args[6]);
         }
-        System.out.println("SERVER_SPC="+ TestHarnessLocationServicesManagement.SERVER_SPC);
+        logger.info("SERVER_SPC={}", TestHarnessLocationServicesManagement.SERVER_SPC);
 
         if (args.length >= 8) {
             TestHarnessLocationServicesManagement.NETWORK_INDICATOR = Integer.parseInt(args[7]);
         }
-        System.out.println("NETWORK_INDICATOR="+ TestHarnessLocationServicesManagement.NETWORK_INDICATOR);
+        logger.info("NETWORK_INDICATOR={}", TestHarnessLocationServicesManagement.NETWORK_INDICATOR);
 
         if (args.length >= 9) {
             TestHarnessLocationServicesManagement.SERVICE_INDICATOR = Integer.parseInt(args[8]);
         }
-        System.out.println("SERVICE_INDICATOR="+ TestHarnessLocationServicesManagement.SERVICE_INDICATOR);
+        logger.info("SERVICE_INDICATOR={}", TestHarnessLocationServicesManagement.SERVICE_INDICATOR);
 
         if (args.length >= 10) {
             TestHarnessLocationServicesManagement.SSN = Integer.parseInt(args[9]);
         }
-        System.out.println("SSN="+ TestHarnessLocationServicesManagement.SSN);
+        logger.info("SSN={}", TestHarnessLocationServicesManagement.SSN);
 
         if (args.length >= 11) {
             TestHarnessLocationServicesManagement.ROUTING_CONTEXT = Integer.parseInt(args[10]);
         }
-        System.out.println("ROUTING_CONTEXT="+ TestHarnessLocationServicesManagement.ROUTING_CONTEXT);
+        logger.info("ROUTING_CONTEXT={}", TestHarnessLocationServicesManagement.ROUTING_CONTEXT);
 
         if(args.length >= 12) {
             TestHarnessLocationServicesManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[11]);
         }
-        System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT=" + TestHarnessLocationServicesManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
+        logger.info("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT={}", TestHarnessLocationServicesManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
 
         final Server server = new Server();
         try {
@@ -382,8 +383,8 @@ public class Server extends TestHarnessLocationServicesManagement {
     @Override
     public void onSendRoutingInfoForLCSRequest(SendRoutingInfoForLCSRequest sendRoutingInfoForLCSRequestIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("sendRoutingInfoForLCSRequestIndication for DialogId=%d", sendRoutingInfoForLCSRequestIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("sendRoutingInfoForLCSRequestIndication for DialogId={}", sendRoutingInfoForLCSRequestIndication
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = sendRoutingInfoForLCSRequestIndication.getInvokeId();
@@ -438,14 +439,14 @@ public class Server extends TestHarnessLocationServicesManagement {
                     lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
             DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
             DiameterIdentity aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity sgsnName = new DiameterIdentityImpl("mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity sgsnRealm = new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity sgsnName = new DiameterIdentityImpl("sgsn1B34.mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity sgsnRealm = new DiameterIdentityImpl("mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
             LCSLocationInfo lcsLocationInfo = mapFactory.createLCSLocationInfo(mscNumber, lmsi, null, gprsNodeIndicator,
                     additionalNumber, supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
             GSNAddress vGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x5a, 0x03, 0x78, 5 });
-            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
-            GSNAddress pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x12 });
+            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.14").getAddress());
+            GSNAddress pprAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.18").getAddress());
             GSNAddress additionalVGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv6, new byte[] { 0x5a, 0, 0, 0, 0, 2, 65, 4, 0, 0, 0, 3, 42, 5, 120, 91 });
 
             sriLcsDialog.addSendRoutingInfoForLCSResponse(invokeId, subscriberIdentity, lcsLocationInfo, null, vGmlcAddress, hGmlcAddress,
@@ -577,20 +578,27 @@ public class Server extends TestHarnessLocationServicesManagement {
                     break;
             }
 
-            // LCS-Event ::= ENUMERATED { emergencyCallOrigination (0), emergencyCallRelease (1), mo-lr (2), ..., deferredmt-lrResponse (3) }
+            // LCS-Event ::= ENUMERATED { emergencyCallOrigination (0), emergencyCallRelease (1), mo-lr (2), ..., deferredmt-lrResponse (3),
+            // deferredmo-lrTTTPInitiation (4), emergencyCallHandover (5) }
             LCSEvent lcsEvent = null;
             if (isDeferred) {
                 lcsEvent = LCSEvent.deferredmtlrResponse;
             } else {
-                switch (rand.nextInt(3) + 1) {
+                switch (rand.nextInt(5) + 1) {
                     case 1:
-                        lcsEvent = emergencyCallOrigination;
+                        lcsEvent = LCSEvent.emergencyCallOrigination;
                         break;
                     case 2:
-                        lcsEvent = emergencyCallRelease;
+                        lcsEvent = LCSEvent.emergencyCallRelease;
                         break;
                     case 3:
-                        lcsEvent = molr;
+                        lcsEvent = LCSEvent.molr;
+                        break;
+                    case 4:
+                        lcsEvent = LCSEvent.deferredmolrTTTPInitiation;
+                        break;
+                    case 5:
+                        lcsEvent = LCSEvent.emergencyCallHandover;
                         break;
                 }
             }
@@ -646,8 +654,8 @@ public class Server extends TestHarnessLocationServicesManagement {
                     lcsCapabilitySetRelease5, lcsCapabilitySetRelease6, lcsCapabilitySetRelease7);
             DiameterIdentity mmeName = new DiameterIdentityImpl("mmec03.mmegi3000.mme.epc.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
             DiameterIdentity aaaServerName = new DiameterIdentityImpl("aaa3000.aaa.mnc002.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity sgsnName = new DiameterIdentityImpl("mme.20.mag.epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
-            DiameterIdentity sgsnRealm = new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity sgsnName = new DiameterIdentityImpl("sgsn1B34.mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
+            DiameterIdentity sgsnRealm = new DiameterIdentityImpl("mnc001.mcc748.gprs".getBytes(StandardCharsets.UTF_8));
             LCSLocationInfo lcsLocationInfo = new LCSLocationInfoImpl(networkNodeNumber, lmsi, null, gprsNodeIndicator, additionalNumber,
                     supportedLCSCapabilitySets, additionalLCSCapabilitySets, mmeName, aaaServerName, sgsnName, sgsnRealm);
 
@@ -821,7 +829,7 @@ public class Server extends TestHarnessLocationServicesManagement {
             }
 
             DeferredLocationEventType deferredLocationEventType;
-            TerminationCause terminationCause = null;
+            TerminationCause terminationCause;
             DeferredmtlrData deferredmtlrData = null;
             // the deferredmt-lrData parameter shall be included if and only if the lcs-Event indicates a deferredmt-lrResponse.
             PeriodicLDRInfo periodicLDRInfo = null; // This parameter refers to the periodic reporting interval and reporting amount of the deferred periodic location.
@@ -866,23 +874,58 @@ public class Server extends TestHarnessLocationServicesManagement {
                         break;
                 }
                 deferredLocationEventType = new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
-                terminationCause = TerminationCause.mtlrRestart;
-                deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
+                switch (rand.nextInt(20) + 1) {
+                    case 1:
+                        terminationCause = TerminationCause.normal;
+                        break;
+                    case 2:
+                        terminationCause = TerminationCause.errorUndefined;
+                        break;
+                    case 3:
+                        terminationCause = TerminationCause.internalTimeout;
+                        break;
+                    case 4:
+                        terminationCause = TerminationCause.congestion;
+                        break;
+                    case 5:
+                        terminationCause = TerminationCause.privacyViolation;
+                        break;
+                    case 6:
+                        terminationCause = TerminationCause.shapeOfLocationEstimateNotSupported;
+                        break;
+                    case 7:
+                        terminationCause = TerminationCause.subscriberTermination;
+                        break;
+                    case 8:
+                        terminationCause = TerminationCause.uETermination;
+                        break;
+                    case 9:
+                        terminationCause = TerminationCause.networkTermination;
+                        break;
+                    default:
+                        terminationCause = TerminationCause.mtlrRestart;
+                        break;
+                }
+                if (terminationCause == TerminationCause.mtlrRestart)
+                    deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, lcsLocationInfo);
+                else
+                    deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, terminationCause, null);
             }
 
             Integer lcsServiceTypeID = 1;
             boolean pseudonymIndicator = false;
             AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyNotFulfilled;
 
-            VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
-            int horizontalSpeed = 101;
-            int bearing = 3;
-            int verticalSpeed = 2;
-            int uncertaintyHorizontalSpeed = 5;
-            int uncertaintyVerticalSpeed = 1;
             VelocityEstimate velocityEstimate = null;
+            VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
+            int horizontalSpeed = rand.nextInt(100) + 10;
+            int bearing = rand.nextInt(5) + 1;
+            int verticalSpeed = rand.nextInt(10) + 1;
+            int uncertaintyHorizontalSpeed = rand.nextInt(5) + 1;
+            int uncertaintyVerticalSpeed = rand.nextInt(2) + 1;
             try {
-                velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
+                velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed,
+                        uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
             } catch (MAPException e) {
                 logger.error(e.getMessage());
             }
@@ -1008,18 +1051,18 @@ public class Server extends TestHarnessLocationServicesManagement {
             }
 
             boolean isMsc = true;
-            ServingNodeAddress servingNodeAddress = new ServingNodeAddressImpl(networkNodeNumber, isMsc);
+            ServingNodeAddress targetServingNodeForHandover = new ServingNodeAddressImpl(networkNodeNumber, isMsc);
 
             Integer lcsReferenceNumber = null;
             if (isDeferred) // If a lcs event indicates deferred mt-lr response, the lcs-Reference number shall be included.
              lcsReferenceNumber = pslReferenceNumber;
 
-            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
+            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.14").getAddress());
 
             Integer utranBaroPressureMeas = null;
             UtranCivicAddress utranCivicAddress = null;
-            if (geranPositioningDataInfo == null && geranGanssPositioningData == null) {
-                utranBaroPressureMeas = 110000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
+            if (geranPositioningDataInfo == null) {
+                utranBaroPressureMeas = rand.nextInt(85000) + 30000; // UtranBaroPressureMeas ::= INTEGER (30000..115000)
                 //File civicAddressFile = new File("map/load/src/main/java/org/restcomm/protocols/ss7/map/load/lsm/civicAddress.xml");
                 //byte[] civicAddressByteArray = new byte[(int) civicAddressFile.length()];
                 String civicAddressString = "<cl:civicAddress>\n" +
@@ -1040,13 +1083,13 @@ public class Server extends TestHarnessLocationServicesManagement {
                     lcsReferenceNumber, geranPositioningDataInfo, utranPositioningDataInfo, cellGlobalIdOrServiceAreaIdOrLAI,
                     hGmlcAddress, lcsServiceTypeID, saiPresent, pseudonymIndicator, accuracyFulfilmentIndicator, velocityEstimate,
                     sequenceNumber, periodicLDRInfo, moLrShortCircuitIndicator, geranGanssPositioningData, utranGanssPositioningData,
-                    servingNodeAddress, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
+                    targetServingNodeForHandover, utranAdditionalPositioningData, utranBaroPressureMeas, utranCivicAddress);
 
             // This will initiate the TC-BEGIN with INVOKE component
             mapDialogSLR.send();
 
         } catch (MAPException e) {
-            logger.error(String.format("Error while sending MAP SLR:" + e));
+            logger.error("Error while sending MAP SLR:", e);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -1055,8 +1098,8 @@ public class Server extends TestHarnessLocationServicesManagement {
     @Override
     public void onProvideSubscriberLocationRequest(ProvideSubscriberLocationRequest provideSubscriberLocationRequestIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onProvideSubscriberLocationRequest for DialogId=%d", provideSubscriberLocationRequestIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onProvideSubscriberLocationRequest for DialogId={}", provideSubscriberLocationRequestIndication
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = provideSubscriberLocationRequestIndication.getInvokeId();
@@ -1358,12 +1401,17 @@ public class Server extends TestHarnessLocationServicesManagement {
             if (provideSubscriberLocationRequestIndication.getLCSQoS() != null) {
                 if (provideSubscriberLocationRequestIndication.getLCSQoS().getVelocityRequest()) {
                     VelocityType velocityType = VelocityType.HorizontalWithVerticalVelocityAndUncertainty;
-                    int horizontalSpeed = 101;
-                    int bearing = 3;
-                    int verticalSpeed = 2;
-                    int uncertaintyHorizontalSpeed = 5;
-                    int uncertaintyVerticalSpeed = 1;
-                    velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed, uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
+                    int horizontalSpeed = rand.nextInt(100) + 10;
+                    int bearing = rand.nextInt(5) + 1;
+                    int verticalSpeed = rand.nextInt(10) + 1;
+                    int uncertaintyHorizontalSpeed = rand.nextInt(5) + 1;
+                    int uncertaintyVerticalSpeed = rand.nextInt(2) + 1;
+                    try {
+                        velocityEstimate = new VelocityEstimateImpl(velocityType, horizontalSpeed, bearing, verticalSpeed,
+                                uncertaintyHorizontalSpeed, uncertaintyVerticalSpeed);
+                    } catch (MAPException e) {
+                        logger.error(e.getMessage());
+                    }
                 }
             }
 
@@ -1415,7 +1463,7 @@ public class Server extends TestHarnessLocationServicesManagement {
             sendMapSLR(slrDialog, true, lcsReferenceNumber);
 
         } catch (MAPException e) {
-            logger.error(String.format("Error while sending MAP PSL response:" + e));
+            logger.error("Error while sending MAP PSL response:", e);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

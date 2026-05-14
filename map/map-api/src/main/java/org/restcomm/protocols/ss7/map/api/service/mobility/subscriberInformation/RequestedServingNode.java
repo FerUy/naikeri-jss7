@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -10,7 +9,6 @@ RequestedServingNode ::= BIT STRING {
   mmeAndSgsn (0)
 } (SIZE (1..8))
 </code>
- *
  *
  * @author sergey vetyutnev
  *

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import java.io.IOException;

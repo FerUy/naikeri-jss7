@@ -1,12 +1,12 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.impl.SccpHarness;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
-import org.restcomm.protocols.ss7.tcap.TCAPStackImpl;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -19,12 +19,13 @@ import org.testng.annotations.Test;
  *
  */
 public class TestCongestionControl extends SccpHarness {
+
+    private static final Logger logger = LogManager.getLogger(TestCongestionControl.class.getName());
+
     public static final long WAIT_TIME = 500;
 
     private TCAPStackImpl tcapStack1;
     private TCAPStackImpl tcapStack2;
-    private SccpAddress peer1Address;
-    private SccpAddress peer2Address;
     private Client client;
     private Server server;
 
@@ -35,12 +36,12 @@ public class TestCongestionControl extends SccpHarness {
     public void setUpClass() {
         this.sccpStack1Name = "TCAPCongestionTestSccpStack1";
         this.sccpStack2Name = "TCAPCongestionTestSccpStack2";
-        System.out.println("setUpClass");
+        logger.info("setUpClass");
     }
 
     @AfterClass
     public void tearDownClass() throws Exception {
-        System.out.println("tearDownClass");
+        logger.info("tearDownClass");
     }
 
     /*
@@ -50,11 +51,11 @@ public class TestCongestionControl extends SccpHarness {
      */
     @BeforeMethod
     public void setUp() throws Exception {
-        System.out.println("setUp");
+        logger.info("setUp");
         super.setUp();
 
-        peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
-        peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
+        SccpAddress peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
+        SccpAddress peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
 
         this.tcapStack1 = new TCAPStackImpl("TCAPCongestionTest1", this.sccpProvider1, 8);
         this.tcapStack2 = new TCAPStackImpl("TCAPCongestionTest2", this.sccpProvider2, 8);
@@ -92,69 +93,69 @@ public class TestCongestionControl extends SccpHarness {
         this.tcapStack2.setCongControl_MemoryThreshold_2(87);
         this.tcapStack2.setCongControl_BackToNormalMemoryThreshold_2(82);
         this.tcapStack2.setCongControl_blockingIncomingTcapMessages(false);
-        client.waitFor(1100);
+        EventTestHarness.waitFor(1100);
 
         // no congestion
         client.startClientDialog();
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         client.releaseDialog();
         server.releaseDialog();
-        assertEquals(server.observerdEvents.size(), 2);
-        assertEquals(client.observerdEvents.size(), 2);
+        assertEquals(server.observedEvents.size(), 2);
+        assertEquals(client.observedEvents.size(), 2);
 
         // user congestion - no blockingIncomingTcapMessages
         this.tcapStack2.getProvider().setUserPartCongestionLevel("a1", 2);
-        client.waitFor(1100);
+        EventTestHarness.waitFor(1100);
         client.startClientDialog();
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         client.releaseDialog();
         server.releaseDialog();
-        assertEquals(server.observerdEvents.size(), 4);
-        assertEquals(client.observerdEvents.size(), 4);
+        assertEquals(server.observedEvents.size(), 4);
+        assertEquals(client.observedEvents.size(), 4);
 
         // user congestion - no blockingIncomingTcapMessages
         this.tcapStack2.setCongControl_blockingIncomingTcapMessages(true);
         client.startClientDialog();
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         client.releaseDialog();
         server.releaseDialog();
-        assertEquals(server.observerdEvents.size(), 4);
-        assertEquals(client.observerdEvents.size(), 7);
-        assertEquals(client.observerdEvents.get(5).getEventType(), EventType.PAbort);
+        assertEquals(server.observedEvents.size(), 4);
+        assertEquals(client.observedEvents.size(), 7);
+        assertEquals(client.observedEvents.get(5).getEventType(), EventType.PAbort);
 
         // user congestion - back to normal
         this.tcapStack2.getProvider().setUserPartCongestionLevel("a1", 0);
-        client.waitFor(1100);
+        EventTestHarness.waitFor(1100);
         client.startClientDialog();
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         client.releaseDialog();
         server.releaseDialog();
-        assertEquals(server.observerdEvents.size(), 6);
-        assertEquals(client.observerdEvents.size(), 9);
+        assertEquals(server.observedEvents.size(), 6);
+        assertEquals(client.observedEvents.size(), 9);
 
         // memory congestion
         this.tcapStack2.setCongControl_MemoryThreshold_1(0.00002);
         this.tcapStack2.setCongControl_BackToNormalMemoryThreshold_1(0.00001);
         this.tcapStack2.setCongControl_MemoryThreshold_2(0.00004);
         this.tcapStack2.setCongControl_BackToNormalMemoryThreshold_2(0.00003);
-        client.waitFor(1100);
+        EventTestHarness.waitFor(1100);
         client.startClientDialog();
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         client.releaseDialog();
         server.releaseDialog();
-        assertEquals(server.observerdEvents.size(), 6);
-        assertEquals(client.observerdEvents.size(), 12);
-        assertEquals(client.observerdEvents.get(10).getEventType(), EventType.PAbort);
+        assertEquals(server.observedEvents.size(), 6);
+        assertEquals(client.observedEvents.size(), 12);
+        assertEquals(client.observedEvents.get(10).getEventType(), EventType.PAbort);
     }
 
 }

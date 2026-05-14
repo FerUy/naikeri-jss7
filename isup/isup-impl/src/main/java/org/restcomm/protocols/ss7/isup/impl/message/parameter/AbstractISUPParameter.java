@@ -1,8 +1,9 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import java.io.ByteArrayOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.isup.ParameterException;
 import org.restcomm.protocols.ss7.isup.message.parameter.ISUPParameter;
 
@@ -15,7 +16,7 @@ import org.restcomm.protocols.ss7.isup.message.parameter.ISUPParameter;
  */
 public abstract class AbstractISUPParameter implements ISUPParameter,Encodable {
 
-    // protected Logger logger = Logger.getLogger(this.getClass().getName());
+    protected Logger logger = LogManager.getLogger(this.getClass().getName());
 
     public int encode(ByteArrayOutputStream bos) throws ParameterException {
         // FIXME: this has to be removed, we should not create separate arrays?

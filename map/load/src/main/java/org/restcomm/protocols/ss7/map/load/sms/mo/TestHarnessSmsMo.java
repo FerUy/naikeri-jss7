@@ -1,28 +1,28 @@
-
 package org.restcomm.protocols.ss7.map.load.sms.mo;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.SimpleLayout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.m3ua.impl.parameter.ParameterFactoryImpl;
 import org.restcomm.protocols.ss7.map.api.MAPDialogListener;
 import org.restcomm.protocols.ss7.map.api.service.sms.MAPServiceSms;
 import org.restcomm.protocols.ss7.map.api.service.sms.MAPServiceSmsListener;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Properties;
+import java.net.URL;
 
 /**
  * @author abhayani
- * @modified <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public abstract class TestHarnessSmsMo implements MAPDialogListener, MAPServiceSmsListener, MAPServiceSms {
 
-    private static final Logger logger = Logger.getLogger("map.test");
+    private static final Logger logger = LogManager.getLogger("map.test");
 
     protected static final String CREATED_DIALOGS = "CreatedScenario";
     protected static final String SUCCESSFUL_DIALOGS = "CompletedScenario";
@@ -83,33 +83,30 @@ public abstract class TestHarnessSmsMo implements MAPDialogListener, MAPServiceS
 
     public void init() {
         try {
-            Properties tckProperties = new Properties();
-
-            InputStream inStreamLog4j = TestHarnessSmsMo.class.getResourceAsStream("/log4j.properties");
-
-            System.out.println("Input Stream = " + inStreamLog4j);
-
-            Properties propertiesLog4j = new Properties();
-            try {
-                propertiesLog4j.load(inStreamLog4j);
-                PropertyConfigurator.configure(propertiesLog4j);
-            } catch (Exception e) {
-                e.printStackTrace();
-                BasicConfigurator.configure();
+            URL resourcePropertiesUrl = TestHarnessSmsMo.class.getResource("/log4j2.properties");
+            if (resourcePropertiesUrl != null) {
+                ConfigurationFactory.getInstance().getConfiguration(null, null, resourcePropertiesUrl.toURI());
+            } else {
+                Configurator.initialize(new DefaultConfiguration());
+                Configurator.setRootLevel(Level.INFO);
             }
-
-            logger.debug("log4j configured");
 
             String lf = System.getProperties().getProperty(LOG_FILE_NAME);
             if (lf != null) {
                 logFileName = lf;
             }
 
-            // If already created a print writer then just use it.
             try {
-                logger.addAppender(new FileAppender(new SimpleLayout(), logFileName));
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
+                LoggerContext lc = (LoggerContext) LogManager.getContext(false);
+                FileAppender fa = FileAppender.newBuilder().withFileName(logFileName)
+                    .setConfiguration(lc.getConfiguration()).build();
+                fa.start();
+                lc.getConfiguration().addAppender(fa);
+                lc.getRootLogger().addAppender(lc.getConfiguration().getAppender(fa.getName()));
+                lc.updateLoggers();
+
+            } catch (Exception exception) {
+                logger.error(exception.getMessage());
             }
         } catch (Exception ex) {
             ex.printStackTrace();

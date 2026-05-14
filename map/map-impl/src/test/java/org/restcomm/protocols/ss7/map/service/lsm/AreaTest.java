@@ -14,12 +14,8 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.map.MAPParameterFactoryImpl;
-import org.restcomm.protocols.ss7.map.api.MAPParameterFactory;
 import org.restcomm.protocols.ss7.map.api.service.lsm.Area;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AreaType;
-import org.restcomm.protocols.ss7.map.service.lsm.AreaIdentificationImpl;
-import org.restcomm.protocols.ss7.map.service.lsm.AreaImpl;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
@@ -32,8 +28,6 @@ import org.testng.annotations.Test;
  *
  */
 public class AreaTest {
-
-    MAPParameterFactory MAPParameterFactory = new MAPParameterFactoryImpl();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -63,8 +57,8 @@ public class AreaTest {
         int tag = asn.readTag();
         assertEquals(tag, Tag.SEQUENCE);
 
-        Area area = new AreaImpl();
-        ((AreaImpl) area).decodeAll(asn);
+        AreaImpl area = new AreaImpl();
+        area.decodeAll(asn);
 
         assertNotNull(area.getAreaType());
         assertEquals(area.getAreaType(), AreaType.plmnId);
@@ -81,10 +75,10 @@ public class AreaTest {
         byte[] data = getEncodedData();
 
         AreaIdentificationImpl ai = new AreaIdentificationImpl(AreaType.plmnId, 900, 177, 0, 0);
-        Area area = new AreaImpl(AreaType.plmnId, ai);
+        AreaImpl area = new AreaImpl(AreaType.plmnId, ai);
 
         AsnOutputStream asnOS = new AsnOutputStream();
-        ((AreaImpl) area).encodeAll(asnOS);
+        area.encodeAll(asnOS);
 
         byte[] encodedData = asnOS.toByteArray();
 

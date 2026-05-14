@@ -1,12 +1,11 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
 import static org.testng.Assert.assertEquals;
 
 import javolution.util.FastList;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.Management;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
@@ -14,12 +13,6 @@ import org.restcomm.protocols.ss7.m3ua.ExchangeType;
 import org.restcomm.protocols.ss7.m3ua.Functionality;
 import org.restcomm.protocols.ss7.m3ua.IPSPType;
 import org.restcomm.protocols.ss7.m3ua.Util;
-import org.restcomm.protocols.ss7.m3ua.impl.AsImpl;
-import org.restcomm.protocols.ss7.m3ua.impl.AsState;
-import org.restcomm.protocols.ss7.m3ua.impl.AspFactoryImpl;
-import org.restcomm.protocols.ss7.m3ua.impl.AspImpl;
-import org.restcomm.protocols.ss7.m3ua.impl.AspState;
-import org.restcomm.protocols.ss7.m3ua.impl.M3UAManagementImpl;
 import org.restcomm.protocols.ss7.m3ua.impl.parameter.ParameterFactoryImpl;
 import org.restcomm.protocols.ss7.m3ua.parameter.RoutingContext;
 import org.restcomm.protocols.ss7.m3ua.parameter.TrafficModeType;
@@ -45,7 +38,7 @@ import com.sun.nio.sctp.SctpChannel;
  */
 public class GatewayTest {
 
-    private static final Logger logger = Logger.getLogger(GatewayTest.class);
+    private static final Logger logger = LogManager.getLogger(GatewayTest.class);
 
     private static final String SERVER_NAME = "testserver";
     private static final String SERVER_HOST = "127.0.0.1";
@@ -59,15 +52,13 @@ public class GatewayTest {
 
     private Management sctpManagement = null;
     private M3UAManagementImpl m3uaMgmt = null;
-    private ParameterFactoryImpl factory = new ParameterFactoryImpl();
+    private final ParameterFactoryImpl factory = new ParameterFactoryImpl();
 
     private AsImpl remAs;
     private AspImpl remAsp;
-    private AspFactoryImpl remAspFactory;
 
     private AsImpl localAs;
     private AspImpl localAsp;
-    private AspFactoryImpl localAspFactory;
 
     private Server server;
     private Client client;
@@ -117,11 +108,11 @@ public class GatewayTest {
     public void testSingleAspInAs() throws Exception {
         // 5.1.1. Single ASP in an Application Server ("1+0" sparing),
 
-        System.out.println("Starting server");
+        logger.info("Starting server");
         server.start();
         Thread.sleep(100);
 
-        System.out.println("Starting Client");
+        logger.info("Starting Client");
         client.start();
 
         Thread.sleep(12000); // 12000
@@ -196,7 +187,7 @@ public class GatewayTest {
 
             // 2. Create AS
             // m3ua as create rc <rc> <ras-name>
-            RoutingContext rc = factory.createRoutingContext(new long[] { 100l });
+            RoutingContext rc = factory.createRoutingContext(new long[] { 100L });
             TrafficModeType trafficModeType = factory.createTrafficModeType(TrafficModeType.Loadshare);
             localAs = (AsImpl) m3uaMgmt.createAs("client-testas", Functionality.AS, ExchangeType.SE, IPSPType.CLIENT, rc,
                     trafficModeType, 1, null);
@@ -204,7 +195,7 @@ public class GatewayTest {
             // 3. Create ASP
             // m3ua asp create ip <local-ip> port <local-port> remip <remip>
             // remport <remport> <asp-name>
-            localAspFactory = (AspFactoryImpl) m3uaMgmt.createAspFactory("client-testasp", CLIENT_ASSOCIATION_NAME, false);
+            AspFactoryImpl localAspFactory = (AspFactoryImpl) m3uaMgmt.createAspFactory("client-testasp", CLIENT_ASSOCIATION_NAME, false);
 
             // 4. Assign ASP to AS
             localAsp = m3uaMgmt.assignAspToAs("client-testas", "client-testasp");
@@ -275,14 +266,14 @@ public class GatewayTest {
             // 4. Create RAS
             // m3ua ras create rc <rc> rk dpc <dpc> opc <opc-list> si <si-list>
             // traffic-mode {broadcast|loadshare|override} <ras-name>
-            RoutingContext rc = factory.createRoutingContext(new long[] { 100l });
+            RoutingContext rc = factory.createRoutingContext(new long[] { 100L });
             TrafficModeType trafficModeType = factory.createTrafficModeType(TrafficModeType.Loadshare);
             remAs = (AsImpl) m3uaMgmt.createAs("server-testas", Functionality.SGW, ExchangeType.SE, IPSPType.CLIENT, rc,
                     trafficModeType, 1, null);
 
             // 5. Create RASP
             // m3ua rasp create <asp-name> <assoc-name>"
-            remAspFactory = (AspFactoryImpl) m3uaMgmt.createAspFactory("server-testasp", SERVER_ASSOCIATION_NAME, false);
+            AspFactoryImpl remAspFactory = (AspFactoryImpl) m3uaMgmt.createAspFactory("server-testasp", SERVER_ASSOCIATION_NAME, false);
 
             // 6. Assign ASP to AS
             remAsp = m3uaMgmt.assignAspToAs("server-testas", "server-testasp");
@@ -325,9 +316,9 @@ public class GatewayTest {
 
     }
 
-    private class Mtp3UserPartListenerImpl implements Mtp3UserPartListener {
+    private static class Mtp3UserPartListenerImpl implements Mtp3UserPartListener {
 
-        private FastList<Mtp3TransferPrimitive> receivedData = new FastList<Mtp3TransferPrimitive>();
+        private final FastList<Mtp3TransferPrimitive> receivedData = new FastList<>();
 
         public FastList<Mtp3TransferPrimitive> getReceivedData() {
             return receivedData;

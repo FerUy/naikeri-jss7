@@ -12,12 +12,13 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.inap.api.primitives.MiscCallInfoDpAssignment;
 import org.restcomm.protocols.ss7.inap.api.primitives.MiscCallInfoMessageType;
-import org.restcomm.protocols.ss7.inap.primitives.MiscCallInfoImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -26,6 +27,8 @@ import org.testng.annotations.Test;
  *
  */
 public class MiscCallInfoTest {
+
+    private static final Logger logger = LogManager.getLogger(MiscCallInfoTest.class.getName());
 
     private byte[] getData1() {
         return new byte[] { (byte) 164, 3, (byte) 128, 1, 1 };
@@ -41,7 +44,7 @@ public class MiscCallInfoTest {
         byte[] data = this.getData1();
         AsnInputStream ais = new AsnInputStream(data);
         MiscCallInfoImpl elem = new MiscCallInfoImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertNotNull(elem.getMessageType());
         assertNull(elem.getDpAssignment());
@@ -50,7 +53,7 @@ public class MiscCallInfoTest {
         data = this.getData2();
         ais = new AsnInputStream(data);
         elem = new MiscCallInfoImpl();
-        tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         assertNotNull(elem.getMessageType());
         assertNotNull(elem.getDpAssignment());
@@ -90,7 +93,7 @@ public class MiscCallInfoTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -114,7 +117,7 @@ public class MiscCallInfoTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

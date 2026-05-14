@@ -1,7 +1,8 @@
 package org.restcomm.protocols.ss7.map.load.lsm;
 
 import com.google.common.util.concurrent.RateLimiter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
@@ -134,15 +135,20 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Problem;
 
 import org.apache.commons.lang3.RandomUtils;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Random;
 
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 
+/**
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ */
 public class Client extends TestHarnessLocationServicesManagement {
 
-    private static final Logger logger = Logger.getLogger(Client.class);
+    private static final Logger logger = LogManager.getLogger(Client.class);
 
     // TCAP
     private static TCAPStack tcapStack;
@@ -154,9 +160,6 @@ public class Client extends TestHarnessLocationServicesManagement {
     // SCCP
     SccpExtModuleImpl sccpExtModule;
     private SccpStackImpl sccpStack;
-    private Router router;
-    private RouterExt routerExt;
-    private SccpResource sccpResource;
 
     // M3UA
     private M3UAManagementImpl clientM3UAMgmt;
@@ -234,6 +237,7 @@ public class Client extends TestHarnessLocationServicesManagement {
 
         // Step3 : Assign ASP to AS
         Asp asp = this.clientM3UAMgmt.assignAspToAs("AS1", "ASP1");
+        logger.debug(asp);
 
         // Step 4: Add Route. Remote point code is 2
         clientM3UAMgmt.addRoute(SERVER_SPC, -1, -1, "AS1");
@@ -252,35 +256,35 @@ public class Client extends TestHarnessLocationServicesManagement {
         this.sccpStack.start();
         this.sccpStack.removeAllResources();
 
-        this.router = this.sccpStack.getRouter();
-        this.routerExt = sccpExtModule.getRouterExt();
-        this.sccpResource = this.sccpStack.getSccpResource();
+        Router router = this.sccpStack.getRouter();
+        RouterExt routerExt = sccpExtModule.getRouterExt();
+        SccpResource sccpResource = this.sccpStack.getSccpResource();
 
-        this.sccpResource.addRemoteSpc(0, SERVER_SPC, 0, 0);
-        this.sccpResource.addRemoteSsn(0, SERVER_SPC, SERVER_SSN, 0, false);
-        this.sccpResource.addRemoteSsn(1, SERVER_SPC, HLR_SSN, 0, false);
-        this.sccpResource.addRemoteSsn(2, SERVER_SPC, MSC_SSN, 0, false);
-        this.sccpResource.addRemoteSsn(3, SERVER_SPC, SGSN_SSN, 0, false);
+        sccpResource.addRemoteSpc(0, SERVER_SPC, 0, 0);
+        sccpResource.addRemoteSsn(0, SERVER_SPC, SERVER_SSN, 0, false);
+        sccpResource.addRemoteSsn(1, SERVER_SPC, HLR_SSN, 0, false);
+        sccpResource.addRemoteSsn(2, SERVER_SPC, MSC_SSN, 0, false);
+        sccpResource.addRemoteSsn(3, SERVER_SPC, SGSN_SSN, 0, false);
 
-        this.router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
-        this.router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
-        this.router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
+        router.addMtp3ServiceAccessPoint(1, 1, CLIENT_SPC, NETWORK_INDICATOR, 0, null);
+        router.addMtp3Destination(1, 1, SERVER_SPC, SERVER_SPC, 0, 255, 255);
+        router.addLongMessageRule(0, 1, 16384, XUDT_ENABLED);
 
         ParameterFactoryImpl fact = new ParameterFactoryImpl();
         EncodingScheme ec = new BCDEvenEncodingScheme();
         GlobalTitle gt1 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec, NatureOfAddress.INTERNATIONAL);
         GlobalTitle gt2 = fact.createGlobalTitle("-", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec, NatureOfAddress.INTERNATIONAL);
         SccpAddress localAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt1, CLIENT_SPC, 0);
-        this.routerExt.addRoutingAddress(1, localAddress);
+        routerExt.addRoutingAddress(1, localAddress);
         SccpAddress remoteAddress = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt2, SERVER_SPC, 0);
-        this.routerExt.addRoutingAddress(2, remoteAddress);
+        routerExt.addRoutingAddress(2, remoteAddress);
 
         GlobalTitle gt = fact.createGlobalTitle("*", 0, org.restcomm.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, ec,
                 NatureOfAddress.INTERNATIONAL);
         SccpAddress pattern = new SccpAddressImpl(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 0);
-        this.routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
+        routerExt.addRule(1, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.REMOTE, pattern,
                 "K", 1, -1, null, 0, null);
-        this.routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern, "K",
+        routerExt.addRule(2, RuleType.SOLITARY, LoadSharingAlgorithm.Bit0, OriginationType.LOCAL, pattern, "K",
                 2, -1, null, 0, null);
     }
 
@@ -330,103 +334,103 @@ public class Client extends TestHarnessLocationServicesManagement {
             ipChannelType = IpChannelType.TCP;
         }
 
-        System.out.println("IpChannelType=" + ipChannelType);
+        logger.info("IpChannelType={}", ipChannelType);
 
         if (args.length >= 4) {
             TestHarnessLocationServicesManagement.CLIENT_IP = args[3];
         }
 
-        System.out.println("CLIENT_IP=" + TestHarnessLocationServicesManagement.CLIENT_IP);
+        logger.info("CLIENT_IP={}", TestHarnessLocationServicesManagement.CLIENT_IP);
 
         if (args.length >= 5) {
             TestHarnessLocationServicesManagement.CLIENT_PORT = Integer.parseInt(args[4]);
         }
 
-        System.out.println("CLIENT_PORT=" + TestHarnessLocationServicesManagement.CLIENT_PORT);
+        logger.info("CLIENT_PORT={}", TestHarnessLocationServicesManagement.CLIENT_PORT);
 
         if (args.length >= 6) {
             TestHarnessLocationServicesManagement.SERVER_IP = args[5];
         }
 
-        System.out.println("SERVER_IP=" + TestHarnessLocationServicesManagement.SERVER_IP);
+        logger.info("SERVER_IP={}", TestHarnessLocationServicesManagement.SERVER_IP);
 
         if (args.length >= 7) {
             TestHarnessLocationServicesManagement.SERVER_PORT = Integer.parseInt(args[6]);
         }
 
-        System.out.println("SERVER_PORT=" + TestHarnessLocationServicesManagement.SERVER_PORT);
+        logger.info("SERVER_PORT={}", TestHarnessLocationServicesManagement.SERVER_PORT);
 
         if (args.length >= 8) {
             TestHarnessLocationServicesManagement.CLIENT_SPC = Integer.parseInt(args[7]);
         }
 
-        System.out.println("CLIENT_SPC=" + TestHarnessLocationServicesManagement.CLIENT_SPC);
+        logger.info("CLIENT_SPC={}", TestHarnessLocationServicesManagement.CLIENT_SPC);
 
         if (args.length >= 9) {
             TestHarnessLocationServicesManagement.SERVER_SPC = Integer.parseInt(args[8]);
         }
 
-        System.out.println("SERVER_SPC=" + TestHarnessLocationServicesManagement.SERVER_SPC);
+        logger.info("SERVER_SPC={}", TestHarnessLocationServicesManagement.SERVER_SPC);
 
         if (args.length >= 10) {
             TestHarnessLocationServicesManagement.NETWORK_INDICATOR = Integer.parseInt(args[9]);
         }
 
-        System.out.println("NETWORK_INDICATOR=" + TestHarnessLocationServicesManagement.NETWORK_INDICATOR);
+        logger.info("NETWORK_INDICATOR={}", TestHarnessLocationServicesManagement.NETWORK_INDICATOR);
 
         if (args.length >= 11) {
             TestHarnessLocationServicesManagement.SERVICE_INDICATOR = Integer.parseInt(args[10]);
         }
 
-        System.out.println("SERVICE_INDICATOR=" + TestHarnessLocationServicesManagement.SERVICE_INDICATOR);
+        logger.info("SERVICE_INDICATOR={}", TestHarnessLocationServicesManagement.SERVICE_INDICATOR);
 
         if (args.length >= 12) {
             TestHarnessLocationServicesManagement.SSN = Integer.parseInt(args[11]);
         }
 
-        System.out.println("SSN=" + TestHarnessLocationServicesManagement.SSN);
+        logger.info("SSN={}", TestHarnessLocationServicesManagement.SSN);
 
         if (args.length >= 13) {
             TestHarnessLocationServicesManagement.ROUTING_CONTEXT = Integer.parseInt(args[12]);
         }
 
-        System.out.println("ROUTING_CONTEXT=" + TestHarnessLocationServicesManagement.ROUTING_CONTEXT);
+        logger.info("ROUTING_CONTEXT={}", TestHarnessLocationServicesManagement.ROUTING_CONTEXT);
 
         if (args.length >= 14) {
             TestHarnessLocationServicesManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[13]);
         }
 
-        System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT=" + TestHarnessLocationServicesManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
+        logger.info("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT={}", TestHarnessLocationServicesManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
 
         if (args.length >= 15) {
             TestHarnessLocationServicesManagement.RAMP_UP_PERIOD = Integer.parseInt(args[14]);
         }
 
-        System.out.println("RAMP_UP_PERIOD=" + TestHarnessLocationServicesManagement.RAMP_UP_PERIOD);
+        logger.info("RAMP_UP_PERIOD={}", TestHarnessLocationServicesManagement.RAMP_UP_PERIOD);
 
         if (args.length >= 16) {
             TestHarnessLocationServicesManagement.SCCP_CLIENT_ADDRESS = args[15];
         }
 
-        System.out.println("SCCP_CLIENT_ADDRESS=" + TestHarnessLocationServicesManagement.SCCP_CLIENT_ADDRESS);
+        logger.info("SCCP_CLIENT_ADDRESS={}", TestHarnessLocationServicesManagement.SCCP_CLIENT_ADDRESS);
 
         if (args.length >= 17) {
             TestHarnessLocationServicesManagement.SCCP_SERVER_ADDRESS = args[16];
         }
 
-        System.out.println("SCCP_SERVER_ADDRESS=" + TestHarnessLocationServicesManagement.SCCP_SERVER_ADDRESS);
+        logger.info("SCCP_SERVER_ADDRESS={}", TestHarnessLocationServicesManagement.SCCP_SERVER_ADDRESS);
 
         if (args.length >= 18) {
             TestHarnessLocationServicesManagement.ROUTING_INDICATOR = RoutingIndicator.valueOf(Integer.parseInt(args[17]));
         }
 
-        System.out.println("ROUTING_INDICATOR=" + TestHarnessLocationServicesManagement.ROUTING_INDICATOR);
+        logger.info("ROUTING_INDICATOR={}", TestHarnessLocationServicesManagement.ROUTING_INDICATOR);
 
         if (args.length >= 19) {
             TestHarnessLocationServicesManagement.SENDING_MESSAGE_THREAD_COUNT = Integer.parseInt(args[18]);
         }
 
-        System.out.println("SENDING_MESSAGE_THREAD_COUNT=" + TestHarnessLocationServicesManagement.SENDING_MESSAGE_THREAD_COUNT);
+        logger.info("SENDING_MESSAGE_THREAD_COUNT={}", TestHarnessLocationServicesManagement.SENDING_MESSAGE_THREAD_COUNT);
 
         // logger.info("Number of calls to be completed = " + noOfCalls +
         // " Number of concurrent calls to be maintained = " +
@@ -434,11 +438,11 @@ public class Client extends TestHarnessLocationServicesManagement {
 
         NDIALOGS = noOfCalls;
 
-        System.out.println("NDIALOGS=" + NDIALOGS);
+        logger.info("NDIALOGS={}", NDIALOGS);
 
         MAXCONCURRENTDIALOGS = noOfConcurrentCalls;
 
-        System.out.println("MAXCONCURRENTDIALOGS=" + MAXCONCURRENTDIALOGS);
+        logger.info("MAXCONCURRENTDIALOGS={}", MAXCONCURRENTDIALOGS);
 
         final Client client = new Client();
         client.endCount = TestHarnessLocationServicesManagement.RAMP_UP_PERIOD;
@@ -466,7 +470,7 @@ public class Client extends TestHarnessLocationServicesManagement {
             client.terminate();
 
         } catch (Exception e) {
-            logger.error("Exception: " + e.getMessage());
+            logger.error("Exception: {}", e.getMessage());
         }
     }
 
@@ -511,12 +515,11 @@ public class Client extends TestHarnessLocationServicesManagement {
         int executorCongestionLevel = this.mapStack.getMAPProvider().getExecutorCongestionLevel();
         if (!(networkIdState == null || networkIdState.isAvailable() && networkIdState.getCongLevel() <= 0 && executorCongestionLevel <= 0)) {
             // congestion or unavailable
-            logger.warn("**** Outgoing congestion control: MAP load test client: networkIdState=" + networkIdState
-                    + ", executorCongestionLevel=" + executorCongestionLevel);
+            logger.warn("**** Outgoing congestion control: MAP load test client: networkIdState={}, executorCongestionLevel={}", networkIdState, executorCongestionLevel);
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
-                logger.error("InterruptedException: " + e.getMessage());
+                logger.error("InterruptedException: {}", e.getMessage());
             }
         }
 
@@ -559,8 +562,8 @@ public class Client extends TestHarnessLocationServicesManagement {
     @Override
     public void onSubscriberLocationReportRequest(SubscriberLocationReportRequest subscriberLocationReportRequestIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onSubscriberLocationReportRequest for DialogId=%d", subscriberLocationReportRequestIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onSubscriberLocationReportRequest for DialogId={}", subscriberLocationReportRequestIndication
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = subscriberLocationReportRequestIndication.getInvokeId();
@@ -635,10 +638,7 @@ public class Client extends TestHarnessLocationServicesManagement {
                     .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, networkNodeNumber.getAddress());
             SccpAddress origSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, CLIENT_SSN, SCCP_GMLC_ADDRESS);
             SccpAddress destSccpAddress;
-            if (gprsNodeIndicator)
-                destSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, SERVER_SSN, networkNodeNumber.getAddress());
-            else
-                destSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, SERVER_SSN, networkNodeNumber.getAddress());
+            destSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, SERVER_SSN, networkNodeNumber.getAddress());
             MAPDialogLsm mapDialogPslRequest = mapProvider.getMAPServiceLsm().createNewDialog(MAPApplicationContext.getInstance(MAPApplicationContextName.locationSvcEnquiryContext,
                     MAPApplicationContextVersion.version3), origSccpAddress, origRef, destSccpAddress, destRef);
 
@@ -646,8 +646,7 @@ public class Client extends TestHarnessLocationServicesManagement {
             DeferredLocationEventType deferredLocationEventType = null;
             Integer lcsReferenceNumber = null;
             Random rand = new Random();
-            int randLocType = rand.nextInt(6) + 1;
-            switch (randLocType) {
+            switch (rand.nextInt(6) + 1) {
                 case 1:
                     locationEstimateType = LocationEstimateType.currentLocation;
                     break;
@@ -807,7 +806,7 @@ public class Client extends TestHarnessLocationServicesManagement {
                 }
             }
 
-            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, new byte[] { 0x0a, 0x00, 0x00, 0x0e });
+            GSNAddress hGmlcAddress = new GSNAddressImpl(GSNAddressAddressType.IPv4, InetAddress.getByName("10.0.0.14").getAddress());
 
             boolean moLrShortCircuitIndicator = true;
 
@@ -820,6 +819,8 @@ public class Client extends TestHarnessLocationServicesManagement {
 
         } catch (MAPException e) {
             logger.error(e.getMessage());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
         }
     }
 

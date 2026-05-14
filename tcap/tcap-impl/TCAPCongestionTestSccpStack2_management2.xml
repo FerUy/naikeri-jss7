@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<zmarginxudtmessage value="240"/>
+<connesttimerdelay value="15000"/>
+<iastimerdelay value="450000"/>
+<iartimerdelay value="960000"/>
+<reltimerdelay value="15000"/>
+<repeatreltimerdelay value="15000"/>
+<inttimerdelay value="30000"/>
+<guardtimerdelay value="1440000"/>
+<resettimerdelay value="15000"/>
+<reassemblytimerdelay value="15000"/>
+<maxdatamessage value="2560"/>
+<periodoflogging value="60000"/>
+<removespc value="true"/>
+<respectpc value="false"/>
+<canrelay value="false"/>
+<timerexecutors_threadcount value="10"/>
+<previewMode value="false"/>
+<sccpProtocolVersion value="ITU"/>
+<congControl_TIMER_A value="400"/>
+<congControl_TIMER_D value="2000"/>
+<congControl_Algo value="international"/>
+<congControl_blockingOutgoingSccpMessages value="false"/>
+<ssttimerduration_min value="10000"/>
+<ssttimerduration_max value="600000"/>
+<ssttimerduration_increasefactor value="1.5"/>

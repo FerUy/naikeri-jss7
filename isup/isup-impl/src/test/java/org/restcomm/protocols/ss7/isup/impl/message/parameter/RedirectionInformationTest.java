@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import static org.testng.Assert.assertEquals;
@@ -13,9 +12,9 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.isup.ParameterException;
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.AbstractISUPParameter;
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.RedirectionInformationImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.RedirectionInformation;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
@@ -31,6 +30,8 @@ import org.testng.annotations.Test;
  * @author sergey vetyutnev
  */
 public class RedirectionInformationTest extends ParameterHarness {
+
+    private static final Logger logger = LogManager.getLogger(RedirectionInformationTest.class.getName());
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -95,7 +96,7 @@ public class RedirectionInformationTest extends ParameterHarness {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -133,10 +134,10 @@ public class RedirectionInformationTest extends ParameterHarness {
         byte[] b = new byte[2];
 
         b[0] = (byte) riCallDRnpr;
-        b[0] |= orrUna << 4;
+        b[0] |= (byte) (orrUna << 4);
 
         b[1] = (byte) counter;
-        b[1] |= rrDeflectionIe << 4;
+        b[1] |= (byte) (rrDeflectionIe << 4);
         return b;
     }
 

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl.oam;
 
 import java.util.Arrays;
@@ -9,8 +8,8 @@ import java.util.Set;
 import javolution.util.FastMap;
 
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.m3ua.As;
 import org.restcomm.protocols.ss7.m3ua.AspFactory;
 import org.restcomm.protocols.ss7.m3ua.ErrorRetryAction;
@@ -35,9 +34,9 @@ import org.restcomm.ss7.management.console.ShellExecutor;
  */
 public class M3UAShellExecutor implements ShellExecutor {
 
-    private static final Logger logger = Logger.getLogger(M3UAShellExecutor.class);
+    private static final Logger logger = LogManager.getLogger(M3UAShellExecutor.class);
 
-    private FastMap<String, M3UAManagementImpl> m3uaManagements = new FastMap<String, M3UAManagementImpl>();
+    private FastMap<String, M3UAManagementImpl> m3uaManagements = new FastMap<>();
 
     private M3UAManagementImpl m3uaManagement;
 
@@ -54,7 +53,7 @@ public class M3UAShellExecutor implements ShellExecutor {
     public void setM3uaManagements(Map<String, M3UAManagementImpl> m3uaManagementsTemp) {
         if (m3uaManagementsTemp != null) {
             synchronized (this) {
-                FastMap<String, M3UAManagementImpl> newM3uaManagements = new FastMap<String, M3UAManagementImpl>();
+                FastMap<String, M3UAManagementImpl> newM3uaManagements = new FastMap<>();
                 newM3uaManagements.putAll(m3uaManagementsTemp);
                 this.m3uaManagements = newM3uaManagements;
             }
@@ -73,8 +72,8 @@ public class M3UAShellExecutor implements ShellExecutor {
      * <traffic mode> min-asp <minimum asp active for TrafficModeType.Loadshare> network-appearance <network appearance>
      * stackname <stack-name>
      *
-     * @param args
-     * @return
+     * @param args String array containing arguments for M3UA AS creation command
+     * @return String result of the command
      */
     private String createAs(String[] args) throws Exception {
         if (args.length < 5 || args.length > 19) {
@@ -107,34 +106,39 @@ public class M3UAShellExecutor implements ShellExecutor {
                 return M3UAOAMMessages.INVALID_COMMAND;
             }
 
-            if (key.equals("mode")) {
-                exchangeType = ExchangeType.getExchangeType(args[count++]);
-                if (exchangeType == null) {
+            switch (key) {
+                case "mode":
+                    exchangeType = ExchangeType.getExchangeType(args[count++]);
+                    if (exchangeType == null) {
+                        return M3UAOAMMessages.INVALID_COMMAND;
+                    }
+                    break;
+                case "ipspType":
+                    ipspType = IPSPType.getIPSPType(args[count++]);
+                    break;
+                case "rc":
+                    long rcLong = Long.parseLong(args[count++]);
+                    rc = parameterFactory.createRoutingContext(new long[]{rcLong});
+                    break;
+                case "traffic-mode":
+                    trafficModeType = getTrafficModeType(args[count++]);
+                    break;
+                case "network-appearance":
+                    na = parameterFactory.createNetworkAppearance(Long.parseLong(args[count++]));
+                    break;
+                case "min-asp":
+                    minAspActiveForLoadbalance = Integer.parseInt(args[count++]);
+                    break;
+                case "stackname":
+                    String m3uaStackName = args[count++];
+                    M3UAManagementImpl m3uaManagementImpl = this.m3uaManagements.get(m3uaStackName);
+                    if (m3uaManagementImpl == null) {
+                        return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
+                    }
+                    this.m3uaManagement = m3uaManagementImpl;
+                    break;
+                default:
                     return M3UAOAMMessages.INVALID_COMMAND;
-                }
-            } else if (key.equals("ipspType")) {
-                ipspType = IPSPType.getIPSPType(args[count++]);
-            } else if (key.equals("rc")) {
-                long rcLong = Long.parseLong(args[count++]);
-                rc = parameterFactory.createRoutingContext(new long[] { rcLong });
-            } else if (key.equals("traffic-mode")) {
-                trafficModeType = getTrafficModeType(args[count++]);
-            } else if (key.equals("network-appearance")) {
-                na = parameterFactory.createNetworkAppearance(Long.parseLong(args[count++]));
-            } else if (key.equals("min-asp")) {
-                minAspActiveForLoadbalance = Integer.parseInt(args[count++]);
-            } else if (key.equals("stackname")) {
-                String m3uaStackName = args[count++];
-
-                M3UAManagementImpl m3uaManagementImpl = this.m3uaManagements.get(m3uaStackName);
-
-                if (m3uaManagementImpl == null) {
-                    return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
-                }
-
-                this.m3uaManagement = m3uaManagementImpl;
-            } else {
-                return M3UAOAMMessages.INVALID_COMMAND;
             }
         }
 
@@ -147,9 +151,9 @@ public class M3UAShellExecutor implements ShellExecutor {
     /**
      * m3ua as destroy <as-name> stackname <stack-name>
      *
-     * @param args
-     * @return
-     * @throws Exception
+     * @param args String array containing arguments for application server destroy command
+     * @return String result of the command
+     * @throws Exception if an error occurs
      */
     private String destroyAs(String[] args) throws Exception {
         if (args.length < 4) {
@@ -188,9 +192,9 @@ public class M3UAShellExecutor implements ShellExecutor {
     /**
      * m3ua as add <as-name> <asp-name> stackname <stack-name>
      *
-     * @param args
-     * @return
-     * @throws Exception
+     * @param args String array containing arguments for the application server add command
+     * @return String result of the command
+     * @throws Exception if an error occurs
      */
     private String addAspToAs(String[] args) throws Exception {
         if (args.length < 5) {
@@ -226,9 +230,9 @@ public class M3UAShellExecutor implements ShellExecutor {
     /**
      * m3ua as remove <as-name> <asp-name> stackname <stack-name>
      *
-     * @param args
-     * @return
-     * @throws Exception
+     * @param args String array containing arguments for the application server remove command
+     * @return String result of the command
+     * @throws Exception if an error occurs
      */
     private String removeAspFromAs(String[] args) throws Exception {
         if (args.length < 5) {
@@ -262,7 +266,7 @@ public class M3UAShellExecutor implements ShellExecutor {
     }
 
     private TrafficModeType getTrafficModeType(String mode) {
-        int iMode = -1;
+        int iMode;
         if (mode == null) {
             return null;
         } else if (mode.equals("loadshare")) {
@@ -342,7 +346,7 @@ public class M3UAShellExecutor implements ShellExecutor {
             return String.format(M3UAOAMMessages.NO_ROUTE_DEFINED_YET, this.m3uaManagement.getName());
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         Set<String> keys = route.keySet();
         for (String key : keys) {
@@ -354,8 +358,7 @@ public class M3UAShellExecutor implements ShellExecutor {
             sb.append(M3UAOAMMessages.TAB);
             sb.append(routeAs.getTrafficModeType());
             sb.append(M3UAOAMMessages.TAB);
-            for (int i = 0; i < asList.length; i++) {
-                As asImpl = asList[i];
+            for (As asImpl : asList) {
                 if (asImpl != null) {
                     sb.append(asImpl.getName());
                     sb.append(M3UAOAMMessages.COMMA);
@@ -410,56 +413,225 @@ public class M3UAShellExecutor implements ShellExecutor {
                 return M3UAOAMMessages.INVALID_COMMAND;
             }
 
-            if (args[1].equals("as")) {
-                String rasCmd = args[2];
-                if (rasCmd == null) {
-                    return M3UAOAMMessages.INVALID_COMMAND;
-                }
-
-                if (rasCmd.equals("create")) {
-                    return this.createAs(args);
-                } else if (rasCmd.equals("destroy")) {
-                    return this.destroyAs(args);
-                } else if (rasCmd.equals("add")) {
-                    return this.addAspToAs(args);
-                } else if (rasCmd.equals("remove")) {
-                    return this.removeAspFromAs(args);
-                } else if (rasCmd.equals("show")) {
-                    return this.showAs(args);
-                }
-                return M3UAOAMMessages.INVALID_COMMAND;
-            } else if (args[1].equals("asp")) {
-
-                if (args.length < 3 || args.length > 11) {
-                    return M3UAOAMMessages.INVALID_COMMAND;
-                }
-
-                // related to rem AS for SigGatewayImpl
-                String raspCmd = args[2];
-
-                if (raspCmd == null) {
-                    return M3UAOAMMessages.INVALID_COMMAND;
-                } else if (raspCmd.equals("create")) {
-                    // m3ua asp create <asp-name> <sctp-association> aspid <aspid> heartbeat <true|false> stackname <stack-name>
-
-                    // Create new ASP
-                    if (args.length < 5) {
+            switch (args[1]) {
+                case "as":
+                    String rasCmd = args[2];
+                    if (rasCmd == null) {
                         return M3UAOAMMessages.INVALID_COMMAND;
                     }
 
-                    String aspName = args[3];
-                    String associationName = args[4];
+                    switch (rasCmd) {
+                        case "create":
+                            return this.createAs(args);
+                        case "destroy":
+                            return this.destroyAs(args);
+                        case "add":
+                            return this.addAspToAs(args);
+                        case "remove":
+                            return this.removeAspFromAs(args);
+                        case "show":
+                            return this.showAs(args);
+                    }
+                    return M3UAOAMMessages.INVALID_COMMAND;
+                case "asp":
 
-                    if (aspName == null || associationName == null) {
+                    if (args.length < 3 || args.length > 11) {
                         return M3UAOAMMessages.INVALID_COMMAND;
                     }
 
-                    AspFactory factory;
-                    long aspId = -1;
-                    boolean isHeartBeatEnabled = false;
+                    // related to rem AS for SigGatewayImpl
+                    String raspCmd = args[2];
 
-                    if (args.length > 5) {
-                        int count = 5;
+                    if (raspCmd == null) {
+                        return M3UAOAMMessages.INVALID_COMMAND;
+                    } else if (raspCmd.equals("create")) {
+                        // m3ua asp create <asp-name> <sctp-association> aspid <aspid> heartbeat <true|false> stackname <stack-name>
+
+                        // Create new ASP
+                        if (args.length < 5) {
+                            return M3UAOAMMessages.INVALID_COMMAND;
+                        }
+
+                        String aspName = args[3];
+                        String associationName = args[4];
+
+                        if (aspName == null || associationName == null) {
+                            return M3UAOAMMessages.INVALID_COMMAND;
+                        }
+
+                        AspFactory factory;
+                        long aspId = -1;
+                        boolean isHeartBeatEnabled = false;
+
+                        if (args.length > 5) {
+                            int count = 5;
+
+                            while (count < args.length) {
+                                String key = args[count++];
+                                if (key == null) {
+                                    return M3UAOAMMessages.INVALID_COMMAND;
+                                }
+
+                                switch (key) {
+                                    case "aspid":
+                                        aspId = Long.parseLong(args[count++]);
+                                        break;
+                                    case "heartbeat":
+                                        isHeartBeatEnabled = Boolean.parseBoolean(args[count++]);
+                                        break;
+                                    case "stackname":
+                                        String m3uaStackName = args[count++];
+
+                                        M3UAManagementImpl m3uaManagementImpl = this.m3uaManagements.get(m3uaStackName);
+
+                                        if (m3uaManagementImpl == null) {
+                                            return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
+                                        }
+
+                                        this.m3uaManagement = m3uaManagementImpl;
+                                        break;
+                                    default:
+                                        return M3UAOAMMessages.INVALID_COMMAND;
+                                }
+                            }
+                        }
+
+                        this.setDefaultValue();
+
+                        if (aspId == -1) {
+                            factory = this.m3uaManagement.createAspFactory(aspName, associationName, isHeartBeatEnabled);
+                        } else {
+                            factory = this.m3uaManagement.createAspFactory(aspName, associationName, aspId, isHeartBeatEnabled);
+                        }
+                        return String.format(M3UAOAMMessages.CREATE_ASP_SUCCESSFUL, factory.getName(),
+                            this.m3uaManagement.getName());
+                    } else if (raspCmd.equals("destroy")) {
+                        // m3ua asp destroy <asp-name> stackname <stack-name>
+                        if (args.length < 4 || args.length > 6) {
+                            return M3UAOAMMessages.INVALID_COMMAND;
+                        }
+
+                        String aspName = args[3];
+                        String m3uaStackName;
+
+                        if (args.length > 4) {
+                            if (!args[4].equals("stackname")) {
+                                return M3UAOAMMessages.INVALID_COMMAND;
+                            }
+
+                            m3uaStackName = args[5];
+                            M3UAManagementImpl m3uaManagementTmp = this.m3uaManagements.get(m3uaStackName);
+
+                            if (m3uaManagementTmp == null) {
+                                return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
+                            }
+
+                            this.m3uaManagement = m3uaManagementTmp;
+                        } else {
+                            this.setDefaultValue();
+                        }
+
+                        this.m3uaManagement.destroyAspFactory(aspName);
+                        return String.format(M3UAOAMMessages.DESTROY_ASP_SUCCESSFUL, aspName, this.m3uaManagement.getName());
+
+                    } else if (raspCmd.equals("show")) {
+                        return this.showAspFactories(args);
+
+                    } else if (raspCmd.equals("start")) {
+                        // m3ua asp start <asp-name> stackname <stack-name>
+
+                        if (args.length < 4) {
+                            return M3UAOAMMessages.INVALID_COMMAND;
+                        }
+
+                        String aspName = args[3];
+
+                        String m3uaStackName;
+
+                        if (args.length > 4) {
+                            if (!args[4].equals("stackname")) {
+                                return M3UAOAMMessages.INVALID_COMMAND;
+                            }
+
+                            m3uaStackName = args[5];
+                            M3UAManagementImpl m3uaManagementTmp = this.m3uaManagements.get(m3uaStackName);
+
+                            if (m3uaManagementTmp == null) {
+                                return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
+                            }
+
+                            this.m3uaManagement = m3uaManagementTmp;
+                        } else {
+                            this.setDefaultValue();
+                        }
+
+                        this.m3uaManagement.startAsp(aspName);
+                        return String.format(M3UAOAMMessages.ASP_START_SUCCESSFUL, aspName, this.m3uaManagement.getName());
+                    } else if (raspCmd.equals("stop")) {
+                        // m3ua asp stop <asp-name> stackname <stack-name>
+
+                        if (args.length < 4) {
+                            return M3UAOAMMessages.INVALID_COMMAND;
+                        }
+
+                        String aspName = args[3];
+
+                        String m3uaStackName;
+
+                        if (args.length > 4) {
+                            if (!args[4].equals("stackname")) {
+                                return M3UAOAMMessages.INVALID_COMMAND;
+                            }
+
+                            m3uaStackName = args[5];
+                            M3UAManagementImpl m3uaManagementTmp = this.m3uaManagements.get(m3uaStackName);
+
+                            if (m3uaManagementTmp == null) {
+                                return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
+                            }
+
+                            this.m3uaManagement = m3uaManagementTmp;
+                        } else {
+                            this.setDefaultValue();
+                        }
+
+                        this.m3uaManagement.stopAsp(aspName);
+                        return String.format(M3UAOAMMessages.ASP_STOP_SUCCESSFUL, aspName, this.m3uaManagement.getName());
+                    }
+
+                    return M3UAOAMMessages.INVALID_COMMAND;
+                case "route":
+
+                    String routeCmd = args[2];
+
+                    if (routeCmd == null) {
+                        return M3UAOAMMessages.INVALID_COMMAND;
+                    }
+
+                    if (routeCmd.equals("add")) {
+                        // m3ua route add <as-name> <dpc> <opc> <si> trafficmode <traffic-mode> stackname <stack-name>
+
+                        if (args.length < 5 || args.length > 11) {
+                            return M3UAOAMMessages.INVALID_COMMAND;
+                        }
+
+                        int count = 3;
+                        String asName = args[count++];
+                        int dpc;
+                        int opc;
+                        int si;
+                        int trafficMode = TrafficModeType.Loadshare;
+
+                        if (asName == null) {
+                            return M3UAOAMMessages.INVALID_COMMAND;
+                        }
+
+                        dpc = Integer.parseInt(args[count++]);
+
+                        opc = Integer.parseInt(args[count++]);
+                        si = Integer.parseInt(args[count++]);
+
+                        count = 7;
 
                         while (count < args.length) {
                             String key = args[count++];
@@ -467,10 +639,8 @@ public class M3UAShellExecutor implements ShellExecutor {
                                 return M3UAOAMMessages.INVALID_COMMAND;
                             }
 
-                            if (key.equals("aspid")) {
-                                aspId = Long.parseLong(args[count++]);
-                            } else if (key.equals("heartbeat")) {
-                                isHeartBeatEnabled = Boolean.parseBoolean(args[count++]);
+                            if (key.equals("trafficmode")) {
+                                trafficMode = Integer.parseInt(args[count++]);
                             } else if (key.equals("stackname")) {
                                 String m3uaStackName = args[count++];
 
@@ -485,237 +655,77 @@ public class M3UAShellExecutor implements ShellExecutor {
                                 return M3UAOAMMessages.INVALID_COMMAND;
                             }
                         }
-                    }
 
-                    this.setDefaultValue();
+                        this.setDefaultValue();
 
-                    if (aspId == -1) {
-                        factory = this.m3uaManagement.createAspFactory(aspName, associationName, isHeartBeatEnabled);
-                    } else {
-                        factory = this.m3uaManagement.createAspFactory(aspName, associationName, aspId, isHeartBeatEnabled);
-                    }
-                    return String.format(M3UAOAMMessages.CREATE_ASP_SUCCESSFUL, factory.getName(),
+                        this.m3uaManagement.addRoute(dpc, opc, si, asName, trafficMode);
+
+                        return String.format(M3UAOAMMessages.ADD_ROUTE_AS_FOR_DPC_SUCCESSFUL, asName, dpc,
                             this.m3uaManagement.getName());
-                } else if (raspCmd.equals("destroy")) {
-                    // m3ua asp destroy <asp-name> stackname <stack-name>
-                    if (args.length < 4 || args.length > 6) {
-                        return M3UAOAMMessages.INVALID_COMMAND;
-                    }
-
-                    String aspName = args[3];
-                    String m3uaStackName = null;
-
-                    if (args.length > 4) {
-                        if (!args[4].equals("stackname")) {
+                    } else if (routeCmd.equals("remove")) {
+                        // m3ua route remove <as-name> <dpc> <opc> <si> stackname <stack-name>
+                        if (args.length < 5 || args.length > 9) {
                             return M3UAOAMMessages.INVALID_COMMAND;
                         }
 
-                        m3uaStackName = args[5];
-                        M3UAManagementImpl m3uaManagementTmp = this.m3uaManagements.get(m3uaStackName);
+                        int count = 3;
+                        String asName = args[count++];
+                        int dpc;
+                        int opc;
+                        int si;
 
-                        if (m3uaManagementTmp == null) {
-                            return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
-                        }
-
-                        this.m3uaManagement = m3uaManagementTmp;
-                    } else {
-                        this.setDefaultValue();
-                    }
-
-                    this.m3uaManagement.destroyAspFactory(aspName);
-                    return String.format(M3UAOAMMessages.DESTROY_ASP_SUCCESSFUL, aspName, this.m3uaManagement.getName());
-
-                } else if (raspCmd.equals("show")) {
-                    return this.showAspFactories(args);
-
-                } else if (raspCmd.equals("start")) {
-                    // m3ua asp start <asp-name> stackname <stack-name>
-
-                    if (args.length < 4) {
-                        return M3UAOAMMessages.INVALID_COMMAND;
-                    }
-
-                    String aspName = args[3];
-
-                    String m3uaStackName = null;
-
-                    if (args.length > 4) {
-                        if (!args[4].equals("stackname")) {
+                        if (asName == null) {
                             return M3UAOAMMessages.INVALID_COMMAND;
                         }
 
-                        m3uaStackName = args[5];
-                        M3UAManagementImpl m3uaManagementTmp = this.m3uaManagements.get(m3uaStackName);
+                        dpc = Integer.parseInt(args[count++]);
+                        opc = Integer.parseInt(args[count++]);
+                        si = Integer.parseInt(args[count++]);
 
-                        if (m3uaManagementTmp == null) {
-                            return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
-                        }
+                        if (args.length > 7) {
+                            if (!args[7].equals("stackname")) {
+                                return M3UAOAMMessages.INVALID_COMMAND;
+                            }
 
-                        this.m3uaManagement = m3uaManagementTmp;
-                    } else {
-                        this.setDefaultValue();
-                    }
+                            String m3uaStackName = args[8];
+                            M3UAManagementImpl m3uaManagementTmp = this.m3uaManagements.get(m3uaStackName);
 
-                    this.m3uaManagement.startAsp(aspName);
-                    return String.format(M3UAOAMMessages.ASP_START_SUCCESSFUL, aspName, this.m3uaManagement.getName());
-                } else if (raspCmd.equals("stop")) {
-                    // m3ua asp stop <asp-name> stackname <stack-name>
-
-                    if (args.length < 4) {
-                        return M3UAOAMMessages.INVALID_COMMAND;
-                    }
-
-                    String aspName = args[3];
-
-                    String m3uaStackName;
-
-                    if (args.length > 4) {
-                        if (!args[4].equals("stackname")) {
-                            return M3UAOAMMessages.INVALID_COMMAND;
-                        }
-
-                        m3uaStackName = args[5];
-                        M3UAManagementImpl m3uaManagementTmp = this.m3uaManagements.get(m3uaStackName);
-
-                        if (m3uaManagementTmp == null) {
-                            return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
-                        }
-
-                        this.m3uaManagement = m3uaManagementTmp;
-                    } else {
-                        this.setDefaultValue();
-                    }
-
-                    this.m3uaManagement.stopAsp(aspName);
-                    return String.format(M3UAOAMMessages.ASP_STOP_SUCCESSFUL, aspName, this.m3uaManagement.getName());
-                }
-
-                return M3UAOAMMessages.INVALID_COMMAND;
-            } else if (args[1].equals("route")) {
-
-                String routeCmd = args[2];
-
-                if (routeCmd == null) {
-                    return M3UAOAMMessages.INVALID_COMMAND;
-                }
-
-                if (routeCmd.equals("add")) {
-                    // m3ua route add <as-name> <dpc> <opc> <si> trafficmode <traffic-mode> stackname <stack-name>
-
-                    if (args.length < 5 || args.length > 11) {
-                        return M3UAOAMMessages.INVALID_COMMAND;
-                    }
-
-                    int count = 3;
-                    String asName = args[count++];
-                    int dpc = -1;
-                    int opc = -1;
-                    int si = -1;
-                    int trafficMode = TrafficModeType.Loadshare;
-
-                    if (asName == null) {
-                        return M3UAOAMMessages.INVALID_COMMAND;
-                    }
-
-                    dpc = Integer.parseInt(args[count++]);
-
-                    opc = Integer.parseInt(args[count++]);
-                    si = Integer.parseInt(args[count++]);
-
-                    count = 7;
-
-                    while (count < args.length) {
-                        String key = args[count++];
-                        if (key == null) {
-                            return M3UAOAMMessages.INVALID_COMMAND;
-                        }
-
-                        if (key.equals("trafficmode")) {
-                            trafficMode = Integer.parseInt(args[count++]);
-                        } else if (key.equals("stackname")) {
-                            String m3uaStackName = args[count++];
-
-                            M3UAManagementImpl m3uaManagementImpl = this.m3uaManagements.get(m3uaStackName);
-
-                            if (m3uaManagementImpl == null) {
+                            if (m3uaManagementTmp == null) {
                                 return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
                             }
 
-                            this.m3uaManagement = m3uaManagementImpl;
+                            this.m3uaManagement = m3uaManagementTmp;
                         } else {
-                            return M3UAOAMMessages.INVALID_COMMAND;
+                            this.setDefaultValue();
                         }
-                    }
 
-                    this.setDefaultValue();
-
-                    this.m3uaManagement.addRoute(dpc, opc, si, asName, trafficMode);
-
-                    return String.format(M3UAOAMMessages.ADD_ROUTE_AS_FOR_DPC_SUCCESSFUL, asName, dpc,
+                        this.m3uaManagement.removeRoute(dpc, opc, si, asName);
+                        return String.format(M3UAOAMMessages.REMOVE_AS_ROUTE_FOR_DPC_SUCCESSFUL, asName, dpc,
                             this.m3uaManagement.getName());
-                } else if (routeCmd.equals("remove")) {
-                    // m3ua route remove <as-name> <dpc> <opc> <si> stackname <stack-name>
-                    if (args.length < 5 || args.length > 9) {
-                        return M3UAOAMMessages.INVALID_COMMAND;
                     }
 
-                    int count = 3;
-                    String asName = args[count++];
-                    int dpc = -1;
-                    int opc = -1;
-                    int si = -1;
+                    if (routeCmd.equals("show")) {
+                        return this.showRoutes(args);
 
-                    if (asName == null) {
-                        return M3UAOAMMessages.INVALID_COMMAND;
                     }
-
-                    dpc = Integer.parseInt(args[count++]);
-                    opc = Integer.parseInt(args[count++]);
-                    si = Integer.parseInt(args[count++]);
-
-                    if (args.length > 7) {
-                        if (!args[7].equals("stackname")) {
-                            return M3UAOAMMessages.INVALID_COMMAND;
-                        }
-
-                        String m3uaStackName = args[8];
-                        M3UAManagementImpl m3uaManagementTmp = this.m3uaManagements.get(m3uaStackName);
-
-                        if (m3uaManagementTmp == null) {
-                            return String.format(M3UAOAMMessages.NO_M3UA_MANAGEMENT_BEAN_FOR_NAME, m3uaStackName);
-                        }
-
-                        this.m3uaManagement = m3uaManagementTmp;
-                    } else {
-                        this.setDefaultValue();
+                    break;
+                case "set":
+                    return this.manageSet(args);
+                case "get":
+                    return this.manageGet(args);
+                case "error":
+                    String errCmd = args[2];
+                    if (errCmd.equals("add")) {
+                        return this.handleAddError(args);
                     }
-
-                    this.m3uaManagement.removeRoute(dpc, opc, si, asName);
-                    return String.format(M3UAOAMMessages.REMOVE_AS_ROUTE_FOR_DPC_SUCCESSFUL, asName, dpc,
-                            this.m3uaManagement.getName());
-                }
-
-                if (routeCmd.equals("show")) {
-                    return this.showRoutes(args);
-
-                }
-            } else if (args[1].equals("set")) {
-                return this.manageSet(args);
-            } else if (args[1].equals("get")) {
-                return this.manageGet(args);
-            } else if (args[1].equals("error")) {
-                String errCmd = args[2];
-                if (errCmd.equals("add")) {
-                    return this.handleAddError(args);
-                }
-                if (errCmd.equals("remove")) {
-                    return this.handleRemoveError(args);
-                }
-                return this.handleErrorList(args);
+                    if (errCmd.equals("remove")) {
+                        return this.handleRemoveError(args);
+                    }
+                    return this.handleErrorList(args);
             }
             return M3UAOAMMessages.INVALID_COMMAND;
         } catch (Exception e) {
-            logger.error(String.format("Error while executing command %s", Arrays.toString(args)), e);
+            logger.error(String.format("Exception while executing command %s", Arrays.toString(args)), e);
             return e.getMessage();
         } catch (Throwable t) {
             logger.error(String.format("Error while executing command %s", Arrays.toString(args)), t);
@@ -868,7 +878,7 @@ public class M3UAShellExecutor implements ShellExecutor {
         return String.format(M3UAOAMMessages.PARAMETER_SUCCESSFULLY_SET, this.m3uaManagement.getName());
     }
 
-    private String manageGet(String[] options) throws Exception {
+    private String manageGet(String[] options) {
         // Minimum 2 needed. Show
 
         // m3ua get <command>

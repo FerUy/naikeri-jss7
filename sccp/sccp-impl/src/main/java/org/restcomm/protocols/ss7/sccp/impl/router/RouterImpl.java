@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.router;
 
 import javolution.text.TextBuilder;
@@ -8,8 +7,8 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.sccp.LongMessageRule;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.Mtp3ServiceAccessPoint;
@@ -153,7 +152,7 @@ import java.util.Map;
  */
 public class RouterImpl implements Router {
 
-    private static final Logger logger = Logger.getLogger(RouterImpl.class);
+    private static final Logger logger = LogManager.getLogger(RouterImpl.class);
 
     private static final String SCCP_ROUTER_PERSIST_DIR_KEY = "sccprouter.persist.dir";
     private static final String USER_DIR_KEY = "user.dir";

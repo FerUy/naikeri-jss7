@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.lsm;
 
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -7,6 +6,7 @@ import org.restcomm.protocols.ss7.map.primitives.OctetStringBase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -41,11 +41,11 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
         if (getUtranPositioningDataDiscriminator() != 0) {
             throw new MAPException("UtranPositioningDataInfo positioningDataDiscriminator indicates absence of positioningDataSet");
         } else {
-            HashMap<String, Integer> posMethodsAndUsage = new HashMap<>();
+            LinkedHashMap<String, Integer> posMethodsAndUsage = new LinkedHashMap<>();
             String positioningMethod;
             int usage;
 
-            for (int i = 1; i < data.length; i++) {
+            for (int i = 2; i < data.length; i++) {
                 positioningMethod = getPositioningMethod((data[i] & 0xF8) >> 3);
                 usage = data[i] & 0x07;
                 posMethodsAndUsage.put(positioningMethod, usage);
@@ -68,7 +68,7 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
         } else {
             ArrayList<String> locationGenPosMethods = new ArrayList<>();
 
-            for (int i=1; i<data.length; i++) {
+            for (int i=2; i<data.length; i++) {
                 if ((data[i] & 0x07) == 3) {
                     locationGenPosMethods.add(getPositioningMethod((data[i] & 0xF8) >> 3));
                 }
@@ -115,6 +115,7 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
         return data[0] & 0x0F;
     }
 
+    @Override
     public String getPositioningMethod(int code) {
         /*
          * Coding of positioning method (bits 8-4):
@@ -133,7 +134,7 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
          * 01100 Cell ID;
          * 01101 to 01111 reserved for other location technologies;
          * 10000 to 11111 reserved for network specific positioning methods.
-         * NOTE:
+         * NOTE: Reserved because of GERAN use only
          */
         String posMethod;
         switch (code) {
@@ -180,6 +181,7 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
         return posMethod;
     }
 
+    @Override
     public String getUsage(int u) {
         String usage = null;
         /*
@@ -210,42 +212,4 @@ public class UtranPositioningDataInfoImpl extends OctetStringBase implements Utr
         }
         return usage;
     }
-
-    /*private static class MultiValueMap<K,V> {
-        private final Map<K, Set<V>> mappings = new HashMap<>();
-
-        public Set<V> getValues(K key) {
-            return mappings.get(key);
-        }
-
-        public void putValue(K key, V value) {
-            Set<V> target = mappings.get(key);
-
-            if(target == null) {
-                target = new HashSet<>();
-                mappings.put(key,target);
-            }
-
-            target.add(value);
-        }
-    }
-
-    public static void main(String[] args) throws MAPException {
-        byte[] data = new byte[] {0x00, 0x00, 0x43, 0x4b, 0x00, 0x62, 0x2b};
-        UtranPositioningDataInfoImpl utranPositioningData = new UtranPositioningDataInfoImpl(data);
-        HashMap<String, Integer> methodsAndUsage = utranPositioningData.getUtranPositioningDataSet();
-
-        for (HashMap.Entry<String, Integer> entry : methodsAndUsage.entrySet()) {
-            String key = entry.getKey();
-            Integer value = entry.getValue();
-            System.out.println("Method=" + key + ", Usage=" + value + ": " + utranPositioningData.getUsage(value));
-        }
-
-        ArrayList<String> methods = utranPositioningData.getUtranLocationGeneratedPositioningMethods();
-        int i = 0;
-        for (String met : methods) {
-            System.out.println("Location generated method("+ methods.get(i) +") = "+met);
-            i++;
-        }
-    }*/
 }

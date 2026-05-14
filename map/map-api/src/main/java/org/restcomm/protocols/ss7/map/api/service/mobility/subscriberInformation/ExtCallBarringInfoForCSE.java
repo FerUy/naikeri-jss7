@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -26,7 +25,6 @@ Ext-CallBarFeatureList ::= SEQUENCE SIZE (1..32) OF Ext-CallBarringFeature
 
 WrongPasswordAttemptsCounter ::= INTEGER (0..4)
 </code>
- *
  *
  * @author sergey vetyutnev
  *

@@ -1,10 +1,9 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -15,17 +14,18 @@ import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
-import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CallTypeCriteria;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CauseValue;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CauseValueCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DCSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DPAnalysedInfoCriterium;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DefaultCallHandling;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DefaultSMSHandling;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DestinationNumberCriteria;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBearerServiceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtTeleserviceCode;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MCSI;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.MMCode;
@@ -50,436 +50,664 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
-import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CauseValueImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.DCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.DPAnalysedInfoCriteriumImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.DestinationNumberCriteriaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBasicServiceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MMCodeImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.MTsmsCAMELTDPCriteriaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OBcsmCamelTDPDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OBcsmCamelTdpCriteriaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCAMELTDPDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SMSCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SSCamelDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTDPDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTdpCriteriaImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TCSIImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VlrCamelSubscriptionInfoImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
 import org.testng.annotations.Test;
 
 /**
- *
- * @author Lasith Waruna Perera
- *
+ *  @author <a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
  */
 public class VlrCamelSubscriptionInfoTest {
 
-    public byte[] getData() {
-        return new byte[] { 48, -126, 2, -56, -96, 23, 48, 18, 48, 16, 10, 1, 4, 2, 1, 3, -128, 5, -111, 17, 34, 51, -13, -127,
-                1, 1, -128, 1, 2, -95, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11,
-                6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -94, 97, 48, 52, 48, 3, 4, 1, 96, 4, 4, -111, 34,
-                50, -11, -96, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42,
-                3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, 48, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15,
-                48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -127, 0, -92, 92,
-                48, 90, 10, 1, 2, -96, 28, -128, 1, 1, -95, 12, 4, 4, -111, 34, 50, -12, 4, 4, -111, 34, 50, -11, -94, 9, 2, 1,
-                2, 2, 1, 4, 2, 1, 1, -95, 6, -126, 1, 38, -125, 1, 0, -126, 1, 0, -93, 3, 4, 1, 7, -92, 39, -96, 32, 48, 10, 6,
-                3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3,
-                31, 32, 33, -91, 60, 48, 6, 4, 1, -125, 4, 1, 2, 2, 1, 3, -128, 4, -111, 34, 50, -11, -95, 39, -96, 32, 48, 10,
-                6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95,
-                3, 31, 32, 33, -125, 0, -90, 106, -96, 58, 48, 56, -128, 1, 1, -127, 1, 3, -126, 4, -111, 34, 50, -11, -125, 1,
-                0, -92, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5,
-                21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -127, 1, 8, -94, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13,
-                14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -124, 0,
-                -89, 22, 48, 17, 48, 15, 10, 1, 12, 2, 1, 3, -128, 4, -111, 34, 50, -11, -127, 1, 1, -128, 1, 2, -88, 21, 48,
-                19, 10, 1, 13, -96, 6, -126, 1, 38, -125, 1, 0, -95, 6, 4, 1, 7, 4, 1, 6, -87, 111, -96, 61, 48, 59, 4, 4,
-                -111, 34, 50, -12, 2, 1, 7, 4, 4, -111, 34, 50, -11, 2, 1, 0, 48, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12,
-                13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -127, 1,
-                2, -94, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5,
-                21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -125, 0, -124, 0, -86, 106, -96, 58, 48, 56, -128, 1, 1, -127, 1,
-                3, -126, 4, -111, 34, 50, -11, -125, 1, 0, -92, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5,
-                6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33, -127, 1, 8, -94, 39, -96,
-                32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24,
-                25, 26, -95, 3, 31, 32, 33, -124, 0, -85, 13, 48, 11, 10, 1, 1, -96, 6, 10, 1, 0, 10, 1, 2 };
-    };
+    public byte[] getVlrCamelSubscriptionInfoEncodedData() {
+        return new byte[] { 48, -126, 1, 66, -96, 29, 48, 20, 48, 18, 10, 1, 4, 2, 1, 7, -128, 7, -111, -108, 113, 1, 100,
+                0, -110, -127, 1, 0, -128, 1, 2, -127, 0, -126, 0, -94, 23, 48, 17, 48, 6, 4, 1, -14, 4, 1, -101, 4, 7, -111,
+                -108, 113, 1, 100, 0, -110, -128, 0, -127, 0, -92, 45, 48, 43, 10, 1, 4, -96, 19, -128, 1, 1, -95, 9, 4, 7,
+                -111, -108, 113, 65, -121, 64, 35, -94, 3, 2, 1, 1, -95, 6, -126, 1, 24, -125, 1, 96, -126, 1, 1, -93, 6, 4,
+                1, 81, 4, 1, 57, -125, 0, -91, 24, 48, 6, 4, 1, 2, 4, 1, 0, 2, 1, 7, -128, 7, -111, -108, 113, 1, 100, 0, -110,
+                -126, 0, -125, 0, -90, 29, -96, 20, 48, 18, -128, 1, 2, -127, 1, 7, -126, 7, -111, -108, 113, 1, 100, 0, -110,
+                -125, 1, 0, -127, 1, 2, -125, 0, -124, 0, -89, 49, 48, 40, 48, 18, 10, 1, 14, 2, 1, 7, -128, 7, -111, -108, 113,
+                1, 100, 0, -110, -127, 1, 0, 48, 18, 10, 1, 13, 2, 1, 7, -128, 7, -111, -108, 113, 1, 100, 0, -110, -127, 1, 0,
+                -128, 1, 2, -127, 0, -126, 0, -88, 21, 48, 19, 10, 1, 14, -96, 6, -126, 1, 24, -125, 1, 96, -95, 6, 4, 1, 21, 4,
+                1, 57, -87, 35, -96, 26, 48, 24, 4, 7, -111, -108, 113, 65, -121, 64, 35, 2, 1, 7, 4, 7, -111, -108, 113, 1, 100,
+                0, -110, 10, 1, 0, -127, 1, 2, -125, 0, -124, 0, -86, 29, -96, 20, 48, 18, -128, 1, 2, -127, 1, 7, -126, 7, -111,
+                -108, 113, 1, 100, 0, -110, -125, 1, 0, -127, 1, 2, -125, 0, -124, 0, -85, 16, 48, 14, 10, 1, 2, -96, 9, 10, 1, 0,
+                10, 1, 1, 10, 1, 2
+        };
+    }
 
     @Test(groups = { "functional.decode", "primitives" })
     public void testDecode() throws Exception {
-        byte[] data = this.getData();
+
+        byte[] data = this.getVlrCamelSubscriptionInfoEncodedData();
         AsnInputStream asn = new AsnInputStream(data);
         int tag = asn.readTag();
-        VlrCamelSubscriptionInfoImpl prim = new VlrCamelSubscriptionInfoImpl();
-        prim.decodeAll(asn);
+        VlrCamelSubscriptionInfoImpl vlrCamelSubscriptionInfo = new VlrCamelSubscriptionInfoImpl();
+        vlrCamelSubscriptionInfo.decodeAll(asn);
+
+        System.out.println(vlrCamelSubscriptionInfo);
 
         assertEquals(tag, Tag.SEQUENCE);
         assertEquals(asn.getTagClass(), Tag.CLASS_UNIVERSAL);
 
-        // oCsi
-        OCSI oCsi = prim.getOCsi();
-        ArrayList<OBcsmCamelTDPData> lst = oCsi.getOBcsmCamelTDPDataList();
-        assertEquals(lst.size(), 1);
-        OBcsmCamelTDPData cd = lst.get(0);
-        assertEquals(cd.getOBcsmTriggerDetectionPoint(), OBcsmTriggerDetectionPoint.routeSelectFailure);
-        assertEquals(cd.getServiceKey(), 3);
-        assertEquals(cd.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
-        assertEquals(cd.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(cd.getGsmSCFAddress().getAddress().equals("1122333"));
-        assertEquals(cd.getDefaultCallHandling(), DefaultCallHandling.releaseCall);
-        assertNull(cd.getExtensionContainer());
-
+        // Wireshark sample
+        /*
+         * vlrCamelSubscriptionInfo
+         *     o-CSI
+         *         o-BcsmCamelTDPDataList: 1 item
+         *             O-BcsmCamelTDPData
+         *                 o-BcsmTriggerDetectionPoint: routeSelectFailure (4)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultCallHandling: continueCall (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csiActive
+         *     ss-CSI
+         *         ss-CamelData
+         *             ss-EventList: 2 items
+         *                 SS-Code: allAdditionalInfoTransferSS - all additional information transfer SS (128)
+         *                 SS-Code: uus2 - UUS2 user-to-user signalling (130)
+         *             gsmSCF-Address: 91947101640092
+         *                 1... .... = Extension: No Extension
+         *                 .001 .... = Nature of number: International Number (0x1)
+         *                 .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                 E.164 number (MSISDN): 491710460029
+         *         notificationToCSE
+         *         csi-Active
+         *     o-BcsmCamelTDP-CriteriaList: 1 item
+         *         O-BcsmCamelTDP-Criteria
+         *             o-BcsmTriggerDetectionPoint: routeSelectFailure (4)
+         *             destinationNumberCriteria
+         *                 matchType: enabling (1)
+         *                 destinationNumberList: 1 item
+         *                     ISDN-AddressString: 91947141874023
+         *                         1... .... = Extension: No Extension
+         *                         .001 .... = Nature of number: International Number (0x1)
+         *                         .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                         E.164 number (MSISDN): 491714780432
+         *                 destinationNumberLengthList: 1 item
+         *                     DestinationNumberLengthList item: 1
+         *             basicServiceCriteria: 2 items
+         *                 Ext-BasicServiceCode: ext-BearerService (2)
+         *                     ext-BearerService: dataCDS-2400bps (28)
+         *                 Ext-BasicServiceCode: ext-Teleservice (3)
+         *                     ext-Teleservice: emergencyCalls (18)
+         *             callTypeCriteria: notForwarded (1)
+         *             o-CauseValueCriteria: 2 items
+         *                 CauseValue: 51
+         *                 CauseValue: 39
+         *     tif-CSI
+         *     m-CSI
+         *         mobilityTriggers: 2 items
+         *             MM-Code: 02
+         *             MM-Code: 00
+         *         serviceKey: 7
+         *         gsmSCF-Address: 91947101640092
+         *             1... .... = Extension: No Extension
+         *             .001 .... = Nature of number: International Number (0x1)
+         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *             E.164 number (MSISDN): 491710460029
+         *         notificationToCSE
+         *         csi-Active
+         *     mo-sms-CSI
+         *         sms-CAMEL-TDP-DataList: 1 item
+         *             SMS-CAMEL-TDP-Data
+         *                 sms-TriggerDetectionPoint: sms-DeliveryRequest (2)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultSMS-Handling: continueTransaction (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csi-Active
+         *     vt-CSI
+         *         t-BcsmCamelTDPDataList: 2 items
+         *             T-BcsmCamelTDPData
+         *                 t-BcsmTriggerDetectionPoint: tNoAnswer (14)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultCallHandling: continueCall (0)
+         *             T-BcsmCamelTDPData
+         *                 t-BcsmTriggerDetectionPoint: tBusy (13)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultCallHandling: continueCall (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csi-Active
+         *     t-BCSM-CAMEL-TDP-CriteriaList: 1 item
+         *         T-BCSM-CAMEL-TDP-Criteria
+         *             t-BCSM-TriggerDetectionPoint: tNoAnswer (14)
+         *             basicServiceCriteria: 2 items
+         *                 Ext-BasicServiceCode: ext-BearerService (2)
+         *                     ext-BearerService: dataCDS-2400bps (28)
+         *                 Ext-BasicServiceCode: ext-Teleservice (3)
+         *                     ext-Teleservice: emergencyCalls (18)
+         *             t-CauseValueCriteria: 2 items
+         *                 CauseValue: 15
+         *                 CauseValue: 39
+         *     d-CSI
+         *         dp-AnalysedInfoCriteriaList: 1 item
+         *             DP-AnalysedInfoCriterium
+         *                 dialledNumber: 91947141874023
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491714780432
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultCallHandling: continueCall (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csi-Active
+         *     mt-sms-CSI
+         *         sms-CAMEL-TDP-DataList: 1 item
+         *             SMS-CAMEL-TDP-Data
+         *                 sms-TriggerDetectionPoint: sms-DeliveryRequest (2)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultSMS-Handling: continueTransaction (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csi-Active
+         *     mt-smsCAMELTDP-CriteriaList: 1 item
+         *         MT-smsCAMELTDP-Criteria
+         *             sms-TriggerDetectionPoint: sms-DeliveryRequest (2)
+         *             tpdu-TypeCriterion: 3 items
+         *                 MT-SMS-TPDU-Type: sms-DELIVER (0)
+         *                 MT-SMS-TPDU-Type: sms-SUBMIT-REPORT (1)
+         *                 MT-SMS-TPDU-Type: sms-STATUS-REPORT (2)
+         */
+        // o-CSI
+        OCSI oCsi = vlrCamelSubscriptionInfo.getOCsi();
+        ArrayList<OBcsmCamelTDPData> oBcsmCamelTDPDataList = oCsi.getOBcsmCamelTDPDataList();
+        assertEquals(oBcsmCamelTDPDataList.size(), 1);
+        OBcsmCamelTDPData oBcsmCamelTDPData = oBcsmCamelTDPDataList.get(0);
+        assertEquals(oBcsmCamelTDPData.getOBcsmTriggerDetectionPoint(), OBcsmTriggerDetectionPoint.routeSelectFailure);
+        assertEquals(oBcsmCamelTDPData.getServiceKey(), 7);
+        assertEquals(oBcsmCamelTDPData.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
+        assertEquals(oBcsmCamelTDPData.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(oBcsmCamelTDPData.getGsmSCFAddress().getAddress(), "491710460029");
+        assertEquals(oBcsmCamelTDPData.getDefaultCallHandling(), DefaultCallHandling.continueCall);
+        assertNull(oBcsmCamelTDPData.getExtensionContainer());
         assertNull(oCsi.getExtensionContainer());
-        assertEquals((int) oCsi.getCamelCapabilityHandling(), 2);
-        assertFalse(oCsi.getNotificationToCSE());
-        assertFalse(oCsi.getCsiActive());
-
+        assertEquals(oCsi.getCamelCapabilityHandling().intValue(), 2);
+        assertTrue(oCsi.getNotificationToCSE());
+        assertTrue(oCsi.getCsiActive());
         // extensionContainer
-        MAPExtensionContainer extensionContainer = prim.getExtensionContainer();
-        assertNotNull(extensionContainer);
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(extensionContainer));
-
+        assertNull(vlrCamelSubscriptionInfo.getExtensionContainer());
         // ssCsi
-        SSCSI ssCsi = prim.getSsCsi();
+        SSCSI ssCsi = vlrCamelSubscriptionInfo.getSsCsi();
         SSCamelData ssCamelData = ssCsi.getSsCamelData();
-
         ArrayList<SSCode> ssEventList = ssCamelData.getSsEventList();
         assertNotNull(ssEventList);
-        assertEquals(ssEventList.size(), 1);
-        SSCode one = ssEventList.get(0);
-        assertNotNull(one);
-        assertEquals(one.getSupplementaryCodeValue(), SupplementaryCodeValue.allCommunityOfInterestSS);
+        assertEquals(ssEventList.size(), 2);
+        SSCode ssEvent1 = ssEventList.get(0);
+        assertNotNull(ssEvent1);
+        assertEquals(ssEvent1.getSupplementaryCodeValue(), SupplementaryCodeValue.plmn_specificSS_2);
+        SSCode ssEvent2 = ssEventList.get(1);
+        assertNotNull(ssEvent2);
+        assertEquals(ssEvent2.getSupplementaryCodeValue(), SupplementaryCodeValue.bicRoam);
         ISDNAddressString gsmSCFAddress = ssCamelData.getGsmSCFAddress();
-        assertTrue(gsmSCFAddress.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddress.getAddress(), "491710460029");
         assertEquals(gsmSCFAddress.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddress.getNumberingPlan(), NumberingPlan.ISDN);
-        assertNotNull(ssCamelData.getExtensionContainer());
-        assertNotNull(ssCsi.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(ssCsi.getExtensionContainer()));
+        assertNull(ssCamelData.getExtensionContainer());
+        assertNull(ssCsi.getExtensionContainer());
         assertTrue(ssCsi.getCsiActive());
-        assertTrue(!ssCsi.getNotificationToCSE());
-
-        // oBcsmCamelTDPCriteriaList
-        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = prim.getOBcsmCamelTDPCriteriaList();
+        assertTrue(ssCsi.getNotificationToCSE());
+        // o-BcsmCamelTDP-CriteriaList
+        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = vlrCamelSubscriptionInfo.getOBcsmCamelTDPCriteriaList();
         assertNotNull(oBcsmCamelTDPCriteriaList);
         assertEquals(oBcsmCamelTDPCriteriaList.size(), 1);
         OBcsmCamelTdpCriteria oBcsmCamelTdpCriteria = oBcsmCamelTDPCriteriaList.get(0);
         assertNotNull(oBcsmCamelTdpCriteria);
-
         DestinationNumberCriteria destinationNumberCriteria = oBcsmCamelTdpCriteria.getDestinationNumberCriteria();
         ArrayList<ISDNAddressString> destinationNumberList = destinationNumberCriteria.getDestinationNumberList();
         assertNotNull(destinationNumberList);
-        assertEquals(destinationNumberList.size(), 2);
+        assertEquals(destinationNumberList.size(), 1);
         ISDNAddressString destinationNumberOne = destinationNumberList.get(0);
         assertNotNull(destinationNumberOne);
-        assertTrue(destinationNumberOne.getAddress().equals("22234"));
+        assertEquals(destinationNumberOne.getAddress(), "491714780432");
         assertEquals(destinationNumberOne.getAddressNature(), AddressNature.international_number);
         assertEquals(destinationNumberOne.getNumberingPlan(), NumberingPlan.ISDN);
-        ISDNAddressString destinationNumberTwo = destinationNumberList.get(1);
-        assertNotNull(destinationNumberTwo);
-        assertTrue(destinationNumberTwo.getAddress().equals("22235"));
-        assertEquals(destinationNumberTwo.getAddressNature(), AddressNature.international_number);
-        assertEquals(destinationNumberTwo.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(destinationNumberCriteria.getMatchType().getCode(), MatchType.enabling.getCode());
         ArrayList<Integer> destinationNumberLengthList = destinationNumberCriteria.getDestinationNumberLengthList();
         assertNotNull(destinationNumberLengthList);
-        assertEquals(destinationNumberLengthList.size(), 3);
-        assertEquals(destinationNumberLengthList.get(0).intValue(), 2);
-        assertEquals(destinationNumberLengthList.get(1).intValue(), 4);
-        assertEquals(destinationNumberLengthList.get(2).intValue(), 1);
-        assertEquals(oBcsmCamelTdpCriteria.getOBcsmTriggerDetectionPoint(), OBcsmTriggerDetectionPoint.collectedInfo);
-        assertNotNull(oBcsmCamelTdpCriteria.getBasicServiceCriteria());
+        assertEquals(destinationNumberLengthList.size(), 1);
+        assertEquals(oBcsmCamelTdpCriteria.getOBcsmTriggerDetectionPoint(), OBcsmTriggerDetectionPoint.routeSelectFailure);
         assertEquals(oBcsmCamelTdpCriteria.getBasicServiceCriteria().size(), 2);
-        ExtBasicServiceCode basicServiceOne = oBcsmCamelTdpCriteria.getBasicServiceCriteria().get(0);
-        assertNotNull(basicServiceOne);
-        assertEquals(basicServiceOne.getExtBearerService().getBearerServiceCodeValue(),
-                BearerServiceCodeValue.padAccessCA_9600bps);
-
-        ExtBasicServiceCode basicServiceTwo = oBcsmCamelTdpCriteria.getBasicServiceCriteria().get(1);
-        assertNotNull(basicServiceTwo);
-        assertEquals(basicServiceTwo.getExtTeleservice().getTeleserviceCodeValue(), TeleserviceCodeValue.allTeleservices);
-
-        assertEquals(oBcsmCamelTdpCriteria.getCallTypeCriteria(), CallTypeCriteria.forwarded);
+        assertEquals(oBcsmCamelTdpCriteria.getBasicServiceCriteria().get(0).getExtBearerService().getBearerServiceCodeValue(),
+                BearerServiceCodeValue.allDataCDS_Services);
+        assertEquals(oBcsmCamelTdpCriteria.getBasicServiceCriteria().get(1).getExtTeleservice().getTeleserviceCodeValue(),
+                TeleserviceCodeValue.allFacsimileTransmissionServices);
+        assertEquals(oBcsmCamelTdpCriteria.getCallTypeCriteria(), CallTypeCriteria.notForwarded);
         ArrayList<CauseValue> oCauseValueCriteria = oBcsmCamelTdpCriteria.getOCauseValueCriteria();
         assertNotNull(oCauseValueCriteria);
-        assertEquals(oCauseValueCriteria.size(), 1);
+        assertEquals(oCauseValueCriteria.size(), 2);
         assertNotNull(oCauseValueCriteria.get(0));
-        assertEquals(oCauseValueCriteria.get(0).getData(), 7);
-
-        // TifCsi
-        assertFalse(prim.getTifCsi());
-
-        // mCsi
-        MCSI mCsi = prim.getMCsi();
+        assertEquals(oCauseValueCriteria.get(0).getData(), 0x51);
+        assertNotNull(oCauseValueCriteria.get(1));
+        assertEquals(oCauseValueCriteria.get(1).getData(), 0x39);
+        // tif-CSI
+        assertTrue(vlrCamelSubscriptionInfo.getTifCsi());
+        // m-CSI
+        MCSI mCsi = vlrCamelSubscriptionInfo.getMCsi();
         ArrayList<MMCode> mobilityTriggers = mCsi.getMobilityTriggers();
         assertNotNull(mobilityTriggers);
         assertEquals(mobilityTriggers.size(), 2);
         MMCode mmCode = mobilityTriggers.get(0);
         assertNotNull(mmCode);
-        assertEquals(MMCodeValue.GPRSAttach, mmCode.getMMCodeValue());
+        assertEquals(mmCode.getMMCodeValue(), MMCodeValue.IMSIAttach);
         MMCode mmCode2 = mobilityTriggers.get(1);
         assertNotNull(mmCode2);
-        assertEquals(MMCodeValue.IMSIAttach, mmCode2.getMMCodeValue());
-        assertNotNull(mCsi.getServiceKey());
-        assertEquals(mCsi.getServiceKey(), 3);
+        assertEquals(mmCode2.getMMCodeValue(), MMCodeValue.LocationUpdateInSameVLR);
+        assertNotNull(mCsi);
+        assertEquals(mCsi.getServiceKey(), 7);
         ISDNAddressString gsmSCFAddressTwo = mCsi.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressTwo.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressTwo.getAddress(), "491710460029");
         assertEquals(gsmSCFAddressTwo.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressTwo.getNumberingPlan(), NumberingPlan.ISDN);
-        assertNotNull(mCsi.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(mCsi.getExtensionContainer()));
+        assertNull(mCsi.getExtensionContainer());
         assertTrue(mCsi.getCsiActive());
-        assertTrue(!mCsi.getNotificationToCSE());
-
-        // smsCsi
-        SMSCSI smsCsi = prim.getSmsCsi();
+        assertTrue(mCsi.getNotificationToCSE());
+        // mo-sms-CSI
+        SMSCSI smsCsi = vlrCamelSubscriptionInfo.getSmsCsi();
         ArrayList<SMSCAMELTDPData> smsCamelTdpDataList = smsCsi.getSmsCamelTdpDataList();
         assertNotNull(smsCamelTdpDataList);
         assertEquals(smsCamelTdpDataList.size(), 1);
         SMSCAMELTDPData smsCAMELTDPData = smsCamelTdpDataList.get(0);
         assertNotNull(smsCAMELTDPData);
-        assertEquals(smsCAMELTDPData.getServiceKey(), 3);
-        assertEquals(smsCAMELTDPData.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
+        assertEquals(smsCAMELTDPData.getServiceKey(), 7);
+        assertEquals(smsCAMELTDPData.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsDeliveryRequest);
         ISDNAddressString gsmSCFAddressSmsCAMELTDPData = smsCAMELTDPData.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressSmsCAMELTDPData.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressSmsCAMELTDPData.getAddress(), "491710460029");
         assertEquals(gsmSCFAddressSmsCAMELTDPData.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressSmsCAMELTDPData.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(smsCAMELTDPData.getDefaultSMSHandling(), DefaultSMSHandling.continueTransaction);
-        assertNotNull(smsCAMELTDPData.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(smsCAMELTDPData.getExtensionContainer()));
+        assertNull(smsCAMELTDPData.getExtensionContainer());
+        assertEquals(smsCsi.getCamelCapabilityHandling().intValue(), 2);
         assertTrue(smsCsi.getCsiActive());
-        assertTrue(!smsCsi.getNotificationToCSE());
-        assertEquals(smsCsi.getCamelCapabilityHandling().intValue(), 8);
-
-        // vtCsi
-        TCSI vtCsi = prim.getVtCsi();
-        ArrayList<TBcsmCamelTDPData> tbcsmCamelTDPDatalst = vtCsi.getTBcsmCamelTDPDataList();
-        assertEquals(lst.size(), 1);
-        TBcsmCamelTDPData tbcsmCamelTDPData = tbcsmCamelTDPDatalst.get(0);
-        assertEquals(tbcsmCamelTDPData.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.termAttemptAuthorized);
-        assertEquals(tbcsmCamelTDPData.getServiceKey(), 3);
+        assertTrue(smsCsi.getNotificationToCSE());
+        // vt-CSI
+        TCSI vtCsi = vlrCamelSubscriptionInfo.getVtCsi();
+        ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDataList = vtCsi.getTBcsmCamelTDPDataList();
+        assertEquals(tBcsmCamelTDPDataList.size(), 2);
+        TBcsmCamelTDPData tbcsmCamelTDPData = tBcsmCamelTDPDataList.get(0);
+        assertEquals(tbcsmCamelTDPData.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.tNoAnswer);
+        assertEquals(tbcsmCamelTDPData.getServiceKey(), 7);
         assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(tbcsmCamelTDPData.getGsmSCFAddress().getAddress().equals("22235"));
-        assertEquals(tbcsmCamelTDPData.getDefaultCallHandling(), DefaultCallHandling.releaseCall);
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddress(), "491710460029");
+        assertEquals(tbcsmCamelTDPData.getDefaultCallHandling(), DefaultCallHandling.continueCall);
         assertNull(tbcsmCamelTDPData.getExtensionContainer());
         assertNull(vtCsi.getExtensionContainer());
-        assertEquals((int) vtCsi.getCamelCapabilityHandling(), 2);
-        assertFalse(vtCsi.getNotificationToCSE());
-        assertFalse(vtCsi.getCsiActive());
-
-        // tBcsmCamelTdpCriteriaList
-        ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = prim.getTBcsmCamelTdpCriteriaList();
+        assertEquals(vtCsi.getCamelCapabilityHandling().intValue(), 2);
+        assertTrue(vtCsi.getNotificationToCSE());
+        assertTrue(vtCsi.getCsiActive());
+        tbcsmCamelTDPData = tBcsmCamelTDPDataList.get(1);
+        assertEquals(tbcsmCamelTDPData.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.tBusy);
+        assertEquals(tbcsmCamelTDPData.getServiceKey(), 7);
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
+        assertEquals(tbcsmCamelTDPData.getGsmSCFAddress().getAddress(), "491710460029");
+        assertEquals(tbcsmCamelTDPData.getDefaultCallHandling(), DefaultCallHandling.continueCall);
+        assertEquals(vtCsi.getCamelCapabilityHandling().intValue(), 2);
+        assertNull(tbcsmCamelTDPData.getExtensionContainer());
+        assertNull(vtCsi.getExtensionContainer());
+        assertTrue(vtCsi.getNotificationToCSE());
+        assertTrue(vtCsi.getCsiActive());
+        // t-BCSM-CAMEL-TDP-CriteriaList
+        ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = vlrCamelSubscriptionInfo.getTBcsmCamelTdpCriteriaList();
         assertNotNull(tBcsmCamelTdpCriteriaList);
         assertEquals(tBcsmCamelTdpCriteriaList.size(), 1);
         assertNotNull(tBcsmCamelTdpCriteriaList.get(0));
         TBcsmCamelTdpCriteria tbcsmCamelTdpCriteria = tBcsmCamelTdpCriteriaList.get(0);
-        assertEquals(tbcsmCamelTdpCriteria.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.tBusy);
-        assertNotNull(tbcsmCamelTdpCriteria.getBasicServiceCriteria());
-        assertEquals(tbcsmCamelTdpCriteria.getBasicServiceCriteria().size(), 2);
-        assertNotNull(tbcsmCamelTdpCriteria.getBasicServiceCriteria().get(0));
-        assertNotNull(tbcsmCamelTdpCriteria.getBasicServiceCriteria().get(1));
-        ArrayList<CauseValue> oCauseValueCriteriaLst = tbcsmCamelTdpCriteria.getTCauseValueCriteria();
-        assertNotNull(oCauseValueCriteriaLst);
-        assertEquals(oCauseValueCriteriaLst.size(), 2);
-        assertNotNull(oCauseValueCriteriaLst.get(0));
-        assertEquals(oCauseValueCriteriaLst.get(0).getData(), 7);
-        assertNotNull(oCauseValueCriteriaLst.get(1));
-        assertEquals(oCauseValueCriteriaLst.get(1).getData(), 6);
-
-        // dCsi
-        DCSI dCsi = prim.getDCsi();
+        assertEquals(tbcsmCamelTdpCriteria.getTBcsmTriggerDetectionPoint(), TBcsmTriggerDetectionPoint.tNoAnswer);
+        ArrayList<ExtBasicServiceCode> basicServiceList = tbcsmCamelTdpCriteria.getBasicServiceCriteria();
+        assertEquals(basicServiceList.size(), 2);
+        assertEquals(basicServiceList.get(0).getExtBearerService().getBearerServiceCodeValue(),
+                BearerServiceCodeValue.allDataCDS_Services);
+        assertEquals(basicServiceList.get(1).getExtTeleservice().getTeleserviceCodeValue(),
+                TeleserviceCodeValue.allFacsimileTransmissionServices);
+        ArrayList<CauseValue> tCauseValueCriteriaLst = tbcsmCamelTdpCriteria.getTCauseValueCriteria();
+        assertNotNull(tCauseValueCriteriaLst);
+        assertEquals(tCauseValueCriteriaLst.size(), 2);
+        assertEquals(tCauseValueCriteriaLst.get(0).getData(), 0x15);
+        assertEquals(tCauseValueCriteriaLst.get(1).getData(), 0x39);
+        // d-CSI
+        DCSI dCsi = vlrCamelSubscriptionInfo.getDCsi();
         ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = dCsi.getDPAnalysedInfoCriteriaList();
-        assertNotNull(dpAnalysedInfoCriteriaList);
         assertEquals(dpAnalysedInfoCriteriaList.size(), 1);
         DPAnalysedInfoCriterium dpAnalysedInfoCriterium = dpAnalysedInfoCriteriaList.get(0);
         assertNotNull(dpAnalysedInfoCriterium);
         ISDNAddressString dialledNumber = dpAnalysedInfoCriterium.getDialledNumber();
-        assertTrue(dialledNumber.getAddress().equals("22234"));
+        assertEquals(dialledNumber.getAddress(), "491714780432");
         assertEquals(dialledNumber.getAddressNature(), AddressNature.international_number);
         assertEquals(dialledNumber.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(dpAnalysedInfoCriterium.getServiceKey(), 7);
         ISDNAddressString gsmSCFAddressDp = dpAnalysedInfoCriterium.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressDp.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressDp.getAddress(), "491710460029");
         assertEquals(gsmSCFAddressDp.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressDp.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(dpAnalysedInfoCriterium.getDefaultCallHandling(), DefaultCallHandling.continueCall);
-        assertNotNull(dCsi.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(dCsi.getExtensionContainer()));
+        assertNull(dCsi.getExtensionContainer());
         assertEquals(dCsi.getCamelCapabilityHandling().intValue(), 2);
         assertTrue(dCsi.getCsiActive());
         assertTrue(dCsi.getNotificationToCSE());
-
-        // mtSmsCSI
-        SMSCSI mtSmsCSI = prim.getMtSmsCSI();
+        // mt-sms-CSI
+        SMSCSI mtSmsCSI = vlrCamelSubscriptionInfo.getMtSmsCSI();
         ArrayList<SMSCAMELTDPData> smsCamelTdpDataListOfmtSmsCSI = mtSmsCSI.getSmsCamelTdpDataList();
         assertNotNull(smsCamelTdpDataListOfmtSmsCSI);
         assertEquals(smsCamelTdpDataListOfmtSmsCSI.size(), 1);
         SMSCAMELTDPData smsCAMELTDPDataOfMtSmsCSI = smsCamelTdpDataListOfmtSmsCSI.get(0);
         assertNotNull(smsCAMELTDPDataOfMtSmsCSI);
-        assertEquals(smsCAMELTDPDataOfMtSmsCSI.getServiceKey(), 3);
-        assertEquals(smsCAMELTDPDataOfMtSmsCSI.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
+        assertEquals(smsCAMELTDPDataOfMtSmsCSI.getServiceKey(), 7);
+        assertEquals(smsCAMELTDPDataOfMtSmsCSI.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsDeliveryRequest);
         ISDNAddressString gsmSCFAddressOfMtSmsCSI = smsCAMELTDPDataOfMtSmsCSI.getGsmSCFAddress();
-        assertTrue(gsmSCFAddressOfMtSmsCSI.getAddress().equals("22235"));
+        assertEquals(gsmSCFAddressOfMtSmsCSI.getAddress(), "491710460029");
         assertEquals(gsmSCFAddressOfMtSmsCSI.getAddressNature(), AddressNature.international_number);
         assertEquals(gsmSCFAddressOfMtSmsCSI.getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(smsCAMELTDPDataOfMtSmsCSI.getDefaultSMSHandling(), DefaultSMSHandling.continueTransaction);
-        assertNotNull(smsCAMELTDPDataOfMtSmsCSI.getExtensionContainer());
-        assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(smsCAMELTDPDataOfMtSmsCSI.getExtensionContainer()));
-        assertNotNull(mtSmsCSI.getExtensionContainer());
+        assertNull(smsCAMELTDPDataOfMtSmsCSI.getExtensionContainer());
+        assertNull(mtSmsCSI.getExtensionContainer());
+        assertEquals(mtSmsCSI.getCamelCapabilityHandling().intValue(), 2);
         assertTrue(mtSmsCSI.getCsiActive());
-        assertTrue(!mtSmsCSI.getNotificationToCSE());
-        assertEquals(mtSmsCSI.getCamelCapabilityHandling().intValue(), 8);
-
-        // mtSmsCamelTdpCriteriaList
-        ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = prim.getMtSmsCamelTdpCriteriaList();
-        assertNotNull(mtSmsCamelTdpCriteriaList);
+        assertTrue(mtSmsCSI.getNotificationToCSE());
+        // mt-smsCAMELTDP-CriteriaList
+        ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = vlrCamelSubscriptionInfo.getMtSmsCamelTdpCriteriaList();
         assertEquals(mtSmsCamelTdpCriteriaList.size(), 1);
         MTsmsCAMELTDPCriteria mtsmsCAMELTDPCriteria = mtSmsCamelTdpCriteriaList.get(0);
-
         ArrayList<MTSMSTPDUType> tPDUTypeCriterion = mtsmsCAMELTDPCriteria.getTPDUTypeCriterion();
         assertNotNull(tPDUTypeCriterion);
-        assertEquals(tPDUTypeCriterion.size(), 2);
+        assertEquals(tPDUTypeCriterion.size(), 3);
         MTSMSTPDUType mtSMSTPDUTypeOne = tPDUTypeCriterion.get(0);
-        assertNotNull(mtSMSTPDUTypeOne);
         assertEquals(mtSMSTPDUTypeOne, MTSMSTPDUType.smsDELIVER);
-
         MTSMSTPDUType mtSMSTPDUTypeTwo = tPDUTypeCriterion.get(1);
-        assertNotNull(mtSMSTPDUTypeTwo);
-        assertTrue(mtSMSTPDUTypeTwo == MTSMSTPDUType.smsSTATUSREPORT);
-        assertEquals(mtsmsCAMELTDPCriteria.getSMSTriggerDetectionPoint(), SMSTriggerDetectionPoint.smsCollectedInfo);
+        assertSame(mtSMSTPDUTypeTwo, MTSMSTPDUType.smsSUBMITREPORT);
+        mtSMSTPDUTypeTwo = tPDUTypeCriterion.get(2);
+        assertSame(mtSMSTPDUTypeTwo, MTSMSTPDUType.smsSTATUSREPORT);
 
     }
 
     @Test(groups = { "functional.encode", "primitives" })
     public void testEncode() throws Exception {
 
-        TBcsmTriggerDetectionPoint tBcsmTriggerDetectionPoint = TBcsmTriggerDetectionPoint.tBusy;
-        ArrayList<ExtBasicServiceCode> basicServiceCriteria = new ArrayList<ExtBasicServiceCode>();
-        ExtBearerServiceCodeImpl b = new ExtBearerServiceCodeImpl(BearerServiceCodeValue.padAccessCA_9600bps);
-        ExtTeleserviceCode extTeleservice = new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allTeleservices);
-        ExtBasicServiceCodeImpl basicServiceOne = new ExtBasicServiceCodeImpl(b);
-        ExtBasicServiceCodeImpl basicServiceTwo = new ExtBasicServiceCodeImpl(extTeleservice);
-        basicServiceCriteria.add(basicServiceOne);
-        basicServiceCriteria.add(basicServiceTwo);
-
-        ArrayList<CauseValue> tCauseValueCriteria = new ArrayList<CauseValue>();
-        tCauseValueCriteria.add(new CauseValueImpl(7));
-        tCauseValueCriteria.add(new CauseValueImpl(6));
-
-        ISDNAddressStringImpl gsmSCFAddressOne = new ISDNAddressStringImpl(AddressNature.international_number,
-                NumberingPlan.ISDN, "1122333");
-        OBcsmCamelTDPDataImpl cind = new OBcsmCamelTDPDataImpl(OBcsmTriggerDetectionPoint.routeSelectFailure, 3,
-                gsmSCFAddressOne, DefaultCallHandling.releaseCall, null);
-        ArrayList<OBcsmCamelTDPData> lst = new ArrayList<OBcsmCamelTDPData>();
-        lst.add(cind);
-
-        OCSI oCsi = new OCSIImpl(lst, null, 2, false, false);
-        MAPExtensionContainer extensionContainer = MAPExtensionContainerTest.GetTestExtensionContainer();
-        ArrayList<SSCode> ssEventList = new ArrayList<SSCode>();
-        ssEventList.add(new SSCodeImpl(SupplementaryCodeValue.allCommunityOfInterestSS.getCode()));
-        ISDNAddressString gsmSCFAddressTwo = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                "22235");
-        SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddressTwo, extensionContainer);
-        boolean notificationToCSE = false;
+        // Wireshark sample
+        /*
+         * vlrCamelSubscriptionInfo
+         *     o-CSI
+         *         o-BcsmCamelTDPDataList: 1 item
+         *             O-BcsmCamelTDPData
+         *                 o-BcsmTriggerDetectionPoint: routeSelectFailure (4)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultCallHandling: continueCall (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csiActive
+         *     ss-CSI
+         *         ss-CamelData
+         *             ss-EventList: 2 items
+         *                 SS-Code: allAdditionalInfoTransferSS - all additional information transfer SS (128)
+         *                 SS-Code: uus2 - UUS2 user-to-user signalling (130)
+         *             gsmSCF-Address: 91947101640092
+         *                 1... .... = Extension: No Extension
+         *                 .001 .... = Nature of number: International Number (0x1)
+         *                 .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                 E.164 number (MSISDN): 491710460029
+         *         notificationToCSE
+         *         csi-Active
+         *     o-BcsmCamelTDP-CriteriaList: 1 item
+         *         O-BcsmCamelTDP-Criteria
+         *             o-BcsmTriggerDetectionPoint: routeSelectFailure (4)
+         *             destinationNumberCriteria
+         *                 matchType: enabling (1)
+         *                 destinationNumberList: 1 item
+         *                     ISDN-AddressString: 91947141874023
+         *                         1... .... = Extension: No Extension
+         *                         .001 .... = Nature of number: International Number (0x1)
+         *                         .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                         E.164 number (MSISDN): 491714780432
+         *                 destinationNumberLengthList: 1 item
+         *                     DestinationNumberLengthList item: 1
+         *             basicServiceCriteria: 2 items
+         *                 Ext-BasicServiceCode: ext-BearerService (2)
+         *                     ext-BearerService: dataCDS-2400bps (28)
+         *                 Ext-BasicServiceCode: ext-Teleservice (3)
+         *                     ext-Teleservice: emergencyCalls (18)
+         *             callTypeCriteria: notForwarded (1)
+         *             o-CauseValueCriteria: 2 items
+         *                 CauseValue: 51
+         *                 CauseValue: 39
+         *     tif-CSI
+         *     m-CSI
+         *         mobilityTriggers: 2 items
+         *             MM-Code: 02
+         *             MM-Code: 00
+         *         serviceKey: 7
+         *         gsmSCF-Address: 91947101640092
+         *             1... .... = Extension: No Extension
+         *             .001 .... = Nature of number: International Number (0x1)
+         *             .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *             E.164 number (MSISDN): 491710460029
+         *         notificationToCSE
+         *         csi-Active
+         *     mo-sms-CSI
+         *         sms-CAMEL-TDP-DataList: 1 item
+         *             SMS-CAMEL-TDP-Data
+         *                 sms-TriggerDetectionPoint: sms-DeliveryRequest (2)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultSMS-Handling: continueTransaction (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csi-Active
+         *     vt-CSI
+         *         t-BcsmCamelTDPDataList: 2 items
+         *             T-BcsmCamelTDPData
+         *                 t-BcsmTriggerDetectionPoint: tNoAnswer (14)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultCallHandling: continueCall (0)
+         *             T-BcsmCamelTDPData
+         *                 t-BcsmTriggerDetectionPoint: tBusy (13)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultCallHandling: continueCall (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csi-Active
+         *     t-BCSM-CAMEL-TDP-CriteriaList: 1 item
+         *         T-BCSM-CAMEL-TDP-Criteria
+         *             t-BCSM-TriggerDetectionPoint: tNoAnswer (14)
+         *             basicServiceCriteria: 2 items
+         *                 Ext-BasicServiceCode: ext-BearerService (2)
+         *                     ext-BearerService: dataCDS-2400bps (28)
+         *                 Ext-BasicServiceCode: ext-Teleservice (3)
+         *                     ext-Teleservice: emergencyCalls (18)
+         *             t-CauseValueCriteria: 2 items
+         *                 CauseValue: 15
+         *                 CauseValue: 39
+         *     d-CSI
+         *         dp-AnalysedInfoCriteriaList: 1 item
+         *             DP-AnalysedInfoCriterium
+         *                 dialledNumber: 91947141874023
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491714780432
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultCallHandling: continueCall (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csi-Active
+         *     mt-sms-CSI
+         *         sms-CAMEL-TDP-DataList: 1 item
+         *             SMS-CAMEL-TDP-Data
+         *                 sms-TriggerDetectionPoint: sms-DeliveryRequest (2)
+         *                 serviceKey: 7
+         *                 gsmSCF-Address: 91947101640092
+         *                     1... .... = Extension: No Extension
+         *                     .001 .... = Nature of number: International Number (0x1)
+         *                     .... 0001 = Number plan: ISDN/Telephony Numbering (Rec ITU-T E.164) (0x1)
+         *                     E.164 number (MSISDN): 491710460029
+         *                 defaultSMS-Handling: continueTransaction (0)
+         *         camelCapabilityHandling: 2
+         *         notificationToCSE
+         *         csi-Active
+         *     mt-smsCAMELTDP-CriteriaList: 1 item
+         *         MT-smsCAMELTDP-Criteria
+         *             sms-TriggerDetectionPoint: sms-DeliveryRequest (2)
+         *             tpdu-TypeCriterion: 3 items
+         *                 MT-SMS-TPDU-Type: sms-DELIVER (0)
+         *                 MT-SMS-TPDU-Type: sms-SUBMIT-REPORT (1)
+         *                 MT-SMS-TPDU-Type: sms-STATUS-REPORT (2)
+         */
+        OBcsmTriggerDetectionPoint oBcsmTDP = OBcsmTriggerDetectionPoint.routeSelectFailure;
+        long serviceKey = 7L;
+        ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
+        DefaultCallHandling defaultCallHandling = DefaultCallHandling.continueCall;
+        OBcsmCamelTDPData oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(oBcsmTDP, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+        ArrayList<OBcsmCamelTDPData> oBcsmCamelTDPDataList = new ArrayList<>();
+        oBcsmCamelTDPDataList.add(oBcsmCamelTDPData);
+        Integer camelCapabilityHandling = 2;
+        boolean notificationToCSE = true;
         boolean csiActive = true;
-
-        SSCSI ssCsi = new SSCSIImpl(ssCamelData, extensionContainer, notificationToCSE, csiActive);
-
-        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = new ArrayList<OBcsmCamelTdpCriteria>();
-        OBcsmTriggerDetectionPoint oBcsmTriggerDetectionPoint = OBcsmTriggerDetectionPoint.collectedInfo;
-        ISDNAddressStringImpl destinationNumberOne = new ISDNAddressStringImpl(AddressNature.international_number,
-                NumberingPlan.ISDN, "22234");
-        ISDNAddressStringImpl destinationNumberTwo = new ISDNAddressStringImpl(AddressNature.international_number,
-                NumberingPlan.ISDN, "22235");
-        ArrayList<ISDNAddressString> destinationNumberList = new ArrayList<ISDNAddressString>();
-        destinationNumberList.add(destinationNumberOne);
-        destinationNumberList.add(destinationNumberTwo);
-        ArrayList<Integer> destinationNumberLengthList = new ArrayList<Integer>();
-        destinationNumberLengthList.add(new Integer(2));
-        destinationNumberLengthList.add(new Integer(4));
-        destinationNumberLengthList.add(new Integer(1));
-        DestinationNumberCriteria destinationNumberCriteria = new DestinationNumberCriteriaImpl(MatchType.enabling,
-                destinationNumberList, destinationNumberLengthList);
-
-        CallTypeCriteria callTypeCriteria = CallTypeCriteria.forwarded;
-        ArrayList<CauseValue> oCauseValueCriteria = new ArrayList<CauseValue>();
-        oCauseValueCriteria.add(new CauseValueImpl(7));
-
-        OBcsmCamelTdpCriteriaImpl oBcsmCamelTdpCriteria = new OBcsmCamelTdpCriteriaImpl(oBcsmTriggerDetectionPoint,
-                destinationNumberCriteria, basicServiceCriteria, callTypeCriteria, oCauseValueCriteria, extensionContainer);
+        OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, null, camelCapabilityHandling, notificationToCSE, csiActive);
+        ArrayList<SSCode> ssEventList = new ArrayList<>();
+        SSCode ssCode1 = new SSCodeImpl(SupplementaryCodeValue.plmn_specificSS_2);
+        SSCode ssCode2 = new SSCodeImpl(SupplementaryCodeValue.bicRoam);
+        ssEventList.add(ssCode1);
+        ssEventList.add(ssCode2);
+        SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddress, null);
+        SSCSI ssCsi = new SSCSIImpl(ssCamelData, null, notificationToCSE, csiActive);
+        MatchType matchType = MatchType.enabling;
+        ArrayList<ISDNAddressString> destinationNumberList = new ArrayList<>();
+        ISDNAddressString destinationNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491714780432");
+        destinationNumberList.add(destinationNumber);
+        ArrayList<Integer> destinationNumberLengthList = new ArrayList<>();
+        destinationNumberLengthList.add(1);
+        DestinationNumberCriteria destinationNumberCriteria = new DestinationNumberCriteriaImpl(matchType, destinationNumberList, destinationNumberLengthList);
+        ArrayList<ExtBasicServiceCode> basicServiceList = new ArrayList<>();
+        BearerServiceCodeValue bearerServiceCodeValue3 = BearerServiceCodeValue.allDataCDS_Services;
+        ExtBearerServiceCode extBearerServiceCode3 = new ExtBearerServiceCodeImpl(bearerServiceCodeValue3);
+        ExtBasicServiceCode extBasicServiceCode3 = new ExtBasicServiceCodeImpl(extBearerServiceCode3);
+        TeleserviceCodeValue teleserviceCodeValue2 = TeleserviceCodeValue.allFacsimileTransmissionServices;
+        ExtTeleserviceCode extTeleserviceCode2 = new ExtTeleserviceCodeImpl(teleserviceCodeValue2);
+        ExtBasicServiceCode extBasicServiceCode4 = new ExtBasicServiceCodeImpl(extTeleserviceCode2);
+        basicServiceList.add(extBasicServiceCode3);
+        basicServiceList.add(extBasicServiceCode4);
+        CallTypeCriteria callTypeCriteria = CallTypeCriteria.notForwarded;
+        ArrayList<CauseValue> oCauseValueCriteria = new ArrayList<>();
+        CauseValue causeValue1 = new CauseValueImpl(CauseValueCodeValue.InvalidCallReferenceValue);
+        CauseValue causeValue2 = new CauseValueImpl(CauseValueCodeValue.BearerCapabilityNotAuthorized);
+        oCauseValueCriteria.add(causeValue1);
+        oCauseValueCriteria.add(causeValue2);
+        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = new ArrayList<>();
+        OBcsmCamelTdpCriteria oBcsmCamelTdpCriteria = new OBcsmCamelTdpCriteriaImpl(oBcsmTDP, destinationNumberCriteria,
+                basicServiceList, callTypeCriteria, oCauseValueCriteria, null);
         oBcsmCamelTDPCriteriaList.add(oBcsmCamelTdpCriteria);
-
-        boolean tifCsi = false;
-
-        ArrayList<MMCode> mobilityTriggers = new ArrayList<MMCode>();
-        Long serviceKey = new Long(3);
-        ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                "22235");
-        ;
-        mobilityTriggers.add(new MMCodeImpl(MMCodeValue.GPRSAttach));
-        mobilityTriggers.add(new MMCodeImpl(MMCodeValue.IMSIAttach));
-
-        MCSI mCsi = new MCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, extensionContainer, notificationToCSE, csiActive);
-
-        SMSTriggerDetectionPoint smsTriggerDetectionPoint = SMSTriggerDetectionPoint.smsCollectedInfo;
+        boolean tifCsi = true;
+        ArrayList<MMCode> mobilityTriggers = new ArrayList<>();
+        MMCode mmCode1 = new MMCodeImpl(MMCodeValue.IMSIAttach);
+        MMCode mmCode2 = new MMCodeImpl(MMCodeValue.LocationUpdateInSameVLR);
+        mobilityTriggers.add(mmCode1);
+        mobilityTriggers.add(mmCode2);
+        MCSI mcsi = new MCSIImpl(mobilityTriggers, serviceKey, gsmSCFAddress, null, notificationToCSE, csiActive);
+        ArrayList<SMSCAMELTDPData> smsCamelTdpDataList = new ArrayList<>();
+        SMSTriggerDetectionPoint smsTDP = SMSTriggerDetectionPoint.smsDeliveryRequest;
         DefaultSMSHandling defaultSMSHandling = DefaultSMSHandling.continueTransaction;
-
-        ArrayList<SMSCAMELTDPData> smsCamelTdpDataList = new ArrayList<SMSCAMELTDPData>();
-        SMSCAMELTDPDataImpl smsCAMELTDPData = new SMSCAMELTDPDataImpl(smsTriggerDetectionPoint, serviceKey, gsmSCFAddress,
-                defaultSMSHandling, extensionContainer);
-        smsCamelTdpDataList.add(smsCAMELTDPData);
-
-        Integer camelCapabilityHandling = new Integer(8);
-
-        SMSCSI smsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extensionContainer, notificationToCSE,
-                csiActive);
-
-        TBcsmCamelTDPDataImpl tBcsmCamelTDPData = new TBcsmCamelTDPDataImpl(TBcsmTriggerDetectionPoint.termAttemptAuthorized,
-                3, gsmSCFAddress, DefaultCallHandling.releaseCall, null);
-        ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDatalst = new ArrayList<TBcsmCamelTDPData>();
-        tBcsmCamelTDPDatalst.add(tBcsmCamelTDPData);
-        TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDatalst, null, 2, false, false);
-
-        TBcsmCamelTdpCriteriaImpl tBcsmCamelTdpCriteria = new TBcsmCamelTdpCriteriaImpl(tBcsmTriggerDetectionPoint,
-                basicServiceCriteria, tCauseValueCriteria);
-        ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = new ArrayList<TBcsmCamelTdpCriteria>();
+        SMSCAMELTDPData smscameltdpData = new SMSCAMELTDPDataImpl(smsTDP, serviceKey, gsmSCFAddress, defaultSMSHandling, null);
+        smsCamelTdpDataList.add(smscameltdpData);
+        SMSCSI smsCsi = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, null, notificationToCSE, csiActive);
+        ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDataList = new ArrayList<>();
+        TBcsmTriggerDetectionPoint tBcsmTDP1 = TBcsmTriggerDetectionPoint.tNoAnswer;
+        TBcsmTriggerDetectionPoint tBcsmTDP2 = TBcsmTriggerDetectionPoint.tBusy;
+        TBcsmCamelTDPData tBcsmCamelTDPData1 = new TBcsmCamelTDPDataImpl(tBcsmTDP1, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+        TBcsmCamelTDPData tBcsmCamelTDPData2 = new TBcsmCamelTDPDataImpl(tBcsmTDP2, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+        tBcsmCamelTDPDataList.add(tBcsmCamelTDPData1);
+        tBcsmCamelTDPDataList.add(tBcsmCamelTDPData2);
+        TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDataList, null, camelCapabilityHandling, notificationToCSE, csiActive);
+        TBcsmTriggerDetectionPoint tBcsmTriggerDetectionPoint = TBcsmTriggerDetectionPoint.tNoAnswer;
+        ArrayList<CauseValue> tCauseValueCriteria = new ArrayList<>();
+        CauseValue tcv1 = new CauseValueImpl(CauseValueCodeValue.CallRejected);
+        CauseValue tcv2 = new CauseValueImpl(CauseValueCodeValue.BearerCapabilityNotAuthorized);
+        tCauseValueCriteria.add(tcv1);
+        tCauseValueCriteria.add(tcv2);
+        TBcsmCamelTdpCriteria tBcsmCamelTdpCriteria = new TBcsmCamelTdpCriteriaImpl(tBcsmTriggerDetectionPoint, basicServiceList, tCauseValueCriteria);
+        ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = new ArrayList<>();
         tBcsmCamelTdpCriteriaList.add(tBcsmCamelTdpCriteria);
-
-        ISDNAddressStringImpl dialledNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                "22234");
-
-        DPAnalysedInfoCriteriumImpl dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, 7, gsmSCFAddress,
-                DefaultCallHandling.continueCall, extensionContainer);
-
-        ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = new ArrayList<DPAnalysedInfoCriterium>();
+        ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = new ArrayList<>();
+        ISDNAddressString dialledNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491714780432");
+        DPAnalysedInfoCriterium dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, serviceKey, gsmSCFAddress, defaultCallHandling, null);
         dpAnalysedInfoCriteriaList.add(dpAnalysedInfoCriterium);
-
-        DCSI dCsi = new DCSIImpl(dpAnalysedInfoCriteriaList, 2, extensionContainer, true, true);
-
-        SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extensionContainer, notificationToCSE,
-                csiActive);
-        ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = new ArrayList<MTsmsCAMELTDPCriteria>();
-        ArrayList<MTSMSTPDUType> tPDUTypeCriterion = new ArrayList<MTSMSTPDUType>();
-        tPDUTypeCriterion.add(MTSMSTPDUType.smsDELIVER);
-        tPDUTypeCriterion.add(MTSMSTPDUType.smsSTATUSREPORT);
-
-        MTsmsCAMELTDPCriteriaImpl mTsmsCAMELTDPCriteria = new MTsmsCAMELTDPCriteriaImpl(smsTriggerDetectionPoint,
-                tPDUTypeCriterion);
+        DCSI dCSI = new DCSIImpl(dpAnalysedInfoCriteriaList, camelCapabilityHandling, null, notificationToCSE, csiActive);
+        SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, null, notificationToCSE, csiActive);
+        ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = new ArrayList<>();
+        ArrayList<MTSMSTPDUType> mtsmstpduTypeArrayList = new ArrayList<>();
+        MTSMSTPDUType mtsmstpduType1 = MTSMSTPDUType.smsDELIVER;
+        MTSMSTPDUType mtsmstpduType2 = MTSMSTPDUType.smsSUBMITREPORT;
+        MTSMSTPDUType mtsmstpduType3 = MTSMSTPDUType.smsSTATUSREPORT;
+        mtsmstpduTypeArrayList.add(mtsmstpduType1);
+        mtsmstpduTypeArrayList.add(mtsmstpduType2);
+        mtsmstpduTypeArrayList.add(mtsmstpduType3);
+        MTsmsCAMELTDPCriteria mTsmsCAMELTDPCriteria = new MTsmsCAMELTDPCriteriaImpl(smsTDP, mtsmstpduTypeArrayList);
         mtSmsCamelTdpCriteriaList.add(mTsmsCAMELTDPCriteria);
-
-        VlrCamelSubscriptionInfoImpl prim = new VlrCamelSubscriptionInfoImpl(oCsi, extensionContainer, ssCsi,
-                oBcsmCamelTDPCriteriaList, tifCsi, mCsi, smsCsi, vtCsi, tBcsmCamelTdpCriteriaList, dCsi, mtSmsCSI,
+        VlrCamelSubscriptionInfoImpl vlrCamelSubscriptionInfo = new VlrCamelSubscriptionInfoImpl(oCSI, null,
+                ssCsi, oBcsmCamelTDPCriteriaList, tifCsi, mcsi, smsCsi, vtCsi, tBcsmCamelTdpCriteriaList, dCSI, mtSmsCSI,
                 mtSmsCamelTdpCriteriaList);
 
-        AsnOutputStream asn = new AsnOutputStream();
-        prim.encodeAll(asn);
+        AsnOutputStream asnOS = new AsnOutputStream();
+        vlrCamelSubscriptionInfo.encodeAll(asnOS);
 
-        assertTrue(Arrays.equals(asn.toByteArray(), this.getData()));
+        byte[] encodedData = asnOS.toByteArray();
+        byte[] rawData = getVlrCamelSubscriptionInfoEncodedData();
+
+        assertTrue(Arrays.equals(rawData, encodedData));
     }
 }

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import org.mobicents.protocols.asn.AsnException;
@@ -58,7 +57,7 @@ public class CAMELSubscriptionInfoImpl extends SequenceBase implements CAMELSubs
     private static final int _TAG_MO_SMS_CSI = 10;
     private static final int _TAG_SS_CSI = 11;
     private static final int _TAG_M_CSI = 12;
-    private static final int _TAG_EXTENSION_CONTAINTER = 13;
+    private static final int TAG_EXTENSION_CONTAINER = 13;
     private static final int _TAG_SPECIFIC_CSI_DELETE_LIST = 14;
     private static final int _TAG_MT_SMS_CSI = 15;
     private static final int _TAG_MT_SMS_CAMEL_TDP_CRITERIA_LIST = 16;
@@ -439,7 +438,7 @@ public class CAMELSubscriptionInfoImpl extends SequenceBase implements CAMELSubs
                         this.mCsi = new MCSIImpl();
                         ((MCSIImpl)this.mCsi).decodeAll(ais);
                         break;
-                    case _TAG_EXTENSION_CONTAINTER:
+                    case TAG_EXTENSION_CONTAINER:
                         if (ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ".extensionContainer: Parameter extensionContainer is primitive",
@@ -707,7 +706,7 @@ public class CAMELSubscriptionInfoImpl extends SequenceBase implements CAMELSubs
         }
 
         if (this.extensionContainer != null) {
-            ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, _TAG_EXTENSION_CONTAINTER);
+            ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream, Tag.CLASS_CONTEXT_SPECIFIC, TAG_EXTENSION_CONTAINER);
         }
 
         if (this.specificCSIDeletedList != null) {

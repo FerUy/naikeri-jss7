@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
@@ -22,15 +21,15 @@ anyTimeModification OPERATION ::= {
 }
 
 AnyTimeModificationArg ::= SEQUENCE {
-  subscriberIdentity               [0] SubscriberIdentity,
-  gsmSCF-Address                   [1] ISDN-AddressString,
-  modificationRequestFor-CF-Info   [2] ModificationRequestFor-CF-Info OPTIONAL,
-  modificationRequestFor-CB-Info   [3] ModificationRequestFor-CB-Info OPTIONAL,
-  modificationRequestFor-CSI       [4] ModificationRequestFor-CSI OPTIONAL,
-  extensionContainer               [5] ExtensionContainer OPTIONAL,
-  longFTN-Supported                [6] NULL OPTIONAL,
+  subscriberIdentity                    [0] SubscriberIdentity,
+  gsmSCF-Address                        [1] ISDN-AddressString,
+  modificationRequestFor-CF-Info        [2] ModificationRequestFor-CF-Info OPTIONAL,
+  modificationRequestFor-CB-Info        [3] ModificationRequestFor-CB-Info OPTIONAL,
+  modificationRequestFor-CSI            [4] ModificationRequestFor-CSI OPTIONAL,
+  extensionContainer                    [5] ExtensionContainer OPTIONAL,
+  longFTN-Supported                     [6] NULL OPTIONAL,
   ...,
-  modificationRequestFor-ODB-data  [7] ModificationRequestFor-ODB-data OPTIONAL,
+  modificationRequestFor-ODB-data       [7] ModificationRequestFor-ODB-data OPTIONAL,
   modificationRequestFor-IP-SM-GW-Data  [8] ModificationRequestFor-IP-SM-GW-Data OPTIONAL,
   activationRequestForUE-reachability   [9] RequestedServingNode OPTIONAL,
   modificationRequestFor-CSG            [10] ModificationRequestFor-CSG OPTIONAL,
@@ -42,7 +41,6 @@ AnyTimeModificationArg ::= SEQUENCE {
 }
 </code>
  *
- *
  * @author sergey vetyutnev
  *
  */
@@ -52,32 +50,32 @@ public interface AnyTimeModificationRequest extends MobilityMessage {
 
     ISDNAddressString getGsmSCFAddress();
 
-    ModificationRequestForCFInfo getModificationRequestForCfInfo();
+    ModificationRequestForCFInfo getModificationRequestForCFInfo();
 
-    ModificationRequestForCBInfo getModificationRequestForCbInfo();
+    ModificationRequestForCBInfo getModificationRequestForCBInfo();
 
     ModificationRequestForCSI getModificationRequestForCSI();
 
     MAPExtensionContainer getExtensionContainer();
 
-    boolean getLongFTNSupported();
+    boolean isLongFTNSupported();
 
-    ModificationRequestForODBdata getModificationRequestForODBdata();
+    ModificationRequestForODBData getModificationRequestForODBData();
 
-    ModificationRequestForIPSMGWData getModificationRequestForIpSmGwData();
+    ModificationRequestForIPSMGWData getModificationRequestForIPSMGWData();
 
     RequestedServingNode getActivationRequestForUEReachability();
 
     ModificationRequestForCSG getModificationRequestForCSG();
 
-    ModificationRequestForCWInfo getModificationRequestForCwData();
+    ModificationRequestForCWInfo getModificationRequestForCWData();
 
-    ModificationRequestForCLIPInfo getModificationRequestForClipData();
+    ModificationRequestForCLIPInfo getModificationRequestForCLIPData();
 
-    ModificationRequestForCLIRInfo getModificationRequestForClirData();
+    ModificationRequestForCLIRInfo getModificationRequestForCLIRData();
 
-    ModificationRequestForCHInfo getModificationRequestForHoldData();
+    ModificationRequestForCHInfo getModificationRequestForHOLDData();
 
-    ModificationRequestForECTInfo getModificationRequestForEctData();
+    ModificationRequestForECTInfo getModificationRequestForECTData();
 
 }

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -214,7 +213,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
     }
 
     private void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
-        ExtTeleserviceCode teleserviceItem;
+        ExtTeleserviceCodeImpl teleserviceItem;
         this.teleserviceList = null;
         this.extensionContainer = null;
         this.bearerServiceList = null;
@@ -238,14 +237,15 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
             switch (ais.getTagClass()) {
                 case Tag.CLASS_CONTEXT_SPECIFIC:
                     switch (tag) {
-                        case _TAG_teleserviceList: // teleserviceList
+                        case _TAG_teleserviceList:
+                            // teleserviceList [1] TeleserviceList OPTIONAL
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".teleserviceList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
                             AsnInputStream ais2 = ais.readSequenceStream();
-                            this.teleserviceList = new ArrayList<ExtTeleserviceCode>();
+                            this.teleserviceList = new ArrayList<>();
                             while (true) {
                                 if (ais2.available() == 0)
                                     break;
@@ -258,7 +258,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 teleserviceItem = new ExtTeleserviceCodeImpl();
-                                ((ExtTeleserviceCodeImpl) teleserviceItem).decodeAll(ais2);
+                                teleserviceItem.decodeAll(ais2);
                                 this.teleserviceList.add(teleserviceItem);
                             }
                             if (this.teleserviceList.size() < 1 || this.teleserviceList.size() > 20) {
@@ -267,27 +267,28 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                                         + this.teleserviceList.size(), MAPParsingComponentExceptionReason.MistypedParameter);
                             }
                             break;
-                        case _TAG_bearerServiceList: // bearerServiceList
+                        case _TAG_bearerServiceList:
+                            // bearerServiceList [2] BearerServiceList OPTIONAL
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".bearerServiceList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            ais2 = ais.readSequenceStream();
-                            this.bearerServiceList = new ArrayList<ExtBearerServiceCode>();
+                            AsnInputStream ais3 = ais.readSequenceStream();
+                            this.bearerServiceList = new ArrayList<>();
                             while (true) {
-                                if (ais2.available() == 0)
+                                if (ais3.available() == 0)
                                     break;
 
-                                int tag2 = ais2.readTag();
-                                if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL
-                                        || !ais2.isTagPrimitive())
+                                int tag2 = ais3.readTag();
+                                if (tag2 != Tag.STRING_OCTET || ais3.getTagClass() != Tag.CLASS_UNIVERSAL
+                                        || !ais3.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad bearerServiceList element tag or tagClass or is not primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
-                                ExtBearerServiceCode extBearerServiceCode = new ExtBearerServiceCodeImpl();
-                                ((ExtBearerServiceCodeImpl) extBearerServiceCode).decodeAll(ais2);
+                                ExtBearerServiceCodeImpl extBearerServiceCode = new ExtBearerServiceCodeImpl();
+                                extBearerServiceCode.decodeAll(ais3);
                                 this.bearerServiceList.add(extBearerServiceCode);
                             }
                             if (this.bearerServiceList.size() < 1 || this.bearerServiceList.size() > 50) {
@@ -297,26 +298,27 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             }
                             break;
                         case _TAG_SS_List:
+                            // ss-List [3] SS-List OPTIONAL
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".ssList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
 
-                            ais2 = ais.readSequenceStream();
-                            this.ssList = new ArrayList<SSCode>();
+                            AsnInputStream ais4 = ais.readSequenceStream();
+                            this.ssList = new ArrayList<>();
                             while (true) {
-                                if (ais2.available() == 0)
+                                if (ais4.available() == 0)
                                     break;
 
-                                int tag2 = ais2.readTag();
-                                if (tag2 != Tag.STRING_OCTET || ais2.getTagClass() != Tag.CLASS_UNIVERSAL
-                                        || !ais2.isTagPrimitive())
+                                int tag2 = ais4.readTag();
+                                if (tag2 != Tag.STRING_OCTET || ais4.getTagClass() != Tag.CLASS_UNIVERSAL
+                                        || !ais4.isTagPrimitive())
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + ": bad ssListList element tag or tagClass or is not primitive ",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
-                                SSCode ssCode = new SSCodeImpl();
-                                ((SSCodeImpl) ssCode).decodeAll(ais2);
+                                SSCodeImpl ssCode = new SSCodeImpl();
+                                ssCode.decodeAll(ais4);
                                 this.ssList.add(ssCode);
                             }
                             if (this.ssList.size() < 1 || this.ssList.size() > 30) {
@@ -327,6 +329,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             break;
 
                         case _TAG_odb_GeneralData:
+                            // odb-GeneralData [4] ODB-GeneralData OPTIONAL
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".odbGeneralData: Parameter odbGeneralData is not primitive",
@@ -334,7 +337,9 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             this.odbGeneralData = new ODBGeneralDataImpl();
                             ((ODBGeneralDataImpl) this.odbGeneralData).decodeAll(ais);
                             break;
+
                         case _TAG_regionalSubscriptionResponse:
+                            // regionalSubscriptionResponse [5] RegionalSubscriptionResponse OPTIONAL
                             if (!ais.isTagPrimitive()) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".regionalSubscriptionResponse: is not primitive",
@@ -345,6 +350,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             break;
 
                         case _TAG_supportedCamelPhases:
+                            // supportedCamelPhases [6] SupportedCamelPhases OPTIONAL
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".supportedCamelPhases: Parameter supportedCamelPhases is not primitive",
@@ -354,6 +360,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             break;
 
                         case _TAG_extContainer:
+                            // extensionContainer [7] ExtensionContainer OPTIONAL
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".extensionContainer: Parameter extensionContainer is primitive",
@@ -363,6 +370,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             break;
 
                         case _TAG_offeredCamel4CSIs:
+                            // offeredCamel4CSIs [8] OfferedCamel4CSIs OPTIONAL
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".offeredCamel4CSIs: Parameter offeredCamel4CSIs is not primitive",
@@ -372,6 +380,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             break;
 
                         case _TAG_supportedFeatures:
+                            // supportedFeatures [9] SupportedFeatures OPTIONAL
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".supportedFeatures: Parameter supportedFeatures is not primitive",
@@ -381,6 +390,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                             break;
 
                         case _TAG_extSupportedFeatures:
+                            // ext-SupportedFeatures [10] Ext-SupportedFeatures OPTIONAL
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".extSupportedFeatures: Parameter extSupportedFeatures is not primitive",
@@ -402,10 +412,6 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
 
             num++;
         }
-
-        if (num == 0)
-            throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Needs at least 1 parameter, found " + num, MAPParsingComponentExceptionReason.MistypedParameter);
     }
 
     @Override
@@ -488,7 +494,7 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
                     throw new MAPException("IOException while encoding " + _PrimitiveName
                             + " parameter regionalSubscriptionResponse", e);
                 } catch (AsnException e) {
-                    throw new MAPException("IOException while encoding " + _PrimitiveName
+                    throw new MAPException("AsnException while encoding " + _PrimitiveName
                             + " parameter regionalSubscriptionResponse", e);
                 }
             }
@@ -564,43 +570,43 @@ public class InsertSubscriberDataResponseImpl extends MobilityMessageImpl implem
 
         if (this.odbGeneralData != null) {
             sb.append("odbGeneralData=");
-            sb.append(odbGeneralData.toString());
+            sb.append(odbGeneralData);
             sb.append(", ");
         }
 
         if (this.regionalSubscriptionResponse != null) {
             sb.append("regionalSubscriptionResponse=");
-            sb.append(regionalSubscriptionResponse.toString());
+            sb.append(regionalSubscriptionResponse);
             sb.append(", ");
         }
 
         if (this.supportedCamelPhases != null) {
             sb.append("supportedCamelPhases=");
-            sb.append(supportedCamelPhases.toString());
+            sb.append(supportedCamelPhases);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
 
         if (this.offeredCamel4CSIs != null) {
             sb.append("offeredCamel4CSIs=");
-            sb.append(offeredCamel4CSIs.toString());
+            sb.append(offeredCamel4CSIs);
             sb.append(", ");
         }
 
         if (this.supportedFeatures != null) {
             sb.append("supportedFeatures=");
-            sb.append(supportedFeatures.toString());
+            sb.append(supportedFeatures);
             sb.append(", ");
         }
 
         if (this.extSupportedFeatures != null) {
             sb.append("extSupportedFeatures=");
-            sb.append(extSupportedFeatures.toString());
+            sb.append(extSupportedFeatures);
             sb.append(", ");
         }
 

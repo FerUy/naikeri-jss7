@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -13,10 +12,10 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
  *
 <code>
 ModificationRequestFor-CB-Info ::= SEQUENCE {
-  ss-Code             [0] SS-Code,
-  basicService        [1] Ext-BasicServiceCode OPTIONAL,
-  ss-Status           [2] Ext-SS-Status OPTIONAL,
-  password            [3] Password OPTIONAL,
+  ss-Code                        [0] SS-Code,
+  basicService                   [1] Ext-BasicServiceCode OPTIONAL,
+  ss-Status                      [2] Ext-SS-Status OPTIONAL,
+  password                       [3] Password OPTIONAL,
   wrongPasswordAttemptsCounter   [4] WrongPasswordAttemptsCounter OPTIONAL,
   modifyNotificationToCSE        [5] ModificationInstruction OPTIONAL,
   extensionContainer             [6] ExtensionContainer OPTIONAL,
@@ -25,7 +24,6 @@ ModificationRequestFor-CB-Info ::= SEQUENCE {
 
 WrongPasswordAttemptsCounter ::= INTEGER (0..4)
 </code>
- *
  *
  * @author sergey vetyutnev
  *

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl.message;
 
 import io.netty.buffer.ByteBuf;

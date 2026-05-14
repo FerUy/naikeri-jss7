@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import org.mobicents.protocols.asn.AsnException;
@@ -409,7 +408,7 @@ public class AnyTimeSubscriptionInterrogationResponseImpl extends MobilityMessag
                     case _TAG_ECT_DATA:
                         if (ais.isTagPrimitive())
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                    + ": Parameter imsi is primitive",
+                                    + ": Parameter ectData is primitive",
                                     MAPParsingComponentExceptionReason.MistypedParameter);
 
                         this.ectData = new EctDataImpl();

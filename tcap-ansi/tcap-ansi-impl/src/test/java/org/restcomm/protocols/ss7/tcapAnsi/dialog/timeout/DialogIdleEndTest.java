@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcapAnsi.dialog.timeout;
 
 import static org.testng.Assert.*;

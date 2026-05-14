@@ -1,14 +1,14 @@
-
 package org.restcomm.protocols.ss7.sccp.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Random;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.restcomm.protocols.ss7.Util;
 import org.restcomm.protocols.ss7.mtp.Mtp3TransferPrimitive;
 import org.restcomm.protocols.ss7.sccp.Router;
@@ -31,6 +31,8 @@ import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
  *
  */
 public abstract class SccpHarness {
+
+    private static final Logger logger = LogManager.getLogger(SccpHarness.class.getName());
 
     protected boolean onlyOneStack;
 
@@ -55,8 +57,8 @@ public abstract class SccpHarness {
     protected ParameterFactory parameterFactory;
 
     /**
-	 *
-	 */
+     *
+     */
     public SccpHarness() {
         mtp3UserPart1.setOtherPart(mtp3UserPart2);
         mtp3UserPart2.setOtherPart(mtp3UserPart1);
@@ -152,7 +154,7 @@ public abstract class SccpHarness {
         if (sccpStack1.getSccpProtocolVersion() == SccpProtocolVersion.ANSI)
             return 8000002;
         else
-        return 2;
+            return 2;
     }
 
     protected int getSSN() {
@@ -183,21 +185,13 @@ public abstract class SccpHarness {
     protected boolean saveTrafficInFile = false;
 
     /**
-     * After this method invoking all MTP traffic will be save into the file "MsgLog.txt" file format:
+     * After this method invoking all MTP traffic will be saved into the file "MsgLog.txt" file format:
      * [message][message]...[message] [message] ::= { byte-length low byte, byte-length high byte, byte[] message }
      */
     public synchronized void saveTrafficInFile() {
         this.saveTrafficInFile = true;
-//        ((Mtp3UserPartImpl) this.mtp3UserPart1).saveTrafficInFile = true;
-//        ((Mtp3UserPartImpl) this.mtp3UserPart2).saveTrafficInFile = true;
 
         try {
-//            String tmpDir = Util.getTmpTestDir();
-//            if (tmpDir != null)
-//                tmpDir = tmpDir + File.separator;
-//            else
-//                tmpDir = "";
-//            FileOutputStream fs = new FileOutputStream(tmpDir + "MsgLog.pcap", false);
             FileOutputStream fs = new FileOutputStream("MsgLog.pcap", false);
 
             // pcap global header
@@ -232,7 +226,7 @@ public abstract class SccpHarness {
             fs.close();
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -427,29 +421,25 @@ public abstract class SccpHarness {
             fs.write(ethPart);
             fs.close();
 
-            // MsgLog.txt version
-            // byte[] txData = msg.encodeMtp3();
-            // FileOutputStream fs = new FileOutputStream("MsgLog.txt", true);
-            // int ln = txData.length;
-            // fs.write(ln & 0xFF);
-            // fs.write(ln >> 8);
-            // fs.write(txData);
-            // fs.close();
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
     public synchronized void saveLogFile(String fileName) {
         try {
-            PatternLayout pattern = new PatternLayout();
-            pattern.setConversionPattern("%d %-5p [%c] (%t) %m%n");
-            FileAppender fileAppender = new FileAppender(pattern, fileName);
-            BasicConfigurator.configure(fileAppender);
-        } catch (IOException e) {
+            LoggerContext lc = (LoggerContext) LogManager.getContext(false);
+            PatternLayout layout = PatternLayout.newBuilder().withPattern("%d %-5p [%c] (%t) %m%n").build();
+            FileAppender fa = FileAppender.newBuilder().setLayout(layout).withFileName(fileName)
+                .setConfiguration(lc.getConfiguration()).build();
+            fa.start();
+            lc.getConfiguration().addAppender(fa);
+            lc.getRootLogger().addAppender(lc.getConfiguration().getAppender(fa.getName()));
+            lc.updateLoggers();
+        } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

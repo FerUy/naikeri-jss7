@@ -11,11 +11,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
-import org.restcomm.protocols.ss7.map.primitives.AddressStringImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -25,6 +26,8 @@ import org.testng.annotations.Test;
  *
  */
 public class AddressStringTest {
+
+    private static final Logger logger = LogManager.getLogger(AddressStringTest.class.getName());
 
     byte[] rawData = new byte[] { 4, 9, (byte) 0x96, 0x02, 0x24, (byte) 0x80, 0x03, 0x00, (byte) 0x80, 0x00, (byte) 0xf2 };
     byte[] rawData2 = new byte[] { 4, 5, -106, 33, -29, 78, -11 };
@@ -94,7 +97,7 @@ public class AddressStringTest {
         // deserialize
         byte[] pickled = out.toByteArray();
         String xml = new String(pickled);
-        System.out.println(xml);
+        logger.info(xml);
 
         InputStream in = new ByteArrayInputStream(pickled);
         ObjectInputStream ois = new ObjectInputStream(in);

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.primitives;
 
 import java.nio.ByteBuffer;

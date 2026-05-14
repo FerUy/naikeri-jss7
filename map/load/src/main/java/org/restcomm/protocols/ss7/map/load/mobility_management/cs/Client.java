@@ -1,7 +1,8 @@
 package org.restcomm.protocols.ss7.map.load.mobility_management.cs;
 
 import com.google.common.util.concurrent.RateLimiter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.asn.BitSetStrictLength;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
@@ -46,6 +47,11 @@ import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.DiameterIdentity;
 import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.primitives.SubscriberIdentity;
+import org.restcomm.protocols.ss7.map.api.primitives.ISDNSubaddressString;
+import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
+import org.restcomm.protocols.ss7.map.primitives.SubscriberIdentityImpl;
+import org.restcomm.protocols.ss7.map.primitives.ISDNSubaddressStringImpl;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.ReSynchronisationInfo;
@@ -106,6 +112,8 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PDPContextInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberState;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.PSSubscriberStateChoice;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
@@ -117,6 +125,21 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TimeZone;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.UserCSGInformation;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationInstruction;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCFInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCBInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCSI;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForODBData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForIPSMGWData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedServingNode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCSG;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCWInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCLIPInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCLIRInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCHInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForECTInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedCAMELSubscriptionInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AdditionalRequestedCAMELSubscriptionInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSGId;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.DeleteSubscriberDataRequest;
@@ -131,14 +154,20 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.RegionalSubscriptionResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.SupportedCamelPhases;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TeleserviceCodeValue;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtBasicServiceCode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtSSStatus;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ODBData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ODBHPLMNData;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.OverrideCategory;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.Password;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.CliRestrictionOption;
 import org.restcomm.protocols.ss7.map.load.CsvWriter;
 import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
 import org.restcomm.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdOrLAIImpl;
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
-import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.PlmnIdImpl;
 import org.restcomm.protocols.ss7.map.primitives.TimeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.ReSynchronisationInfoImpl;
@@ -164,6 +193,22 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.Sub
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TAIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.TimeZoneImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.UserCSGInformationImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBasicServiceCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtSSStatusImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBHPLMNDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForCBInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForCFInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForCHInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForCLIPInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForCLIRInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForCSGImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForCSIImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForCWInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForECTInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForIPSMGWDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ModificationRequestForODBDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RequestedServingNodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBearerServiceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtTeleserviceCodeImpl;
@@ -172,6 +217,7 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ODBG
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
+import org.restcomm.protocols.ss7.map.service.supplementary.PasswordImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
@@ -204,9 +250,9 @@ import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
-public class Client extends TestHarnessMobilityManagement {
+public class Client extends TestHarnessMobilityManagementCs {
 
-    private static final Logger logger = Logger.getLogger(Client.class);
+    private static final Logger logger = LogManager.getLogger(Client.class);
 
     // TCAP
     private static TCAPStack tcapStack;
@@ -240,6 +286,7 @@ public class Client extends TestHarnessMobilityManagement {
 
     static Long imsiForPurge = 901405105680000L;
     static Long imsiForCheckImei_Huawei = 901405105680000L;
+    static Long imsiForATM = 901405105680000L;
 
     protected void initializeStack(IpChannelType ipChannelType) throws Exception {
 
@@ -373,13 +420,12 @@ public class Client extends TestHarnessMobilityManagement {
         if (!(networkIdState == null
                 || networkIdState.isAvailable() && networkIdState.getCongLevel() <= 0 && executorCongestionLevel <= 0)) {
             // congestion or unavailable
-            logger.warn("**** Outgoing congestion control: MAP load test client: networkIdState=" + networkIdState
-                    + ", executorCongestionLevel=" + executorCongestionLevel);
+            logger.warn("**** Outgoing congestion control: MAP load test client: networkIdState={}, executorCongestionLevel={}", networkIdState, executorCongestionLevel);
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
-                logger.error("InterruptedException: " + e.getMessage());
+                logger.error("InterruptedException: {}", e.getMessage());
             }
         }
 
@@ -417,121 +463,121 @@ public class Client extends TestHarnessMobilityManagement {
             ipChannelType = IpChannelType.TCP;
         }
 
-        System.out.println("IpChannelType=" + ipChannelType);
+        logger.info("IpChannelType={}", ipChannelType);
 
         if (args.length >= 4) {
-            TestHarnessMobilityManagement.CLIENT_IP = args[3];
+            TestHarnessMobilityManagementCs.CLIENT_IP = args[3];
         }
 
-        System.out.println("CLIENT_IP=" + TestHarnessMobilityManagement.CLIENT_IP);
+        logger.info("CLIENT_IP={}", TestHarnessMobilityManagementCs.CLIENT_IP);
 
         if (args.length >= 5) {
-            TestHarnessMobilityManagement.CLIENT_PORT = Integer.parseInt(args[4]);
+            TestHarnessMobilityManagementCs.CLIENT_PORT = Integer.parseInt(args[4]);
         }
 
-        System.out.println("CLIENT_PORT=" + TestHarnessMobilityManagement.CLIENT_PORT);
+        logger.info("CLIENT_PORT={}", TestHarnessMobilityManagementCs.CLIENT_PORT);
 
         if (args.length >= 6) {
-            TestHarnessMobilityManagement.SERVER_IP = args[5];
+            TestHarnessMobilityManagementCs.SERVER_IP = args[5];
         }
 
-        System.out.println("SERVER_IP=" + TestHarnessMobilityManagement.SERVER_IP);
+        logger.info("SERVER_IP={}", TestHarnessMobilityManagementCs.SERVER_IP);
 
         if (args.length >= 7) {
-            TestHarnessMobilityManagement.SERVER_PORT = Integer.parseInt(args[6]);
+            TestHarnessMobilityManagementCs.SERVER_PORT = Integer.parseInt(args[6]);
         }
 
-        System.out.println("SERVER_PORT=" + TestHarnessMobilityManagement.SERVER_PORT);
+        logger.info("SERVER_PORT={}", TestHarnessMobilityManagementCs.SERVER_PORT);
 
         if (args.length >= 8) {
-            TestHarnessMobilityManagement.CLIENT_SPC = Integer.parseInt(args[7]);
+            TestHarnessMobilityManagementCs.CLIENT_SPC = Integer.parseInt(args[7]);
         }
 
-        System.out.println("CLIENT_SPC=" + TestHarnessMobilityManagement.CLIENT_SPC);
+        logger.info("CLIENT_SPC={}", TestHarnessMobilityManagementCs.CLIENT_SPC);
 
         if (args.length >= 9) {
-            TestHarnessMobilityManagement.SERVER_SPC = Integer.parseInt(args[8]);
+            TestHarnessMobilityManagementCs.SERVER_SPC = Integer.parseInt(args[8]);
         }
 
-        System.out.println("SERVER_SPC=" + TestHarnessMobilityManagement.SERVER_SPC);
+        logger.info("SERVER_SPC={}", TestHarnessMobilityManagementCs.SERVER_SPC);
 
         if (args.length >= 10) {
-            TestHarnessMobilityManagement.NETWORK_INDICATOR = Integer.parseInt(args[9]);
+            TestHarnessMobilityManagementCs.NETWORK_INDICATOR = Integer.parseInt(args[9]);
         }
 
-        System.out.println("NETWORK_INDICATOR=" + TestHarnessMobilityManagement.NETWORK_INDICATOR);
+        logger.info("NETWORK_INDICATOR={}", TestHarnessMobilityManagementCs.NETWORK_INDICATOR);
 
         if (args.length >= 11) {
-            TestHarnessMobilityManagement.SERVICE_INDICATOR = Integer.parseInt(args[10]);
+            TestHarnessMobilityManagementCs.SERVICE_INDICATOR = Integer.parseInt(args[10]);
         }
 
-        System.out.println("SERVICE_INDICATOR=" + TestHarnessMobilityManagement.SERVICE_INDICATOR);
+        logger.info("SERVICE_INDICATOR={}", TestHarnessMobilityManagementCs.SERVICE_INDICATOR);
 
         if (args.length >= 12) {
-            TestHarnessMobilityManagement.SSN = Integer.parseInt(args[11]);
+            TestHarnessMobilityManagementCs.SSN = Integer.parseInt(args[11]);
         }
 
-        System.out.println("SSN=" + TestHarnessMobilityManagement.SSN);
+        logger.info("SSN={}", TestHarnessMobilityManagementCs.SSN);
 
         if (args.length >= 13) {
-            TestHarnessMobilityManagement.ROUTING_CONTEXT = Integer.parseInt(args[12]);
+            TestHarnessMobilityManagementCs.ROUTING_CONTEXT = Integer.parseInt(args[12]);
         }
 
-        System.out.println("ROUTING_CONTEXT=" + TestHarnessMobilityManagement.ROUTING_CONTEXT);
+        logger.info("ROUTING_CONTEXT={}", TestHarnessMobilityManagementCs.ROUTING_CONTEXT);
 
         if (args.length >= 14) {
-            TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[13]);
+            TestHarnessMobilityManagementCs.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[13]);
         }
 
-        System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT=" + TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
+        logger.info("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT={}", TestHarnessMobilityManagementCs.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
 
         if (args.length >= 15) {
-            TestHarnessMobilityManagement.RAMP_UP_PERIOD = Integer.parseInt(args[14]);
+            TestHarnessMobilityManagementCs.RAMP_UP_PERIOD = Integer.parseInt(args[14]);
         }
 
-        System.out.println("RAMP_UP_PERIOD=" + TestHarnessMobilityManagement.RAMP_UP_PERIOD);
+        logger.info("RAMP_UP_PERIOD={}", TestHarnessMobilityManagementCs.RAMP_UP_PERIOD);
 
         if (args.length >= 16) {
-            TestHarnessMobilityManagement.SCCP_CLIENT_ADDRESS = args[15];
+            TestHarnessMobilityManagementCs.SCCP_CLIENT_ADDRESS = args[15];
         }
 
-        System.out.println("SCCP_CLIENT_ADDRESS=" + TestHarnessMobilityManagement.SCCP_CLIENT_ADDRESS);
+        logger.info("SCCP_CLIENT_ADDRESS={}", TestHarnessMobilityManagementCs.SCCP_CLIENT_ADDRESS);
 
         if (args.length >= 17) {
-            TestHarnessMobilityManagement.SCCP_SERVER_ADDRESS = args[16];
+            TestHarnessMobilityManagementCs.SCCP_SERVER_ADDRESS = args[16];
         }
 
-        System.out.println("SCCP_SERVER_ADDRESS=" + TestHarnessMobilityManagement.SCCP_SERVER_ADDRESS);
+        logger.info("SCCP_SERVER_ADDRESS={}", TestHarnessMobilityManagementCs.SCCP_SERVER_ADDRESS);
 
         if (args.length >= 18) {
-            TestHarnessMobilityManagement.ROUTING_INDICATOR = RoutingIndicator.valueOf(Integer.parseInt(args[17]));
+            TestHarnessMobilityManagementCs.ROUTING_INDICATOR = RoutingIndicator.valueOf(Integer.parseInt(args[17]));
         }
 
-        System.out.println("ROUTING_INDICATOR=" + TestHarnessMobilityManagement.ROUTING_INDICATOR);
+        logger.info("ROUTING_INDICATOR={}", TestHarnessMobilityManagementCs.ROUTING_INDICATOR);
 
         if (args.length >= 19) {
-            TestHarnessMobilityManagement.SENDING_MESSAGE_THREAD_COUNT = Integer.parseInt(args[18]);
+            TestHarnessMobilityManagementCs.SENDING_MESSAGE_THREAD_COUNT = Integer.parseInt(args[18]);
         }
 
-        System.out.println("SENDING_MESSAGE_THREAD_COUNT=" + TestHarnessMobilityManagement.SENDING_MESSAGE_THREAD_COUNT);
+        logger.info("SENDING_MESSAGE_THREAD_COUNT={}", TestHarnessMobilityManagementCs.SENDING_MESSAGE_THREAD_COUNT);
 
         // logger.info("Number of calls to be completed = " + noOfCalls + " Number of concurrent calls to be maintained = " + noOfConcurrentCalls);
 
         NDIALOGS = noOfCalls;
 
-        System.out.println("NDIALOGS=" + NDIALOGS);
+        logger.info("NDIALOGS={}", NDIALOGS);
 
         MAXCONCURRENTDIALOGS = noOfConcurrentCalls;
 
-        System.out.println("MAXCONCURRENTDIALOGS=" + MAXCONCURRENTDIALOGS);
+        logger.info("MAXCONCURRENTDIALOGS={}", MAXCONCURRENTDIALOGS);
 
         final Client client = new Client();
-        client.endCount = TestHarnessMobilityManagement.RAMP_UP_PERIOD;
+        client.endCount = TestHarnessMobilityManagementCs.RAMP_UP_PERIOD;
 
         try {
             client.initializeStack(ipChannelType);
 
-            Thread.sleep(TestHarnessMobilityManagement.TEST_START_DELAY);
+            Thread.sleep(TestHarnessMobilityManagementCs.TEST_START_DELAY);
 
             // threads creating
             Thread[] threads = new Thread[SENDING_MESSAGE_THREAD_COUNT];
@@ -549,7 +595,7 @@ public class Client extends TestHarnessMobilityManagement {
             client.terminate();
 
         } catch (Exception e) {
-            logger.error("Exception: " + e.getMessage());
+            logger.error("Exception: {}", e.getMessage());
         }
     }
 
@@ -599,8 +645,7 @@ public class Client extends TestHarnessMobilityManagement {
      */
     @Override
     public void onErrorComponent(MAPDialog mapDialog, Long invokeId, MAPErrorMessage mapErrorMessage) {
-        logger.error(String.format("onErrorComponent for Dialog=%d and invokeId=%d MAPErrorMessage=%s",
-                mapDialog.getLocalDialogId(), invokeId, mapErrorMessage));
+        logger.error("onErrorComponent for Dialog={} and invokeId={} MAPErrorMessage={}", mapDialog.getLocalDialogId(), invokeId, mapErrorMessage);
     }
 
     /*
@@ -611,8 +656,7 @@ public class Client extends TestHarnessMobilityManagement {
      */
     @Override
     public void onRejectComponent(MAPDialog mapDialog, Long invokeId, Problem problem, boolean isLocalOriginated) {
-        logger.error(String.format("onRejectComponent for Dialog=%d and invokeId=%d Problem=%s isLocalOriginated=%s",
-                mapDialog.getLocalDialogId(), invokeId, problem, isLocalOriginated));
+        logger.error("onRejectComponent for Dialog={} and invokeId={} Problem={} isLocalOriginated={}", mapDialog.getLocalDialogId(), invokeId, problem, isLocalOriginated);
     }
 
     /*
@@ -623,7 +667,7 @@ public class Client extends TestHarnessMobilityManagement {
      */
     @Override
     public void onInvokeTimeout(MAPDialog mapDialog, Long invokeId) {
-        logger.error(String.format("onInvokeTimeout for Dialog=%d and invokeId=%d", mapDialog.getLocalDialogId(), invokeId));
+        logger.error("onInvokeTimeout for Dialog={} and invokeId={}", mapDialog.getLocalDialogId(), invokeId);
     }
 
     /*
@@ -635,7 +679,7 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onDialogDelimiter(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogDelimiter for DialogId=%d", mapDialog.getLocalDialogId()));
+            logger.debug("onDialogDelimiter for DialogId={}", mapDialog.getLocalDialogId());
         }
     }
 
@@ -650,9 +694,7 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onDialogRequest(MAPDialog mapDialog, AddressString destReference, AddressString origReference, MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format(
-                    "onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s MAPExtensionContainer=%s",
-                    mapDialog.getLocalDialogId(), destReference, origReference, extensionContainer));
+            logger.debug("onDialogRequest for DialogId={} DestinationReference={} OriginReference={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), destReference, origReference, extensionContainer);
         }
     }
 
@@ -668,8 +710,7 @@ public class Client extends TestHarnessMobilityManagement {
     public void onDialogRequestEricsson(MAPDialog mapDialog, AddressString destReference, AddressString origReference, AddressString arg3,
                                         AddressString arg4) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s ",
-                    mapDialog.getLocalDialogId(), destReference, origReference));
+            logger.debug("onDialogRequest for DialogId={} DestinationReference={} OriginReference={} ", mapDialog.getLocalDialogId(), destReference, origReference);
         }
     }
 
@@ -682,7 +723,7 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onDialogAccept(MAPDialog mapDialog, MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogAccept for DialogId=%d MAPExtensionContainer=%s", mapDialog.getLocalDialogId(), extensionContainer));
+            logger.debug("onDialogAccept for DialogId={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), extensionContainer);
         }
     }
 
@@ -697,9 +738,7 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onDialogReject(MAPDialog mapDialog, MAPRefuseReason refuseReason, ApplicationContextName alternativeApplicationContext,
                                MAPExtensionContainer extensionContainer) {
-        logger.error(String.format(
-                "onDialogReject for DialogId=%d MAPRefuseReason=%s ApplicationContextName=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), refuseReason, alternativeApplicationContext, extensionContainer));
+        logger.error("onDialogReject for DialogId={} MAPRefuseReason={} ApplicationContextName={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), refuseReason, alternativeApplicationContext, extensionContainer);
         this.csvWriter.incrementCounter(ERROR_DIALOGS);
     }
 
@@ -712,8 +751,7 @@ public class Client extends TestHarnessMobilityManagement {
      */
     @Override
     public void onDialogUserAbort(MAPDialog mapDialog, MAPUserAbortChoice userReason, MAPExtensionContainer extensionContainer) {
-        logger.error(String.format("onDialogUserAbort for DialogId=%d MAPUserAbortChoice=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), userReason, extensionContainer));
+        logger.error("onDialogUserAbort for DialogId={} MAPUserAbortChoice={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), userReason, extensionContainer);
         this.csvWriter.incrementCounter(ERROR_DIALOGS);
     }
 
@@ -728,9 +766,7 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onDialogProviderAbort(MAPDialog mapDialog, MAPAbortProviderReason abortProviderReason, MAPAbortSource abortSource,
                                       MAPExtensionContainer extensionContainer) {
-        logger.error(String.format(
-                "onDialogProviderAbort for DialogId=%d MAPAbortProviderReason=%s MAPAbortSource=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), abortProviderReason, abortSource, extensionContainer));
+        logger.error("onDialogProviderAbort for DialogId={} MAPAbortProviderReason={} MAPAbortSource={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), abortProviderReason, abortSource, extensionContainer);
         this.csvWriter.incrementCounter(ERROR_DIALOGS);
     }
 
@@ -742,7 +778,7 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onDialogClose(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("DialogClose for Dialog=%d", mapDialog.getLocalDialogId()));
+            logger.debug("DialogClose for Dialog={}", mapDialog.getLocalDialogId());
         }
     }
 
@@ -754,8 +790,7 @@ public class Client extends TestHarnessMobilityManagement {
      */
     @Override
     public void onDialogNotice(MAPDialog mapDialog, MAPNoticeProblemDiagnostic noticeProblemDiagnostic) {
-        logger.error(String.format("onDialogNotice for DialogId=%d MAPNoticeProblemDiagnostic=%s ",
-                mapDialog.getLocalDialogId(), noticeProblemDiagnostic));
+        logger.error("onDialogNotice for DialogId={} MAPNoticeProblemDiagnostic={} ", mapDialog.getLocalDialogId(), noticeProblemDiagnostic);
         this.csvWriter.incrementCounter(ERROR_DIALOGS);
     }
 
@@ -768,7 +803,7 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onDialogRelease(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogRelease for DialogId=%d", mapDialog.getLocalDialogId()));
+            logger.debug("onDialogRelease for DialogId={}", mapDialog.getLocalDialogId());
         }
         this.csvWriter.incrementCounter(SUCCESSFUL_DIALOGS);
         this.endCount++;
@@ -778,18 +813,18 @@ public class Client extends TestHarnessMobilityManagement {
                 long current = System.currentTimeMillis();
                 float sec = (float) (current - prev) / 1000f;
                 prev = current;
-                logger.warn("Completed 10000 Dialogs, dialogs per second: " + (10000 / sec));
+                logger.warn("Completed 10000 Dialogs, dialogs per second: {}", 10000 / sec);
             }
         } else {
             if (!endReportPrinted) {
                 endReportPrinted = true;
                 long current = System.currentTimeMillis();
-                logger.warn("Start Time = " + start);
-                logger.warn("Current Time = " + current);
+                logger.warn("Start Time = {}", start);
+                logger.warn("Current Time = {}", current);
                 float sec = (float) (current - start) / 1000f;
 
-                logger.warn("Total time in sec = " + sec);
-                logger.warn("Throughput = " + (NDIALOGS / sec));
+                logger.warn("Total time in sec = {}", sec);
+                logger.warn("Throughput = {}", NDIALOGS / sec);
             }
         }
     }
@@ -802,7 +837,7 @@ public class Client extends TestHarnessMobilityManagement {
      */
     @Override
     public void onDialogTimeout(MAPDialog mapDialog) {
-        logger.error(String.format("onDialogTimeout for DialogId=%d", mapDialog.getLocalDialogId()));
+        logger.error("onDialogTimeout for DialogId={}", mapDialog.getLocalDialogId());
         this.csvWriter.incrementCounter(ERROR_DIALOGS);
     }
 
@@ -858,15 +893,15 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onSendAuthenticationInfoRequest(SendAuthenticationInfoRequest sendAuthenticationInfoRequestIndication) {
-        logger.error(String.format("Received SendAuthenticationInfoRequest over DialogId=%d", sendAuthenticationInfoRequestIndication
-                .getMAPDialog().getLocalDialogId()));
+        logger.error("Received SendAuthenticationInfoRequest over DialogId={}", sendAuthenticationInfoRequestIndication
+                .getMAPDialog().getLocalDialogId());
     }
 
     @Override
     public void onSendAuthenticationInfoResponse(SendAuthenticationInfoResponse sendAuthenticationInfoResponseIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onSendAuthenticationInfoResponse for DialogId=%d", sendAuthenticationInfoResponseIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onSendAuthenticationInfoResponse for DialogId={}", sendAuthenticationInfoResponseIndication
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             // Create Dialog
@@ -969,8 +1004,8 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onInsertSubscriberDataRequest(InsertSubscriberDataRequest insertSubscriberDataRequest) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onInsertSubscriberDataRequest for DialogId=%d", insertSubscriberDataRequest
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onInsertSubscriberDataRequest for DialogId={}", insertSubscriberDataRequest
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = insertSubscriberDataRequest.getInvokeId();
@@ -1112,22 +1147,22 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onInsertSubscriberDataResponse(InsertSubscriberDataResponse insertSubscriberDataResponse) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onInsertSubscriberDataResponse over DialogId=%d", insertSubscriberDataResponse
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onInsertSubscriberDataResponse over DialogId={}", insertSubscriberDataResponse
+                    .getMAPDialog().getLocalDialogId());
         }
     }
 
     @Override
     public void onUpdateLocationRequest(UpdateLocationRequest updateLocationRequestIndication) {
-        logger.error(String.format("ERROR: received UpdateLocationRequest at the client (acting as VLR) over DialogId=%d", updateLocationRequestIndication
-                .getMAPDialog().getLocalDialogId()));
+        logger.error("ERROR: received UpdateLocationRequest at the client (acting as VLR) over DialogId={}", updateLocationRequestIndication
+                .getMAPDialog().getLocalDialogId());
     }
 
     @Override
     public void onUpdateLocationResponse(UpdateLocationResponse updateLocationResponseIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onUpdateLocationResponse over DialogId=%d", updateLocationResponseIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onUpdateLocationResponse over DialogId={}", updateLocationResponseIndication
+                    .getMAPDialog().getLocalDialogId());
         }
     }
 
@@ -1144,8 +1179,8 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onCancelLocationRequest(CancelLocationRequest cancelLocationRequest) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onCancelLocationRequest for DialogId=%d", cancelLocationRequest
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onCancelLocationRequest for DialogId={}", cancelLocationRequest
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = cancelLocationRequest.getInvokeId();
@@ -1161,6 +1196,7 @@ public class Client extends TestHarnessMobilityManagement {
 
             new Thread(new PurgeMSSender(this)).start();
             new Thread(new CHISender(this)).start();
+            new Thread(new ATMSender(this)).start();
 
         } catch (MAPException e) {
             logger.error("Error while processing CancelLocationRequest ", e);
@@ -1169,23 +1205,23 @@ public class Client extends TestHarnessMobilityManagement {
 
     @Override
     public void onCancelLocationResponse(CancelLocationResponse cancelLocationResponse) {
-        logger.error(String.format("onCancelLocationResponse over DialogId=%d", cancelLocationResponse
-                .getMAPDialog().getLocalDialogId()));
+        logger.error("onCancelLocationResponse over DialogId={}", cancelLocationResponse
+                .getMAPDialog().getLocalDialogId());
     }
 
     @Override
     public void onPurgeMSRequest(PurgeMSRequest purgeMSRequest) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onPurgeMSRequest over DialogId=%d", purgeMSRequest
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onPurgeMSRequest over DialogId={}", purgeMSRequest
+                    .getMAPDialog().getLocalDialogId());
         }
     }
 
     @Override
     public void onPurgeMSResponse(PurgeMSResponse purgeMSResponse) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onPurgeMSResponse over DialogId=%d", purgeMSResponse
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onPurgeMSResponse over DialogId={}", purgeMSResponse
+                    .getMAPDialog().getLocalDialogId());
         }
     }
 
@@ -1212,20 +1248,20 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onResetRequest(ResetRequest resetRequestIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onResetRequest over DialogId=%d", resetRequestIndication.getMAPDialog().getLocalDialogId()));
+            logger.debug("onResetRequest over DialogId={}", resetRequestIndication.getMAPDialog().getLocalDialogId());
             try {
                 if (resetRequestIndication.getHlrNumber() != null)
-                    logger.debug("onResetRequest, hlrNumber="+resetRequestIndication.getHlrNumber());
+                    logger.debug("onResetRequest, hlrNumber={}", resetRequestIndication.getHlrNumber());
                 if (resetRequestIndication.getSendingNodenumber() != null)
-                    logger.debug("onResetRequest, sendingNodeNumber="+resetRequestIndication.getSendingNodenumber());
+                    logger.debug("onResetRequest, sendingNodeNumber={}", resetRequestIndication.getSendingNodenumber());
                 if (resetRequestIndication.getHlrList() != null)
-                    logger.debug("onResetRequest, hlrList="+resetRequestIndication.getHlrList());
+                    logger.debug("onResetRequest, hlrList={}", resetRequestIndication.getHlrList());
                 if (resetRequestIndication.getResetIdList() != null)
-                    logger.debug("onResetRequest, resetIdList="+resetRequestIndication.getResetIdList());
+                    logger.debug("onResetRequest, resetIdList={}", resetRequestIndication.getResetIdList());
                 if (resetRequestIndication.getSubscriptionData() != null)
-                    logger.debug("onResetRequest, subscriptionData="+resetRequestIndication.getSubscriptionData());
+                    logger.debug("onResetRequest, subscriptionData={}", resetRequestIndication.getSubscriptionData());
                 if (resetRequestIndication.getSubscriptionDataDeletion() != null)
-                    logger.debug("onResetRequest, subscriptionDataDeletion="+resetRequestIndication.getSubscriptionDataDeletion());
+                    logger.debug("onResetRequest, subscriptionDataDeletion={}", resetRequestIndication.getSubscriptionDataDeletion());
 
             } catch (Exception e) {
                 logger.error("Error while processing onResetRequest ", e);
@@ -1270,10 +1306,23 @@ public class Client extends TestHarnessMobilityManagement {
     }
 
     @Override
+    public void onAnyTimeModificationRequest(AnyTimeModificationRequest anyTimeModificationRequest) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationResponse(AnyTimeModificationResponse anyTimeModificationResponse) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("onAnyTimeModificationResponse over DialogId={}", anyTimeModificationResponse
+                    .getMAPDialog().getLocalDialogId());
+        }
+    }
+
+    @Override
     public void onProvideSubscriberInfoRequest(ProvideSubscriberInfoRequest provideSubscriberInfoRequest) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onProvideSubscriberInfoRequest over DialogId=%d", provideSubscriberInfoRequest
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onProvideSubscriberInfoRequest over DialogId={}", provideSubscriberInfoRequest
+                    .getMAPDialog().getLocalDialogId());
         }
 
         try {
@@ -1748,8 +1797,8 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onDeleteSubscriberDataRequest(DeleteSubscriberDataRequest deleteSubscriberDataRequest) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDeleteSubscriberDataRequest over DialogId=%d", deleteSubscriberDataRequest
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onDeleteSubscriberDataRequest over DialogId={}", deleteSubscriberDataRequest
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = deleteSubscriberDataRequest.getInvokeId();
@@ -1795,8 +1844,8 @@ public class Client extends TestHarnessMobilityManagement {
     @Override
     public void onCheckImeiResponse(CheckImeiResponse checkImeiResponse) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onCheckImeiResponse over DialogId=%d", checkImeiResponse
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onCheckImeiResponse over DialogId={}", checkImeiResponse
+                    .getMAPDialog().getLocalDialogId());
         }
     }
 
@@ -1878,7 +1927,7 @@ public class Client extends TestHarnessMobilityManagement {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ie) {
-                logger.error("Interrupted Exception on "+getClient()+", " +ie.getMessage());
+                logger.error("Interrupted Exception on {}, {}", getClient(), ie.getMessage());
             }
             try {
                 // Create Dialog
@@ -2078,6 +2127,140 @@ public class Client extends TestHarnessMobilityManagement {
                         null, locationInformationEPS);
                 mapDialogMobility.send();
 
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+        }
+    }
+
+    private static class ATMSender implements Runnable {
+
+        private final Client client4AtmSender;
+
+        public ATMSender(Client client) {
+            client4AtmSender = client;
+        }
+
+        public Client getClient() {
+            return client4AtmSender;
+        }
+
+        @Override
+        public void run() {
+            imsiForATM++;
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ie) {
+                logger.error("Interrupted Exception for "+getClient()+"." +ie.getMessage());
+            }
+
+            try {
+                // Create Dialog
+                AddressString originAddressString = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710490000");
+                AddressString destAddressString = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
+
+                SccpAddress clientSccpAddress = createSccpAddress(ROUTING_INDICATOR, CLIENT_SPC, VLR_SSN, SCCP_CLIENT_ADDRESS);
+                SccpAddress serverSccpAddress = createSccpAddress(ROUTING_INDICATOR, SERVER_SPC, HLR_SSN, SCCP_SERVER_ADDRESS);
+
+                MAPApplicationContextVersion mapAcnVersion = MAPApplicationContextVersion.version3;
+                MAPApplicationContextName mapAcn = MAPApplicationContextName.anyTimeInfoHandlingContext;
+                MAPApplicationContext mapAppContext = MAPApplicationContext.getInstance(mapAcn, mapAcnVersion);
+                MAPDialogMobility mapDialogMobility = mapProvider.getMAPServiceMobility().createNewDialog(mapAppContext, clientSccpAddress,
+                        originAddressString, serverSccpAddress, destAddressString);
+
+                IMSI imsi = new IMSIImpl(String.valueOf(imsiForATM));
+                SubscriberIdentity subscriberIdentity = new SubscriberIdentityImpl(imsi);
+                ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                        "491710490023");
+                SupplementaryCodeValue supplementaryCodeValue = getSupplementaryCodeValue();
+                SSCode ssCode = new SSCodeImpl(supplementaryCodeValue);
+                ExtBasicServiceCode basicServiceCode = new ExtBasicServiceCodeImpl(new ExtBearerServiceCodeImpl(getBearerServiceCodeValue()));
+                ExtBasicServiceCode basicServiceCode2 = new ExtBasicServiceCodeImpl(new ExtTeleserviceCodeImpl(getTeleserviceCodeValue()));
+                ExtSSStatus ssStatus = new ExtSSStatusImpl(false, true, false, true);
+                AddressString forwardedToNumber = mapProvider.getMAPParameterFactory()
+                        .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "882285105682451");
+                ISDNSubaddressString forwardedToSubaddress = new ISDNSubaddressStringImpl(new byte[] { 2, 5 });
+                Random rand = new Random();
+                Integer noReplyConditionTime = rand.nextInt(26) + 5;
+                ModificationInstruction modifyNotificationToCSE = ModificationInstruction.activate;
+                ModificationRequestForCFInfo modificationRequestForCFInfo = null;
+                ModificationRequestForCBInfo modificationRequestForCBInfo = null;
+                ModificationRequestForCSI modificationRequestForCSI = null;
+                boolean longFTNSupported = true;
+                ModificationRequestForODBData modificationRequestForODBData = null;
+                ModificationRequestForIPSMGWData modificationRequestForIPSMGWData = null;
+                RequestedServingNode activationRequestForUEReachability = new RequestedServingNodeImpl(true);
+                ModificationRequestForCSG modificationRequestForCSG = null;
+                ModificationRequestForCWInfo modificationRequestForCWData = null;
+                ModificationRequestForCLIPInfo modificationRequestForCLIPData = null;
+                ModificationRequestForCLIRInfo modificationRequestForCLIRData = null;
+                ModificationRequestForCHInfo modificationRequestForHOLDData= null;
+                ModificationRequestForECTInfo modificationRequestForECTData = null;
+
+                switch (rand.nextInt(11) + 1) {
+                    case 1:
+                        modificationRequestForCFInfo = new ModificationRequestForCFInfoImpl(ssCode, basicServiceCode, ssStatus, forwardedToNumber,
+                                forwardedToSubaddress, noReplyConditionTime, modifyNotificationToCSE, null);
+                        break;
+                    case 2:
+                        Password password = new PasswordImpl("1230");
+                        Integer wrongPasswordAttemptsCounter = 4;
+                        modificationRequestForCBInfo = new ModificationRequestForCBInfoImpl(ssCode, basicServiceCode2, ssStatus, password,
+                                wrongPasswordAttemptsCounter, modifyNotificationToCSE, null);
+                        break;
+                    case 3:
+                        RequestedCAMELSubscriptionInfo requestedCAMELSubscriptionInfo = RequestedCAMELSubscriptionInfo.getInstance(rand.nextInt(9));
+                        ModificationInstruction modifyCSIState = ModificationInstruction.getInstance(1);
+                        AdditionalRequestedCAMELSubscriptionInfo additionalRequestedCAMELSubscriptionInfo = AdditionalRequestedCAMELSubscriptionInfo.getInstance(rand.nextInt(5));
+                        modificationRequestForCSI = new ModificationRequestForCSIImpl(requestedCAMELSubscriptionInfo, modifyNotificationToCSE,
+                                modifyCSIState, null, additionalRequestedCAMELSubscriptionInfo);
+                        break;
+                    case 4:
+                        ODBGeneralData oDBGeneralData = new ODBGeneralDataImpl(false, true, false, false, true, false, true, false, true, true, false,
+                            true, false, true, false, true, false, true, false, true, false, true, false, true, false,
+                                true, false, true, false);
+                        ODBHPLMNData odbHplmnData = new ODBHPLMNDataImpl(true, false, false, false);
+                        ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, null);
+                        modificationRequestForODBData = new ModificationRequestForODBDataImpl(odbData, modifyNotificationToCSE, null);
+                        break;
+                    case 5:
+                        ModificationInstruction modifyRegistrationStatus = ModificationInstruction.activate;
+                        NetworkNodeDiameterAddress networkNodeDiameterAddress = getNetworkNodeDiameterAddress();
+                        modificationRequestForIPSMGWData = new ModificationRequestForIPSMGWDataImpl(modifyRegistrationStatus, null, networkNodeDiameterAddress);
+                        break;
+                    case 6:
+                        modificationRequestForCSG = new ModificationRequestForCSGImpl(modifyNotificationToCSE, null);
+                        break;
+                    case 7:
+                        modificationRequestForCWData = new ModificationRequestForCWInfoImpl(basicServiceCode, ssStatus, modifyNotificationToCSE, null);
+                        break;
+                    case 8:
+                        OverrideCategory overrideCategory = OverrideCategory.getInstance(rand.nextInt(1));
+                        modificationRequestForCLIPData = new ModificationRequestForCLIPInfoImpl(ssStatus, overrideCategory, modifyNotificationToCSE, null);
+                        break;
+                    case 9:
+                        CliRestrictionOption cliRestrictionOption = CliRestrictionOption.getInstance(rand.nextInt(2));
+                        modificationRequestForCLIRData = new ModificationRequestForCLIRInfoImpl(ssStatus, cliRestrictionOption, modifyNotificationToCSE, null);
+                        break;
+                    case 10:
+                        modificationRequestForHOLDData = new ModificationRequestForCHInfoImpl(ssStatus, modifyNotificationToCSE, null);
+                        break;
+                    case 11:
+                        modificationRequestForECTData = new ModificationRequestForECTInfoImpl(ssStatus, modifyNotificationToCSE, null);
+                        break;
+                }
+                mapDialogMobility.addAnyTimeModificationRequest(30, subscriberIdentity, gsmSCFAddress, modificationRequestForCFInfo, modificationRequestForCBInfo,
+                        modificationRequestForCSI, null, longFTNSupported, modificationRequestForODBData, modificationRequestForIPSMGWData,
+                        activationRequestForUEReachability, modificationRequestForCSG, modificationRequestForCWData, modificationRequestForCLIPData, modificationRequestForCLIRData,
+                        modificationRequestForHOLDData, modificationRequestForECTData);
+
+                mapDialogMobility.send();
+
+            } catch (MAPException e) {
+                logger.error("MAPException while adding MAP ATM to MAP dialog", e);
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
@@ -2291,7 +2474,7 @@ public class Client extends TestHarnessMobilityManagement {
             case 36:
                 bearerServiceCodeValue = BearerServiceCodeValue.allSynchronousServices;
                 break;
-            case 37:
+            /*case 37:
                 bearerServiceCodeValue = BearerServiceCodeValue.allPLMN_specificBS;
                 break;
             case 38:
@@ -2335,12 +2518,121 @@ public class Client extends TestHarnessMobilityManagement {
                 break;
             case 51:
                 bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_F;
-                break;
+                break;*/
             default:
                 bearerServiceCodeValue = BearerServiceCodeValue.allBearerServices;
                 break;
         }
         return bearerServiceCodeValue;
+    }
+
+    private static TeleserviceCodeValue getTeleserviceCodeValue() {
+        TeleserviceCodeValue teleserviceCodeValue;
+        Random rand = new Random();
+        switch (rand.nextInt(33 + 1)) {
+            case 2:
+                teleserviceCodeValue = TeleserviceCodeValue.allSpeechTransmissionServices;
+                break;
+            case 3:
+                teleserviceCodeValue = TeleserviceCodeValue.telephony;
+                break;
+            case 4:
+                teleserviceCodeValue = TeleserviceCodeValue.emergencyCalls;
+                break;
+            case 5:
+                teleserviceCodeValue = TeleserviceCodeValue.allShortMessageServices;
+                break;
+            case 6:
+                teleserviceCodeValue = TeleserviceCodeValue.shortMessageMT_PP;
+                break;
+            case 7:
+                teleserviceCodeValue = TeleserviceCodeValue.shortMessageMO_PP;
+                break;
+            case 8:
+                teleserviceCodeValue = TeleserviceCodeValue.cellBroadcast;
+                break;
+            case 9:
+                teleserviceCodeValue = TeleserviceCodeValue.allFacsimileTransmissionServices;
+                break;
+            case 10:
+                teleserviceCodeValue = TeleserviceCodeValue.facsimileGroup3AndAlterSpeech;
+                break;
+            case 11:
+                teleserviceCodeValue = TeleserviceCodeValue.automaticFacsimileGroup3;
+                break;
+            case 12:
+                teleserviceCodeValue = TeleserviceCodeValue.facsimileGroup4;
+                break;
+            case 13:
+                teleserviceCodeValue = TeleserviceCodeValue.allDataTeleservices;
+                break;
+            case 14:
+                teleserviceCodeValue = TeleserviceCodeValue.allTeleservices_ExeptSMS;
+                break;
+            case 15:
+                teleserviceCodeValue = TeleserviceCodeValue.allVoiceGroupCallServices;
+                break;
+            case 16:
+                teleserviceCodeValue = TeleserviceCodeValue.voiceGroupCall;
+                break;
+            case 17:
+                teleserviceCodeValue = TeleserviceCodeValue.voiceBroadcastCall;
+                break;
+            /*case 18:
+                teleserviceCodeValue = TeleserviceCodeValue.allPLMN_specificTS;
+                break;
+            case 19:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_1;
+                break;
+            case 20:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_2;
+                break;
+            case 21:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_3;
+                break;
+            case 22:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_4;
+                break;
+            case 23:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_5;
+                break;
+            case 24:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_6;
+                break;
+            case 25:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_7;
+                break;
+            case 26:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_8;
+                break;
+            case 27:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_9;
+                break;
+            case 28:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_A;
+                break;
+            case 29:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_B;
+                break;
+            case 30:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_C;
+                break;
+            case 31:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_D;
+                break;
+            case 32:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_E;
+                break;
+            case 33:
+                teleserviceCodeValue = TeleserviceCodeValue.plmn_specificTS_F;
+                break;
+            default:
+                teleserviceCodeValue = TeleserviceCodeValue.allTeleservices;
+                break;*/
+            default:
+                teleserviceCodeValue = TeleserviceCodeValue.allTeleservices;
+        }
+        return teleserviceCodeValue;
     }
 
     private static SupplementaryCodeValue getSupplementaryCodeValue() {
@@ -2515,7 +2807,7 @@ public class Client extends TestHarnessMobilityManagement {
             case 56:
                 supplementaryCodeValue = SupplementaryCodeValue.transferToThirdParty;
                 break;
-            case 57:
+            /*case 57:
                 supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_1;
                 break;
             case 58:
@@ -2559,7 +2851,7 @@ public class Client extends TestHarnessMobilityManagement {
                 break;
             case 71:
                 supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_f;
-                break;
+                break;*/
             default:
                 supplementaryCodeValue = SupplementaryCodeValue.allSS;
                 break;

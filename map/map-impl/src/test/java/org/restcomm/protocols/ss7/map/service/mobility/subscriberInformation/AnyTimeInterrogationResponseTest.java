@@ -12,6 +12,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -29,11 +31,6 @@ import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.LAIFixedLengthImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.AnyTimeInterrogationResponseImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.GeographicalInformationImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.LocationInformationImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.SubscriberInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.SubscriberStateImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -42,6 +39,8 @@ import org.testng.annotations.Test;
  *
  */
 public class AnyTimeInterrogationResponseTest {
+
+    private static final Logger logger = LogManager.getLogger(AnyTimeInterrogationResponseTest.class.getName());
 
     // Real Trace
     byte[] data = new byte[] { 0x30, 0x34, (byte) 0x30, 0x32, (byte) 0xa0, 0x2c, 0x02, 0x01, 0x01, (byte) 0x80, 0x08, 0x10,
@@ -74,7 +73,7 @@ public class AnyTimeInterrogationResponseTest {
         assertNotNull(locInfo);
         assertEquals((int) locInfo.getAgeOfLocationInformation(), 1);
         assertTrue(Arrays.equals(locInfo.getGeographicalInformation().getData(), dataGeoInfo));
-        assertTrue(locInfo.getVlrNumber().getAddress().equals("553496629910"));
+        assertEquals(locInfo.getVlrNumber().getAddress(), "553496629910");
         assertEquals(locInfo.getVlrNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(locInfo.getVlrNumber().getNumberingPlan(), NumberingPlan.ISDN);
         assertEquals(locInfo.getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getMCC(), 724);
@@ -82,7 +81,7 @@ public class AnyTimeInterrogationResponseTest {
         assertEquals(locInfo.getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength().getLac(), 31134);
         assertEquals(locInfo.getCellGlobalIdOrServiceAreaIdOrLAI().getCellGlobalIdOrServiceAreaIdFixedLength()
                 .getCellIdOrServiceAreaCode(), 10656);
-        assertTrue(locInfo.getMscNumber().getAddress().equals("553496629910"));
+        assertEquals(locInfo.getMscNumber().getAddress(), "553496629910");
         assertEquals(locInfo.getMscNumber().getAddressNature(), AddressNature.international_number);
         assertEquals(locInfo.getMscNumber().getNumberingPlan(), NumberingPlan.ISDN);
         assertTrue(locInfo.getSaiPresent());
@@ -107,7 +106,7 @@ public class AnyTimeInterrogationResponseTest {
 
     }
 
-    @Test(groups = { "functional.decode", "subscriberInformation" })
+    @Test(groups = { "functional.encode", "subscriberInformation" })
     public void testEncode() throws Exception {
 
         ISDNAddressStringImpl vlrNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
@@ -167,7 +166,7 @@ public class AnyTimeInterrogationResponseTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

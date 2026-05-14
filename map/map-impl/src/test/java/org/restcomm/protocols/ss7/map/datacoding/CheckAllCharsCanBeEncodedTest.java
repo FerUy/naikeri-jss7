@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.datacoding;
 
 import static org.testng.Assert.assertFalse;

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccpext;
 
 import org.restcomm.protocols.ss7.sccp.impl.Ss7ExtSccpDetailedInterface;

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import static org.testng.Assert.assertEquals;
@@ -11,7 +10,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.UserServiceInformationImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.isup.message.parameter.UserServiceInformation;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
@@ -25,6 +25,9 @@ import org.testng.annotations.Test;
  *
  */
 public class UserServiceInformationTest {
+
+    private static final Logger logger = LogManager.getLogger(UserServiceInformationTest.class.getName());
+
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
@@ -303,7 +306,7 @@ public class UserServiceInformationTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -380,7 +383,7 @@ public class UserServiceInformationTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

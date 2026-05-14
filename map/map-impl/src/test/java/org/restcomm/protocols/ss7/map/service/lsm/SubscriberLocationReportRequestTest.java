@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.lsm;
 
 import static org.testng.Assert.assertEquals;
@@ -15,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.google.common.collect.Multimap;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -37,7 +37,6 @@ import org.restcomm.protocols.ss7.map.api.service.lsm.AddGeographicalInformation
 import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
 import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredLocationEventType;
 import org.restcomm.protocols.ss7.map.api.service.lsm.DeferredmtlrData;
-import org.restcomm.protocols.ss7.map.api.service.lsm.EllipsoidPoint;
 import org.restcomm.protocols.ss7.map.api.service.lsm.ExtGeographicalInformation;
 import org.restcomm.protocols.ss7.map.api.service.lsm.GeranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
@@ -1046,7 +1045,7 @@ public class SubscriberLocationReportRequestTest {
         assertTrue(moLrShortCircuitIndicator);
         assertNull(geranGANSSpositioningData);
         UtranGANSSpositioningDataImpl utranGanssPositioningData = new UtranGANSSpositioningDataImpl(utranGANSSpositioningData.getData());
-        HashMap<String, String> methodsAndGanssIds = utranGanssPositioningData.getLocationGeneratedMethodsAndGANSSId();
+        Multimap<String, String> methodsAndGanssIds = utranGanssPositioningData.getLocationGeneratedMethodsAndGANSSIds();
         Set<String> utranGanssMethods = methodsAndGanssIds.keySet();
         Collection<String> utranGanssIds = methodsAndGanssIds.values();
         assertTrue(utranGanssMethods.contains("MS-Based"));
@@ -1065,7 +1064,7 @@ public class SubscriberLocationReportRequestTest {
         assertEquals(targetServingNodeForHandover.getMscNumber().getAddress(), "491710460015");
         assertFalse(targetServingNodeForHandover.getMscNumber().isExtension());
         UtranAdditionalPositioningDataImpl utranAdditionalPositioningDataImpl = new UtranAdditionalPositioningDataImpl(utranAdditionalPositioningData.getData());
-        HashMap<String, String> methodsAndAddPosIds = utranAdditionalPositioningDataImpl.getUtranAdditionalPositioningDataSet();
+        Multimap<String, String> methodsAndAddPosIds = utranAdditionalPositioningDataImpl.getUtranAdditionalPositioningMethodsAndIds();
         Set<String> utranAddMethods = methodsAndAddPosIds.keySet();
         Collection<String> utranAddPosIds = methodsAndAddPosIds.values();
         assertTrue(utranAddMethods.contains("Standalone"));
@@ -1372,7 +1371,7 @@ public class SubscriberLocationReportRequestTest {
         assertEquals(sgsnRealm, new DiameterIdentityImpl("epc.mnc001.mcc748.3gppnetwork.org".getBytes(StandardCharsets.UTF_8)));
         assertEquals(lcsReferenceNumber.intValue(), 73); // 0x49 = 73
         geranPositioningData = new PositioningDataInformationImpl(geranPositioningData.getData());
-        HashMap<String, Integer> geranMethodsAndUsage = geranPositioningData.getPositioningMethodsAndUsage();
+        HashMap<String, Integer> geranMethodsAndUsage = geranPositioningData.getPositioningDataSet();
         assertNotNull(geranMethodsAndUsage.get("Mobile Based E-OTD"));
         assertNotNull(geranMethodsAndUsage.get("Mobile Assisted E-OTD"));
         assertNotNull(geranMethodsAndUsage.get("U-TDOA"));
@@ -1407,7 +1406,7 @@ public class SubscriberLocationReportRequestTest {
         assertNull(periodicLDRInfo);
         assertTrue(moLrShortCircuitIndicator);
         geranGANSSpositioningData = new GeranGANSSpositioningDataImpl(geranGANSSpositioningData.getData());
-        HashMap<String, String> geranGanssMethodsAndGanssIds = geranGANSSpositioningData.getLocationGeneratedMethodsAndGANSSId();
+        Multimap<String, String> geranGanssMethodsAndGanssIds = geranGANSSpositioningData.getLocationGeneratedMethodsAndGANSSIds();
         Set<String> geranGanssMethods = geranGanssMethodsAndGanssIds.keySet();
         Collection<String> geranGanssIds = geranGanssMethodsAndGanssIds.values();
         assertTrue(geranGanssMethods.contains("MS-Based"));

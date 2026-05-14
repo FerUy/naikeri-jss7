@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap.api.tc.dialog;
 
 import java.io.Serializable;

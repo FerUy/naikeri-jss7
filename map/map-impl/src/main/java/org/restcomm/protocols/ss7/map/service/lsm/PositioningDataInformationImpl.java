@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.lsm;
 
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -7,6 +6,7 @@ import org.restcomm.protocols.ss7.map.primitives.OctetStringBase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -70,7 +70,7 @@ public class PositioningDataInformationImpl extends OctetStringBase implements P
     }
 
     @Override
-    public HashMap<String, Integer> getPositioningMethodsAndUsage() throws MAPException {
+    public HashMap<String, Integer> getPositioningDataSet() throws MAPException {
         if (data == null)
             throw new MAPException("PositioningDataInformation data must not be empty");
         if (data.length < 2)
@@ -80,7 +80,7 @@ public class PositioningDataInformationImpl extends OctetStringBase implements P
         if (getPositioningDataDiscriminator() != 0)
             throw new MAPException("PositioningDataInformation positioningDataDiscriminator indicates absence of positioningDataSet");
 
-        HashMap<String, Integer> posMethodsAndUsage = new HashMap<>();
+        LinkedHashMap<String, Integer> posMethodsAndUsage = new LinkedHashMap<>();
         String positioningMethod;
         int usage;
 
@@ -92,6 +92,8 @@ public class PositioningDataInformationImpl extends OctetStringBase implements P
         return posMethodsAndUsage;
     }
 
+
+    @Override
     public String getPositioningMethod(int code) {
         /*
          * Coding of positioning method (bits 8-4):
@@ -159,6 +161,7 @@ public class PositioningDataInformationImpl extends OctetStringBase implements P
         return posMethod;
     }
 
+    @Override
     public String getUsage(int u) {
         String usage = null;
         /*
@@ -190,41 +193,4 @@ public class PositioningDataInformationImpl extends OctetStringBase implements P
         }
         return usage;
     }
-
-    /*private static class MultiValueMap<K,V> {
-        private final Map<K, Set<V>> mappings = new HashMap<>();
-
-        public Set<V> getValues(K key) {
-            return mappings.get(key);
-        }
-
-        public void putValue(K key, V value) {
-            Set<V> target = mappings.get(key);
-
-            if(target == null) {
-                target = new HashSet<>();
-                mappings.put(key,target);
-            }
-
-            target.add(value);
-        }
-    }
-
-
-    public static void main(String[] args) throws MAPException {
-        byte[] data = new byte[] {0x00, 0x03, 0x1b, 0x21, 0x2b, 0x3a, 0x43, 0x60};
-        PositioningDataInformationImpl geranPositioningData = new PositioningDataInformationImpl(data);
-        HashMap<String, Integer> methodsAndUsage = geranPositioningData.getPositioningMethodsAndUsage();
-
-        for (HashMap.Entry<String, Integer> entry : methodsAndUsage.entrySet()) {
-            String key = entry.getKey();
-            Integer value = entry.getValue();
-            System.out.println("Method=" + key + ", Usage=" + value + ": " + geranPositioningData.getUsage(value));
-        }
-
-        ArrayList<String> methods = geranPositioningData.getLocationGeneratedPositioningMethods();
-        for (String met : methods) {
-            System.out.println("Location generated method:"+ met);
-        }
-    }*/
 }

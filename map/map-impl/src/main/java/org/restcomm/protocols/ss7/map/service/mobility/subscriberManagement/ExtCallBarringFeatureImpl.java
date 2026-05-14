@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -77,8 +76,7 @@ public class ExtCallBarringFeatureImpl extends SequenceBase implements ExtCallBa
                         case ExtBasicServiceCodeImpl._ID_ext_Teleservice:
                             if (!ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                                        + ".basicService: is not primitive",
-                                        MAPParsingComponentExceptionReason.MistypedParameter);
+                                        + ".basicService: is not primitive", MAPParsingComponentExceptionReason.MistypedParameter);
                             this.basicService = new ExtBasicServiceCodeImpl();
                             ((ExtBasicServiceCodeImpl) this.basicService).decodeAll(ais);
                             break;
@@ -147,19 +145,19 @@ public class ExtCallBarringFeatureImpl extends SequenceBase implements ExtCallBa
 
         if (this.basicService != null) {
             sb.append("basicService=");
-            sb.append(this.basicService.toString());
+            sb.append(this.basicService);
             sb.append(", ");
         }
 
         if (this.ssStatus != null) {
             sb.append("ssStatus=");
-            sb.append(this.ssStatus.toString());
+            sb.append(this.ssStatus);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(", ");
         }
 

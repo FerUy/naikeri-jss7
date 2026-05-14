@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.faultRecovery;
 
 import org.mobicents.protocols.asn.AsnInputStream;

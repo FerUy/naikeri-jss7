@@ -2,6 +2,8 @@ package org.restcomm.protocols.ss7.sccp.impl;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.SccpProvider;
 import org.restcomm.protocols.ss7.sccp.impl.message.SccpMessageImpl;
 import org.restcomm.protocols.ss7.sccp.message.SccpDataMessage;
@@ -11,6 +13,8 @@ public class AdvancedUser extends User {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Logger logger = LogManager.getLogger(AdvancedUser.class.getName());
+
     public AdvancedUser(SccpProvider provider, SccpAddress address, SccpAddress dest, int ssn) {
         super(provider, address, dest, ssn);
     }
@@ -18,16 +22,16 @@ public class AdvancedUser extends User {
     @Override
     public void onMessage(SccpDataMessage message) {
         this.messages.add(message);
-        System.out.println(String.format("SccpDataMessage=%s seqControl=%d", message, message.getSls()));
+        logger.debug("SccpDataMessage={} seqControl={}", message, message.getSls());
         SccpAddress calledAddress = message.getCalledPartyAddress();
         SccpAddress callingAddress = message.getCallingPartyAddress();
         SccpDataMessage newMessage = provider.getMessageFactory().createDataMessageClass1(callingAddress, calledAddress, message.getData(),
                 message.getSls(),message.getOriginLocalSsn(), true, message.getHopCounter(), message.getImportance());
-        ((SccpMessageImpl) newMessage).setOutgoingDpc(message.getIncomingOpc());
+        newMessage.setOutgoingDpc(message.getIncomingOpc());
         try {
             this.provider.send(newMessage);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
 import java.util.Map;

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl.message;
 
 import org.restcomm.protocols.ss7.Util;

@@ -16,8 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javolution.util.FastMap;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -89,9 +89,9 @@ import org.restcomm.ss7.congestion.MemoryCongestionMonitorImpl;
  */
 public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
-    private static final Logger logger = Logger.getLogger(TCAPProviderImpl.class); // listenres
+    private static final Logger logger = LogManager.getLogger(TCAPProviderImpl.class); // listeners
 
-    private transient List<TCListener> tcListeners = new CopyOnWriteArrayList<TCListener>();
+    private transient List<TCListener> tcListeners = new CopyOnWriteArrayList<>();
     protected transient ScheduledExecutorService _EXECUTOR;
     // boundary for Uni directional dialogs :), tx id is always encoded
     // on 4 octets, so this is its max value
@@ -108,10 +108,10 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
     // explicitly...
 
 //    private transient FastMap<Long, DialogImpl> dialogs = new FastMap <Long, DialogImpl>();
-    private transient ConcurrentHashMap<Long, DialogImpl> dialogs = new ConcurrentHashMap <Long, DialogImpl>();
+    private transient ConcurrentHashMap<Long, DialogImpl> dialogs = new ConcurrentHashMap <>();
 
-//    protected transient FastMap<PrevewDialogDataKey, PreviewDialogData> dialogPreviewList = new FastMap<PrevewDialogDataKey, PrevewDialogData>();
-    protected transient ConcurrentHashMap<PreviewDialogDataKey, PreviewDialogData> dialogPreviewList = new ConcurrentHashMap<PreviewDialogDataKey, PreviewDialogData>();
+//    protected transient FastMap<PreviewDialogDataKey, PreviewDialogData> dialogPreviewList = new FastMap<PreviewDialogDataKey, PreviewDialogData>();
+    protected transient ConcurrentHashMap<PreviewDialogDataKey, PreviewDialogData> dialogPreviewList = new ConcurrentHashMap<>();
     private transient FastMap<Integer, NetworkIdState> networkIdStateList = new FastMap<Integer, NetworkIdState>().shared();
     private NetworkIdStateListUpdater currentNetworkIdStateListUpdater;
 
@@ -126,7 +126,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
     private int executorCountWithCongestionLevel_2 = 0;
     private int executorCountWithCongestionLevel_3 = 0;
     private MemoryCongestionMonitorImpl memoryCongestionMonitor;
-    private transient FastMap<String, Integer> lstUserPartCongestionLevel = new FastMap<String, Integer>();
+    private transient FastMap<String, Integer> lstUserPartCongestionLevel = new FastMap<>();
     private int userPartCongestionLevel_1 = 0;
     private int userPartCongestionLevel_2 = 0;
     private int userPartCongestionLevel_3 = 0;
@@ -396,7 +396,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCBegin(tcapBeginIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -413,7 +413,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCContinue(tcapContinueIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -430,7 +430,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCEnd(tcapEndIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -446,7 +446,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCPAbort(tcapAbortIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -463,7 +463,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCUserAbort(tcapAbortIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -480,7 +480,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCUni(tcapUniIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -492,7 +492,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onTCNotice(tcapNoticeIndication);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering data to transport layer.", e);
             }
         }
@@ -527,7 +527,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onDialogReleased(dialog);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering dialog release.", e);
             }
         }
@@ -546,7 +546,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 lst.onDialogTimeout(dialog);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering dialog release.", e);
             }
         }
@@ -565,13 +565,13 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
         return this._EXECUTOR.schedule(operationTimerTask, invokeTimeout, TimeUnit.MILLISECONDS);
     }
 
-    public void operationTimedOut(InvokeImpl tapcInvokeRequest) {
+    public void operationTimedOut(InvokeImpl tcapInvokeRequest) {
         try {
             for (TCListener lst : this.tcListeners) {
-                lst.onInvokeTimeout(tapcInvokeRequest);
+                lst.onInvokeTimeout(tcapInvokeRequest);
             }
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Received exception while delivering Begin.", e);
             }
         }
@@ -640,7 +640,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
             }
             this.send(aos.toByteArray(), false, sccpCalledPartyAddress, sccpCallingPartyAddress, seqControl, networkId, sccpCallingPartyAddress.getSubsystemNumber(), remotePc);
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Failed to send message: ", e);
             }
         }
@@ -678,7 +678,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
             }
             this.send(aos.toByteArray(), false, sccpCalledPartyAddress, sccpCallingPartyAddress, seqControl, networkId, sccpCallingPartyAddress.getSubsystemNumber(), remotePc);
         } catch (Exception e) {
-            if (logger.isEnabledFor(Level.ERROR)) {
+            if (logger.isErrorEnabled()) {
                 logger.error("Failed to send message: ", e);
             }
         }
@@ -712,7 +712,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                     try {
                         tcapContinueMessage = TcapFactory.createTCContinueMessage(ais);
                     } catch (ParseException e) {
-                        logger.error("ParseException when parsing TCContinueMessage: " + e.toString(), e);
+                        logger.error("ParseException when parsing TCContinueMessage: " + e, e);
 
                         // parsing OriginatingTransactionId
                         ais = new AsnInputStream(data);
@@ -771,7 +771,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                     try {
                         tcapBeginMessage = TcapFactory.createTCBeginMessage(ais);
                     } catch (ParseException e) {
-                        logger.error("ParseException when parsing TCBeginMessage: " + e.toString(), e);
+                        logger.error("ParseException when parsing TCBeginMessage: " + e, e);
 
                         // parsing OriginatingTransactionId
                         ais = new AsnInputStream(data);
@@ -821,7 +821,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                             setSsnToDialog(dialog, sccpDataMessage.getCalledPartyAddress().getSubsystemNumber());
                         } else {
                             int remotePc = sccpDataMessage.getIncomingOpc();
-                            dialog = (DialogImpl) this.getNewDialog(sccpCallingPartyAddress, sccpCalledPartyAddress, sccpDataMessage.getSls(), null);
+                            dialog = this.getNewDialog(sccpCallingPartyAddress, sccpCalledPartyAddress, sccpDataMessage.getSls(), null);
                             dialog.setRemotePc(remotePc);
                             setSsnToDialog(dialog, sccpDataMessage.getCalledPartyAddress().getSubsystemNumber());
                         }
@@ -853,7 +853,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                     try {
                         tcapEndMessage = TcapFactory.createTCEndMessage(ais);
                     } catch (ParseException e) {
-                        logger.error("ParseException when parsing TCEndMessage: " + e.toString(), e);
+                        logger.error("ParseException when parsing TCEndMessage: " + e, e);
                         return;
                     }
 
@@ -885,11 +885,11 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                     break;
 
                 case TCAbortMessage._TAG:
-                    TCAbortMessage tcapAbortMessage = null;
+                    TCAbortMessage tcapAbortMessage;
                     try {
                         tcapAbortMessage = TcapFactory.createTCAbortMessage(ais);
                     } catch (ParseException e) {
-                        logger.error("ParseException when parsing TCAbortMessage: " + e.toString(), e);
+                        logger.error("ParseException when parsing TCAbortMessage: " + e, e);
                         return;
                     }
 
@@ -926,7 +926,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                     try {
                         tcapUniMessage = TcapFactory.createTCUniMessage(ais);
                     } catch (ParseException e) {
-                        logger.error("ParseException when parsing TCUniMessage: " + e.toString(), e);
+                        logger.error("ParseException when parsing TCUniMessage: " + e, e);
                         return;
                     }
 
@@ -957,7 +957,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
             return;
         }
 
-        logger.error(String.format("Rx unidentified tag=%s, tagClass=. SccpMessage=%s", tag, ais.getTagClass(), sccpDataMessage));
+        logger.error(String.format("Rx unidentified tag=%s, tagClass=%s. SccpMessage=%s", tag, ais.getTagClass(), sccpDataMessage));
         TCUnidentifiedMessage tcapUnidentified = new TCUnidentifiedMessage();
         tcapUnidentified.decode(ais);
 
@@ -1056,14 +1056,14 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
         // if (pddx != null) {
         // this.removePreviewDialog(pddx);
         // throw new TCAPException("Dialog with trId=" + ky.origTxId +
-        // " is already exists - we ignore it and drops curent dialog");
+        // " is already exists - we ignore it and drops current dialog");
         // }
         //
         // Long dialogId = this.getAvailableTxIdPreview();
         // PreviewDialogData pdd = new PreviewDialogData(this, dialogId);
         // this.dialogPreviewList.put(ky, pdd);
         // DialogImpl di = new DialogImpl(sccpCallingPartyAddress, sccpCalledPartyAddress, seqControl, this._EXECUTOR, this, pdd, false);
-        // pdd.setPrevewDialogDataKey1(ky);
+        // pdd.setPreviewDialogDataKey1(ky);
         //
         // pdd.startIdleTimer();
         //
@@ -1085,8 +1085,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 this.curDialogId = this.stack.getDialogIdRangeStart() - 1;
             if (++this.curDialogId > this.stack.getDialogIdRangeEnd())
                 this.curDialogId = this.stack.getDialogIdRangeStart();
-            Long id = this.curDialogId;
-            return id;
+            return this.curDialogId;
         }
     }
 

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -135,24 +134,24 @@ public class OBcsmCamelTdpCriteriaImpl extends SequenceBase implements OBcsmCame
                             ((DestinationNumberCriteriaImpl) this.destinationNumberCriteria).decodeAll(ais);
                             break;
                         case _TAG_basicServiceCriteria:
-                            ExtBasicServiceCode extBasicServiceCode = null;
+                            ExtBasicServiceCodeImpl extBasicServiceCode;
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".basicServiceCriteria: is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             AsnInputStream ais2 = ais.readSequenceStream();
-                            this.basicServiceCriteria = new ArrayList<ExtBasicServiceCode>();
+                            this.basicServiceCriteria = new ArrayList<>();
                             while (true) {
                                 if (ais2.available() == 0)
                                     break;
 
                                 ais2.readTag();
                                 extBasicServiceCode = new ExtBasicServiceCodeImpl();
-                                ((ExtBasicServiceCodeImpl) extBasicServiceCode).decodeAll(ais2);
+                                extBasicServiceCode.decodeAll(ais2);
                                 this.basicServiceCriteria.add(extBasicServiceCode);
                             }
 
-                            if (this.basicServiceCriteria.size() < 1 || this.basicServiceCriteria.size() > 5) {
+                            if (this.basicServiceCriteria.isEmpty() || this.basicServiceCriteria.size() > 5) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter basicServiceCriteria size must be from 1 to 5, found: "
                                         + this.basicServiceCriteria.size(),
@@ -168,13 +167,13 @@ public class OBcsmCamelTdpCriteriaImpl extends SequenceBase implements OBcsmCame
                             this.callTypeCriteria = CallTypeCriteria.getInstance(code);
                             break;
                         case _TAG_oCauseValueCriteria:
-                            CauseValue causeValue = null;
+                            CauseValueImpl causeValue;
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".oCauseValueCriteria: is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             AsnInputStream ais3 = ais.readSequenceStream();
-                            this.oCauseValueCriteria = new ArrayList<CauseValue>();
+                            this.oCauseValueCriteria = new ArrayList<>();
                             while (true) {
                                 if (ais3.available() == 0)
                                     break;
@@ -187,11 +186,11 @@ public class OBcsmCamelTdpCriteriaImpl extends SequenceBase implements OBcsmCame
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 causeValue = new CauseValueImpl();
-                                ((CauseValueImpl) causeValue).decodeAll(ais3);
+                                causeValue.decodeAll(ais3);
                                 this.oCauseValueCriteria.add(causeValue);
                             }
 
-                            if (this.oCauseValueCriteria.size() < 1 || this.oCauseValueCriteria.size() > 5) {
+                            if (this.oCauseValueCriteria.isEmpty() || this.oCauseValueCriteria.size() > 5) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter oCauseValueCriteria size must be from 1 to 5, found: "
                                         + this.oCauseValueCriteria.size(), MAPParsingComponentExceptionReason.MistypedParameter);
@@ -220,7 +219,7 @@ public class OBcsmCamelTdpCriteriaImpl extends SequenceBase implements OBcsmCame
 
         if (this.oBcsmTriggerDetectionPoint == null)
             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                    + ": Parament oBcsmTriggerDetectionPoint is mandatory but does not found",
+                    + ".oBcsmTriggerDetectionPoint: parameter is mandatory but does not found",
                     MAPParsingComponentExceptionReason.MistypedParameter);
 
     }
@@ -230,12 +229,12 @@ public class OBcsmCamelTdpCriteriaImpl extends SequenceBase implements OBcsmCame
         if (this.oBcsmTriggerDetectionPoint == null)
             throw new MAPException("Error while encoding " + _PrimitiveName + ": oBcsmTriggerDetectionPoint required.");
 
-        if (this.basicServiceCriteria != null && (this.basicServiceCriteria.size() < 1 || this.basicServiceCriteria.size() > 5)) {
+        if (this.basicServiceCriteria != null && (this.basicServiceCriteria.isEmpty() || this.basicServiceCriteria.size() > 5)) {
             throw new MAPException("Error while encoding " + _PrimitiveName
                     + ": Parameter basicServiceCriteria size must be from 1 to 5, found: " + this.basicServiceCriteria.size());
         }
 
-        if (this.oCauseValueCriteria != null && (this.oCauseValueCriteria.size() < 1 || this.oCauseValueCriteria.size() > 5)) {
+        if (this.oCauseValueCriteria != null && (this.oCauseValueCriteria.isEmpty() || this.oCauseValueCriteria.size() > 5)) {
             throw new MAPException("Error while encoding " + _PrimitiveName
                     + ": Parameter oCauseValueCriteria size must be from 1 to 5, found: " + this.oCauseValueCriteria.size());
         }
@@ -276,24 +275,24 @@ public class OBcsmCamelTdpCriteriaImpl extends SequenceBase implements OBcsmCame
         } catch (AsnException e) {
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (IOException e) {
-            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
+            throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.oBcsmTriggerDetectionPoint != null) {
             sb.append("oBcsmTriggerDetectionPoint=");
-            sb.append(this.oBcsmTriggerDetectionPoint.toString());
+            sb.append(this.oBcsmTriggerDetectionPoint);
             sb.append(", ");
         }
 
         if (this.destinationNumberCriteria != null) {
             sb.append("destinationNumberCriteria=");
-            sb.append(this.destinationNumberCriteria.toString());
+            sb.append(this.destinationNumberCriteria);
             sb.append(", ");
         }
 
@@ -305,14 +304,14 @@ public class OBcsmCamelTdpCriteriaImpl extends SequenceBase implements OBcsmCame
                     firstItem = false;
                 else
                     sb.append(", ");
-                sb.append(be.toString());
+                sb.append(be);
             }
             sb.append("], ");
         }
 
         if (this.callTypeCriteria != null) {
             sb.append("callTypeCriteria=");
-            sb.append(this.callTypeCriteria.toString());
+            sb.append(this.callTypeCriteria);
             sb.append(", ");
         }
 
@@ -324,14 +323,14 @@ public class OBcsmCamelTdpCriteriaImpl extends SequenceBase implements OBcsmCame
                     firstItem = false;
                 else
                     sb.append(", ");
-                sb.append(be.toString());
+                sb.append(be);
             }
             sb.append("], ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(" ");
         }
 

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import static org.testng.Assert.assertEquals;
@@ -19,8 +18,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.TBcsmTriggerDetectionPoint;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TBcsmCamelTDPDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TCSIImpl;
 import org.testng.annotations.Test;
 
 /**
@@ -60,7 +57,7 @@ public class TCSIImplTest {
         assertEquals(cd.getServiceKey(), 3);
         assertEquals(cd.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(cd.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(cd.getGsmSCFAddress().getAddress().equals("1122333"));
+        assertEquals(cd.getGsmSCFAddress().getAddress(), "1122333");
         assertEquals(cd.getDefaultCallHandling(), DefaultCallHandling.releaseCall);
         assertNull(cd.getExtensionContainer());
 
@@ -86,7 +83,7 @@ public class TCSIImplTest {
         assertEquals(cd.getServiceKey(), 3);
         assertEquals(cd.getGsmSCFAddress().getAddressNature(), AddressNature.international_number);
         assertEquals(cd.getGsmSCFAddress().getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(cd.getGsmSCFAddress().getAddress().equals("1122333"));
+        assertEquals(cd.getGsmSCFAddress().getAddress(), "1122333");
         assertEquals(cd.getDefaultCallHandling(), DefaultCallHandling.releaseCall);
         assertNull(cd.getExtensionContainer());
 
@@ -104,7 +101,7 @@ public class TCSIImplTest {
                 "1122333");
         TBcsmCamelTDPDataImpl cind = new TBcsmCamelTDPDataImpl(TBcsmTriggerDetectionPoint.termAttemptAuthorized, 3,
                 gsmSCFAddress, DefaultCallHandling.releaseCall, null);
-        ArrayList<TBcsmCamelTDPData> lst = new ArrayList<TBcsmCamelTDPData>();
+        ArrayList<TBcsmCamelTDPData> lst = new ArrayList<>();
         lst.add(cind);
         TCSIImpl ind = new TCSIImpl(lst, null, 2, false, false);
 

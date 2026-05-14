@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.message;
 
 import static org.testng.Assert.assertEquals;
@@ -9,8 +8,8 @@ import static org.testng.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.Util;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.NumberingPlan;
@@ -18,10 +17,6 @@ import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
-import org.restcomm.protocols.ss7.sccp.impl.message.EncodingResult;
-import org.restcomm.protocols.ss7.sccp.impl.message.EncodingResultData;
-import org.restcomm.protocols.ss7.sccp.impl.message.MessageFactoryImpl;
-import org.restcomm.protocols.ss7.sccp.impl.message.SccpNoticeMessageImpl;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.BCDOddEncodingScheme;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.HopCounterImpl;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.ImportanceImpl;
@@ -45,8 +40,9 @@ import org.testng.annotations.Test;
  */
 public class SccpNoticeMessageTest {
 
-    private Logger logger;
-    private SccpStackImpl stack = new SccpStackImpl("SccpNoticeMessageTestStack", null);
+    private static Logger logger = LogManager.getLogger(SccpNoticeMessageTest.class.getName());
+
+    private final SccpStackImpl stack = new SccpStackImpl("SccpNoticeMessageTestStack", null);
     private MessageFactoryImpl messageFactory;
 
     @BeforeMethod
@@ -54,7 +50,7 @@ public class SccpNoticeMessageTest {
         this.stack.setPersistDir(Util.getTmpTestDir());
         this.stack.start();
         this.messageFactory = new MessageFactoryImpl(stack);
-        this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName());
+        logger = LogManager.getLogger(SccpStackImpl.class.getCanonicalName());
     }
 
     @AfterMethod
@@ -84,7 +80,7 @@ public class SccpNoticeMessageTest {
                 2, 1, 0, 108, 70, -95, 60, 2, 1, 2, 2, 1, 23, 48, 52, -96, 50, 48, 6, -128, 1, 14, -127, 1, 1, 48, 6, -128, 1,
                 13, -127, 1, 1, 48, 11, -128, 1, 17, -127, 1, 1, -94, 3, -128, 1, 1, 48, 11, -128, 1, 17, -127, 1, 1, -94, 3,
                 -128, 1, 2, 48, 6, -128, 1, 18, -127, 1, 1, -95, 6, 2, 1, 3, 2, 1, 31 };
-    };
+    }
 
     public byte[] getDataXudt1() {
         return new byte[] { 18, 1, 15, 4, 6, 10, 15, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15, 18, 1, 7, 0 };
@@ -99,7 +95,7 @@ public class SccpNoticeMessageTest {
     }
 
     public byte[] getDataLudt1() {
-        return new byte[] { 20, 5, 10, 7, 00, 8, 00, 11, 00, 00, 00, 2, 66, 8, 4, 67, 1, 0, 6, 5, 00, 11, 12, 13, 14, 15 };
+        return new byte[] { 20, 5, 10, 7, 0, 8, 0, 11, 0, 0, 0, 2, 66, 8, 4, 67, 1, 0, 6, 5, 0, 11, 12, 13, 14, 15 };
     }
 
     @Test(groups = { "SccpMessage", "functional.decode" })
@@ -111,7 +107,7 @@ public class SccpNoticeMessageTest {
         ByteArrayInputStream buf = new ByteArrayInputStream(b);
         int type = buf.read();
         SccpNoticeMessage msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(msg);
+        logger.info(msg);
         assertNotNull(msg);
         assertEquals(msg.getReturnCause().getValue(), ReturnCauseValue.NO_TRANSLATION_FOR_NATURE);
 
@@ -119,7 +115,7 @@ public class SccpNoticeMessageTest {
         assertNotNull(calledAdd);
         assertEquals(calledAdd.getSignalingPointCode(), 0);
         assertEquals(calledAdd.getSubsystemNumber(), 146);
-        assertTrue(calledAdd.getGlobalTitle().getDigits().equals("999999999"));
+        assertEquals(calledAdd.getGlobalTitle().getDigits(), "999999999");
 
         SccpAddress callingAdd = msg.getCallingPartyAddress();
         assertNotNull(callingAdd);
@@ -134,7 +130,7 @@ public class SccpNoticeMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(msg);
+        logger.info(msg);
         assertNotNull(msg);
         assertEquals(msg.getReturnCause().getValue(), ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
 
@@ -159,7 +155,7 @@ public class SccpNoticeMessageTest {
         buf = new ByteArrayInputStream(b);
         type = buf.read();
         msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf, SccpProtocolVersion.ITU, 0);
-        System.out.println(msg);
+        logger.info(msg);
         assertNotNull(msg);
         assertEquals(msg.getReturnCause().getValue(), ReturnCauseValue.MTP_FAILURE);
 

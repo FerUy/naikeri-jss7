@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.primitives;
 
 import static org.testng.Assert.assertEquals;
@@ -13,11 +12,12 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.primitives.AlertingCategory;
 import org.restcomm.protocols.ss7.map.api.primitives.AlertingLevel;
-import org.restcomm.protocols.ss7.map.primitives.AlertingPatternImpl;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
@@ -29,6 +29,9 @@ import org.testng.annotations.Test;
  *
  */
 public class AlertingPatternTest {
+
+    private static final Logger logger = LogManager.getLogger(AlertingPatternTest.class.getName());
+
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
@@ -50,7 +53,7 @@ public class AlertingPatternTest {
         byte[] data = new byte[] { (byte) 0x04, 0x01, 0x07 };
 
         AsnInputStream asn = new AsnInputStream(data);
-        int tag = asn.readTag();
+        asn.readTag();
 
         AlertingPatternImpl addNum = new AlertingPatternImpl();
         addNum.decodeAll(asn);
@@ -90,7 +93,7 @@ public class AlertingPatternTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -114,7 +117,7 @@ public class AlertingPatternTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

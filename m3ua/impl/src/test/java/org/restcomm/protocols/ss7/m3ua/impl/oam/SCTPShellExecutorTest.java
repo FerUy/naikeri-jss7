@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl.oam;
 
 import static org.testng.Assert.assertEquals;
@@ -7,12 +6,11 @@ import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
 import javolution.util.FastMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.api.Management;
 import org.mobicents.protocols.api.Server;
 import org.mobicents.protocols.sctp.ManagementImpl;
-import org.restcomm.protocols.ss7.m3ua.impl.oam.M3UAOAMMessages;
-import org.restcomm.protocols.ss7.m3ua.impl.oam.SCTPOAMMessages;
-import org.restcomm.protocols.ss7.m3ua.impl.oam.SCTPShellExecutor;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -25,7 +23,8 @@ import org.testng.annotations.Test;
  */
 public class SCTPShellExecutorTest {
 
-    private FastMap<String, Management> sctpManagements = null;
+    private static final Logger logger = LogManager.getLogger(SCTPShellExecutorTest.class.getName());
+
     private SCTPShellExecutor sctpShellExecutor = null;
 
     private ManagementImpl management1;
@@ -47,10 +46,10 @@ public class SCTPShellExecutorTest {
         this.management1 = new ManagementImpl("TestSCTP1");
         this.management2 = new ManagementImpl("TestSCTP2");
 
-        this.sctpManagements = new FastMap<String, Management>();
+        FastMap<String, Management> sctpManagements = new FastMap<>();
 
-        this.sctpManagements.put("TestSCTP1", management1);
-        this.sctpManagements.put("TestSCTP2", management2);
+        sctpManagements.put("TestSCTP1", management1);
+        sctpManagements.put("TestSCTP2", management2);
 
         this.sctpShellExecutor.setSctpManagements(sctpManagements);
 
@@ -69,7 +68,7 @@ public class SCTPShellExecutorTest {
     }
 
     @Test
-    public void testServerCommands() throws Exception {
+    public void testServerCommands() {
         // CREATE
 
         // Test 0
@@ -81,29 +80,29 @@ public class SCTPShellExecutorTest {
         sctpServerCommand = "sctp server create TestServer1 127.0.0.1 2905";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.ADD_SERVER_SUCCESS, "TestServer1", this.management1.getName()));
-        assertEquals(1, this.management1.getServers().size());
-        assertEquals(0, this.management2.getServers().size());
+        assertEquals(this.management1.getServers().size(), 1);
+        assertEquals(this.management2.getServers().size(), 0);
 
         // Test`2
         sctpServerCommand = "sctp server create TestServer2 127.0.0.1 2906 sockettype TCP";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.ADD_SERVER_SUCCESS, "TestServer2", this.management1.getName()));
-        assertEquals(2, this.management1.getServers().size());
-        assertEquals(0, this.management2.getServers().size());
+        assertEquals(this.management1.getServers().size(), 2);
+        assertEquals(this.management2.getServers().size(), 0);
 
         // Test`3
         sctpServerCommand = "sctp server create TestServer3 127.0.0.1 2907 stackname TestSCTP2";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.ADD_SERVER_SUCCESS, "TestServer3", this.management2.getName()));
-        assertEquals(1, this.management2.getServers().size());
-        assertEquals(2, this.management1.getServers().size());
+        assertEquals(this.management2.getServers().size(), 1);
+        assertEquals(this.management1.getServers().size(), 2);
 
         // Test`4
         sctpServerCommand = "sctp server create TestServer4 127.0.0.1 2908 stackname TestSCTP2 sockettype TCP";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.ADD_SERVER_SUCCESS, "TestServer4", this.management2.getName()));
-        assertEquals(2, this.management2.getServers().size());
-        assertEquals(2, this.management1.getServers().size());
+        assertEquals(this.management2.getServers().size(), 2);
+        assertEquals(this.management1.getServers().size(), 2);
 
         // START
 
@@ -156,74 +155,74 @@ public class SCTPShellExecutorTest {
         sctpServerCommand = "sctp server destroy TestServer1";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.REMOVE_SERVER_SUCCESS, "TestServer1", this.management1.getName()));
-        assertEquals(1, this.management1.getServers().size());
+        assertEquals(this.management1.getServers().size(), 1);
 
         // Test 12
         sctpServerCommand = "sctp server destroy TestServer2";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.REMOVE_SERVER_SUCCESS, "TestServer2", this.management1.getName()));
-        assertEquals(0, this.management1.getServers().size());
+        assertEquals(this.management1.getServers().size(), 0);
 
         // Test 13
         sctpServerCommand = "sctp server destroy TestServer3 stackname TestSCTP2";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.REMOVE_SERVER_SUCCESS, "TestServer3", this.management2.getName()));
-        assertEquals(1, this.management2.getServers().size());
+        assertEquals(this.management2.getServers().size(), 1);
 
         // Test 14
         sctpServerCommand = "sctp server destroy TestServer4";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.REMOVE_SERVER_SUCCESS, "TestServer4", this.management2.getName()));
-        assertEquals(0, this.management2.getServers().size());
+        assertEquals(this.management2.getServers().size(), 0);
 
     }
 
     @Test
-    public void testSetGetCommands() throws Exception {
+    public void testSetGetCommands() {
         String sctpServerCommand = "sctp set connectdelay 21500";
         String result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(M3UAOAMMessages.PARAMETER_SUCCESSFULLY_SET, "TestSCTP1"));
-        assertEquals(21500, this.management1.getConnectDelay());
+        assertEquals(this.management1.getConnectDelay(), 21500);
 
         sctpServerCommand = "sctp set connectdelay 21501 stackname TestSCTP2";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(M3UAOAMMessages.PARAMETER_SUCCESSFULLY_SET, "TestSCTP2"));
-        assertEquals(21501, this.management2.getConnectDelay());
+        assertEquals(this.management2.getConnectDelay(), 21501);
 
         // workerthreads not used anymore => assert invalid command and not equal
         sctpServerCommand = "sctp set workerthreads 12";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
         assertEquals(result, String.format(M3UAOAMMessages.INVALID_COMMAND, "TestSCTP2"));
-        assertNotEquals(12, this.management2.getWorkerThreads());
+        assertNotEquals(this.management2.getWorkerThreads(), 12);
 
         // workerthreads not used anymore => assert false
         sctpServerCommand = "sctp get workerthreads";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
-        System.out.println(result);
+        logger.info(result);
         assertFalse(result.contains("TestSCTP2") && result.contains("workerthreads") && result.contains("12"));
 
         sctpServerCommand = "sctp get";
         result = this.sctpShellExecutor.execute(sctpServerCommand.split(" "));
-        System.out.println(result);
+        logger.info(result);
         assertTrue(result.contains("TestSCTP1") && result.contains("TestSCTP2"));
 
     }
 
     @Test
-    public void testAssociationCommands() throws Exception {
+    public void testAssociationCommands() {
         String sctpAssocCommand = "sctp association create Assoc1 CLIENT 127.0.0.1 2905 127.0.0.1 2906";
         String result = this.sctpShellExecutor.execute(sctpAssocCommand.split(" "));
         assertEquals(result,
                 String.format(SCTPOAMMessages.ADD_CLIENT_ASSOCIATION_SUCCESS, "Assoc1", this.management1.getName()));
-        assertEquals(1, this.management1.getAssociations().size());
-        assertEquals(0, this.management2.getAssociations().size());
+        assertEquals(this.management1.getAssociations().size(), 1);
+        assertEquals(this.management2.getAssociations().size(), 0);
 
         sctpAssocCommand = "sctp association create Assoc2 CLIENT 127.0.0.1 2907 127.0.0.1 2908 stackname TestSCTP2";
         result = this.sctpShellExecutor.execute(sctpAssocCommand.split(" "));
         assertEquals(result,
                 String.format(SCTPOAMMessages.ADD_CLIENT_ASSOCIATION_SUCCESS, "Assoc2", this.management2.getName()));
-        assertEquals(1, this.management1.getAssociations().size());
-        assertEquals(1, this.management2.getAssociations().size());
+        assertEquals(this.management1.getAssociations().size(), 1);
+        assertEquals(this.management2.getAssociations().size(), 1);
 
         // Test creating server association
         String sctpServerCommand = "sctp server create TestServer1 127.0.0.1 2903 stackname TestSCTP1";
@@ -234,38 +233,38 @@ public class SCTPShellExecutorTest {
         result = this.sctpShellExecutor.execute(sctpAssocCommand.split(" "));
         assertEquals(result,
                 String.format(SCTPOAMMessages.ADD_SERVER_ASSOCIATION_SUCCESS, "Assoc3", this.management1.getName()));
-        assertEquals(2, this.management1.getAssociations().size());
-        assertEquals(1, this.management2.getAssociations().size());
+        assertEquals(this.management1.getAssociations().size(), 2);
+        assertEquals(this.management2.getAssociations().size(), 1);
 
         sctpAssocCommand = "sctp association show";
         result = this.sctpShellExecutor.execute(sctpAssocCommand.split(" "));
-        System.out.println(result);
+        logger.info(result);
         assertTrue(result.contains("Assoc1") && result.contains("Assoc3"));
         assertFalse(result.contains("Assoc2"));
 
         sctpAssocCommand = "sctp association show stackname TestSCTP2";
         result = this.sctpShellExecutor.execute(sctpAssocCommand.split(" "));
-        System.out.println(result);
+        logger.info(result);
         assertTrue(result.contains("Assoc2"));
         assertFalse(result.contains("Assoc1") || result.contains("Assoc3"));
 
         sctpAssocCommand = "sctp association destroy Assoc2";
         result = this.sctpShellExecutor.execute(sctpAssocCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.REMOVE_ASSOCIATION_SUCCESS, "Assoc2", this.management2.getName()));
-        assertEquals(2, this.management1.getAssociations().size());
-        assertEquals(0, this.management2.getAssociations().size());
+        assertEquals(this.management1.getAssociations().size(), 2);
+        assertEquals(this.management2.getAssociations().size(), 0);
 
         sctpAssocCommand = "sctp association destroy Assoc1 stackname TestSCTP1";
         result = this.sctpShellExecutor.execute(sctpAssocCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.REMOVE_ASSOCIATION_SUCCESS, "Assoc1", this.management1.getName()));
-        assertEquals(1, this.management1.getAssociations().size());
-        assertEquals(0, this.management2.getAssociations().size());
+        assertEquals(this.management1.getAssociations().size(), 1);
+        assertEquals(this.management2.getAssociations().size(), 0);
 
         sctpAssocCommand = "sctp association destroy Assoc3 stackname TestSCTP1";
         result = this.sctpShellExecutor.execute(sctpAssocCommand.split(" "));
         assertEquals(result, String.format(SCTPOAMMessages.REMOVE_ASSOCIATION_SUCCESS, "Assoc3", this.management1.getName()));
-        assertEquals(0, this.management1.getAssociations().size());
-        assertEquals(0, this.management2.getAssociations().size());
+        assertEquals(this.management1.getAssociations().size(), 0);
+        assertEquals(this.management2.getAssociations().size(), 0);
     }
 
 }

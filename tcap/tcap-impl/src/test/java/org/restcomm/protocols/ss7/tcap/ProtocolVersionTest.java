@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
 import static org.testng.Assert.assertNotNull;
@@ -6,6 +5,8 @@ import static org.testng.Assert.assertNull;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
@@ -24,7 +25,6 @@ import org.restcomm.protocols.ss7.sccp.parameter.RefusalCause;
 import org.restcomm.protocols.ss7.sccp.parameter.ReleaseCause;
 import org.restcomm.protocols.ss7.sccp.parameter.ResetCause;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
-import org.restcomm.protocols.ss7.tcap.TCAPStackImpl;
 import org.restcomm.protocols.ss7.tcap.asn.DialogRequestAPDU;
 import org.restcomm.protocols.ss7.tcap.asn.ParseException;
 import org.restcomm.protocols.ss7.tcap.asn.ProtocolVersion;
@@ -44,16 +44,15 @@ import org.testng.annotations.Test;
  *
  */
 public class ProtocolVersionTest extends SccpHarness {
+
+    private static final Logger logger = LogManager.getLogger(ProtocolVersionTest.class.getName());
+
     public static final long WAIT_TIME = 500;
     private static final int _WAIT_TIMEOUT = 90000;
     public static final long[] _ACN_ = new long[] { 0, 4, 0, 0, 1, 0, 19, 2 };
     private TCAPStackImpl tcapStack1;
     private TCAPStackImpl tcapStack2;
-    private SccpAddress peer1Address;
-    private SccpAddress peer2Address;
     private Client client;
-    private Server server;
-    private TestSccpListener sccpListener;
     private ProtocolVersion pv;
 
     public ProtocolVersionTest() {
@@ -64,12 +63,12 @@ public class ProtocolVersionTest extends SccpHarness {
     public void setUpClass() {
         this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
         this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
-        System.out.println("setUpClass");
+        logger.info("setUpClass");
     }
 
     @AfterClass
     public void tearDownClass() throws Exception {
-        System.out.println("tearDownClass");
+        logger.info("tearDownClass");
     }
 
     /*
@@ -79,13 +78,13 @@ public class ProtocolVersionTest extends SccpHarness {
      */
     @BeforeMethod
     public void setUp() throws Exception {
-        System.out.println("setUp");
+        logger.info("setUp");
         super.setUp();
 
-        peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
-        peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
+        SccpAddress peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
+        SccpAddress peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
 
-        sccpListener = new TestSccpListener();
+        TestSccpListener sccpListener = new TestSccpListener();
         this.sccpProvider2.registerSccpListener(8, sccpListener);
         this.tcapStack1 = new TCAPStackImpl("TCAPFunctionalTest", this.sccpProvider1, 8);
         this.tcapStack2 = new TCAPStackImpl("TCAPFunctionalTest", this.sccpProvider2, 7);
@@ -97,7 +96,7 @@ public class ProtocolVersionTest extends SccpHarness {
         this.tcapStack2.setInvokeTimeout(0);
         // create test classes
         this.client = new Client(this.tcapStack1, super.parameterFactory, peer1Address, peer2Address);
-        this.server = new Server(this.tcapStack2, super.parameterFactory, peer2Address, peer1Address);
+        Server server = new Server(this.tcapStack2, super.parameterFactory, peer2Address, peer1Address);
 
     }
 
@@ -119,10 +118,10 @@ public class ProtocolVersionTest extends SccpHarness {
 
         client.startClientDialog();
         client.dialog.setDoNotSendProtocolVersion(true);
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         assertNull(pv);
     }
     
@@ -131,10 +130,10 @@ public class ProtocolVersionTest extends SccpHarness {
 
         client.startClientDialog();
         client.dialog.setDoNotSendProtocolVersion(false);
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         assertNotNull(pv);
     }
     
@@ -142,9 +141,9 @@ public class ProtocolVersionTest extends SccpHarness {
     public void doNotSendProtocolVersionStackTest() throws Exception {
         this.tcapStack1.setDoNotSendProtocolVersion(true);
         client.startClientDialog();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         assertNull(pv);
     }
 
@@ -152,9 +151,9 @@ public class ProtocolVersionTest extends SccpHarness {
     public void sendProtocolVersionStackTest() throws Exception {
         this.tcapStack1.setDoNotSendProtocolVersion(false);
         client.startClientDialog();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         assertNotNull(pv);
     }
 
@@ -167,47 +166,39 @@ public class ProtocolVersionTest extends SccpHarness {
             AsnInputStream ais = new AsnInputStream(message.getData());
             TCContinueMessage tcm = null;
             int tag;
-            try
-            {
+            try {
                 tag = ais.readTag();
-                
             }
             catch(IOException ex) {
-                try
-                {
+                try {
                     ais.close();
                 }
                 catch(IOException ex1) {
-                    
+                    logger.error(ex.getMessage());
                 }
-                
                 return;
-            }       
-            
-            switch (tag) {
-                case TCBeginMessage._TAG:
-                    TCBeginMessage tcb = null;
-                    try {
-                        tcb = TcapFactory.createTCBeginMessage(ais);
-                    } catch (ParseException e) {
-                        
+            }
+
+            if (tag == TCBeginMessage._TAG) {
+                TCBeginMessage tcb = null;
+                try {
+                    tcb = TcapFactory.createTCBeginMessage(ais);
+                } catch (ParseException e) {
+                    logger.error(e.getMessage());
+                }
+
+                if (tcb != null) {
+                    if (tcb.getDialogPortion().getDialogAPDU() instanceof DialogRequestAPDU) {
+                        pv = ((DialogRequestAPDU) tcb.getDialogPortion().getDialogAPDU()).getProtocolVersion();
                     }
-                    
-                    if(tcb!=null)
-                    {
-                        if(tcb.getDialogPortion().getDialogAPDU() instanceof DialogRequestAPDU) {
-                            pv=((DialogRequestAPDU)tcb.getDialogPortion().getDialogAPDU()).getProtocolVersion();
-                        } 
-                        System.out.println("PROTOCOL VERSION IS : " + pv);
-                    }
-                    break;
+                    logger.info("PROTOCOL VERSION IS : {}", pv);
+                }
             }      
-            try
-            {
+            try {
                 ais.close();
             }
             catch(IOException ex1) {
-                
+                logger.error(ex1.getMessage());
             }
         }
 

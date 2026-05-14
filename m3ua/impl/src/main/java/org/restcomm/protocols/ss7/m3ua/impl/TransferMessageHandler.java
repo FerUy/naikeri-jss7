@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.restcomm.protocols.ss7.m3ua.message.transfer.PayloadData;
 import org.restcomm.protocols.ss7.m3ua.parameter.ErrorCode;
@@ -18,7 +17,7 @@ import org.restcomm.protocols.ss7.mtp.Mtp3TransferPrimitiveFactory;
  */
 public class TransferMessageHandler extends MessageHandler {
 
-    private static final Logger logger = Logger.getLogger(TransferMessageHandler.class);
+    private static final Logger logger = LogManager.getLogger(TransferMessageHandler.class);
 
     private Mtp3TransferPrimitiveFactory mtp3TransferPrimitiveFactory = null;
 

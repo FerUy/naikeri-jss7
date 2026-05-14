@@ -1,7 +1,7 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.router;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.restcomm.protocols.ss7.Util;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
@@ -12,9 +12,6 @@ import org.restcomm.protocols.ss7.sccp.impl.SccpStackImplProxy;
 import org.restcomm.protocols.ss7.sccp.impl.User;
 import org.restcomm.protocols.ss7.sccp.message.SccpDataMessage;
 import org.restcomm.protocols.ss7.sccp.message.SccpMessage;
-import org.restcomm.protocols.ss7.sccp.message.SccpNoticeMessage;
-import org.restcomm.protocols.ss7.sccp.parameter.ReturnCause;
-import org.restcomm.protocols.ss7.sccp.parameter.ReturnCauseValue;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
 import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterface;
 import org.testng.annotations.AfterClass;
@@ -24,9 +21,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
-*
-* @author sergey vetyutnev
-*
+ *
+ * @author sergey vetyutnev
+ * @author <a href="jarmex@gmail.com"> James Amo </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ *
 */
 public class RouteOnGtTest extends SccpHarness {
 
@@ -105,7 +104,7 @@ public class RouteOnGtTest extends SccpHarness {
         u2.register();
 
         SccpAddress a3 = sccpProvider1.getParameterFactory().createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE,
-                sccpProvider1.getParameterFactory().createGlobalTitle("111111", 1), 0, 0);
+            sccpProvider1.getParameterFactory().createGlobalTitle("111111", 1), getStack1PC(), 8);
 
         SccpDataMessage message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8,
                 true, null, null);
@@ -115,15 +114,15 @@ public class RouteOnGtTest extends SccpHarness {
         assertEquals(u2.getMessages().size(), 0);
 
         SccpMessage mes1 = u1.getMessages().get(0);
-        SccpNoticeMessage mes11 = (SccpNoticeMessage) mes1;
-        ReturnCause returnCause = mes11.getReturnCause();
-        assertEquals(returnCause.getValue(), ReturnCauseValue.ERR_IN_LOCAL_PROCESSING);
+        assertTrue(mes1 instanceof SccpDataMessage);
     }
 
     @Test(groups = { "SccpMessage", "functional.transfer" })
     public void testReceive() throws Exception {
-        a1 = sccpProvider1.getParameterFactory().createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, getStack1PC(), 8);
-        a2 = sccpProvider1.getParameterFactory().createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, getStack2PC(), 8);
+        a1 = sccpProvider1.getParameterFactory().createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE,
+            sccpProvider1.getParameterFactory().createGlobalTitle("111111", 1), getStack1PC(), 8);
+        a2 = sccpProvider1.getParameterFactory().createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE,
+            sccpProvider1.getParameterFactory().createGlobalTitle("222222", 1), getStack2PC(), 8);
 
         User u1 = new User(sccpStack1.getSccpProvider(), a1, a2, getSSN());
         User u2 = new User(sccpStack2.getSccpProvider(), a2, a1, getSSN());
@@ -137,7 +136,6 @@ public class RouteOnGtTest extends SccpHarness {
         Thread.sleep(100);
         assertEquals(u1.getMessages().size(), 0);
         assertEquals(u2.getMessages().size(), 0);
-
     }
 
 }

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import org.mobicents.protocols.asn.AsnException;

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.errors;
 
 import static org.testng.Assert.assertEquals;
@@ -14,6 +13,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
@@ -58,26 +59,6 @@ import org.restcomm.protocols.ss7.map.api.smstpdu.FailureCause;
 import org.restcomm.protocols.ss7.map.api.smstpdu.ProtocolIdentifier;
 import org.restcomm.protocols.ss7.map.api.smstpdu.SmsDeliverReportTpdu;
 import org.restcomm.protocols.ss7.map.api.smstpdu.UserData;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageAbsentSubscriberImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageAbsentSubscriberSMImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageBusySubscriberImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageCUGRejectImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageCallBarredImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageExtensionContainerImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageFacilityNotSupImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageFactoryImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageParameterlessImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessagePositionMethodFailureImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessagePwRegistrationFailureImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageRoamingNotAllowedImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageSMDeliveryFailureImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageSsErrorStatusImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageSsIncompatibilityImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageSubscriberBusyForMtSmsImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageSystemFailureImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageUnauthorizedLCSClientImpl;
-import org.restcomm.protocols.ss7.map.errors.MAPErrorMessageUnknownSubscriberImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.BasicServiceCodeImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.TeleserviceCodeImpl;
@@ -99,6 +80,8 @@ import org.testng.annotations.Test;
  *
  */
 public class MAPErrorMessageTest {
+
+    private static final Logger logger = LogManager.getLogger(MAPErrorMessageTest.class.getName());
 
     private Parameter getDataExtContainerFull() {
         Parameter par = new ParameterImpl();
@@ -131,8 +114,6 @@ public class MAPErrorMessageTest {
 
     private Parameter getDataSmDeliveryFailureFull() {
         Parameter par = new ParameterImpl();
-//        par.setData(new byte[] { 10, 1, 4, 4, 5, 1, 3, 5, 7, 9, 48, 39, -96, 32, 48, 10, 6, 3, 42, 3, 4, 11, 12, 13, 14, 15,
-//                48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3, 31, 32, 33 });
         par.setData(new byte[] { 10, 1, 4, 4, 14, 0, -43, 7, 127, -10, 8, 1, 2, 0, 0, 0, 9, 9, 9, 48, 39, -96, 32, 48, 10, 6,
                 3, 42, 3, 4, 11, 12, 13, 14, 15, 48, 5, 6, 3, 42, 3, 6, 48, 11, 6, 3, 42, 3, 5, 21, 22, 23, 24, 25, 26, -95, 3,
                 31, 32, 33 });
@@ -327,7 +308,7 @@ public class MAPErrorMessageTest {
         return par;
     }
 
-    private byte[] uData = { 1, 2, 0, 0, 0, 9, 9, 9 };
+    private final byte[] uData = { 1, 2, 0, 0, 0, 9, 9, 9 };
 
     @Test(groups = { "functional.decode", "dialog.message" })
     public void testDecode() throws Exception {
@@ -429,7 +410,7 @@ public class MAPErrorMessageTest {
         MAPErrorMessageCallBarred emCallBarred = em.getEmCallBarred();
         assertEquals(emCallBarred.getMapProtocolVersion(), 3);
         assertEquals(emCallBarred.getCallBarringCause(), CallBarringCause.operatorBarring);
-        assertEquals((boolean) emCallBarred.getUnauthorisedMessageOriginator(), false);
+        assertFalse(emCallBarred.getUnauthorisedMessageOriginator());
         assertNull(emCallBarred.getExtensionContainer());
 
         p = getDataCallBarredFull();
@@ -440,7 +421,7 @@ public class MAPErrorMessageTest {
         emCallBarred = em.getEmCallBarred();
         assertEquals(emCallBarred.getMapProtocolVersion(), 3);
         assertEquals(emCallBarred.getCallBarringCause(), CallBarringCause.operatorBarring);
-        assertEquals((boolean) emCallBarred.getUnauthorisedMessageOriginator(), true);
+        assertTrue(emCallBarred.getUnauthorisedMessageOriginator());
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(emCallBarred.getExtensionContainer()));
 
         p = getDataFacilityNotSupFull();
@@ -450,8 +431,8 @@ public class MAPErrorMessageTest {
         assertTrue(em.isEmFacilityNotSup());
         MAPErrorMessageFacilityNotSup emFacilityNotSup = em.getEmFacilityNotSup();
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(emFacilityNotSup.getExtensionContainer()));
-        assertEquals((boolean) emFacilityNotSup.getShapeOfLocationEstimateNotSupported(), true);
-        assertEquals((boolean) emFacilityNotSup.getNeededLcsCapabilityNotSupportedInServingNode(), true);
+        assertTrue(emFacilityNotSup.getShapeOfLocationEstimateNotSupported());
+        assertTrue(emFacilityNotSup.getNeededLcsCapabilityNotSupportedInServingNode());
 
         p = getDataUnknownSubscriberFull();
         em = (MAPErrorMessageImpl) fact.createMessageFromErrorCode((long) MAPErrorCode.unknownSubscriber);
@@ -469,7 +450,7 @@ public class MAPErrorMessageTest {
         assertTrue(em.isEmSubscriberBusyForMtSms());
         MAPErrorMessageSubscriberBusyForMtSms emSubscriberBusyForMtSms = em.getEmSubscriberBusyForMtSms();
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(emSubscriberBusyForMtSms.getExtensionContainer()));
-        assertEquals((boolean) emSubscriberBusyForMtSms.getGprsConnectionSuspended(), true);
+        assertTrue(emSubscriberBusyForMtSms.getGprsConnectionSuspended());
 
         p = getDataAbsentSubscriberFull();
         em = (MAPErrorMessageImpl) fact.createMessageFromErrorCode((long) MAPErrorCode.absentSubscriber);
@@ -865,7 +846,7 @@ public class MAPErrorMessageTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);
@@ -892,7 +873,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -916,7 +897,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -940,7 +921,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -963,7 +944,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -986,7 +967,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1010,7 +991,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1024,7 +1005,7 @@ public class MAPErrorMessageTest {
         assertEquals(copy6.getExtensionContainer(), em6.getExtensionContainer());
 
         // MAPErrorMessageParameterless
-        MAPErrorMessageParameterlessImpl em7 = (MAPErrorMessageParameterlessImpl) fact.createMAPErrorMessageParameterless(1l);
+        MAPErrorMessageParameterlessImpl em7 = (MAPErrorMessageParameterlessImpl) fact.createMAPErrorMessageParameterless(1L);
 
         baos = new ByteArrayOutputStream();
         writer = XMLObjectWriter.newInstance(baos);
@@ -1036,7 +1017,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1060,7 +1041,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1084,7 +1065,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1109,7 +1090,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1134,7 +1115,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1164,7 +1145,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1188,7 +1169,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1220,7 +1201,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1245,7 +1226,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1268,7 +1249,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1294,7 +1275,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);
@@ -1319,7 +1300,7 @@ public class MAPErrorMessageTest {
         rawData = baos.toByteArray();
         serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         bais = new ByteArrayInputStream(rawData);
         reader = XMLObjectReader.newInstance(bais);

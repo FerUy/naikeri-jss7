@@ -10,10 +10,11 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
-import org.restcomm.protocols.ss7.inap.isup.CallingPartysCategoryInapImpl;
 import org.restcomm.protocols.ss7.isup.impl.message.parameter.CallingPartyCategoryImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.CallingPartyCategory;
 import org.testng.annotations.Test;
@@ -24,6 +25,8 @@ import org.testng.annotations.Test;
  *
  */
 public class CallingPartysCategoryInapTest {
+
+    private static final Logger logger = LogManager.getLogger(CallingPartysCategoryInapTest.class.getName());
 
     public byte[] getData() {
         return new byte[] { (byte) 133, 1, 10 };
@@ -39,7 +42,7 @@ public class CallingPartysCategoryInapTest {
         byte[] data = this.getData();
         AsnInputStream ais = new AsnInputStream(data);
         CallingPartysCategoryInapImpl elem = new CallingPartysCategoryInapImpl();
-        int tag = ais.readTag();
+        ais.readTag();
         elem.decodeAll(ais);
         CallingPartyCategory cpc = elem.getCallingPartyCategory();
         assertTrue(Arrays.equals(elem.getData(), this.getIntData()));
@@ -79,7 +82,7 @@ public class CallingPartysCategoryInapTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

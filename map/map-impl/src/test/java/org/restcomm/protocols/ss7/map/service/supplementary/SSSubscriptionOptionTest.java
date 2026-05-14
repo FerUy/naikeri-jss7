@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.supplementary;
 
 import static org.testng.Assert.assertEquals;

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -61,7 +60,11 @@ public interface PositioningDataInformation extends Serializable {
 
     int getPositioningDataDiscriminator() throws MAPException;
 
-    HashMap<String, Integer> getPositioningMethodsAndUsage() throws MAPException;
+    HashMap<String, Integer> getPositioningDataSet() throws MAPException;
 
     ArrayList<String> getLocationGeneratedPositioningMethods() throws MAPException;
+
+    String getPositioningMethod(int code);
+
+    String getUsage(int u);
 }

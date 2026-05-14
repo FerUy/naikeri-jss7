@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.router;
 
 import java.util.HashMap;

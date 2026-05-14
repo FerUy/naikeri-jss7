@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import java.io.ByteArrayInputStream;
@@ -34,11 +33,11 @@ public class LocationNumberImpl extends AbstractNAINumber implements LocationNum
     protected int screeningIndicator;
 
     public LocationNumberImpl(int natureOfAddresIndicator, String address, int numberingPlanIndicator,
-            int internalNetworkNumberIndicator, int addressRepresentationRestrictedIndicator, int screeningIndicator) {
+            int internalNetworkNumberIndicator, int addressRepresentationREstrictedIndicator, int screeningIndicator) {
         super(natureOfAddresIndicator, address);
         this.numberingPlanIndicator = numberingPlanIndicator;
         this.internalNetworkNumberIndicator = internalNetworkNumberIndicator;
-        this.addressRepresentationRestrictedIndicator = addressRepresentationRestrictedIndicator;
+        this.addressRepresentationRestrictedIndicator = addressRepresentationREstrictedIndicator;
         this.screeningIndicator = screeningIndicator;
     }
 
@@ -60,7 +59,7 @@ public class LocationNumberImpl extends AbstractNAINumber implements LocationNum
     /*
      * (non-Javadoc)
      *
-     * @see org.mobicents.isup.parameters.AbstractNumber#decodeBody(java.io.ByteArrayInputStream)
+     * @seeorg.mobicents.isup.parameters.AbstractNumber#decodeBody(java.io. ByteArrayInputStream)
      */
 
     public int decodeBody(ByteArrayInputStream bis) throws IllegalArgumentException {
@@ -88,8 +87,8 @@ public class LocationNumberImpl extends AbstractNAINumber implements LocationNum
             return;
         // NOTE 1 If the parameter is included and the address presentation
         // restricted indicator indicates
-        // address not available, octets 3 to n (these are digits.) are omitted,
-        // the subfields in items a - odd/even, b -nai , c - ni and d -npi, are
+        // address not available, octets 3 to n( this are digits.) are omitted,
+        // the subfields in items a - odd/evem, b -nai , c - ni and d -npi, are
         // coded with
         // 0's, and the subfield f - filler, is coded with 11.
         this.oddFlag = 0;
@@ -104,7 +103,7 @@ public class LocationNumberImpl extends AbstractNAINumber implements LocationNum
     /*
      * (non-Javadoc)
      *
-     * @see org.mobicents.isup.parameters.AbstractNumber#encodeBody(java.io.ByteArrayOutputStream)
+     * @seeorg.mobicents.isup.parameters.AbstractNumber#encodeBody(java.io. ByteArrayOutputStream)
      */
 
     public int encodeBody(ByteArrayOutputStream bos) {
@@ -175,7 +174,7 @@ public class LocationNumberImpl extends AbstractNAINumber implements LocationNum
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<LocationNumberImpl> ISUP_LOCATION_NUMBER_XML = new XMLFormat<>(
+    protected static final XMLFormat<LocationNumberImpl> ISUP_LOCATION_NUMBER_XML = new XMLFormat<LocationNumberImpl>(
             LocationNumberImpl.class) {
 
         @Override

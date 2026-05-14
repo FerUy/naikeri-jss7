@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
 import org.restcomm.protocols.ss7.sccp.RemoteSccpStatus;
 import org.restcomm.protocols.ss7.sccp.SccpConnection;
@@ -32,13 +34,16 @@ import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
  * @author abhayani
  */
 public class User extends BaseSccpListener implements SccpListener {
+
+    private static final Logger logger = LogManager.getLogger(User.class.getName());
+
     protected SccpProvider provider;
     protected SccpAddress address;
     protected SccpAddress dest;
     protected int ssn;
     // protected SccpMessage msg;
-    protected List<SccpMessage> messages = new ArrayList<SccpMessage>();
-    protected List<byte[]> receivedData = Collections.synchronizedList(new ArrayList<byte[]>());
+    protected List<SccpMessage> messages = new ArrayList<>();
+    protected List<byte[]> receivedData = Collections.synchronizedList(new ArrayList<>());
     protected boolean refuseConnections;
     protected UserStats stats = new UserStats();
     private UserOptions options = new UserOptions();
@@ -60,7 +65,7 @@ public class User extends BaseSccpListener implements SccpListener {
 
     public boolean check() { // override if required.
         System.err.println("SIZE: "+messages.size());
-        if (messages.size() == 0) {
+        if (messages.isEmpty()) {
             return false;
         }
         SccpMessage msg = messages.get(0);
@@ -117,7 +122,7 @@ public class User extends BaseSccpListener implements SccpListener {
 
     public void onMessage(SccpDataMessage message) {
         this.messages.add(message);
-        System.out.println(String.format("SccpDataMessage=%s seqControl=%d", message, message.getSls()));
+        logger.info("SccpDataMessage={} seqControl={}", message, message.getSls());
 
         // localAddress = message.getCalledPartyAddress();
         // SccpAddress remoteAddress = message.getCallingPartyAddress();
@@ -160,7 +165,7 @@ public class User extends BaseSccpListener implements SccpListener {
     @Override
     public void onNotice(SccpNoticeMessage message) {
         this.messages.add(message);
-        System.out.println(String.format("SccpNoticeMessage=%s seqControl=%d", message, message.getSls()));
+        logger.info("SccpNoticeMessage={} seqControl={}", message, message.getSls());
     }
 
     @Override

@@ -52,7 +52,7 @@ public class LocationInformation5GSImpl extends SequenceBase implements Location
     private static final String GEODETIC_INFO = "geodeticInformation";
     private static final String AMF_ADDRESS = "amf-address";
     private static final String TAI = "trackingAreaIdentity";
-    private static final String CURRENT_LOCATION_RETRIEVED = "trackingAreaIdentity";
+    private static final String CURRENT_LOCATION_RETRIEVED = "currentLocationRetrieved";
     private static final String AGE_OF_LOCATION_INFO = "ageOfLocationInformation";
     private static final String VPLMN_ID = "vplmnId";
     private static final String LOCAL_TIME_ZONE = "localtimeZone";

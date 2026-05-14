@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message;
 
 import org.restcomm.protocols.ss7.isup.impl.message.AbstractISUPMessage;

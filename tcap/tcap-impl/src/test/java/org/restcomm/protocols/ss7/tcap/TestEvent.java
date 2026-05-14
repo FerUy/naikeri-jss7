@@ -8,37 +8,35 @@ import java.io.Serializable;
  */
 public class TestEvent implements Serializable {
 
-    private EventType eventType;
-    private boolean sent;
-    private long timestamp;
-    private Object event;
-    private int sequence;
+    private final EventType eventType;
+    private final boolean sent;
+    private final long timestamp;
+    private final Object event;
+    private final int sequence;
 
     public static TestEvent createReceivedEvent(EventType eventType, Object eventSource, int sequence) {
-        TestEvent te = new TestEvent(eventType, false, System.currentTimeMillis(), eventSource, sequence);
-        return te;
+        return new TestEvent(eventType, false, System.currentTimeMillis(), eventSource, sequence);
     }
 
     public static TestEvent createSentEvent(EventType eventType, Object eventSource, int sequence) {
-        TestEvent te = new TestEvent(eventType, true, System.currentTimeMillis(), eventSource, sequence);
-        return te;
+        return new TestEvent(eventType, true, System.currentTimeMillis(), eventSource, sequence);
     }
 
     public static TestEvent createReceivedEvent(EventType eventType, Object eventSource, int sequence, long stamp) {
-        TestEvent te = new TestEvent(eventType, false, stamp, eventSource, sequence);
-        return te;
+        return new TestEvent(eventType, false, stamp, eventSource, sequence);
     }
 
     public static TestEvent createSentEvent(EventType eventType, Object eventSource, int sequence, long stamp) {
-        TestEvent te = new TestEvent(eventType, true, stamp, eventSource, sequence);
-        return te;
+        return new TestEvent(eventType, true, stamp, eventSource, sequence);
     }
 
     /**
-     * @param eventType
-     * @param sent
-     * @param timestamp
-     * @param event
+     * @param eventType type of TCAP event
+     *                  (Begin, Continue, End, Uni, UAbort, PAbort, Notice, InvokeTimeout, DialogTimeout, DialogRelease,
+     *                  Invoke, ReturnResult, ReturnResultLast, ReturnError, Reject)
+     * @param sent boolean determining if sent or not
+     * @param timestamp timestamp of the event
+     * @param event the event object
      */
     public TestEvent(EventType eventType, boolean sent, long timestamp, Object event, int sequence) {
         super();
@@ -102,13 +100,13 @@ public class TestEvent implements Serializable {
             return false;
         if (sequence != other.sequence)
             return false;
-        if (timestamp != other.timestamp) {
+        // If one of the timestamps is 0, we ignore timestamp comparison completely
+        // This is useful for tests where we don't care about exact timing
+        if (timestamp != 0 && other.timestamp != 0 && timestamp != other.timestamp) {
             long v = timestamp - other.timestamp;
             v = Math.abs(v);
             // 600ms, this can happen if we run tests concurrently and its not a big deal :)
-            if (v > 600) {
-                return false;
-            }
+            return v <= 600;
         }
 
         // now compare source!

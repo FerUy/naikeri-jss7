@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -9,8 +8,8 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.mtp.Mtp3;
 import org.restcomm.protocols.ss7.mtp.Mtp3EndCongestionPrimitive;
@@ -191,7 +190,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
     private boolean previewMode = false;
 
-    protected volatile State state = State.IDLE;
+    protected volatile State state;
 
     // provider ref, this can be real provider or pipe, for tests.
     protected SccpProviderImpl sccpProvider;
@@ -208,9 +207,9 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
     protected int referenceNumberCounterMax = 0xffffff;
 
-    protected FastMap<Integer, Mtp3UserPart> mtp3UserParts = new FastMap<Integer, Mtp3UserPart>();
+    protected FastMap<Integer, Mtp3UserPart> mtp3UserParts = new FastMap<>();
     protected ScheduledExecutorService timerExecutors;
-    protected FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl> reassemplyCache = new FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl>();
+    protected FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl> reassemplyCache = new FastMap<>();
 
     // executors for delivering messages SCCP user -> SCCP -> SCCP user (for messages that are not from or to MTP part)
     protected ExecutorService[] msgDeliveryExecutors;
@@ -236,8 +235,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
     private volatile int selectorCounter = 0;
     protected volatile int referenceNumberCounter = 0;
 
-    private FastMap<Integer, Date> lastCongNotice = new FastMap<Integer, Date>();
-    private FastMap<Integer, Date> lastUserPartUnavailNotice = new FastMap<Integer, Date>();
+    private FastMap<Integer, Date> lastCongNotice = new FastMap<>();
+    private FastMap<Integer, Date> lastUserPartUnavailNotice = new FastMap<>();
 
     protected Scheduler scheduler;
     protected Ss7ExtSccpDetailedInterface ss7ExtSccpDetailedInterface;
@@ -265,7 +264,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
         binding.setClassAttribute(CLASS_ATTRIBUTE);
 
         this.name = name;
-        this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName() + "-" + this.name);
+        this.logger = LogManager.getLogger(SccpStackImpl.class.getCanonicalName() + "-" + this.name);
 
         this.messageFactory = new MessageFactoryImpl(this);
         this.sccpProvider = new SccpProviderImpl(this);
@@ -313,7 +312,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
     public void setMtp3UserParts(Map<Integer, Mtp3UserPart> mtp3UserPartsTemp) {
         if (mtp3UserPartsTemp != null) {
             synchronized (this) {
-                FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<Integer, Mtp3UserPart>();
+                FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<>();
                 newMtp3UserPart.putAll(mtp3UserPartsTemp);
                 this.mtp3UserParts = newMtp3UserPart;
             }
@@ -329,7 +328,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
             this.removeMtp3UserPart(id);
         } else {
             synchronized (this) {
-                FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<Integer, Mtp3UserPart>();
+                FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<>();
                 newMtp3UserPart.putAll(this.mtp3UserParts);
                 newMtp3UserPart.put(id, mtp3UserPart);
                 this.mtp3UserParts = newMtp3UserPart;
@@ -339,7 +338,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
     public void removeMtp3UserPart(int id) {
         synchronized (this) {
-            FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<Integer, Mtp3UserPart>();
+            FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<>();
             newMtp3UserPart.putAll(this.mtp3UserParts);
             newMtp3UserPart.remove(id);
             this.mtp3UserParts = newMtp3UserPart;
@@ -524,6 +523,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
     public SccpCongestionControlAlgo getCongControlAlgo() {
         return this.congControl_Algo;
     }
+
 
     public String getCongControl_Algo() {
         return this.congControl_Algo.toString();
@@ -859,7 +859,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                     .append(File.separator).append(this.name).append("_").append(PERSIST_FILE_NAME);
         }
 
-        logger.info(String.format("SCCP Management configuration file path %s", persistFile.toString()));
+        logger.info(String.format("SCCP Management configuration file path %s", persistFile));
 
         try {
             this.load();
@@ -1005,7 +1005,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
     }
 
     protected enum State {
-        IDLE, CONFIGURED, RUNNING;
+        IDLE, CONFIGURED, RUNNING
     }
 
     public SccpConnectionImpl newConnection(int localSsn, ProtocolClass protocol) throws MaxConnectionCountReached {
@@ -1113,7 +1113,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                 opc = svcAccessPoint.getOpc();
                 networkId = svcAccessPoint.getNetworkId();
                 ni = svcAccessPoint.getNi();
-                // use opc, networkId and ni to find the the mtp3Id to use
+                // use opc, networkId and ni to find the mtp3Id to use
                 Mtp3Destination mtp3Destination = svcAccessPoint.getMtp3Destination(svcAccessPoints.getKey());
                 firstSls = mtp3Destination.getFirstSls();
                 // defensively setting the first SLS value to 0 if wrongly configured as a negative number
@@ -1321,20 +1321,20 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                 RemoteSignalingPointCode remoteSpc = this.getSccpResource().getRemoteSpcByPC(dpc);
                 Mtp3ServiceAccessPoint sap = this.router.findMtp3ServiceAccessPoint(opc, sls);
                 if (remoteSpc == null) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isWarnEnabled()) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d. But RemoteSpc is not found", dpc));
                     }
                     return;
                 }
                 if (remoteSpc.isRemoteSpcProhibited()) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isWarnEnabled()) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d. But RemoteSpc is Prohibited", dpc));
                     }
                     // TODO: ***** SSP should we send SSP message to a peer ?
                     return;
                 }
                 if (remoteSpc.getCurrentRestrictionLevel() > 1) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isWarnEnabled()) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d. But RemoteSpc is Congested", dpc));
                     }
                     // TODO: ***** SSC should we send SSC message to a peer ?
@@ -1342,7 +1342,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                 }
                 Mtp3ServiceAccessPoint sap2 = this.router.findMtp3ServiceAccessPoint(dpc, sls);
                 if (sap2 == null) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isWarnEnabled()) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d / sls=%d. But SAP is not found",
                                 dpc, sls));
                     }
@@ -1350,7 +1350,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                 }
                 Mtp3UserPart mup = this.getMtp3UserPart(sap2.getMtp3Id());
                 if (mup == null) {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isWarnEnabled()) {
                         logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d / sls=%d. no matching Mtp3UserPart found", dpc, sls));
                     }
                     return;
@@ -1391,7 +1391,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
             Mtp3ServiceAccessPoint sap = this.router.findMtp3ServiceAccessPointForIncMes(dpc, opc, localGtDigits);
             int networkId = 0;
             if (sap == null) {
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn(String.format("Incoming Mtp3 Message for local address for localPC=%d, remotePC=%d, sls=%d. But SAP is not found for localPC", dpc, opc, mtp3Msg.getSls()));
                 }
             } else {
@@ -1433,14 +1433,14 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                             // nonfirst segment
                             MessageReassemblyProcess msp = new MessageReassemblyProcess(segm.getSegmentationLocalRef(),
                                     sgmMsg.getCallingPartyAddress());
-                            SccpSegmentableMessageImpl sgmMsgFst = null;
+                            SccpSegmentableMessageImpl sgmMsgFst;
                             synchronized (this.reassemplyCache) {
                                 sgmMsgFst = this.reassemplyCache.get(msp);
                             }
                             if (sgmMsgFst == null) {
                                 // previous segments cache is not found -
                                 // discard a segment
-                                if (logger.isEnabledFor(Level.WARN)) {
+                                if (logger.isWarnEnabled()) {
                                     logger.warn(String
                                             .format("Reassembly function failure: received a non first segment without the first segement having recieved. SccpMessageSegment=%s",
                                                     msg));
@@ -1455,7 +1455,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                                     if (mspMain != null)
                                         mspMain.stopTimer();
                                 }
-                                if (logger.isEnabledFor(Level.WARN)) {
+                                if (logger.isWarnEnabled()) {
                                     logger.warn(String
                                             .format("Reassembly function failure: when receiving a next segment message order is missing. SccpMessageSegment=%s",
                                                     msg));
@@ -1509,9 +1509,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                 sccpRoutingControl.routeMsgFromMtpConn((SccpConnMessage) msg);
 
             } else {
-                logger.warn(String
-                        .format("Rx SCCP message which is not instance of SccpAddressedMessage or SccpSegmentableMessage" +
-                                " and doesn't implement SccpConnMessage. Will be dropped. Message=", msg));
+                logger.warn("Rx SCCP message which is not instance of SccpAddressedMessage or SccpSegmentableMessage" +
+                                " and doesn't implement SccpConnMessage. Will be dropped. Message=", msg);
             }
         } catch (Exception e) {
             logger.error("IOException while handling SCCP message: " + e.getMessage(), e);
@@ -1562,7 +1561,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
         }
 
         public void run() {
-            SccpSegmentableMessageImpl msg = null;
+            SccpSegmentableMessageImpl msg;
             synchronized (reassemplyCache) {
                 msg = reassemplyCache.remove(this);
                 if (msg == null)
@@ -1636,10 +1635,10 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
     /**
      * Load and create LinkSets and Link from persisted file
      *
-     * @throws Exception
+     * @throws FileNotFoundException when there is no file
      */
     protected void load() throws FileNotFoundException {
-        XMLObjectReader reader = null;
+        XMLObjectReader reader;
         try {
             reader = XMLObjectReader.newInstance(new FileInputStream(persistFile.toString()));
 

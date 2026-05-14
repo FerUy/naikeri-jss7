@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcapAnsi.api;
 
 import java.io.IOException;

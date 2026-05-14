@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -14,7 +13,6 @@ ModificationRequestFor-CSG ::= SEQUENCE {
   ...
 }
 </code>
- *
  *
  * @author sergey vetyutnev
  *

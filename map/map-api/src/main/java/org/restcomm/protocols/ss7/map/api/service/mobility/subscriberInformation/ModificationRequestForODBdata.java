@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -10,18 +9,17 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
  *
 <code>
 ModificationRequestFor-ODB-data ::= SEQUENCE {
-  odb-data                  [0] ODB-Data OPTIONAL,
+  odb-data                  [0] ODB-Data                OPTIONAL,
   modifyNotificationToCSE   [1] ModificationInstruction OPTIONAL,
-  extensionContainer        [2] ExtensionContainer OPTIONAL,
+  extensionContainer        [2] ExtensionContainer      OPTIONAL,
   ...
 }
 </code>
  *
- *
  * @author sergey vetyutnev
  *
  */
-public interface ModificationRequestForODBdata extends Serializable {
+public interface ModificationRequestForODBData extends Serializable {
 
     ODBData getOdbData();
 

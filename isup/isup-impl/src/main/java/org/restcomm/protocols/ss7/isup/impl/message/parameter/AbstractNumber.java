@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import java.io.ByteArrayInputStream;
@@ -8,8 +7,8 @@ import java.io.IOException;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.isup.ParameterException;
 import org.restcomm.protocols.ss7.isup.message.parameter.Number;
 
@@ -44,7 +43,8 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
 
     private static final String DEFAULT_ADDRESS = "";
 
-    protected Logger logger = Logger.getLogger(this.getClass());
+    protected Logger logger = LogManager.getLogger(this.getClass());
+
     /**
      * Holds odd flag, it can have either value: 10000000(x80) or 00000000. For each it takes value 1 and 0;
      */
@@ -57,8 +57,8 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
     public static final int _FLAG_ODD = 1;
 
     /**
-     * Holds digits(in specs: "signal"). digits[0] holds most siginificant digit. Also length of this table contains information
-     * about Odd/even flag. However, there is distinct flag used in process of decoding from byte[]. This is becuse in case of
+     * Holds digits(in specs: "signal"). digits[0] holds most significant digit. Also, length of this table contains information
+     * about Odd/even flag. However, there is distinct flag used in process of decoding from byte[]. This is because in case of
      * decoding we don't know if last digit is filler or digit.
      */
     protected String address;
@@ -180,7 +180,7 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
 
     /**
      * This method is used in constructor that takes byte[] or ByteArrayInputStream as parameter. Decodes header part (its 1 or
-     * 2 bytes usually.) Default implemetnation decodes header of one byte - where most significant bit is O/E indicator and
+     * 2 bytes usually.) Default implementation decodes header of one byte - where most significant bit is O/E indicator and
      * bits 7-1 are NAI. This method should be over
      *
      * @param bis
@@ -228,7 +228,7 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
         int count = 0;
         try {
             address = "";
-            int b = 0;
+            int b;
             while (bis.available() - 1 > 0) {
                 b = (byte) bis.read();
 
@@ -318,7 +318,7 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
     }
 
     /**
-     * This methods is used in encode method. It encodes body. Each subclass shoudl provide implementetaion.
+     * This method is used in encode method. It encodes body. Each subclass should provide implementation.
      *
      * @param bos
      * @return - number of bytes reads
@@ -339,7 +339,7 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
         }
         boolean isOdd = this.oddFlag == _FLAG_ODD;
 
-        byte b = 0;
+        byte b;
         int count = (!isOdd) ? address.length() : address.length() - 1;
         int bytesCount = 0;
         for (int i = 0; i < count - 1; i += 2) {
@@ -391,7 +391,7 @@ public abstract class AbstractNumber extends AbstractISUPParameter implements Nu
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<AbstractNumber> ISUP_ABSTRACT_NUMBER_XML = new XMLFormat<AbstractNumber>(
+    protected static final XMLFormat<AbstractNumber> ISUP_ABSTRACT_NUMBER_XML = new XMLFormat<>(
             AbstractNumber.class) {
 
         @Override

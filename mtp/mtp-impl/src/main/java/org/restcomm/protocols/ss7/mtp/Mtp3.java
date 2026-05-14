@@ -7,8 +7,8 @@ import java.util.List;
 
 import javolution.util.FastList;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.stream.api.SelectorKey;
 import org.mobicents.protocols.stream.api.SelectorProvider;
 import org.mobicents.protocols.stream.api.StreamSelector;
@@ -37,7 +37,7 @@ public class Mtp3 implements Runnable {
 
     // FIXME: MOVE THIS TO LINKSET?
     protected volatile boolean started = false;
-    /** defautl value of SSI */
+    /** default value of SSI */
     public static final int DEFAULT_NI = 2;// NATIONAL, as default.
 
     private int dpc;
@@ -66,7 +66,7 @@ public class Mtp3 implements Runnable {
 
     private Scheduler scheduler;
 
-    private static final Logger logger = Logger.getLogger(Mtp3.class);
+    private static final Logger logger = LogManager.getLogger(Mtp3.class);
 
     // public Mtp3Impl(String name, Mtp1 layer1) {
     public Mtp3(String name, Scheduler scheduler) {
@@ -119,7 +119,7 @@ public class Mtp3 implements Runnable {
     /**
      * Sets network indicator to be used as part of SIO( actually SSI). It Accepts 2 bit integer.
      *
-     * @param ni
+     * @param ni network indicator
      */
     public void setNetworkIndicator(int ni) {
         this.ni = (0x03 & ni) << 2;
@@ -219,10 +219,9 @@ public class Mtp3 implements Runnable {
     /**
      * This method is called when new MSU is detected.
      *
-     * //@param sio service information octet.
-     * //@param msg service information field;
+     * @param rxFrame service information octet.
+     * @param mtp2 service information field;
      */
-
     public void onMessage(Mtp2Buffer rxFrame, Mtp2 mtp2) {
         // | ----------------------- TO L4 --------------------------- |
         // | --------------------- SIF ------------------------ |
@@ -241,10 +240,10 @@ public class Mtp3 implements Runnable {
         int opc = opc(rxFrame.frame, 4);
         int sls = sls(rxFrame.frame, 4);
 
-        // check SSI, Q.704 Figure 25, seems like if its bad, we discard.
+        // check SSI, Q.704 Figure 25, seems like if it's bad, we discard.
         if (this.ni != ni) {
-            if (logger.isInfoEnabled()) {
-                logger.error(String.format("(%s) Received MSU with bad SSI, discarding! ni:" + ni + " this.ni:" + this.ni
+            if (logger.isErrorEnabled()) {
+                logger.error(String.format("(%s) Received MSSU with bad SSI, discarding! ni:" + ni + " thisni:" + this.ni
                         + " [si=" + serviceIndicator + ",ssi=" + subserviceIndicator + ", dpc=" + dpc + ", opc=" + opc
                         + ", sls=" + sls + "] data: ", mtp2.getName())
                         + Arrays.toString(rxFrame.frame));
@@ -288,7 +287,7 @@ public class Mtp3 implements Runnable {
                     writeRoutingLabel(this.localFrame, sio, this.ni, sls, opc, dpc);
                     // slta[0] = (byte) sio;
                     this.localFrame[5] = 0x021;
-                    // +1 cause we copy LEN byte also.
+                    // +1 because we copy LEN byte also.
                     System.arraycopy(rxFrame.frame, 9, this.localFrame, 6, len + 1);
 
                     if (logger.isDebugEnabled()) {
@@ -312,13 +311,13 @@ public class Mtp3 implements Runnable {
                             linkUp(mtp2);
                         }
                     } else {
-                        if (logger.isEnabledFor(Level.WARN)) {
+                        if (logger.isWarnEnabled()) {
                             logger.warn("SLTA pattern does not match: \n" + Arrays.toString(rxFrame.frame) + "\n"
                                     + Arrays.toString(SLTM_PATTERN));
                         }
                     }
                 } else {
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isWarnEnabled()) {
                         logger.warn(String.format("(%s) Unexpected message type", mtp2.getName()));
                     }
                 }
@@ -361,7 +360,7 @@ public class Mtp3 implements Runnable {
                 }
                 break;
             default:
-                if (logger.isEnabledFor(Level.WARN)) {
+                if (logger.isWarnEnabled()) {
                     logger.warn("Received MSU for UNKNOWN SERVICE!!!!!!!!!!!: " + Utils.dump(rxFrame.frame, rxFrame.len, false));
                 }
                 break;
@@ -380,7 +379,7 @@ public class Mtp3 implements Runnable {
     }
 
     public boolean send(byte[] msg, int len) {
-        // method expects proper message, lets pray its ok :/ - this is a way to be aligned with dialogic cards.
+        // method expects proper message, lets pray it's ok :/ - this is a way to be aligned with Dialogic cards.
         // selecting link using sls
         // get sls;
         byte sls = (byte) sls(msg, 1);
@@ -501,7 +500,7 @@ public class Mtp3 implements Runnable {
     }
 
     private static final int PATTERN_OFFSET = 10;
-    private static final int PATTERN_LEN_OFFSET = PATTERN_OFFSET + 2; // +2 becuase frame.len contains 2B for CRC
+    private static final int PATTERN_LEN_OFFSET = PATTERN_OFFSET + 2; // +2 because frame.len contains 2B for CRC
 
     private boolean checkPattern(Mtp2Buffer frame, int sltmLen, byte[] pattern) {
         if (sltmLen != pattern.length) {
@@ -514,6 +513,7 @@ public class Mtp3 implements Runnable {
         }
         return true;
     }
+
 
     protected class SLTMTest extends Task {
 
@@ -565,9 +565,9 @@ public class Mtp3 implements Runnable {
         public void ack() {
             // disable current awaiting handler
             cancel();
-            // reset number of tryies;
+            // reset number of tries;
             tryCount = -1;
-            // shcedule next ping
+            // schedule next ping
             ttl = Mtp3.TIMEOUT_T2_SLTM;
             scheduler.submitHeatbeat(this);
             if (logger.isDebugEnabled()) {
@@ -577,8 +577,6 @@ public class Mtp3 implements Runnable {
 
         /**
          * Sends SLTM message using this link.
-         *
-         * //@param timeout the amount of time in millisecond for awaiting response.
          */
         public void ping() {
             // preparing test message
@@ -592,7 +590,7 @@ public class Mtp3 implements Runnable {
             // sending test message
             link.send(sltm, sltm.length);
 
-            // incremeting number of tries.
+            // incrementing number of tries.
             tryCount++;
 
             // scheduling timeout

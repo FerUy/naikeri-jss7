@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import java.io.IOException;
@@ -27,6 +26,7 @@ import org.restcomm.protocols.ss7.map.primitives.SequenceBase;
 /**
  * @author amit bhayani
  * @author sergey vetyutnev
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public class LocationInformationEPSImpl extends SequenceBase implements LocationInformationEPS {
@@ -176,6 +176,7 @@ public class LocationInformationEPSImpl extends SequenceBase implements Location
         this.geodeticInformation = null;
         this.currentLocationRetrieved = false;
         this.ageOfLocationInformation = null;
+        this.mmeName = null;
 
         AsnInputStream ais = asnInputStream.readSequenceStreamData(length);
 

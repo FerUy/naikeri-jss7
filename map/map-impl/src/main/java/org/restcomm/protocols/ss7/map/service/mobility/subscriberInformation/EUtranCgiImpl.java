@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import jakarta.xml.bind.DatatypeConverter;
@@ -6,7 +5,8 @@ import jakarta.xml.bind.DatatypeConverter;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -37,7 +37,7 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
 
     private static final String DEFAULT_VALUE = null;
 
-    private static final Logger logger = Logger.getLogger(EUtranCgiImpl.class);
+    private static final Logger logger = LogManager.getLogger(EUtranCgiImpl.class);
 
     public EUtranCgiImpl() {
         super(7, 7, "EUtranCgi");

@@ -1,7 +1,7 @@
 package org.restcomm.protocols.ss7.m3ua.impl;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSMState;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.TransitionHandler;
@@ -22,7 +22,7 @@ public class THPeerSendM3uaBlockingError implements TransitionHandler {
 
     private AspImpl aspImpl;
     private FSM fsm;
-    private static final Logger logger = Logger.getLogger(THPeerSendM3uaBlockingError.class);
+    private static final Logger logger = LogManager.getLogger(THPeerSendM3uaBlockingError.class);
 
     public THPeerSendM3uaBlockingError(AspImpl aspImpl, FSM fsm) {
         this.aspImpl = aspImpl;

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcapAnsi;
 
 import static org.testng.Assert.assertEquals;
@@ -764,7 +763,7 @@ public class TCAPComponentsTest extends SccpHarness {
                     }
 
                     TestEvent te = TestEvent.createReceivedEvent(et, c, sequence++);
-                    this.observerdEvents.add(te);
+                    this.observedEvents.add(te);
                 }
             }
         }
@@ -799,7 +798,7 @@ public class TCAPComponentsTest extends SccpHarness {
                 te = TestEvent.createSentEvent(EventType.InvokeLast, null, sequence++);
             else
                 te = TestEvent.createSentEvent(EventType.InvokeNotLast, null, sequence++);
-            this.observerdEvents.add(te);
+            this.observedEvents.add(te);
 
             this.dialog.sendComponent(invoke);
 
@@ -836,7 +835,7 @@ public class TCAPComponentsTest extends SccpHarness {
             invoke.setTimeout(timout);
 
             TestEvent te = TestEvent.createSentEvent(EventType.InvokeNotLast, null, sequence++);
-            this.observerdEvents.add(te);
+            this.observedEvents.add(te);
 
             this.dialog.sendComponent(invoke);
         }
@@ -847,7 +846,7 @@ public class TCAPComponentsTest extends SccpHarness {
             rej.setProblem(RejectProblem.returnErrorUnexpectedError);
 
             TestEvent te = TestEvent.createSentEvent(EventType.Reject, null, sequence++);
-            this.observerdEvents.add(te);
+            this.observedEvents.add(te);
 
             this.dialog.sendComponent(rej);
         }
@@ -863,7 +862,7 @@ public class TCAPComponentsTest extends SccpHarness {
 //            rr.setOperationCode(oc);
 
             TestEvent te = TestEvent.createSentEvent(EventType.ReturnResult, null, sequence++);
-            this.observerdEvents.add(te);
+            this.observedEvents.add(te);
 
             this.dialog.sendComponent(rr);
         }
@@ -879,7 +878,7 @@ public class TCAPComponentsTest extends SccpHarness {
 //            rr.setOperationCode(oc);
 
             TestEvent te = TestEvent.createSentEvent(EventType.ReturnResultLast, null, sequence++);
-            this.observerdEvents.add(te);
+            this.observedEvents.add(te);
 
             this.dialog.sendComponent(rr);
         }
@@ -895,7 +894,7 @@ public class TCAPComponentsTest extends SccpHarness {
             err.setErrorCode(ec);
 
             TestEvent te = TestEvent.createSentEvent(EventType.ReturnError, null, sequence++);
-            this.observerdEvents.add(te);
+            this.observedEvents.add(te);
 
             this.dialog.sendComponent(err);
         }
@@ -938,7 +937,7 @@ public class TCAPComponentsTest extends SccpHarness {
                     }
 
                     TestEvent te = TestEvent.createReceivedEvent(et, c, sequence++);
-                    this.observerdEvents.add(te);
+                    this.observedEvents.add(te);
                 }
             }
         }

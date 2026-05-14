@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.primitives;
 
 import java.io.IOException;
@@ -162,12 +161,14 @@ public class ExternalSignalInfoImpl implements ExternalSignalInfo, MAPAsnPrimiti
             throw new MAPException("Error while encoding " + _PrimitiveName + ": protocolId and signalInfo must not be null");
 
         try {
-            if (this.protocolId != null)
-                asnOutputStream.writeInteger(Tag.CLASS_UNIVERSAL, Tag.ENUMERATED, this.protocolId.getCode());
+            asnOutputStream.writeInteger(Tag.CLASS_UNIVERSAL, Tag.ENUMERATED, this.protocolId.getCode());
+
             if (this.signalInfo != null)
                 ((SignalInfoImpl) this.signalInfo).encodeAll(asnOutputStream);
+
             if (this.extensionContainer != null)
                 ((MAPExtensionContainerImpl) this.extensionContainer).encodeAll(asnOutputStream);
+
         } catch (IOException e) {
             throw new MAPException("IOException when encoding ExternalSignalInfo : " + e.getMessage(), e);
         } catch (AsnException e) {

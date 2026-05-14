@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.Util;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.MaxConnectionCountReached;
@@ -524,7 +523,7 @@ public class ConnectionFlowControlTest extends SccpHarnessExt {
             this.starter = starter;
             this.conn = conn;
             this.workerNumber = (byte) workerNumber;
-            this.logger = Logger.getLogger(SenderThread.class.getCanonicalName()
+            this.logger = LogManager.getLogger(SenderThread.class.getCanonicalName()
                     + "-" + conn.getLocalReference()
                     + "-" + workerNumber
                     + "-" + sccpStack.getName());

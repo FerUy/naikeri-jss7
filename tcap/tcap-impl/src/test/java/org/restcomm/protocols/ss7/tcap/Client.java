@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
 import org.mobicents.protocols.asn.Tag;
@@ -8,7 +7,6 @@ import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.restcomm.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
-import org.restcomm.protocols.ss7.tcap.DialogImpl;
 import org.restcomm.protocols.ss7.tcap.api.ComponentPrimitiveFactory;
 import org.restcomm.protocols.ss7.tcap.api.TCAPException;
 import org.restcomm.protocols.ss7.tcap.api.TCAPSendException;
@@ -29,9 +27,9 @@ import org.restcomm.protocols.ss7.tcap.asn.comp.Parameter;
 public class Client extends EventTestHarness {
 
     /**
-     * @param stack
-     * @param thisAddress
-     * @param remoteAddress
+     * @param stack TCAP stack
+     * @param thisAddress local SCCP address
+     * @param remoteAddress remote SCCP address
      */
     public Client(final TCAPStack stack, final ParameterFactory parameterFactory, final SccpAddress thisAddress, final SccpAddress remoteAddress) {
         super(stack, parameterFactory, thisAddress, remoteAddress);
@@ -45,7 +43,7 @@ public class Client extends EventTestHarness {
         Invoke invoke = cpFactory.createTCInvokeRequest(InvokeClass.Class1);
         invoke.setInvokeId(this.dialog.getNewInvokeId());
         OperationCode oc = cpFactory.createOperationCode();
-        oc.setLocalOperationCode(new Long(12));
+        oc.setLocalOperationCode(12L);
         invoke.setOperationCode(oc);
         // no parameter
         this.dialog.sendComponent(invoke);
@@ -54,7 +52,7 @@ public class Client extends EventTestHarness {
         invoke = cpFactory.createTCInvokeRequest(InvokeClass.Class1);
         invoke.setInvokeId(this.dialog.getNewInvokeId());
         oc = cpFactory.createOperationCode();
-        oc.setLocalOperationCode(new Long(13));
+        oc.setLocalOperationCode(13L);
         invoke.setOperationCode(oc);
         // no parameter
         this.dialog.sendComponent(invoke);
@@ -66,18 +64,20 @@ public class Client extends EventTestHarness {
         super.sendBegin();
     }
 
-    public void sendBeginUnreachableAddress(boolean returnMessageOnError) throws TCAPException, TCAPSendException {
+    public void sendBeginUnreachableAddress(boolean returnMessageOnError) throws TCAPSendException {
         System.err.println(this + " T[" + System.currentTimeMillis() + "]send BEGIN");
         ApplicationContextName acn = this.tcapProvider.getDialogPrimitiveFactory().createApplicationContextName(_ACN_);
         // UI is optional!
         TCBeginRequest tcbr = this.tcapProvider.getDialogPrimitiveFactory().createBegin(this.dialog);
         tcbr.setApplicationContextName(acn);
 
-        GlobalTitle gt = super.parameterFactory.createGlobalTitle("93702994006",0, NumberingPlan.ISDN_TELEPHONY, null, NatureOfAddress.INTERNATIONAL);
-        ((DialogImpl) this.dialog).setRemoteAddress(super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 0, 8));
+        // Setting a completely unreachable address
+        GlobalTitle gt = super.parameterFactory.createGlobalTitle("93702994006", 0, NumberingPlan.ISDN_TELEPHONY, null, NatureOfAddress.INTERNATIONAL);
+        SccpAddress unreachableAddress = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, 99, 8); // Using a non-existent point code 99
+        (this.dialog).setRemoteAddress(unreachableAddress);
         tcbr.setReturnMessageOnError(returnMessageOnError);
 
-        this.observerdEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
+        this.observedEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
         this.dialog.send(tcbr);
     }
 
@@ -94,7 +94,7 @@ public class Client extends EventTestHarness {
     public Invoke createNewInvoke() {
 
         Invoke invoke = this.tcapProvider.getComponentPrimitiveFactory().createTCInvokeRequest();
-        invoke.setInvokeId(12l);
+        invoke.setInvokeId(12L);
 
         OperationCode oc = TcapFactory.createOperationCode();
 
@@ -141,7 +141,7 @@ public class Client extends EventTestHarness {
             this.dialog.sendComponent(invoke);
         }
 
-        // this.observerdEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
+        // this.observedEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
         // this.dialog.send(tcbr);
 
         this.sendBegin();

@@ -56,7 +56,7 @@ public class AnyTimeInterrogationRequestTest {
 
     }
 
-    @Test(groups = { "functional.decode", "subscriberInformation" })
+    @Test(groups = { "functional.encode", "subscriberInformation" })
     public void testEncode() throws Exception {
 
         ISDNAddressString isdnAdd = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl.router;
 
 import javolution.util.FastMap;
@@ -987,6 +986,7 @@ public class RouterTest {
         @Override
         public void setCongControl_Algo(String value) {
             // TODO Auto-generated method stub
+            
         }
 
         @Override

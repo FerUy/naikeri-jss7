@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap.api;
 
 import org.restcomm.protocols.ss7.tcap.api.tc.dialog.Dialog;

@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<presence xmlns="urn:ietf:params:xml:ns:pidf"
-          xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
-          xmlns:cl="urn:ietf:params:xml:ns:pidf:geopriv10:civicLoc"
-          entity="pres:geotarget@example.com">
-    <tuple id="sg89ae">
-        <status>
-            <gp:geopriv>
-                <gp:location-info>
-                    <cl:civicAddress>
-                        <cl:country>US</cl:country>
-                        <cl:A1>New York</cl:A1>
-                        <cl:A3>New York</cl:A3>
-                        <cl:A6>Broadway</cl:A6>
-                        <cl:HNO>123</cl:HNO>
-                        <cl:LOC>Suite 75</cl:LOC>
-                        <cl:PC>10027-0401</cl:PC>
-                    </cl:civicAddress>
-                </gp:location-info>
-            </gp:geopriv>
-        </status>
-    </tuple>
-</presence>
+<civicAddress>
+    <country>AU</country>
+    <A1>NSW</A1>
+    <A3>Wollongong</A3>
+    <A4>North Wollongong</A4>
+    <RD>Flinders</RD>
+    <STS>Street</STS>
+    <RDBR>Campbell Street</RDBR>
+    <LMK>Gilligan's Island</LMK>
+    <LOC>Corner</LOC>
+    <NAM>Video Rental Store</NAM>
+    <PC>2500</PC>
+    <ROOM>Westerns and Classics</ROOM>
+    <PLC>store</PLC>
+    <POBOX>Private Box 15</POBOX>
+    <MP>248</MP>
+    <PN>22-109-689</PN>
+</civicAddress>

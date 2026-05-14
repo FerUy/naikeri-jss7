@@ -2,7 +2,9 @@ package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -10,7 +12,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.primitives.OctetStringBase;
 import org.restcomm.protocols.ss7.map.primitives.TbcdString;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 
 /**
@@ -23,10 +24,10 @@ public class UtranCgiImpl extends OctetStringBase implements UtranCgi {
     private static final String UCI = "UtranCgi";
 
     private static final String DATA = "data";
-
+    private static final int DEFAULT_INT_VALUE = 0;
     private static final String DEFAULT_VALUE = null;
 
-    private static final Logger logger = Logger.getLogger(EUtranCgiImpl.class);
+    private static final Logger logger = LogManager.getLogger(EUtranCgiImpl.class);
 
     public UtranCgiImpl() {
         super(7, 7, "UtranCgi");
@@ -187,20 +188,31 @@ public class UtranCgiImpl extends OctetStringBase implements UtranCgi {
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<UtranCgiImpl> UTRAN_CGI_XML_FORMAT = new XMLFormat<UtranCgiImpl>(UtranCgiImpl.class) {
+    protected static final XMLFormat<UtranCgiImpl> UTRAN_CELL_ID_XML_FORMAT = new XMLFormat<>(UtranCgiImpl.class) {
 
         @Override
-        public void read(javolution.xml.XMLFormat.InputElement xml, UtranCgiImpl UtranCgi) throws XMLStreamException {
-            String s = xml.getAttribute(DATA, DEFAULT_VALUE);
-            if (s != null) {
-                UtranCgi.data = DatatypeConverter.parseHexBinary(s);
+        public void read(javolution.xml.XMLFormat.InputElement xml, UtranCgiImpl utranCellId) throws XMLStreamException {
+            int mcc = xml.getAttribute(MCC, DEFAULT_INT_VALUE);
+            int mnc = xml.getAttribute(MNC, DEFAULT_INT_VALUE);
+            int uci = xml.getAttribute(UCI, DEFAULT_INT_VALUE);
+
+            try {
+                utranCellId.setData(mcc, mnc, uci);
+            } catch (MAPException e) {
+                throw new XMLStreamException("MAPException when deserializing UTRANCellIdImpl", e);
             }
         }
 
         @Override
-        public void write(UtranCgiImpl UtranCgi, javolution.xml.XMLFormat.OutputElement xml) throws XMLStreamException {
-            if (UtranCgi.data != null) {
-                xml.setAttribute(DATA, DatatypeConverter.printHexBinary(UtranCgi.data));
+        public void write(UtranCgiImpl utranCellId, javolution.xml.XMLFormat.OutputElement xml) throws XMLStreamException {
+            try {
+                xml.setAttribute(MCC, utranCellId.getMCC());
+                xml.setAttribute(MNC, utranCellId.getMNC());
+                xml.setAttribute(UCI, utranCellId.getUci());
+            } catch (MAPException e) {
+                throw new XMLStreamException("MAPException when serializing UTRANCellIdImpl", e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
     };

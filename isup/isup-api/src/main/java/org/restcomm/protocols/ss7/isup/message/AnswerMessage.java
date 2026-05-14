@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.message;
 
 import org.restcomm.protocols.ss7.isup.message.parameter.AccessDeliveryInformation;

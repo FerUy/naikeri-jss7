@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import static org.testng.Assert.assertEquals;
@@ -2891,7 +2890,7 @@ public class InsertSubscriberDataRequestTest {
         // end lcsInformation
 
         // start istAlertTimer
-        Integer istAlertTimer = 21;
+        int istAlertTimer = 21;
 
         // superChargerSupportedInHLR
         AgeIndicator superChargerSupportedInHLR = new AgeIndicatorImpl(this.getAgeIndicatorData());
@@ -2924,7 +2923,7 @@ public class InsertSubscriberDataRequestTest {
         Boolean icsIndicator = Boolean.TRUE;
 
         // start epsSubscriptionData
-        Integer rfspId = 4;
+        int rfspId = 4;
         AMBR ambr = new AMBRImpl(2, 4, extensionContainer);
         int defaultContext = 2;
         ArrayList<APNConfiguration> ePSDataList = new ArrayList<>();
@@ -2989,7 +2988,7 @@ public class InsertSubscriberDataRequestTest {
         Boolean mdtUserConsent = Boolean.TRUE;
 
         // subscribedPeriodicLAUtimer
-        Long subscribedPeriodicLAUtimer = 2L;
+        long subscribedPeriodicLAUtimer = 2L;
 
         // vplmnCSGSubscriptionDataList
         ArrayList<CSGSubscriptionData> vplmnCSGSubscriptionDataList = null;

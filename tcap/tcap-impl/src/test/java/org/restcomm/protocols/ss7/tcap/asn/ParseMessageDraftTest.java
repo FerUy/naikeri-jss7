@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap.asn;
 
 import static org.testng.Assert.assertEquals;

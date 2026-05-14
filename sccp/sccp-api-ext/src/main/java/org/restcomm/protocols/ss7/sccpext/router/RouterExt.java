@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccpext.router;
 
 import java.util.Map;

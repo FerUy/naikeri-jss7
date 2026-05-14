@@ -9,7 +9,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CAMELSubscriptionInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallBarringData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallForwardingData;
-import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ExtCwFeature;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.MSISDNBS;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ODBInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.BearerServiceCodeValue;
@@ -26,18 +25,6 @@ import org.restcomm.protocols.ss7.map.api.service.supplementary.CliRestrictionOp
 import org.restcomm.protocols.ss7.map.api.service.supplementary.OverrideCategory;
 import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponseImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CAMELSubscriptionInfoImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CallBarringDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CallForwardingDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CallHoldDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CallWaitingDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ClipDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ClirDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.EctDataImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ExtCwFeatureImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.MSISDNBSImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ODBInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.CSGSubscriptionDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtBasicServiceCodeImpl;
@@ -68,7 +55,7 @@ import static org.testng.Assert.assertTrue;
  * @author vadim subbotin
  */
 public class AnyTimeSubscriptionInterrogationResponseTest {
-    private byte[] data = { 48, (byte) 129, (byte) 219, (byte) 161, 13, 48, 11, 48, 9, (byte) 130, 1, 0, (byte) 132, 1, 15,
+    private final byte[] data = { 48, (byte) 129, (byte) 219, (byte) 161, 13, 48, 11, 48, 9, (byte) 130, 1, 0, (byte) 132, 1, 15,
             (byte) 135, 1, 10, (byte) 162, 21, 48, 8, 48, 6, (byte) 130, 1, 96, (byte) 132, 1, 8, 18, 4, 48, 48, 48, 48, 2, 1,
             3, 5, 0, (byte) 163, 15, 48, 11, 3, 5, 3, (byte) 255, (byte) 252, 0, 0, 3, 2, 4, (byte) 240, 5, 0, (byte) 164, 32,
             (byte) 160, 26, 48, 19, 48, 17, 10, 1, 2, 2, 1, 20, (byte) 128, 6, (byte) 145, 33, 67, 101, (byte) 135, 9,
@@ -160,11 +147,11 @@ public class AnyTimeSubscriptionInterrogationResponseTest {
         final ExtForwFeatureImpl extForwFeature = new ExtForwFeatureImpl(new ExtBasicServiceCodeImpl(
                 new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allBearerServices)),
                 new ExtSSStatusImpl(true, true, true, true), null, null, null, 10, null, null);
-        CallForwardingDataImpl callForwardingData = new CallForwardingDataImpl(new ArrayList<ExtForwFeature>() {{add(extForwFeature);}}, false, null);
+        CallForwardingDataImpl callForwardingData = new CallForwardingDataImpl(new ArrayList<>() {{add(extForwFeature);}}, false, null);
 
         final ExtCallBarringFeatureImpl extCallBarringFeature = new ExtCallBarringFeatureImpl(new ExtBasicServiceCodeImpl(
                 new ExtBearerServiceCodeImpl(BearerServiceCodeValue.allAsynchronousServices)), new ExtSSStatusImpl(true, false, false, false), null);
-        CallBarringDataImpl callBarringData = new CallBarringDataImpl(new ArrayList<ExtCallBarringFeature>(){{add(extCallBarringFeature);}},
+        CallBarringDataImpl callBarringData = new CallBarringDataImpl(new ArrayList<>(){{add(extCallBarringFeature);}},
                 new PasswordImpl("0000"), 3, true, null);
 
         ODBDataImpl odbData = new ODBDataImpl(new ODBGeneralDataImpl(true, true, true, true, true, true, true, true, true, true, true, true, true,
@@ -175,17 +162,17 @@ public class AnyTimeSubscriptionInterrogationResponseTest {
         ISDNAddressStringImpl gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "1234567890");
         final OBcsmCamelTDPDataImpl oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(OBcsmTriggerDetectionPoint.collectedInfo, 20, gsmSCFAddress,
                 DefaultCallHandling.continueCall, null);
-        OCSIImpl ocsi = new OCSIImpl(new ArrayList<OBcsmCamelTDPData>(){{add(oBcsmCamelTDPData);}}, null, 5, false, true);
+        OCSIImpl ocsi = new OCSIImpl(new ArrayList<>(){{add(oBcsmCamelTDPData);}}, null, 5, false, true);
         CAMELSubscriptionInfoImpl camelSubscriptionInfo = new CAMELSubscriptionInfoImpl(ocsi, null, null, null, null, null, null, true, true,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         ISDNAddressStringImpl msisdn = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "79161234567");
         final ExtBasicServiceCodeImpl basicServiceCode = new ExtBasicServiceCodeImpl(new ExtTeleserviceCodeImpl(TeleserviceCodeValue.allTeleservices));
-        final MSISDNBSImpl msisdnbs = new MSISDNBSImpl(msisdn, new ArrayList<ExtBasicServiceCode>(){{add(basicServiceCode);}}, null);
+        final MSISDNBSImpl msisdnbs = new MSISDNBSImpl(msisdn, new ArrayList<>(){{add(basicServiceCode);}}, null);
 
         final ExtCwFeatureImpl extCwFeature = new ExtCwFeatureImpl(new ExtBasicServiceCodeImpl(new ExtBearerServiceCodeImpl(
                 BearerServiceCodeValue.allAsynchronousServices)), new ExtSSStatusImpl(true, false, false, false));
-        CallWaitingDataImpl callWaitingData = new CallWaitingDataImpl(new ArrayList<ExtCwFeature>(){{add(extCwFeature);}}, false);
+        CallWaitingDataImpl callWaitingData = new CallWaitingDataImpl(new ArrayList<>(){{add(extCwFeature);}}, false);
 
         CallHoldDataImpl callHoldData = new CallHoldDataImpl(new ExtSSStatusImpl(false, true, false, false), true);
 
@@ -195,17 +182,18 @@ public class AnyTimeSubscriptionInterrogationResponseTest {
 
         EctDataImpl ectData = new EctDataImpl(new ExtSSStatusImpl(false, true, false, false), false);
 
-        ArrayList<CSGSubscriptionData> csgSubscriptionDataList = new ArrayList<CSGSubscriptionData>();
+        ArrayList<CSGSubscriptionData> csgSubscriptionDataList = new ArrayList<>();
         BitSetStrictLength dataCSGId = new BitSetStrictLength(27);
         CSGId csgId = new CSGIdImpl(dataCSGId);
         CSGSubscriptionData csgSubscriptionData = new CSGSubscriptionDataImpl(csgId, null, null, null);
         csgSubscriptionDataList.add(csgSubscriptionData);
+
         
         AnyTimeSubscriptionInterrogationResponseImpl response = new AnyTimeSubscriptionInterrogationResponseImpl(callForwardingData,
                 callBarringData, odbInfo, camelSubscriptionInfo, new SupportedCamelPhasesImpl(true, true, true, true),
                 new SupportedCamelPhasesImpl(true, true, false, false), MAPExtensionContainerTest.GetTestExtensionContainer(),
                 new OfferedCamel4CSIsImpl(true, true, true, true, true, true, true), new OfferedCamel4CSIsImpl(true, true, true, true, false, false, false),
-                new ArrayList<MSISDNBS>(){{add(msisdnbs);}}, csgSubscriptionDataList, callWaitingData, callHoldData, clipData, clirData, ectData);
+                new ArrayList<>(){{add(msisdnbs);}}, csgSubscriptionDataList, callWaitingData, callHoldData, clipData, clirData, ectData);
 
         AsnOutputStream asnOS = new AsnOutputStream();
         response.encodeAll(asnOS);

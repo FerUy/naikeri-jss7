@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
 import java.io.BufferedReader;
@@ -18,7 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.naikeri.licensor.LicenseValidator;
 import javolution.text.TextBuilder;
 import javolution.util.FastList;
 import javolution.util.FastMap;
@@ -26,8 +24,8 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.Management;
 import org.restcomm.protocols.ss7.m3ua.As;
@@ -69,7 +67,7 @@ import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterface;
  */
 public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAManagement {
 
-    private static final Logger logger = Logger.getLogger(M3UAManagementImpl.class);
+    private static final Logger logger = LogManager.getLogger(M3UAManagementImpl.class);
     private static final String AS_LIST = "asList";
     private static final String ASP_FACTORY_LIST = "aspFactoryList";
     private static final String DPC_VS_AS_LIST = "route";
@@ -260,21 +258,6 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
     }
 
     public void start() throws Exception {
-
-        Thread checkLicense = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    LicenseValidator licenseValidator = new LicenseValidator();
-                    logger.warn("License validation via com.naikeri.licensor.LicenseValidator");
-                    licenseValidator.validate();
-                } catch(Exception e) {
-                    logger.info("Exception found during startup : " + e);
-                }
-            }
-        });
-        checkLicense.start();
-
         if (this.transportManagement == null) {
             throw new NullPointerException("TransportManagement is null");
         }
@@ -1080,6 +1063,29 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         }
     }
 
+    private void validateStatisticsVariable(XMLObjectReader reader) {
+        try {
+            this.statisticsEnabled = reader.read(STATISTICS_ENABLED, Boolean.class);
+        } catch (Exception e) {
+            this.statisticsEnabled = false;
+            logger.warn("Setting the default value for " + STATISTICS_ENABLED + " in  false");
+        }
+
+        try {
+            this.statisticsTaskDelay = reader.read(STATISTICS_TASK_DELAY, Long.class);
+        } catch (Exception e) {
+            this.statisticsTaskDelay = 5000;
+            logger.warn("Setting the default value for " + STATISTICS_TASK_DELAY + " in  5000");
+        }
+
+        try {
+            this.statisticsTaskPeriod = reader.read(STATISTICS_TASK_PERIOD, Long.class);
+        } catch (Exception e) {
+            this.statisticsTaskPeriod = 5000;
+            logger.warn("Setting the default value for " + STATISTICS_TASK_PERIOD + " in  5000");
+        }
+    }
+
     protected void loadActualData(XMLObjectReader reader) throws XMLStreamException, IOException{
         try {
             Integer maxSeqNumPropValue = reader.read(MAX_SEQUENCE_NUMBER_PROP, Integer.class);
@@ -1087,9 +1093,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
             this.timeBetweenHeartbeat = reader.read(HEART_BEAT_TIME_PROP, Integer.class);
 
-            this.statisticsEnabled = reader.read(STATISTICS_ENABLED, Boolean.class);
-            this.statisticsTaskDelay = reader.read(STATISTICS_TASK_DELAY, Long.class);
-            this.statisticsTaskPeriod = reader.read(STATISTICS_TASK_PERIOD, Long.class);
+            validateStatisticsVariable(reader);
 
             this.routingKeyManagementEnabled = reader.read(ROUTING_KEY_MANAGEMENT_ENABLED, Boolean.class);
 

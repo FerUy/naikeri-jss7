@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -93,24 +92,24 @@ public class TBcsmCamelTdpCriteriaImpl extends SequenceBase implements TBcsmCame
                 case Tag.CLASS_CONTEXT_SPECIFIC:
                     switch (tag) {
                         case _TAG_basicServiceCriteria:
-                            ExtBasicServiceCode extBasicServiceCode = null;
+                            ExtBasicServiceCodeImpl extBasicServiceCode;
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".basicServiceCriteria: is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             AsnInputStream ais2 = ais.readSequenceStream();
-                            this.basicServiceCriteria = new ArrayList<ExtBasicServiceCode>();
+                            this.basicServiceCriteria = new ArrayList<>();
                             while (true) {
                                 if (ais2.available() == 0)
                                     break;
 
                                 int tag2 = ais2.readTag();
                                 extBasicServiceCode = new ExtBasicServiceCodeImpl();
-                                ((ExtBasicServiceCodeImpl) extBasicServiceCode).decodeAll(ais2);
+                                extBasicServiceCode.decodeAll(ais2);
                                 this.basicServiceCriteria.add(extBasicServiceCode);
                             }
 
-                            if (this.basicServiceCriteria.size() < 1 || this.basicServiceCriteria.size() > 5) {
+                            if (this.basicServiceCriteria.isEmpty() || this.basicServiceCriteria.size() > 5) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter basicServiceCriteria size must be from 1 to 5, found: "
                                         + this.basicServiceCriteria.size(),
@@ -119,13 +118,13 @@ public class TBcsmCamelTdpCriteriaImpl extends SequenceBase implements TBcsmCame
                             break;
 
                         case _TAG_tCauseValueCriteria:
-                            CauseValue causeValue = null;
+                            CauseValueImpl causeValue;
                             if (ais.isTagPrimitive())
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".tCauseValueCriteria: is not primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
                             AsnInputStream ais3 = ais.readSequenceStream();
-                            this.tCauseValueCriteria = new ArrayList<CauseValue>();
+                            this.tCauseValueCriteria = new ArrayList<>();
                             while (true) {
                                 if (ais3.available() == 0)
                                     break;
@@ -138,11 +137,11 @@ public class TBcsmCamelTdpCriteriaImpl extends SequenceBase implements TBcsmCame
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 causeValue = new CauseValueImpl();
-                                ((CauseValueImpl) causeValue).decodeAll(ais3);
+                                causeValue.decodeAll(ais3);
                                 this.tCauseValueCriteria.add(causeValue);
                             }
 
-                            if (this.tCauseValueCriteria.size() < 1 || this.tCauseValueCriteria.size() > 5) {
+                            if (this.tCauseValueCriteria.isEmpty() || this.tCauseValueCriteria.size() > 5) {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ": Parameter tCauseValueCriteria size must be from 1 to 5, found: "
                                         + this.tCauseValueCriteria.size(), MAPParsingComponentExceptionReason.MistypedParameter);
@@ -173,12 +172,12 @@ public class TBcsmCamelTdpCriteriaImpl extends SequenceBase implements TBcsmCame
         if (this.tBcsmTriggerDetectionPoint == null)
             throw new MAPException("Error while encoding " + _PrimitiveName + ": tBcsmTriggerDetectionPoint required.");
 
-        if (this.basicServiceCriteria != null && (this.basicServiceCriteria.size() < 1 || this.basicServiceCriteria.size() > 5)) {
+        if (this.basicServiceCriteria != null && (this.basicServiceCriteria.isEmpty() || this.basicServiceCriteria.size() > 5)) {
             throw new MAPException("Error while encoding " + _PrimitiveName
                     + ": Parameter basicServiceCriteria size must be from 1 to 5, found: " + this.basicServiceCriteria.size());
         }
 
-        if (this.tCauseValueCriteria != null && (this.tCauseValueCriteria.size() < 1 || this.tCauseValueCriteria.size() > 5)) {
+        if (this.tCauseValueCriteria != null && (this.tCauseValueCriteria.isEmpty() || this.tCauseValueCriteria.size() > 5)) {
             throw new MAPException("Error while encoding " + _PrimitiveName
                     + ": Parameter tCauseValueCriteria size must be from 1 to 5, found: " + this.tCauseValueCriteria.size());
         }
@@ -207,18 +206,18 @@ public class TBcsmCamelTdpCriteriaImpl extends SequenceBase implements TBcsmCame
         } catch (AsnException e) {
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (IOException e) {
-            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
+            throw new MAPException("IOException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.tBcsmTriggerDetectionPoint != null) {
             sb.append("tBcsmTriggerDetectionPoint=");
-            sb.append(this.tBcsmTriggerDetectionPoint.toString());
+            sb.append(this.tBcsmTriggerDetectionPoint);
             sb.append(", ");
         }
 

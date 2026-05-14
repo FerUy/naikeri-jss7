@@ -1,11 +1,10 @@
-
 package org.restcomm.protocols.ss7.map.service.lsm;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranGANSSpositioningData;
 import org.restcomm.protocols.ss7.map.primitives.OctetStringBase;
-
-import java.util.HashMap;
 
 /**
  *
@@ -27,7 +26,33 @@ public class UtranGANSSpositioningDataImpl extends OctetStringBase implements Ut
     }
 
     @Override
-    public HashMap<String, String> getLocationGeneratedMethodsAndGANSSId() throws MAPException {
+    public Multimap<String, String> getUtranGANSSPositioningMethodsAndGANSSIds() throws MAPException {
+        if (data == null)
+            throw new MAPException("UtranGANSSpositioningData data must not be empty");
+        if (data.length < 1)
+            throw new MAPException("UtranGANSSpositioningData data length must be at least 1");
+        if (data.length > 9)
+            throw new MAPException("UtranGANSSpositioningData data length must not be higher than 9");
+
+        /*if (getUtranGanssPositioningDataDiscriminator() != 1) {
+            throw new MAPException("positioningDataDiscriminator indicates GANSS-PositioningDataSet is absence or not unique");
+        } else {
+            for (int i=1; i<data.length-1; i++) {*/
+        Multimap<String, String> methodsAndGANSSId = LinkedHashMultimap.create();
+        String method;
+        String ganssId;
+
+        for (byte dataByte : data) {
+            method = getUtranGanssPositioningMethod((dataByte & 0xC0) >> 6);
+            ganssId = getGANSSId((dataByte & 0x38) >> 3);
+            methodsAndGANSSId.put(method, ganssId);
+        }
+        return methodsAndGANSSId;
+        /*}*/
+    }
+
+    @Override
+    public Multimap<String, String> getLocationGeneratedMethodsAndGANSSIds() throws MAPException {
         if (data == null)
             throw new MAPException("UtranGANSSpositioningData data must not be empty");
         if (data.length < 1)
@@ -38,14 +63,14 @@ public class UtranGANSSpositioningDataImpl extends OctetStringBase implements Ut
         if (getUtranGanssPositioningDataDiscriminator() != 1) {
             throw new MAPException("positioningDataDiscriminator indicates GANSS-PositioningDataSet is absence or not unique");
         } else {
-            HashMap<String, String> methodsAndGANSSId = new HashMap<>();
+            Multimap<String, String> methodsAndGANSSId = LinkedHashMultimap.create();
             String method;
             String ganssId;
 
-            for (int i=1; i<data.length; i++) {
-                if ((data[i] & 0x07) == 3) {
-                    method = getUtranGanssPossitioningMethod((data[i] & 0xC0) >> 6);
-                    ganssId = getGANSSId((data[i] & 0x38) >> 3);
+            for (byte dataByte : data) {
+                if ((dataByte & 0x07) == 3) {
+                    method = getUtranGanssPositioningMethod((dataByte & 0xC0) >> 6);
+                    ganssId = getGANSSId((dataByte & 0x38) >> 3);
                     methodsAndGANSSId.put(method, ganssId);
                 }
             }
@@ -86,16 +111,17 @@ public class UtranGANSSpositioningDataImpl extends OctetStringBase implements Ut
          *
          * All other values are reserved.
          */
-        return data[0] & 0x0F;
+        return data[0] & 0x0F; // This doesn't seem to be the case here (otherwise, min/maxLength should be 2/10 instead of 1/9)
     }
 
-    public String getUtranGanssPossitioningMethod(int code) {
+    @Override
+    public String getUtranGanssPositioningMethod(int code) {
         /*
          * Coding of Method (bits 8-7):
-         * 00   MS-Based
-         * 01   MS-Assisted
-         * 10   Conventional
-         * 11   Reserved
+         *  00   MS-Based
+         *  01   MS-Assisted
+         *  10   Conventional
+         *  11   Reserved
          */
         String method;
         switch (code) {
@@ -115,7 +141,8 @@ public class UtranGANSSpositioningDataImpl extends OctetStringBase implements Ut
         return method;
     }
 
-    private String getGANSSId(int code) throws MAPException {
+    @Override
+    public String getGANSSId(int code) throws MAPException {
         /*
          * Coding of the GANSS Id (bits 6-4) :
          *  000  Galileo
@@ -123,12 +150,13 @@ public class UtranGANSSpositioningDataImpl extends OctetStringBase implements Ut
          *  010  Modernized GPS
          *  011  Quasi Zenith Satellite System (QZSS)
          *  100  GLONASS
-         *  101  BDS
+         *  101  BeiDou Navigation Satellite System (BDS)
+         *  other values reserved.
          */
-        if (code > 5)
-            throw new MAPException("UtranGANSSpositioningData GANSS Id must be an integer value between 0 and 5");
+        if (code > 7)
+            throw new MAPException("UtranGANSSpositioningData GANSS Id must be an integer value between 0 and 7");
 
-        String ganssId = null;
+        String ganssId;
         switch (code) {
             case 0:
                 ganssId = "Galileo";
@@ -148,22 +176,26 @@ public class UtranGANSSpositioningDataImpl extends OctetStringBase implements Ut
             case 5:
                 ganssId = "BDS";
                 break;
+            default:
+                ganssId = "Reserved";
+                break;
         }
         return ganssId;
     }
 
-    public String getUsage(int u) {
+    @Override
+    public String getUsage(byte[] utranGanssPositioningData, int index) {
         String usage = null;
         /*
          * Coding of usage (bits 3-1):
-         * 000 Attempted unsuccessfully due to failure or interruption - not used.
-         * 001 Attempted successfully: results not used to generate location - not used.
-         * 010 Attempted successfully: results used to verify but not generate location - not used.
-         * 011 Attempted successfully: results used to generate location.
-         * 100 Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined.
+         *  000 Attempted unsuccessfully due to failure or interruption - not used.
+         *  001 Attempted successfully: results not used to generate location - not used.
+         *  010 Attempted successfully: results used to verify but not generate location - not used.
+         *  011 Attempted successfully: results used to generate location.
+         *  100 Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined.
          *
          */
-        switch (u) {
+        switch (getUsageCode(utranGanssPositioningData, index)) {
             case 0:
                 usage = "Attempted unsuccessfully due to failure or interruption - not used";
                 break;
@@ -183,34 +215,8 @@ public class UtranGANSSpositioningDataImpl extends OctetStringBase implements Ut
         return usage;
     }
 
-    /*private static class MultiValueMap<K,V> {
-        private final Map<K, Set<V>> mappings = new HashMap<>();
-
-        public Set<V> getValues(K key) {
-            return mappings.get(key);
-        }
-
-        public void putValue(K key, V value) {
-            Set<V> target = mappings.get(key);
-
-            if(target == null) {
-                target = new HashSet<>();
-                mappings.put(key,target);
-            }
-
-            target.add(value);
-        }
-    }*/
-
-    /*public static void main(String[] args) throws MAPException {
-        byte[] data = new byte[] {0x01, 0x63, (byte) 0x8b, 0x02, 0x03};
-        UtranGANSSpositioningDataImpl utranGANSSpositioningData = new UtranGANSSpositioningDataImpl(data);
-        HashMap<String, String> methodsAndGanssIds = utranGANSSpositioningData.getLocationGeneratedMethodsAndGANSSId();
-
-        for (HashMap.Entry<String, String> entry : methodsAndGanssIds.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            System.out.println("Method=" + key + ", GANSSId=" + value);
-        }
-    }*/
+    @Override
+    public int getUsageCode(byte[] utranGanssPositioningData, int index) {
+        return utranGanssPositioningData[index] & 0x07;
+    }
 }

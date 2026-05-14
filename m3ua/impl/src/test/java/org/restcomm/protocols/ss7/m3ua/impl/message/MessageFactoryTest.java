@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl.message;
 
 import static org.testng.Assert.assertEquals;
@@ -9,8 +8,6 @@ import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
 
-import org.restcomm.protocols.ss7.m3ua.impl.message.M3UAMessageImpl;
-import org.restcomm.protocols.ss7.m3ua.impl.message.MessageFactoryImpl;
 import org.restcomm.protocols.ss7.m3ua.message.MessageType;
 import org.restcomm.protocols.ss7.m3ua.message.transfer.PayloadData;
 import org.restcomm.protocols.ss7.m3ua.parameter.ProtocolData;
@@ -26,7 +23,7 @@ import org.testng.annotations.Test;
  */
 public class MessageFactoryTest {
 
-    private MessageFactoryImpl messageFactory = new MessageFactoryImpl();
+    private final MessageFactoryImpl messageFactory = new MessageFactoryImpl();
 
     /**
 	 *
@@ -66,9 +63,9 @@ public class MessageFactoryTest {
 
         assertEquals(MessageType.PAYLOAD, messageImpl.getMessageType());
         PayloadData payloadData = (PayloadData) messageImpl;
-        assertEquals(0l, payloadData.getNetworkAppearance().getNetApp());
+        assertEquals(0, payloadData.getNetworkAppearance().getNetApp());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(25l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(25, payloadData.getRoutingContext().getRoutingContexts()[0]);
         ProtocolData protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(6045, protocolData.getOpc());
@@ -109,7 +106,7 @@ public class MessageFactoryTest {
         PayloadData payloadData = (PayloadData) messageImpl;
         assertNull(payloadData.getNetworkAppearance());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(1l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(1, payloadData.getRoutingContext().getRoutingContexts()[0]);
         ProtocolData protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(2, protocolData.getOpc());
@@ -149,7 +146,7 @@ public class MessageFactoryTest {
         PayloadData payloadData = (PayloadData) messageImpl;
         assertNull(payloadData.getNetworkAppearance());
         assertEquals(1, payloadData.getRoutingContext().getRoutingContexts().length);
-        assertEquals(1l, payloadData.getRoutingContext().getRoutingContexts()[0]);
+        assertEquals(1, payloadData.getRoutingContext().getRoutingContexts()[0]);
         ProtocolData protocolData = payloadData.getData();
         assertNotNull(protocolData);
         assertEquals(2, protocolData.getOpc());

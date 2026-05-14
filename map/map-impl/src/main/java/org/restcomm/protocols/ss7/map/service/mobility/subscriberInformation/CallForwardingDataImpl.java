@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import org.mobicents.protocols.asn.AsnException;
@@ -187,12 +186,11 @@ public class CallForwardingDataImpl extends SequenceBase implements CallForwardi
             sb.append("], ");
         }
         if (isNotificationToCSE) {
-            sb.append("isNotificationToCSE, ");
+            sb.append(", notificationToCSE, ");
         }
         if (this.extensionContainer != null) {
-            sb.append("extensionContainer=");
+            sb.append(", extensionContainer=");
             sb.append(this.extensionContainer);
-            sb.append(", ");
         }
 
         sb.append("]");

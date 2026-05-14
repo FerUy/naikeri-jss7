@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcapAnsi;
 
 import java.util.concurrent.Future;
@@ -6,8 +5,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.tcapAnsi.api.TCAPStack;
 import org.restcomm.protocols.ss7.tcapAnsi.api.asn.ApplicationContext;
 import org.restcomm.protocols.ss7.tcapAnsi.asn.InvokeImpl;
@@ -19,7 +18,7 @@ import org.restcomm.protocols.ss7.tcapAnsi.asn.InvokeImpl;
  */
 public class PreviewDialogData {
 
-    private static final Logger logger = Logger.getLogger(PreviewDialogData.class);
+    private static final Logger logger = LogManager.getLogger(PreviewDialogData.class);
 
     private ApplicationContext lastACN;
     private InvokeImpl[] operationsSentA;
@@ -27,8 +26,8 @@ public class PreviewDialogData {
 
     private Object upperDialog;
 
-    private PreviewDialogDataKey prevewDialogDataKey1;
-    private PreviewDialogDataKey prevewDialogDataKey2;
+    private PreviewDialogDataKey previewDialogDataKey1;
+    private PreviewDialogDataKey previewDialogDataKey2;
 
     private ReentrantLock dialogLock = new ReentrantLock();
     private Future idleTimerFuture;
@@ -81,20 +80,20 @@ public class PreviewDialogData {
         upperDialog = val;
     }
 
-    protected PreviewDialogDataKey getPrevewDialogDataKey1() {
-        return prevewDialogDataKey1;
+    protected PreviewDialogDataKey getPreviewDialogDataKey1() {
+        return previewDialogDataKey1;
     }
 
-    protected PreviewDialogDataKey getPrevewDialogDataKey2() {
-        return prevewDialogDataKey2;
+    protected PreviewDialogDataKey getPreviewDialogDataKey2() {
+        return previewDialogDataKey2;
     }
 
-    protected void setPrevewDialogDataKey1(PreviewDialogDataKey val) {
-        prevewDialogDataKey1 = val;
+    protected void setPreviewDialogDataKey1(PreviewDialogDataKey val) {
+        previewDialogDataKey1 = val;
     }
 
-    protected void setPrevewDialogDataKey2(PreviewDialogDataKey val) {
-        prevewDialogDataKey2 = val;
+    protected void setPreviewDialogDataKey2(PreviewDialogDataKey val) {
+        previewDialogDataKey2 = val;
     }
 
     protected void startIdleTimer() {
@@ -146,7 +145,7 @@ public class PreviewDialogData {
                 dialogLock.lock();
 
 //              Dialog d1 = new DialogImpl(localAddress, remoteAddress, seqControl, provider._EXECUTOR, provider, pdd, sideB);
-                DialogImpl dlg = (DialogImpl)provider.getPreviewDialog(prevewDialogDataKey1, null, null, null, 0);
+                DialogImpl dlg = (DialogImpl)provider.getPreviewDialog(previewDialogDataKey1, null, null, null, 0);
                 provider.timeout(dlg);
                 provider.removePreviewDialog(dlg);
 
@@ -158,13 +157,13 @@ public class PreviewDialogData {
 //
 //                if (logger.isEnabledFor(Level.ERROR)) {
 //                    StringBuilder sb = new StringBuilder();
-//                    if (this.pdd.prevewDialogDataKey1 != null) {
+//                    if (this.pdd.previewDialogDataKey1 != null) {
 //                        sb.append(", trId1=");
-//                        sb.append(this.pdd.prevewDialogDataKey1.origTxId);
+//                        sb.append(this.pdd.previewDialogDataKey1.origTxId);
 //                    }
-//                    if (this.pdd.prevewDialogDataKey2 != null) {
+//                    if (this.pdd.previewDialogDataKey2 != null) {
 //                        sb.append(", trId2=");
-//                        sb.append(this.pdd.prevewDialogDataKey2.origTxId);
+//                        sb.append(this.pdd.previewDialogDataKey2.origTxId);
 //                    }
 ////                    logger.error("Dialog closed by a timeout" + sb.toString() + "  " + i1 + "->" + i2);
 //                }

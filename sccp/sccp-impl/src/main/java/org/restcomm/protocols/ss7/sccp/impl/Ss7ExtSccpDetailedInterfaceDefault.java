@@ -1,10 +1,9 @@
-
 package org.restcomm.protocols.ss7.sccp.impl;
 
 import javolution.util.FastMap;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.sccp.NetworkIdState;
 import org.restcomm.protocols.ss7.sccp.RemoteSccpStatus;
 import org.restcomm.protocols.ss7.sccp.Router;
@@ -22,7 +21,7 @@ public class Ss7ExtSccpDetailedInterfaceDefault implements Ss7ExtSccpDetailedInt
 
     @Override
     public void init(SccpStackImpl sccpStackImpl) {
-        this.logger = Logger.getLogger(Ss7ExtSccpDetailedInterfaceDefault.class.getCanonicalName() + "-" + sccpStackImpl.getName());
+        this.logger = LogManager.getLogger(Ss7ExtSccpDetailedInterfaceDefault.class.getCanonicalName() + "-" + sccpStackImpl.getName());
     }
 
     @Override

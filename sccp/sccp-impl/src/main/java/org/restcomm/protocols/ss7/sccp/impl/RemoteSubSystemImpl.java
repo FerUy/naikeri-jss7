@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl;
 
 import javolution.text.CharArray;

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement;
 
 import java.io.Serializable;
@@ -45,7 +44,6 @@ Ext-ExternalClientList ::= SEQUENCE SIZE (1..35) OF ExternalClient
 
 ServiceTypeList ::= SEQUENCE SIZE (1..32) OF ServiceType
 </code>
- *
  *
  *
  * @author sergey vetyutnev

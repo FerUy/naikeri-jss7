@@ -1,15 +1,13 @@
 package org.restcomm.protocols.ss7.map.service.lsm;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 import org.restcomm.protocols.ss7.map.api.service.lsm.UtranAdditionalPositioningData;
 import org.restcomm.protocols.ss7.map.primitives.OctetStringBase;
 
-import java.util.HashMap;
-
 /**
- *
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
- *
  */
 public class UtranAdditionalPositioningDataImpl extends OctetStringBase implements UtranAdditionalPositioningData {
 
@@ -27,7 +25,7 @@ public class UtranAdditionalPositioningDataImpl extends OctetStringBase implemen
     }
 
     @Override
-    public HashMap<String, String> getUtranAdditionalPositioningDataSet() throws MAPException {
+    public Multimap<String, String> getUtranAdditionalPositioningMethodsAndIds() throws MAPException {
         if (data == null)
             throw new MAPException("UtranAdditionalPositioningData data must not be null");
         if (data.length < 1)
@@ -35,25 +33,50 @@ public class UtranAdditionalPositioningDataImpl extends OctetStringBase implemen
         if (data.length > 8)
             throw new MAPException("UtranAdditionalPositioningData data length must not be higher than 8");
 
-        HashMap<String, String> posMethodsAndAddPosId = new HashMap<>();
+        Multimap<String, String> posMethodsAndAddPosId = LinkedHashMultimap.create();
         String positioningMethod;
         String additionalPosId;
 
-        for (int i = 0; i < data.length; i++) {
-            positioningMethod = getPositioningMethod((data[i] & 0xc0) >> 6);
-            additionalPosId = getAdditionalPositioningId((data[i] & 0x38) >> 3);
+        for (byte dataByte : data) {
+            positioningMethod = getAdditionalPositioningMethod((dataByte & 0xC0) >> 6);
+            additionalPosId = getAdditionalPositioningId((dataByte & 0x38) >> 3);
             posMethodsAndAddPosId.put(positioningMethod, additionalPosId);
         }
         return posMethodsAndAddPosId;
     }
 
-    public String getPositioningMethod(int code) {
+    @Override
+    public Multimap<String, String> getLocationGeneratedMethodsAndAddPosIds() throws MAPException {
+        if (data == null)
+            throw new MAPException("UtranAdditionalPositioningData data must not be null");
+        if (data.length < 1)
+            throw new MAPException("UtranAdditionalPositioningData data length must be at least 1");
+        if (data.length > 8)
+            throw new MAPException("UtranAdditionalPositioningData data length must not be higher than 8");
+
+        Multimap<String, String> methodsAndGANSSId = LinkedHashMultimap.create();
+        String method;
+        String ganssId;
+
+        for (byte dataByte : data) {
+            if ((dataByte & 0x07) == 3) {
+                method = getAdditionalPositioningMethod((dataByte & 0xC0) >> 6);
+                ganssId = getAdditionalPositioningId((dataByte & 0x38) >> 3);
+                methodsAndGANSSId.put(method, ganssId);
+            }
+        }
+        return methodsAndGANSSId;
+
+    }
+
+    @Override
+    public String getAdditionalPositioningMethod(int code) {
         /*
          * Coding of positioning method (bits 8-7):
-         * 00 Reserved;
-         * 01 MS-Assisted;
-         * 10 Standalone;
-         * 11 Reserved.
+         *  00 Reserved;
+         *  01 MS-Assisted;
+         *  10 Standalone;
+         *  11 Reserved.
          */
         String posMethod;
         switch (code) {
@@ -70,14 +93,15 @@ public class UtranAdditionalPositioningDataImpl extends OctetStringBase implemen
         return posMethod;
     }
 
+    @Override
     public String getAdditionalPositioningId(int id) {
         /*
          * Coding of Additional Positioning ID (bits 6-4):
-         * 000 Barometric Pressure;
-         * 001 WLAN;
-         * 010 Bluetooth;
-         * 011 MBS;
-         * other values reserved.
+         *  000 Barometric Pressure;
+         *  001 WLAN;01001011
+         *  010 Bluetooth;
+         *  011 MBS;
+         *  other values reserved.
          */
         String additionalPositioningId;
         switch (id) {
@@ -100,15 +124,15 @@ public class UtranAdditionalPositioningDataImpl extends OctetStringBase implemen
         return additionalPositioningId;
     }
 
-    private String getUsage(int u) {
+    @Override
+    public String getUsage(byte[] utranAdditionalPositioningData, int index) {
+        String usage = null;
         /*
          * Coding of usage (bits 3-1):
-         * 011 Attempted successfully: results used to generate location;
-         * 100 Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined.
-         *
+         *  011 Attempted successfully: results used to generate location;
+         *  100 Attempted successfully: case where MS supports multiple mobile based positioning methods and the actual method or methods used by the MS cannot be determined.
          */
-        String usage = null;
-        switch (u) {
+        switch (getUsageCode(utranAdditionalPositioningData, index)) {
             case 3:
                 usage = "Attempted successfully: results used to generate location";
                 break;
@@ -119,34 +143,8 @@ public class UtranAdditionalPositioningDataImpl extends OctetStringBase implemen
         return usage;
     }
 
-    /*private static class MultiValueMap<K,V> {
-        private final Map<K, Set<V>> mappings = new HashMap<>();
-
-        public Set<V> getValues(K key) {
-            return mappings.get(key);
-        }
-
-        public void putValue(K key, V value) {
-            Set<V> target = mappings.get(key);
-
-            if(target == null) {
-                target = new HashSet<>();
-                mappings.put(key,target);
-            }
-
-            target.add(value);
-        }
+    @Override
+    public int getUsageCode(byte[] utranAdditionalPositioningData, int index) {
+        return utranAdditionalPositioningData[index] & 0x07;
     }
-
-    public static void main(String[] args) throws MAPException {
-        byte[] data = new byte[] {0x57, (byte) 0x8F};
-        UtranAdditionalPositioningDataImpl utranAdditionalPositioningData = new UtranAdditionalPositioningDataImpl(data);
-        HashMap<String, String> methodsAndAddPosIds = utranAdditionalPositioningData.getUtranAdditionalPositioningDataSet();
-
-        for (HashMap.Entry<String, String> entry : methodsAndAddPosIds.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            System.out.println("Method=" + key + ", AddPosId=" + value);
-        }
-    }*/
 }

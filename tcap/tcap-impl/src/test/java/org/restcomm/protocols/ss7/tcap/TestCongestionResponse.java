@@ -1,13 +1,13 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
 import static org.testng.Assert.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.impl.SccpHarness;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
-import org.restcomm.protocols.ss7.tcap.TCAPStackImpl;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -20,15 +20,15 @@ import org.testng.annotations.Test;
  *
  */
 public class TestCongestionResponse extends SccpHarness {
+
+    private static final Logger logger = LogManager.getLogger(TestCongestionResponse.class.getName());
+
     public static final long WAIT_TIME = 1000;
 
     private TCAPStackImpl tcapStack1;
     private TCAPStackImpl tcapStack2;
-    private SccpAddress peer1Address;
-    private SccpAddress peer2Address;
     private Client client;
     private Server server;
-    private TestSccpListener sccpListener;
 
     public TestCongestionResponse() {
     }
@@ -37,23 +37,23 @@ public class TestCongestionResponse extends SccpHarness {
     public void setUpClass() {
         this.sccpStack1Name = "TCAPCongestionTestSccpStack1";
         this.sccpStack2Name = "TCAPCongestionTestSccpStack2";
-        System.out.println("setUpClass");
+        logger.info("setUpClass");
     }
 
     @AfterClass
     public void tearDownClass() throws Exception {
-        System.out.println("tearDownClass");
+        logger.info("tearDownClass");
     }
 
     @BeforeMethod
     public void setUp() throws Exception {
-        System.out.println("setUp");
+        logger.info("setUp");
         super.setUp();
 
-        peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
-        peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
+        SccpAddress peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
+        SccpAddress peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
 
-        sccpListener = new TestSccpListener();
+        TestSccpListener sccpListener = new TestSccpListener();
         this.sccpProvider1.registerSccpListener(1, sccpListener);
         ((SccpStackImpl)this.sccpProvider1.getSccpStack()).setCongControlM(1);
         this.tcapStack1 = new TCAPStackImpl("TCAPCongestionTest1", this.sccpProvider1, 8);
@@ -91,25 +91,25 @@ public class TestCongestionResponse extends SccpHarness {
 
         // user congestion
         this.tcapStack2.getProvider().setUserPartCongestionLevel("a1", 1);
-        client.waitFor(1100);
+        EventTestHarness.waitFor(1100);
         client.startClientDialog();
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         server.sendContinue();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         client.releaseDialog();
         server.releaseDialog();
-        assertEquals(server.observerdEvents.size(), 3);
-        assertEquals(client.observerdEvents.size(), 3);
+        assertEquals(server.observedEvents.size(), 3);
+        assertEquals(client.observedEvents.size(), 3);
 
         client.startClientDialog();
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
         client.releaseDialog();
         server.releaseDialog();
-        assertEquals(server.observerdEvents.size(), 5);
-        assertEquals(client.observerdEvents.size(), 5);
+        assertEquals(server.observedEvents.size(), 5);
+        assertEquals(client.observedEvents.size(), 5);
 //        assertTrue(sccpListener.isCongestedStatusReceived());
 
     }

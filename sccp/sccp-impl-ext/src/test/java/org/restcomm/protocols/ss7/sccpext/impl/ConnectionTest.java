@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl;
 
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;

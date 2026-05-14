@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl.parameter;
 
 import org.restcomm.protocols.ss7.m3ua.parameter.ASPIdentifier;

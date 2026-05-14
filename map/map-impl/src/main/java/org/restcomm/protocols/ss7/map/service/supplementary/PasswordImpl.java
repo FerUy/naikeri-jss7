@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.supplementary;
 
 import java.io.IOException;
@@ -129,15 +128,11 @@ public class PasswordImpl implements Password, MAPAsnPrimitive {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName);
-        sb.append(" [data=\"");
 
-        sb.append(this.data);
-
-        sb.append("\"]");
-
-        return sb.toString();
+        return _PrimitiveName +
+                " [data=\"" +
+                this.data +
+                "\"]";
     }
 
 }

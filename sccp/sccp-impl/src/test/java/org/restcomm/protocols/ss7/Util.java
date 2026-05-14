@@ -1,8 +1,13 @@
 package org.restcomm.protocols.ss7;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 
 public class Util {
+
+    private static final Logger logger = LogManager.getLogger(Util.class.getName());
 
     public static String getTmpTestDir() {
         try {
@@ -12,10 +17,10 @@ public class Util {
                 return paths[0];
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
-        return new File(".").getAbsolutePath().toString();
+        return new File(".").getAbsolutePath();
     }
 
 }

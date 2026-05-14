@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api;
 
 /**
@@ -8,6 +7,6 @@ package org.restcomm.protocols.ss7.map.api;
  */
 public enum MAPParsingComponentExceptionReason {
 
-    UnrecognizedOperation, MistypedParameter;
+    UnrecognizedOperation, MistypedParameter
 
 }

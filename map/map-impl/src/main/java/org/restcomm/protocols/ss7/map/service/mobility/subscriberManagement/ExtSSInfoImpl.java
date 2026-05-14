@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -271,10 +270,7 @@ public class ExtSSInfoImpl implements ExtSSInfo, MAPAsnPrimitive {
             return;
         }
 
-        if (this.emlppInfo != null) {
-            ((EMLPPInfoImpl) this.emlppInfo).encodeData(asnOutputStream);
-            return;
-        }
+        ((EMLPPInfoImpl) this.emlppInfo).encodeData(asnOutputStream);
     }
 
     @Override
@@ -284,31 +280,31 @@ public class ExtSSInfoImpl implements ExtSSInfo, MAPAsnPrimitive {
 
         if (this.forwardingInfo != null) {
             sb.append("forwardingInfo=");
-            sb.append(this.forwardingInfo.toString());
+            sb.append(this.forwardingInfo);
             sb.append(", ");
         }
 
         if (this.callBarringInfo != null) {
             sb.append("callBarringInfo=");
-            sb.append(this.callBarringInfo.toString());
+            sb.append(this.callBarringInfo);
             sb.append(", ");
         }
 
         if (this.cugInfo != null) {
             sb.append("cugInfo=");
-            sb.append(this.cugInfo.toString());
+            sb.append(this.cugInfo);
             sb.append(", ");
         }
 
         if (this.ssData != null) {
             sb.append("ssData=");
-            sb.append(this.ssData.toString());
+            sb.append(this.ssData);
             sb.append(", ");
         }
 
         if (this.emlppInfo != null) {
             sb.append("emlppInfo=");
-            sb.append(this.emlppInfo.toString());
+            sb.append(this.emlppInfo);
         }
 
         sb.append("]");

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import static org.testng.Assert.assertEquals;
@@ -12,7 +11,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.LocationNumberImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.isup.message.parameter.LocationNumber;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
@@ -27,6 +27,8 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
  */
 public class LocationNumberTest {
+
+    private static final Logger logger = LogManager.getLogger(LocationNumberTest.class.getName());
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -119,7 +121,7 @@ public class LocationNumberTest {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

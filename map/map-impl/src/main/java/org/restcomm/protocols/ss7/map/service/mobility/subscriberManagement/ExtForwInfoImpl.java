@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -75,7 +74,8 @@ public class ExtForwInfoImpl extends SequenceBase implements ExtForwInfo {
             int tag = ais.readTag();
 
             switch (num) {
-                case 0: // ssCode
+                case 0:
+                    // ssCode
                     if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || tag != Tag.STRING_OCTET || !ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ".ssCode: bad tag or tag class or not primitive",
@@ -84,14 +84,15 @@ public class ExtForwInfoImpl extends SequenceBase implements ExtForwInfo {
                     ((SSCodeImpl) this.ssCode).decodeAll(ais);
                     break;
 
-                case 1: // forwardingFeatureList
+                case 1:
+                    // forwardingFeatureList
                     if (ais.getTagClass() != Tag.CLASS_UNIVERSAL || tag != Tag.SEQUENCE || ais.isTagPrimitive())
                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                 + ".forwardingFeatureList: Parameter is primitive",
                                 MAPParsingComponentExceptionReason.MistypedParameter);
 
                     AsnInputStream ais2 = ais.readSequenceStream();
-                    this.forwardingFeatureList = new ArrayList<ExtForwFeature>();
+                    this.forwardingFeatureList = new ArrayList<>();
                     while (true) {
                         if (ais2.available() == 0)
                             break;
@@ -188,11 +189,11 @@ public class ExtForwInfoImpl extends SequenceBase implements ExtForwInfo {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.ssCode != null) {
             sb.append("ssCode=");
-            sb.append(this.ssCode.toString());
+            sb.append(this.ssCode);
             sb.append(", ");
         }
 
@@ -211,7 +212,7 @@ public class ExtForwInfoImpl extends SequenceBase implements ExtForwInfo {
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
         }
 
         sb.append("]");

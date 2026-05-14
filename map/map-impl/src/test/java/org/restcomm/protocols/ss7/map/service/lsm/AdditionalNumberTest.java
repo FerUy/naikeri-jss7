@@ -20,7 +20,6 @@ import org.restcomm.protocols.ss7.map.api.primitives.AddressNature;
 import org.restcomm.protocols.ss7.map.api.primitives.ISDNAddressString;
 import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.service.lsm.AdditionalNumber;
-import org.restcomm.protocols.ss7.map.service.lsm.AdditionalNumberImpl;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
@@ -76,7 +75,7 @@ public class AdditionalNumberTest {
         ISDNAddressString isdnAdd = addNum.getMSCNumber();
         assertEquals(isdnAdd.getAddressNature(), AddressNature.international_number);
         assertEquals(isdnAdd.getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(isdnAdd.getAddress().equals("55619007"));
+        assertEquals(isdnAdd.getAddress(), "55619007");
 
         data = getEncodedSgsnNumber();
 
@@ -91,7 +90,7 @@ public class AdditionalNumberTest {
         isdnAdd = addNum.getSGSNNumber();
         assertEquals(isdnAdd.getAddressNature(), AddressNature.international_number);
         assertEquals(isdnAdd.getNumberingPlan(), NumberingPlan.ISDN);
-        assertTrue(isdnAdd.getAddress().equals("55619007"));
+        assertEquals(isdnAdd.getAddress(), "55619007");
     }
 
     @Test(groups = { "functional.encode", "service.lsm" })
@@ -100,10 +99,10 @@ public class AdditionalNumberTest {
 
         ISDNAddressString isdnAdd = MAPParameterFactory.createISDNAddressString(AddressNature.international_number,
                 NumberingPlan.ISDN, "55619007");
-        AdditionalNumber addNum = new AdditionalNumberImpl(isdnAdd, null);
+        AdditionalNumberImpl addNum = new AdditionalNumberImpl(isdnAdd, null);
 
         AsnOutputStream asnOS = new AsnOutputStream();
-        ((AdditionalNumberImpl) addNum).encodeAll(asnOS);
+        addNum.encodeAll(asnOS);
 
         byte[] encodedData = asnOS.toByteArray();
 
@@ -114,7 +113,7 @@ public class AdditionalNumberTest {
         addNum = new AdditionalNumberImpl(null, isdnAdd);
 
         asnOS = new AsnOutputStream();
-        ((AdditionalNumberImpl) addNum).encodeAll(asnOS);
+        addNum.encodeAll(asnOS);
 
         encodedData = asnOS.toByteArray();
 

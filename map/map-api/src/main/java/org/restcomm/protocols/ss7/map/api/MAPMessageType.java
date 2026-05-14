@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api;
 
 /**
@@ -18,6 +17,7 @@ public enum MAPMessageType {
     updateGprsLocation_Response, purgeMS_Request, purgeMS_Response, RestoreData_Request, RestoreData_Response, reset_Request,
     forwardCheckSSIndication_Request, provideSubscriberInfo_Request, provideSubscriberInfo_Response,
     authenticationFailureReport_Request, authenticationFailureReport_Response,
+    anyTimeModification_Request, anyTimeModification_Response,
 
     // -- supplementary
     processUnstructuredSSRequest_Request, processUnstructuredSSRequest_Response, unstructuredSSRequest_Request,

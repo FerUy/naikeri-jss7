@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -41,6 +40,9 @@ import java.util.HashMap;
  maxGANSSSet INTEGER ::= 9
  GANSS-PositioningMethodAndUsage ::= OCTET STRING (SIZE(1))
 
+ Additional-PositioningDataSet ::= SEQUENCE(SIZE(1..maxAddPosSet)) OF Additional-PositioningMethodAndUsage
+ maxAddPosSet INTEGER ::= 8
+ Additional-PositioningMethodAndUsage ::= OCTET STRING (SIZE(1))
  </code>
  *
  * @author sergey vetyutnev
@@ -50,9 +52,13 @@ public interface UtranPositioningDataInfo extends Serializable {
 
     byte[] getData();
 
+    int getUtranPositioningDataDiscriminator() throws MAPException;
+
     HashMap<String, Integer> getUtranPositioningDataSet() throws MAPException;
 
     ArrayList<String> getUtranLocationGeneratedPositioningMethods() throws MAPException;
 
-    int getUtranPositioningDataDiscriminator() throws MAPException;
+    String getPositioningMethod(int code);
+
+    String getUsage(int u);
 }

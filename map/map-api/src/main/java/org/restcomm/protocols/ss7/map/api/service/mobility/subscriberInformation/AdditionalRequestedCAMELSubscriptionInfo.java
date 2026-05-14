@@ -1,10 +1,17 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 /**
  *
- AdditionalRequestedCAMEL-SubscriptionInfo ::= ENUMERATED { mt-sms-CSI (0), mg-csi (1), o-IM-CSI (2), d-IM-CSI (3), vt-IM-CSI
- * (4), ...} -- exception handling: unknown values shall be discarded by the receiver.
+ <code>
+ AdditionalRequestedCAMEL-SubscriptionInfo ::= ENUMERATED {
+  mt-sms-CSI (0),
+  mg-csi     (1),
+  o-IM-CSI   (2),
+  d-IM-CSI   (3),
+  vt-IM-CSI  (4),
+  ...}
+  -- exception handling: unknown values shall be discarded by the receiver.
+ </code>
  *
  *
  * @author sergey vetyutnev

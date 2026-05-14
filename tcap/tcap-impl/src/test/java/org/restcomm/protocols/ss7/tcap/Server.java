@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
 import org.restcomm.protocols.ss7.sccp.parameter.ParameterFactory;

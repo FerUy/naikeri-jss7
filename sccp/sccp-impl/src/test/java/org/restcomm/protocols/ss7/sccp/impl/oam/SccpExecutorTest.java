@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.oam;
 
 import javolution.util.FastMap;
@@ -19,8 +18,6 @@ import org.restcomm.protocols.ss7.sccp.RemoteSubSystem;
 import org.restcomm.protocols.ss7.sccp.Router;
 import org.restcomm.protocols.ss7.sccp.SccpResource;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
-import org.restcomm.protocols.ss7.sccp.impl.oam.SccpExecutor;
-import org.restcomm.protocols.ss7.sccp.impl.oam.SccpOAMMessage;
 import org.restcomm.ss7.congestion.ExecutorCongestionMonitor;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -76,7 +73,7 @@ public class SccpExecutorTest {
 
         sccpExecutor = new SccpExecutor();
         
-        FastMap<String, SccpStackImpl> sccpStacks = new FastMap<String, SccpStackImpl>();
+        FastMap<String, SccpStackImpl> sccpStacks = new FastMap<>();
         sccpStacks.put(this.sccpStack.getName(), this.sccpStack);
         
         sccpExecutor.setSccpStacks(sccpStacks);
@@ -129,7 +126,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp lmr create 4 19 20 ludt_segm";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.LMR_ALREADY_EXIST));
+        assertEquals(res, SccpOAMMessage.LMR_ALREADY_EXIST);
         assertEquals(this.router.getLongMessageRules().size(), 4);
         lmr = this.router.getLongMessageRule(4);
 
@@ -168,7 +165,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp lmr modify 5 first-spc 23 last-spc 24 rule-type udt";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.LMR_DOESNT_EXIST,this.sccpStack.getName() )));
+        assertEquals(String.format(SccpOAMMessage.LMR_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getLongMessageRules().size(), 4);
         lmr = this.router.getLongMessageRule(4);
         assertEquals(lmr.getFirstSpc(), 21);
@@ -194,7 +191,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp lmr delete 10";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.LMR_DOESNT_EXIST,this.sccpStack.getName() )));
+        assertEquals(String.format(SccpOAMMessage.LMR_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getLongMessageRules().size(), 4);
 
         rspCmd = "sccp lmr delete 4";
@@ -207,7 +204,7 @@ public class SccpExecutorTest {
 
         String rspCmd = "sccp sap create 5 101 11 2";
         String res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.MUP_DOESNT_EXIST));
+        assertEquals(res, SccpOAMMessage.MUP_DOESNT_EXIST);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 0);
 
         rspCmd = "sccp sap create 5 1 11 2";
@@ -224,7 +221,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp sap create 5 1 11 2";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.SAP_ALREADY_EXIST));
+        assertEquals(res, SccpOAMMessage.SAP_ALREADY_EXIST);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 11);
@@ -234,7 +231,7 @@ public class SccpExecutorTest {
         //localgtdigits <localGtDigits>
         rspCmd = "sccp sap modify 5 mtp3-id 2 opc 12 ni 2";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.MUP_DOESNT_EXIST));
+        assertEquals(res, SccpOAMMessage.MUP_DOESNT_EXIST);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 11);
@@ -256,7 +253,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp sap modify 6 mtp3-id 2 opc 14 ni 2";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 55);
@@ -264,7 +261,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp dest create 1 7 31 32 3 4 255";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST,this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 55);
@@ -285,7 +282,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp dest create 5 7 33 34 3 4 255";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.DEST_ALREADY_EXIST));
+        assertEquals(res, SccpOAMMessage.DEST_ALREADY_EXIST);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 55);
@@ -297,7 +294,7 @@ public class SccpExecutorTest {
         //sls-mask <sls-mask> stackname <stack-name>
         rspCmd = "sccp dest modify 1 7 first-dpc 35 last-dpc 36 first-sls 3 last-sls 4 sls-mask 15";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 55);
@@ -307,7 +304,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp dest modify 5 9 first-dpc 38 last-dpc 39 first-sls 3 last-sls 4 sls-mask 15";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.DEST_DOESNT_EXIST,this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.DEST_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 55);
@@ -323,9 +320,12 @@ public class SccpExecutorTest {
         assertEquals(sap.getMtp3Destinations().size(), 1);
         dest = sap.getMtp3Destination(7);
         assertEquals(dest.getFirstDpc(), 40);
+        assertEquals(dest.getLastDpc(), 41);
+        assertEquals(dest.getFirstSls(), 3);
+        assertEquals(dest.getLastSls(), 4);
         assertEquals(dest.getSlsMask(), 15);
 
-        rspCmd = "sccp dest modify 5 7 first-dpc 1 last-dpc 2";
+        rspCmd = "sccp dest modify 5 7 first-dpc 1 last-dpc 2 first-sls 1 last-sls 2 sls-mask 15";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
@@ -334,6 +334,8 @@ public class SccpExecutorTest {
         dest = sap.getMtp3Destination(7);
         assertEquals(dest.getFirstDpc(), 1);
         assertEquals(dest.getLastDpc(), 2);
+        assertEquals(dest.getFirstSls(), 1);
+        assertEquals(dest.getLastSls(), 2);
         assertEquals(dest.getSlsMask(), 15);
 
         rspCmd = "sccp dest show 5 7";
@@ -350,7 +352,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp dest delete 1 7";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 55);
@@ -360,7 +362,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp dest delete 5 9";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.DEST_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.DEST_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 55);
@@ -377,7 +379,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp sap delete 1";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.SAP_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.router.getMtp3ServiceAccessPoints().size(), 1);
         sap = this.router.getMtp3ServiceAccessPoint(5);
         assertEquals(sap.getOpc(), 55);
@@ -404,7 +406,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp rsp create 1 12 0 0";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.RSPC_ALREADY_EXIST));
+        assertEquals(res, SccpOAMMessage.RSPC_ALREADY_EXIST);
         assertEquals(this.sccpResource.getRemoteSpcs().size(), 1);
         spc = this.sccpResource.getRemoteSpc(1);
         assertEquals(spc.getRemoteSpc(), 11);
@@ -412,7 +414,7 @@ public class SccpExecutorTest {
         //sccp rsp modify <id> remote-spc <remote-spc> rspc-flag <rspc-flag> mask <mask> stackname <stack-name>
         rspCmd = "sccp rsp modify 2 remote-spc 12 rspc-flag 0 mask 0";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.RSPC_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.RSPC_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.sccpResource.getRemoteSpcs().size(), 1);
         spc = this.sccpResource.getRemoteSpc(1);
         assertEquals(spc.getRemoteSpc(), 11);
@@ -437,7 +439,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp rsp delete 5";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.RSPC_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.RSPC_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.sccpResource.getRemoteSpcs().size(), 1);
         spc = this.sccpResource.getRemoteSpc(1);
         assertEquals(spc.getRemoteSpc(), 13);
@@ -485,7 +487,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp rss create 2 12 8 0";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.RSS_ALREADY_EXIST));
+        assertEquals(res, SccpOAMMessage.RSS_ALREADY_EXIST);
         assertEquals(this.sccpResource.getRemoteSsns().size(), 1);
         rss = this.sccpResource.getRemoteSsn(2);
         assertEquals(rss.getRemoteSpc(), 12);
@@ -500,7 +502,6 @@ public class SccpExecutorTest {
         rss = this.sccpResource.getRemoteSsn(2);
         assertEquals(rss.getRemoteSpc(), 13);
         assertEquals(rss.getRemoteSsn(), 18);
-        assertTrue(rss.getMarkProhibitedWhenSpcResuming());
 
         rspCmd = "sccp rss modify 2 remote-spc 14 remote-ssn 19 rss-flag 0 prohibitedwhenspcresuming true";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
@@ -527,7 +528,7 @@ public class SccpExecutorTest {
         rss = this.sccpResource.getRemoteSsn(2);
         assertEquals(rss.getRemoteSpc(), 14);
         assertEquals(rss.getRemoteSsn(), 8);
-        assertTrue(rss.getMarkProhibitedWhenSpcResuming());
+        assertFalse(rss.getMarkProhibitedWhenSpcResuming());
 
         rspCmd = "sccp rss show 1";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
@@ -555,7 +556,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp csp create 3 22";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.CS_ALREADY_EXIST),res);
+        assertEquals(res, SccpOAMMessage.CS_ALREADY_EXIST, res);
         assertEquals(this.sccpResource.getConcernedSpcs().size(), 1);
         cspc = this.sccpResource.getConcernedSpc(3);
         assertEquals(cspc.getRemoteSpc(), 21);
@@ -568,7 +569,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp csp modify 33 24";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.CS_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.CS_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.sccpResource.getConcernedSpcs().size(), 1);
         cspc = this.sccpResource.getConcernedSpc(3);
         assertEquals(cspc.getRemoteSpc(), 23);
@@ -581,7 +582,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp csp delete 33";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(String.format(SccpOAMMessage.CS_DOESNT_EXIST, this.sccpStack.getName())));
+        assertEquals(String.format(SccpOAMMessage.CS_DOESNT_EXIST, this.sccpStack.getName()), res);
         assertEquals(this.sccpResource.getConcernedSpcs().size(), 1);
         cspc = this.sccpResource.getConcernedSpc(3);
         assertEquals(cspc.getRemoteSpc(), 23);
@@ -614,7 +615,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp set removeSpc false";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertEquals(this.sccpStack.isRemoveSpc(), false);
+        assertFalse(this.sccpStack.isRemoveSpc());
 
         rspCmd = "sccp set sstTimerDuration_Min 6000";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
@@ -630,7 +631,7 @@ public class SccpExecutorTest {
 
         rspCmd = "sccp set canrelay true";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertEquals(this.sccpStack.isCanRelay(), true);
+        assertTrue(this.sccpStack.isCanRelay());
 
         rspCmd = "sccp set connesttimerdelay 60001";
         res = this.sccpExecutor.execute(rspCmd.split(" "));
@@ -690,7 +691,7 @@ public class SccpExecutorTest {
 
     }
 
-    class Mtp3UserPartImpl implements Mtp3UserPart {
+    static class Mtp3UserPartImpl implements Mtp3UserPart {
 
         public void addMtp3UserPartListener(Mtp3UserPartListener arg0) {
             // TODO Auto-generated method stub

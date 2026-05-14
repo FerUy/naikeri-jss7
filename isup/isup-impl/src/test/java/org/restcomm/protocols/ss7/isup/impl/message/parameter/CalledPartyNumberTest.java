@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.message.parameter;
 
 import static org.testng.Assert.assertEquals;
@@ -11,9 +10,9 @@ import java.lang.reflect.InvocationTargetException;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.isup.ParameterException;
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.AbstractISUPParameter;
-import org.restcomm.protocols.ss7.isup.impl.message.parameter.CalledPartyNumberImpl;
 import org.restcomm.protocols.ss7.isup.message.parameter.CalledPartyNumber;
 import org.testng.annotations.Test;
 
@@ -26,9 +25,8 @@ import org.testng.annotations.Test;
  */
 public class CalledPartyNumberTest extends ParameterHarness {
 
-    /**
-     * @throws IOException
-     */
+    private static final Logger logger = LogManager.getLogger(CalledPartyNumberTest.class.getName());
+
     public CalledPartyNumberTest() throws IOException {
         super.badBodies.add(new byte[1]);
 
@@ -101,7 +99,7 @@ public class CalledPartyNumberTest extends ParameterHarness {
         byte[] rawData = baos.toByteArray();
         String serializedEvent = new String(rawData);
 
-        System.out.println(serializedEvent);
+        logger.info(serializedEvent);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
         XMLObjectReader reader = XMLObjectReader.newInstance(bais);

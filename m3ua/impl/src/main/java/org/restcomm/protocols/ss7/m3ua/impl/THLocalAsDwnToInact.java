@@ -1,8 +1,7 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.m3ua.Functionality;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.restcomm.protocols.ss7.m3ua.impl.fsm.FSMState;
@@ -19,7 +18,7 @@ import org.restcomm.protocols.ss7.m3ua.parameter.Status;
  */
 public class THLocalAsDwnToInact implements TransitionHandler {
 
-    private static final Logger logger = Logger.getLogger(THLocalAsDwnToInact.class);
+    private static final Logger logger = LogManager.getLogger(THLocalAsDwnToInact.class);
 
     private AsImpl asImpl;
     private FSM fsm;

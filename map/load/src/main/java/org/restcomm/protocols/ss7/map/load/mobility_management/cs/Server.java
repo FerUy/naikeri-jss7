@@ -1,6 +1,7 @@
 package org.restcomm.protocols.ss7.map.load.mobility_management.cs;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.asn.BitSetStrictLength;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
@@ -46,10 +47,36 @@ import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
 import org.restcomm.protocols.ss7.map.api.primitives.LMSI;
 import org.restcomm.protocols.ss7.map.api.primitives.PlmnId;
 import org.restcomm.protocols.ss7.map.api.primitives.Time;
+import org.restcomm.protocols.ss7.map.api.primitives.FTNAddressString;
+import org.restcomm.protocols.ss7.map.api.primitives.ISDNSubaddressString;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtForwOptions;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtForwOptionsForwardingReason;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtForwFeature;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ExtCallBarringFeature;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CAMELSubscriptionInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ODBInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ExtCwFeature;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallWaitingData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.CallHoldData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClipData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ClirData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.EctData;
+import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
+import org.restcomm.protocols.ss7.map.primitives.ISDNSubaddressStringImpl;
+import org.restcomm.protocols.ss7.map.primitives.FTNAddressStringImpl;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.OverrideCategory;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.Password;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.CliRestrictionOption;
+import org.restcomm.protocols.ss7.map.api.service.supplementary.SSSubscriptionOption;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
 import org.restcomm.protocols.ss7.map.api.service.lsm.LCSClientInternalID;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPDialogMobility;
 import org.restcomm.protocols.ss7.map.api.service.mobility.MAPServiceMobilityListener;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ExtCallBarringInfoForCSE;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ExtForwardingInfoForCSE;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ExtSSInfoForCSE;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationFailureReportResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.authentication.AuthenticationQuintuplet;
@@ -97,6 +124,8 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeSubscriptionInterrogationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.DomainType;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.LIPAPermission;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationRequest;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.AnyTimeModificationResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoRequest;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ProvideSubscriberInfoResponse;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
@@ -198,14 +227,9 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.VoiceBroadcastData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.VoiceGroupCallData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.ZoneCode;
-import org.restcomm.protocols.ss7.map.api.service.supplementary.CliRestrictionOption;
-import org.restcomm.protocols.ss7.map.api.service.supplementary.OverrideCategory;
-import org.restcomm.protocols.ss7.map.api.service.supplementary.SSCode;
-import org.restcomm.protocols.ss7.map.api.service.supplementary.SSSubscriptionOption;
-import org.restcomm.protocols.ss7.map.api.service.supplementary.SupplementaryCodeValue;
+
 import org.restcomm.protocols.ss7.map.primitives.DiameterIdentityImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
-import org.restcomm.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.restcomm.protocols.ss7.map.primitives.LMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.NAEACICImpl;
 import org.restcomm.protocols.ss7.map.primitives.NAEAPreferredCIImpl;
@@ -222,10 +246,22 @@ import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.DeleteSubsc
 import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.InsertSubscriberDataArgsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.ResetIdImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.SendingNodeNumberImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CAMELSubscriptionInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.imei.UESBIIuAImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.imei.UESBIIuBImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.imei.UESBIIuImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.RequestedInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ExtCwFeatureImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ExtForwardingInfoForCSEImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ExtCallBarringInfoForCSEImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CallWaitingDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ExtSSInfoForCSEImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ODBInfoImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CallHoldDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ClipDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.ClirDataImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.EctDataImpl;
+
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.AMBRImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.APNConfigurationProfileImpl;
@@ -292,7 +328,12 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VlrC
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VoiceBroadcastDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.VoiceGroupCallDataImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ZoneCodeImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtCallBarringFeatureImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtForwFeatureImpl;
+import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.ExtForwOptionsImpl;
+
 import org.restcomm.protocols.ss7.map.service.supplementary.SSCodeImpl;
+import org.restcomm.protocols.ss7.map.service.supplementary.PasswordImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.SSSubscriptionOptionImpl;
 import org.restcomm.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.restcomm.protocols.ss7.sccp.OriginationType;
@@ -324,9 +365,9 @@ import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
-public class Server extends TestHarnessMobilityManagement {
+public class Server extends TestHarnessMobilityManagementCs {
 
-    private static final Logger logger = Logger.getLogger(Server.class);
+    private static final Logger logger = LogManager.getLogger(Server.class);
 
     private static MAPProvider mapProvider;
 
@@ -484,7 +525,7 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onDialogDelimiter(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogDelimiter for DialogId=%d", mapDialog.getLocalDialogId()));
+            logger.debug("onDialogDelimiter for DialogId={}", mapDialog.getLocalDialogId());
         }
     }
 
@@ -500,9 +541,7 @@ public class Server extends TestHarnessMobilityManagement {
     public void onDialogRequest(MAPDialog mapDialog, AddressString destReference, AddressString origReference,
                                 MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format(
-                    "onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s MAPExtensionContainer=%s",
-                    mapDialog.getLocalDialogId(), destReference, origReference, extensionContainer));
+            logger.debug("onDialogRequest for DialogId={} DestinationReference={} OriginReference={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), destReference, origReference, extensionContainer);
         }
     }
 
@@ -510,8 +549,7 @@ public class Server extends TestHarnessMobilityManagement {
     public void onDialogRequestEricsson(MAPDialog mapDialog, AddressString destReference, AddressString origReference,
                                         AddressString imsi, AddressString vlr) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogRequest for DialogId=%d DestinationReference=%s OriginReference=%s ",
-                    mapDialog.getLocalDialogId(), destReference, origReference));
+            logger.debug("onDialogRequest for DialogId={} DestinationReference={} OriginReference={} ", mapDialog.getLocalDialogId(), destReference, origReference);
         }
     }
 
@@ -524,8 +562,7 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onDialogAccept(MAPDialog mapDialog, MAPExtensionContainer extensionContainer) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogAccept for DialogId=%d MAPExtensionContainer=%s", mapDialog.getLocalDialogId(),
-                    extensionContainer));
+            logger.debug("onDialogAccept for DialogId={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), extensionContainer);
         }
     }
 
@@ -540,9 +577,7 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onDialogReject(MAPDialog mapDialog, MAPRefuseReason refuseReason, ApplicationContextName alternativeApplicationContext,
                                MAPExtensionContainer extensionContainer) {
-        logger.error(String.format(
-                "onDialogReject for DialogId=%d MAPRefuseReason=%s ApplicationContextName=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), refuseReason, alternativeApplicationContext, extensionContainer));
+        logger.error("onDialogReject for DialogId={} MAPRefuseReason={} ApplicationContextName={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), refuseReason, alternativeApplicationContext, extensionContainer);
     }
 
     /*
@@ -554,8 +589,7 @@ public class Server extends TestHarnessMobilityManagement {
      */
     @Override
     public void onDialogUserAbort(MAPDialog mapDialog, MAPUserAbortChoice userReason, MAPExtensionContainer extensionContainer) {
-        logger.error(String.format("onDialogUserAbort for DialogId=%d MAPUserAbortChoice=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), userReason, extensionContainer));
+        logger.error("onDialogUserAbort for DialogId={} MAPUserAbortChoice={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), userReason, extensionContainer);
     }
 
     /*
@@ -569,9 +603,7 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onDialogProviderAbort(MAPDialog mapDialog, MAPAbortProviderReason abortProviderReason, MAPAbortSource abortSource,
                                       MAPExtensionContainer extensionContainer) {
-        logger.error(String.format(
-                "onDialogProviderAbort for DialogId=%d MAPAbortProviderReason=%s MAPAbortSource=%s MAPExtensionContainer=%s",
-                mapDialog.getLocalDialogId(), abortProviderReason, abortSource, extensionContainer));
+        logger.error("onDialogProviderAbort for DialogId={} MAPAbortProviderReason={} MAPAbortSource={} MAPExtensionContainer={}", mapDialog.getLocalDialogId(), abortProviderReason, abortSource, extensionContainer);
     }
 
     /*
@@ -582,7 +614,7 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onDialogClose(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("DialogClose for Dialog=%d", mapDialog.getLocalDialogId()));
+            logger.debug("DialogClose for Dialog={}", mapDialog.getLocalDialogId());
         }
     }
 
@@ -594,8 +626,7 @@ public class Server extends TestHarnessMobilityManagement {
      */
     @Override
     public void onDialogNotice(MAPDialog mapDialog, MAPNoticeProblemDiagnostic noticeProblemDiagnostic) {
-        logger.error(String.format("onDialogNotice for DialogId=%d MAPNoticeProblemDiagnostic=%s ",
-                mapDialog.getLocalDialogId(), noticeProblemDiagnostic));
+        logger.error("onDialogNotice for DialogId={} MAPNoticeProblemDiagnostic={} ", mapDialog.getLocalDialogId(), noticeProblemDiagnostic);
     }
 
     /*
@@ -607,7 +638,7 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onDialogRelease(MAPDialog mapDialog) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onDialogRelease for DialogId=%d", mapDialog.getLocalDialogId()));
+            logger.debug("onDialogRelease for DialogId={}", mapDialog.getLocalDialogId());
         }
 
         this.endCount++;
@@ -616,7 +647,7 @@ public class Server extends TestHarnessMobilityManagement {
             long currentTime = System.currentTimeMillis();
             long processingTime = currentTime - start;
             start = currentTime;
-            logger.warn("Completed 10000 Dialogs in " + processingTime + " milliseconds");
+            logger.warn("Completed 10000 Dialogs in {} milliseconds", processingTime);
         }
 
     }
@@ -629,7 +660,7 @@ public class Server extends TestHarnessMobilityManagement {
      */
     @Override
     public void onDialogTimeout(MAPDialog mapDialog) {
-        logger.error(String.format("onDialogTimeout for DialogId=%d", mapDialog.getLocalDialogId()));
+        logger.error("onDialogTimeout for DialogId={}", mapDialog.getLocalDialogId());
     }
 
     /*
@@ -641,8 +672,7 @@ public class Server extends TestHarnessMobilityManagement {
      */
     @Override
     public void onErrorComponent(MAPDialog mapDialog, Long invokeId, MAPErrorMessage mapErrorMessage) {
-        logger.error(String.format("onErrorComponent for Dialog=%d and invokeId=%d MAPErrorMessage=%s",
-                mapDialog.getLocalDialogId(), invokeId, mapErrorMessage));
+        logger.error("onErrorComponent for Dialog={} and invokeId={} MAPErrorMessage={}", mapDialog.getLocalDialogId(), invokeId, mapErrorMessage);
     }
 
     /*
@@ -653,8 +683,7 @@ public class Server extends TestHarnessMobilityManagement {
      */
     @Override
     public void onRejectComponent(MAPDialog mapDialog, Long invokeId, Problem problem, boolean isLocalOriginated) {
-        logger.error(String.format("onRejectComponent for Dialog=%d and invokeId=%d Problem=%s isLocalOriginated=%s",
-                mapDialog.getLocalDialogId(), invokeId, problem, isLocalOriginated));
+        logger.error("onRejectComponent for Dialog={} and invokeId={} Problem={} isLocalOriginated={}", mapDialog.getLocalDialogId(), invokeId, problem, isLocalOriginated);
     }
 
     /*
@@ -665,7 +694,7 @@ public class Server extends TestHarnessMobilityManagement {
      */
     @Override
     public void onInvokeTimeout(MAPDialog mapDialog, Long invokeId) {
-        logger.error(String.format("onInvokeTimeout for Dialog=%d and invokeId=%d", mapDialog.getLocalDialogId(), invokeId));
+        logger.error("onInvokeTimeout for Dialog={} and invokeId={}", mapDialog.getLocalDialogId(), invokeId);
     }
 
     public static void main(String[] args) {
@@ -673,62 +702,62 @@ public class Server extends TestHarnessMobilityManagement {
         if (args.length >= 1 && args[0].equalsIgnoreCase("tcp")) {
             ipChannelType = IpChannelType.TCP;
         }
-        System.out.println("IpChannelType="+ipChannelType);
+        logger.info("IpChannelType={}", ipChannelType);
 
         if (args.length >= 2) {
-            TestHarnessMobilityManagement.CLIENT_IP = args[1];
+            TestHarnessMobilityManagementCs.CLIENT_IP = args[1];
         }
-        System.out.println("CLIENT_IP="+ TestHarnessMobilityManagement.CLIENT_IP);
+        logger.info("CLIENT_IP={}", TestHarnessMobilityManagementCs.CLIENT_IP);
 
         if (args.length >= 3) {
-            TestHarnessMobilityManagement.CLIENT_PORT = Integer.parseInt(args[2]);
+            TestHarnessMobilityManagementCs.CLIENT_PORT = Integer.parseInt(args[2]);
         }
-        System.out.println("CLIENT_PORT="+ TestHarnessMobilityManagement.CLIENT_PORT);
+        logger.info("CLIENT_PORT={}", TestHarnessMobilityManagementCs.CLIENT_PORT);
 
         if (args.length >= 4) {
-            TestHarnessMobilityManagement.SERVER_IP = args[3];
+            TestHarnessMobilityManagementCs.SERVER_IP = args[3];
         }
-        System.out.println("SERVER_IP="+ TestHarnessMobilityManagement.SERVER_IP);
+        logger.info("SERVER_IP={}", TestHarnessMobilityManagementCs.SERVER_IP);
 
         if (args.length >= 5) {
-            TestHarnessMobilityManagement.SERVER_PORT = Integer.parseInt(args[4]);
+            TestHarnessMobilityManagementCs.SERVER_PORT = Integer.parseInt(args[4]);
         }
-        System.out.println("SERVER_PORT="+ TestHarnessMobilityManagement.SERVER_PORT);
+        logger.info("SERVER_PORT={}", TestHarnessMobilityManagementCs.SERVER_PORT);
 
         if (args.length >= 6) {
-            TestHarnessMobilityManagement.CLIENT_SPC = Integer.parseInt(args[5]);
+            TestHarnessMobilityManagementCs.CLIENT_SPC = Integer.parseInt(args[5]);
         }
-        System.out.println("CLIENT_SPC="+ TestHarnessMobilityManagement.CLIENT_SPC);
+        logger.info("CLIENT_SPC={}", TestHarnessMobilityManagementCs.CLIENT_SPC);
 
         if (args.length >= 7) {
-            TestHarnessMobilityManagement.SERVER_SPC = Integer.parseInt(args[6]);
+            TestHarnessMobilityManagementCs.SERVER_SPC = Integer.parseInt(args[6]);
         }
-        System.out.println("SERVER_SPC="+ TestHarnessMobilityManagement.SERVER_SPC);
+        logger.info("SERVER_SPC={}", TestHarnessMobilityManagementCs.SERVER_SPC);
 
         if (args.length >= 8) {
-            TestHarnessMobilityManagement.NETWORK_INDICATOR = Integer.parseInt(args[7]);
+            TestHarnessMobilityManagementCs.NETWORK_INDICATOR = Integer.parseInt(args[7]);
         }
-        System.out.println("NETWORK_INDICATOR="+ TestHarnessMobilityManagement.NETWORK_INDICATOR);
+        logger.info("NETWORK_INDICATOR={}", TestHarnessMobilityManagementCs.NETWORK_INDICATOR);
 
         if (args.length >= 9) {
-            TestHarnessMobilityManagement.SERVICE_INDICATOR = Integer.parseInt(args[8]);
+            TestHarnessMobilityManagementCs.SERVICE_INDICATOR = Integer.parseInt(args[8]);
         }
-        System.out.println("SERVICE_INDICATOR="+ TestHarnessMobilityManagement.SERVICE_INDICATOR);
+        logger.info("SERVICE_INDICATOR={}", TestHarnessMobilityManagementCs.SERVICE_INDICATOR);
 
         if (args.length >= 10) {
-            TestHarnessMobilityManagement.SSN = Integer.parseInt(args[9]);
+            TestHarnessMobilityManagementCs.SSN = Integer.parseInt(args[9]);
         }
-        System.out.println("SSN="+ TestHarnessMobilityManagement.SSN);
+        logger.info("SSN={}", TestHarnessMobilityManagementCs.SSN);
 
         if (args.length >= 11) {
-            TestHarnessMobilityManagement.ROUTING_CONTEXT = Integer.parseInt(args[10]);
+            TestHarnessMobilityManagementCs.ROUTING_CONTEXT = Integer.parseInt(args[10]);
         }
-        System.out.println("ROUTING_CONTEXT="+ TestHarnessMobilityManagement.ROUTING_CONTEXT);
+        logger.info("ROUTING_CONTEXT={}", TestHarnessMobilityManagementCs.ROUTING_CONTEXT);
 
         if(args.length >= 12){
-            TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[11]);
+            TestHarnessMobilityManagementCs.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT = Integer.parseInt(args[11]);
         }
-        System.out.println("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT=" + TestHarnessMobilityManagement.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
+        logger.info("DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT={}", TestHarnessMobilityManagementCs.DELIVERY_TRANSFER_MESSAGE_THREAD_COUNT);
 
         final Server server = new Server();
         try {
@@ -792,8 +821,8 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onSendAuthenticationInfoRequest(SendAuthenticationInfoRequest sendAuthenticationInfoRequestIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onSendAuthenticationInfoRequest for DialogId=%d", sendAuthenticationInfoRequestIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onSendAuthenticationInfoRequest for DialogId={}", sendAuthenticationInfoRequestIndication
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = sendAuthenticationInfoRequestIndication.getInvokeId();
@@ -846,15 +875,15 @@ public class Server extends TestHarnessMobilityManagement {
 
     @Override
     public void onSendAuthenticationInfoResponse(SendAuthenticationInfoResponse sendAuthenticationInfoResponseIndication) {
-        logger.error(String.format("ERROR: received SendAuthenticationInfoResponse at the server (acting as HLR) over DialogId=%d", sendAuthenticationInfoResponseIndication
-                .getMAPDialog().getLocalDialogId()));
+        logger.error("ERROR: received SendAuthenticationInfoResponse at the server (acting as HLR) over DialogId={}", sendAuthenticationInfoResponseIndication
+                .getMAPDialog().getLocalDialogId());
     }
 
     @Override
     public void onUpdateLocationRequest(UpdateLocationRequest updateLocationRequestIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onUpdateLocationRequest for DialogId=%d", updateLocationRequestIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onUpdateLocationRequest for DialogId={}", updateLocationRequestIndication
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             // Create Dialog for MAP CL
@@ -967,7 +996,7 @@ public class Server extends TestHarnessMobilityManagement {
             boolean plmnSpecificBarringType3 = false;
             boolean plmnSpecificBarringType4 = false;
             ODBHPLMNData odbHplmnData = new ODBHPLMNDataImpl(plmnSpecificBarringType1, plmnSpecificBarringType2, plmnSpecificBarringType3, plmnSpecificBarringType4);
-            ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, extCont);
+            ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, null);
             // roamingRestrictionDueToUnsupportedFeature
             boolean roamingRestrictionDueToUnsupportedFeature = true;
             // regionalSubscriptionData
@@ -990,7 +1019,7 @@ public class Server extends TestHarnessMobilityManagement {
             addInfoBitset.set(1);
             addInfoBitset.set(24);
             AdditionalInfo addInfo = new AdditionalInfoImpl(addInfoBitset);
-            VoiceGroupCallData voiceGroupCallData = new VoiceGroupCallDataImpl(gId, extCont, addSubscriptions, addInfo, lGId);
+            VoiceGroupCallData voiceGroupCallData = new VoiceGroupCallDataImpl(gId, null, addSubscriptions, addInfo, lGId);
             vgcsSubscriptionData.add(voiceGroupCallData);
             // vlrCamelSubscriptionInfo
             OBcsmTriggerDetectionPoint oBcsmTDP = OBcsmTriggerDetectionPoint.routeSelectFailure;
@@ -1003,13 +1032,13 @@ public class Server extends TestHarnessMobilityManagement {
             Integer camelCapabilityHandling = 2;
             boolean notificationToCSE = true;
             boolean csiActive = true;
-            OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, extCont, camelCapabilityHandling, notificationToCSE, csiActive);
+            OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, null, camelCapabilityHandling, notificationToCSE, csiActive);
             ArrayList<SSCode> ssEventList = new ArrayList<>();
             ssEventList.add(clip);
             ssEventList.add(clir);
-            SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddress, extCont);
-            SSCSI ssCsi = new SSCSIImpl(ssCamelData, extCont, notificationToCSE, csiActive);
-            ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = getoBcsmCamelTdpCriteria(oBcsmTDP, basicServiceGroupList, extCont);
+            SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddress, null);
+            SSCSI ssCsi = new SSCSIImpl(ssCamelData, null, notificationToCSE, csiActive);
+            ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = getOBcsmCamelTdpCriteria(oBcsmTDP, basicServiceGroupList);
             boolean tifCsi = true;
             ArrayList<MMCode> mobilityTriggers = new ArrayList<>();
             MMCode mmCode1 = new MMCodeImpl(MMCodeValue.IMSIAttach);
@@ -1030,7 +1059,7 @@ public class Server extends TestHarnessMobilityManagement {
             TBcsmCamelTDPData tBcsmCamelTDPData2 = new TBcsmCamelTDPDataImpl(tBcsmTDP2, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
             tBcsmCamelTDPDataList.add(tBcsmCamelTDPData1);
             tBcsmCamelTDPDataList.add(tBcsmCamelTDPData2);
-            TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDataList, extCont, camelCapabilityHandling, notificationToCSE, csiActive);
+            TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDataList, null, camelCapabilityHandling, notificationToCSE, csiActive);
             TBcsmTriggerDetectionPoint tBcsmTriggerDetectionPoint = TBcsmTriggerDetectionPoint.tNoAnswer;
             ArrayList<CauseValue> tCauseValueCriteria = new ArrayList<>();
             CauseValue tcv1 = new CauseValueImpl(CauseValueCodeValue.CallRejected);
@@ -1044,8 +1073,8 @@ public class Server extends TestHarnessMobilityManagement {
             ISDNAddressString dialledNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491714780432");
             DPAnalysedInfoCriterium dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, serviceKey, gsmSCFAddress, defaultCallHandling, extCont);
             dpAnalysedInfoCriteriaList.add(dpAnalysedInfoCriterium);
-            DCSI dCSI = new DCSIImpl(dpAnalysedInfoCriteriaList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
-            SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, extCont, notificationToCSE, csiActive);
+            DCSI dCSI = new DCSIImpl(dpAnalysedInfoCriteriaList, camelCapabilityHandling, null, notificationToCSE, csiActive);
+            SMSCSI mtSmsCSI = new SMSCSIImpl(smsCamelTdpDataList, camelCapabilityHandling, null, notificationToCSE, csiActive);
             ArrayList<MTsmsCAMELTDPCriteria> mtSmsCamelTdpCriteriaList = new ArrayList<>();
             ArrayList<MTSMSTPDUType> mtsmstpduTypeArrayList = new ArrayList<>();
             MTSMSTPDUType mtsmstpduType1 = MTSMSTPDUType.smsDELIVER;
@@ -1250,7 +1279,7 @@ public class Server extends TestHarnessMobilityManagement {
         }
     }
 
-    private static ArrayList<OBcsmCamelTdpCriteria> getoBcsmCamelTdpCriteria(OBcsmTriggerDetectionPoint oBcsmTDP, ArrayList<ExtBasicServiceCode> basicServiceGroupList, MAPExtensionContainer mapExtensionContainer) {
+    private static ArrayList<OBcsmCamelTdpCriteria> getOBcsmCamelTdpCriteria(OBcsmTriggerDetectionPoint oBcsmTDP, ArrayList<ExtBasicServiceCode> basicServiceGroupList) {
         DestinationNumberCriteria destinationNumberCriteria = getDestinationNumberCriteria();
         CallTypeCriteria callTypeCriteria = CallTypeCriteria.notForwarded;
         ArrayList<CauseValue> oCauseValueCriteria = new ArrayList<>();
@@ -1260,7 +1289,7 @@ public class Server extends TestHarnessMobilityManagement {
         oCauseValueCriteria.add(causeValue2);
         ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = new ArrayList<>();
         OBcsmCamelTdpCriteria oBcsmCamelTdpCriteria = new OBcsmCamelTdpCriteriaImpl(oBcsmTDP, destinationNumberCriteria,
-                basicServiceGroupList, callTypeCriteria, oCauseValueCriteria, mapExtensionContainer);
+                basicServiceGroupList, callTypeCriteria, oCauseValueCriteria, null);
         Result result = new Result(oBcsmCamelTDPCriteriaList, oBcsmCamelTdpCriteria);
         result.oBcsmCamelTDPCriteriaList.add(result.oBcsmCamelTdpCriteria);
         return result.oBcsmCamelTDPCriteriaList;
@@ -1289,22 +1318,22 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onUpdateLocationResponse(UpdateLocationResponse updateLocationResponseIndication) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onUpdateLocationResponse for DialogId=%d", updateLocationResponseIndication
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onUpdateLocationResponse for DialogId={}", updateLocationResponseIndication
+                    .getMAPDialog().getLocalDialogId());
         }
     }
 
     @Override
     public void onInsertSubscriberDataRequest(InsertSubscriberDataRequest insertSubscriberDataRequest) {
-        logger.error(String.format("ERROR: received InsertSubscriberDataRequest at the server (acting as HLR) over DialogId=%d", insertSubscriberDataRequest
-                .getMAPDialog().getLocalDialogId()));
+        logger.error("ERROR: received InsertSubscriberDataRequest at the server (acting as HLR) over DialogId={}", insertSubscriberDataRequest
+                .getMAPDialog().getLocalDialogId());
     }
 
     @Override
     public void onInsertSubscriberDataResponse(InsertSubscriberDataResponse insertSubscriberDataResponse) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onInsertSubscriberDataResponse for DialogId=%d", insertSubscriberDataResponse
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onInsertSubscriberDataResponse for DialogId={}", insertSubscriberDataResponse
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = insertSubscriberDataResponse.getInvokeId();
@@ -1323,15 +1352,15 @@ public class Server extends TestHarnessMobilityManagement {
 
     @Override
     public void onCancelLocationRequest(CancelLocationRequest cancelLocationRequest) {
-        logger.error(String.format("ERROR: received CancelLocationRequest at the server (acting as HLR) over DialogId=%d", cancelLocationRequest
-                .getMAPDialog().getLocalDialogId()));
+        logger.error("ERROR: received CancelLocationRequest at the server (acting as HLR) over DialogId={}", cancelLocationRequest
+                .getMAPDialog().getLocalDialogId());
     }
 
     @Override
     public void onCancelLocationResponse(CancelLocationResponse cancelLocationResponse) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onCancelLocationResponse for DialogId=%d", cancelLocationResponse
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onCancelLocationResponse for DialogId={}", cancelLocationResponse
+                    .getMAPDialog().getLocalDialogId());
         }
         // Start a new CL with subscription withdraw and reattach procedure (simulating an OSS request)
         new Thread(new SubscriptionWithdrawReattach(this)).start();
@@ -1356,8 +1385,8 @@ public class Server extends TestHarnessMobilityManagement {
     @Override
     public void onPurgeMSRequest(PurgeMSRequest purgeMSRequest) {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("onPurgeMSRequest for DialogId=%d", purgeMSRequest
-                    .getMAPDialog().getLocalDialogId()));
+            logger.debug("onPurgeMSRequest for DialogId={}", purgeMSRequest
+                    .getMAPDialog().getLocalDialogId());
         }
         try {
             long invokeId = purgeMSRequest.getInvokeId();
@@ -1381,8 +1410,8 @@ public class Server extends TestHarnessMobilityManagement {
 
     @Override
     public void onPurgeMSResponse(PurgeMSResponse purgeMSResponse) {
-        logger.error(String.format("Received PurgeMSResponse at the server (acting as HLR) over DialogId=%d", purgeMSResponse
-                .getMAPDialog().getLocalDialogId()));
+        logger.error("Received PurgeMSResponse at the server (acting as HLR) over DialogId={}", purgeMSResponse
+                .getMAPDialog().getLocalDialogId());
     }
 
     @Override
@@ -1442,6 +1471,189 @@ public class Server extends TestHarnessMobilityManagement {
 
     @Override
     public void onAnyTimeSubscriptionInterrogationResponse(AnyTimeSubscriptionInterrogationResponse anyTimeSubscriptionInterrogationResponse) {
+
+    }
+
+    @Override
+    public void onAnyTimeModificationRequest(AnyTimeModificationRequest anyTimeModificationRequest) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("onAnyTimeModificationRequest for DialogId={}", anyTimeModificationRequest
+                    .getMAPDialog().getLocalDialogId());
+        }
+        try {
+            long invokeId = anyTimeModificationRequest.getInvokeId();
+            MAPDialogMobility mapDialogMobility = anyTimeModificationRequest.getMAPDialog();
+
+            SSCode ssCode1 = new SSCodeImpl(getSupplementaryCodeValue());
+            SSCode ssCode2 = new SSCodeImpl(getSupplementaryCodeValue());
+            ExtBasicServiceCode bearerServiceCode = new ExtBasicServiceCodeImpl(new ExtBearerServiceCodeImpl(getBearerServiceCodeValue()));
+            ExtBasicServiceCode teleServiceCode = new ExtBasicServiceCodeImpl(new ExtTeleserviceCodeImpl(getTeleserviceCodeValue()));
+            ExtSSStatus ssStatus1 = new ExtSSStatusImpl(true, false, true, false);
+            ExtSSStatus ssStatus2= new ExtSSStatusImpl(false, true, true, true);
+            ISDNAddressString forwardedToNumber1 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
+                    "882285105682451");
+            ISDNAddressString forwardedToNumber2 = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "882285105682457");
+            ISDNSubaddressString forwardedToSubaddress1 = new ISDNSubaddressStringImpl(new byte[] { 2, 5 });
+            ISDNSubaddressString forwardedToSubaddress2 = new ISDNSubaddressStringImpl(new byte[] { 2, 4 });
+            Random rand = new Random();
+            ExtForwOptions forwardingOptions1 = new ExtForwOptionsImpl(true, false, false,
+                    ExtForwOptionsForwardingReason.getInstance(rand.nextInt(3)));
+            ExtForwOptions forwardingOptions2 = new ExtForwOptionsImpl(true, false, false,
+                    ExtForwOptionsForwardingReason.getInstance(rand.nextInt(3)));
+            Integer noReplyConditionTime1 = rand.nextInt(26) + 5;
+            Integer noReplyConditionTime2 = rand.nextInt(26) + 5;
+            FTNAddressString longForwardedToNumber1 = new FTNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710400332");
+            FTNAddressString longForwardedToNumber2 = new FTNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710400335");
+            ExtForwFeature extForwFeature1 = new ExtForwFeatureImpl(bearerServiceCode, ssStatus1, forwardedToNumber1,
+                    forwardedToSubaddress1, forwardingOptions1, noReplyConditionTime1, null, longForwardedToNumber1);
+            ExtForwFeature extForwFeature2 = new ExtForwFeatureImpl(teleServiceCode, ssStatus2, forwardedToNumber2,
+                    forwardedToSubaddress2, forwardingOptions2, noReplyConditionTime2, null, longForwardedToNumber2);
+            ArrayList<ExtForwFeature> forwardingFeatureList = new ArrayList<>();
+            forwardingFeatureList.add(extForwFeature1);
+            forwardingFeatureList.add(extForwFeature2);
+            ExtSSInfoForCSE ssInfoForCSE;
+            Password password;
+            int wrongPasswordAttemptsCounter;
+            ArrayList<ExtCallBarringFeature> callBarringFeatureList = new ArrayList<>();
+            ExtCallBarringFeature callBarringFeature1 = new ExtCallBarringFeatureImpl(bearerServiceCode, ssStatus1, null);
+            ExtCallBarringFeature callBarringFeature2 = new ExtCallBarringFeatureImpl(teleServiceCode, ssStatus2, null);
+            callBarringFeatureList.add(callBarringFeature1);
+            callBarringFeatureList.add(callBarringFeature2);
+            switch (rand.nextInt(4) + 1) {
+                case 1:
+                    password = new PasswordImpl("3412");
+                    wrongPasswordAttemptsCounter = 4;
+                    ExtCallBarringInfoForCSE callBarringInfoForCSE1 = new ExtCallBarringInfoForCSEImpl(ssCode1, callBarringFeatureList, password, wrongPasswordAttemptsCounter,
+                            true, null);
+                    ssInfoForCSE = new ExtSSInfoForCSEImpl(callBarringInfoForCSE1);
+                    break;
+                case 2:
+                    password = new PasswordImpl("3029");
+                    wrongPasswordAttemptsCounter = 3;
+                    ExtCallBarringInfoForCSE callBarringInfoForCSE2 = new ExtCallBarringInfoForCSEImpl(ssCode2, callBarringFeatureList, password, wrongPasswordAttemptsCounter,
+                            true, null);
+                    ssInfoForCSE = new ExtSSInfoForCSEImpl(callBarringInfoForCSE2);
+                    break;
+                case 3:
+                    ExtForwardingInfoForCSE forwardingInfoForCSE1 = new ExtForwardingInfoForCSEImpl(ssCode1, forwardingFeatureList, true, null);
+                    ssInfoForCSE = new ExtSSInfoForCSEImpl(forwardingInfoForCSE1);
+                    break;
+                default:
+                    ExtForwardingInfoForCSE forwardingInfoForCSE2 = new ExtForwardingInfoForCSEImpl(ssCode2, forwardingFeatureList, true, null);
+                    ssInfoForCSE = new ExtSSInfoForCSEImpl(forwardingInfoForCSE2);
+                    break;
+            }
+            OBcsmTriggerDetectionPoint oBcsmTDP = OBcsmTriggerDetectionPoint.routeSelectFailure;
+            long serviceKey = 7L;
+            ISDNAddressString gsmSCFAddress = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491710460029");
+            DefaultCallHandling defaultCallHandling = DefaultCallHandling.continueCall;
+            OBcsmCamelTDPData oBcsmCamelTDPData = new OBcsmCamelTDPDataImpl(oBcsmTDP, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+            ArrayList<OBcsmCamelTDPData> oBcsmCamelTDPDataList = new ArrayList<>();
+            oBcsmCamelTDPDataList.add(oBcsmCamelTDPData);
+            Integer camelCapabilityHandling = 2;
+            boolean notificationToCSE = true;
+            boolean csiActive = true;
+            OCSI oCSI = new OCSIImpl(oBcsmCamelTDPDataList, null, camelCapabilityHandling, notificationToCSE, csiActive);
+            ArrayList<ExtBasicServiceCode> basicServiceGroupList = new ArrayList<>();
+            basicServiceGroupList.add(bearerServiceCode);
+            basicServiceGroupList.add(teleServiceCode);
+            ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = getOBcsmCamelTdpCriteria(oBcsmTDP, basicServiceGroupList);
+            ArrayList<DPAnalysedInfoCriterium> dpAnalysedInfoCriteriaList = new ArrayList<>();
+            ISDNAddressString dialledNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "491714780432");
+            DPAnalysedInfoCriterium dpAnalysedInfoCriterium = new DPAnalysedInfoCriteriumImpl(dialledNumber, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+            dpAnalysedInfoCriteriaList.add(dpAnalysedInfoCriterium);
+            DCSI dCSI = new DCSIImpl(dpAnalysedInfoCriteriaList, camelCapabilityHandling, null, notificationToCSE, csiActive);
+            TBcsmTriggerDetectionPoint tBcsmTriggerDetectionPoint = TBcsmTriggerDetectionPoint.tNoAnswer;
+            ArrayList<CauseValue> tCauseValueCriteria = new ArrayList<>();
+            CauseValue tcv1 = new CauseValueImpl(CauseValueCodeValue.CallRejected);
+            CauseValue tcv2 = new CauseValueImpl(CauseValueCodeValue.BearerCapabilityNotAuthorized);
+            tCauseValueCriteria.add(tcv1);
+            tCauseValueCriteria.add(tcv2);
+            TBcsmCamelTdpCriteria tBcsmCamelTdpCriteria = new TBcsmCamelTdpCriteriaImpl(tBcsmTriggerDetectionPoint, basicServiceGroupList, tCauseValueCriteria);
+            ArrayList<TBcsmCamelTdpCriteria> tBcsmCamelTdpCriteriaList = new ArrayList<>();
+            tBcsmCamelTdpCriteriaList.add(tBcsmCamelTdpCriteria);
+            ArrayList<TBcsmCamelTDPData> tBcsmCamelTDPDataList = new ArrayList<>();
+            TBcsmTriggerDetectionPoint tBcsmTDP1 = TBcsmTriggerDetectionPoint.tNoAnswer;
+            TBcsmTriggerDetectionPoint tBcsmTDP2 = TBcsmTriggerDetectionPoint.tBusy;
+            TBcsmCamelTDPData tBcsmCamelTDPData1 = new TBcsmCamelTDPDataImpl(tBcsmTDP1, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+            TBcsmCamelTDPData tBcsmCamelTDPData2 = new TBcsmCamelTDPDataImpl(tBcsmTDP2, serviceKey, gsmSCFAddress, defaultCallHandling, null);
+            tBcsmCamelTDPDataList.add(tBcsmCamelTDPData1);
+            tBcsmCamelTDPDataList.add(tBcsmCamelTDPData2);
+            TCSI vtCsi = new TCSIImpl(tBcsmCamelTDPDataList, null, camelCapabilityHandling, notificationToCSE, csiActive);
+            CAMELSubscriptionInfo camelSubscriptionInfo = new CAMELSubscriptionInfoImpl(oCSI, oBcsmCamelTDPCriteriaList, dCSI,
+                    null, tBcsmCamelTdpCriteriaList, vtCsi, null, true, true, null, null, null, null, null, null, null,
+                    null, null, null, null, null, null, null);
+            // odbData
+            boolean allOGCallsBarred = false;
+            boolean internationalOGCallsBarred = false;
+            boolean internationalOGCallsNotToHPLMNCountryBarred = false;
+            boolean premiumRateInformationOGCallsBarred = true;
+            boolean premiumRateEntertainmentOGCallsBarred = true;
+            boolean ssAccessBarred = true;
+            boolean interzonalOGCallsBarred = false;
+            boolean interzonalOGCallsNotToHPLMNCountryBarred = false;
+            boolean interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred = false;
+            boolean allECTBarred = false;
+            boolean chargeableECTBarred = false;
+            boolean internationalECTBarred = false;
+            boolean interzonalECTBarred = false;
+            boolean doublyChargeableECTBarred = true;
+            boolean multipleECTBarred = true;
+            boolean allPacketOrientedServicesBarred = false;
+            boolean roamerAccessToHPLMNAPBarred = false;
+            boolean roamerAccessToVPLMNAPBarred = true;
+            boolean roamingOutsidePLMNOGCallsBarred = false;
+            boolean allICCallsBarred = false;
+            boolean roamingOutsidePLMNICCallsBarred = true;
+            boolean roamingOutsidePLMNICountryICCallsBarred = false;
+            boolean roamingOutsidePLMNBarred = false;
+            boolean roamingOutsidePLMNCountryBarred = false;
+            boolean registrationAllCFBarred = true;
+            boolean registrationCFNotToHPLMNBarred = true;
+            boolean registrationInterzonalCFBarred = true;
+            boolean registrationInterzonalCFNotToHPLMNBarred = true;
+            boolean registrationInternationalCFBarred = true;
+            ODBGeneralData oDBGeneralData = new ODBGeneralDataImpl(allOGCallsBarred, internationalOGCallsBarred, internationalOGCallsNotToHPLMNCountryBarred,
+                    premiumRateInformationOGCallsBarred, premiumRateEntertainmentOGCallsBarred, ssAccessBarred,
+                    interzonalOGCallsBarred, interzonalOGCallsNotToHPLMNCountryBarred, interzonalOGCallsAndInternationalOGCallsNotToHPLMNCountryBarred,
+                    allECTBarred, chargeableECTBarred, internationalECTBarred, interzonalECTBarred,
+                    doublyChargeableECTBarred, multipleECTBarred, allPacketOrientedServicesBarred, roamerAccessToHPLMNAPBarred, roamerAccessToVPLMNAPBarred,
+                    roamingOutsidePLMNOGCallsBarred, allICCallsBarred, roamingOutsidePLMNICCallsBarred,
+                    roamingOutsidePLMNICountryICCallsBarred, roamingOutsidePLMNBarred, roamingOutsidePLMNCountryBarred,
+                    registrationAllCFBarred, registrationCFNotToHPLMNBarred, registrationInterzonalCFBarred,
+                    registrationInterzonalCFNotToHPLMNBarred, registrationInternationalCFBarred);
+            boolean plmnSpecificBarringType1 = true;
+            boolean plmnSpecificBarringType2 = false;
+            boolean plmnSpecificBarringType3 = false;
+            boolean plmnSpecificBarringType4 = false;
+            ODBHPLMNData odbHplmnData = new ODBHPLMNDataImpl(plmnSpecificBarringType1, plmnSpecificBarringType2, plmnSpecificBarringType3, plmnSpecificBarringType4);
+            ODBData odbData = new ODBDataImpl(oDBGeneralData, odbHplmnData, null);
+            ODBInfo odbInfo = new ODBInfoImpl(odbData, true, null);
+            ExtCwFeature cwFeature1 = new ExtCwFeatureImpl(bearerServiceCode, ssStatus1);
+            ExtCwFeature cwFeature2 = new ExtCwFeatureImpl(teleServiceCode, ssStatus2);
+            ArrayList<ExtCwFeature> cwFeatureList = new ArrayList<>();
+            cwFeatureList.add(cwFeature1);
+            cwFeatureList.add(cwFeature2);
+            CallWaitingData cwData = new CallWaitingDataImpl(cwFeatureList, true);
+            CallHoldData chData = new CallHoldDataImpl(ssStatus1, true);
+            ClipData clipData = new ClipDataImpl(ssStatus2, OverrideCategory.overrideEnabled, true);
+            ClirData clirData = new ClirDataImpl(ssStatus1, CliRestrictionOption.temporaryDefaultAllowed, true);
+            EctData ectData = new EctDataImpl(ssStatus1, true);
+            AddressString serviceCentreAddress = mapProvider.getMAPParameterFactory()
+                    .createAddressString(AddressNature.international_number, NumberingPlan.ISDN, "491710400021");
+
+            mapDialogMobility.addAnyTimeModificationResponse(invokeId, ssInfoForCSE, camelSubscriptionInfo, null,
+                    odbInfo, cwData, chData, clipData, clirData, ectData, serviceCentreAddress);
+
+            mapDialogMobility.close(false);
+
+        } catch (MAPException e) {
+            logger.error("Error while processing AnyTimeModificationResponse ", e);
+        }
+    }
+
+    @Override
+    public void onAnyTimeModificationResponse(AnyTimeModificationResponse anyTimeModificationResponse) {
 
     }
 
@@ -2413,7 +2625,7 @@ public class Server extends TestHarnessMobilityManagement {
             case 36:
                 bearerServiceCodeValue = BearerServiceCodeValue.allSynchronousServices;
                 break;
-            case 37:
+            /*case 37:
                 bearerServiceCodeValue = BearerServiceCodeValue.allPLMN_specificBS;
                 break;
             case 38:
@@ -2457,7 +2669,7 @@ public class Server extends TestHarnessMobilityManagement {
                 break;
             case 51:
                 bearerServiceCodeValue = BearerServiceCodeValue.plmn_specificBS_F;
-                break;
+                break;*/
             default:
                 bearerServiceCodeValue = BearerServiceCodeValue.allBearerServices;
                 break;
@@ -2517,7 +2729,7 @@ public class Server extends TestHarnessMobilityManagement {
             case 17:
                 teleserviceCodeValue = TeleserviceCodeValue.voiceBroadcastCall;
                 break;
-            case 18:
+            /*case 18:
                 teleserviceCodeValue = TeleserviceCodeValue.allPLMN_specificTS;
                 break;
             case 19:
@@ -2567,7 +2779,9 @@ public class Server extends TestHarnessMobilityManagement {
                 break;
             default:
                 teleserviceCodeValue = TeleserviceCodeValue.allTeleservices;
-                break;
+                break;*/
+            default:
+                teleserviceCodeValue = TeleserviceCodeValue.allTeleservices;
         }
         return teleserviceCodeValue;
     }
@@ -2744,7 +2958,7 @@ public class Server extends TestHarnessMobilityManagement {
             case 56:
                 supplementaryCodeValue = SupplementaryCodeValue.transferToThirdParty;
                 break;
-            case 57:
+            /*case 57:
                 supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_1;
                 break;
             case 58:
@@ -2788,7 +3002,7 @@ public class Server extends TestHarnessMobilityManagement {
                 break;
             case 71:
                 supplementaryCodeValue = SupplementaryCodeValue.plmn_specificSS_f;
-                break;
+                break;*/
             default:
                 supplementaryCodeValue = SupplementaryCodeValue.allSS;
                 break;
@@ -2855,7 +3069,7 @@ public class Server extends TestHarnessMobilityManagement {
         ssEventList.add(ssCode2);
         SSCamelData ssCamelData = new SSCamelDataImpl(ssEventList, gsmSCFAddress, null);
         SSCSI ssCsi = new SSCSIImpl(ssCamelData, null, notificationToCSE, csiActive);
-        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = getoBcsmCamelTdpCriteria(oBcsmTDP, basicServiceList, null);
+        ArrayList<OBcsmCamelTdpCriteria> oBcsmCamelTDPCriteriaList = getOBcsmCamelTdpCriteria(oBcsmTDP, basicServiceList);
         boolean tifCsi = true;
         ArrayList<MMCode> mobilityTriggers = new ArrayList<>();
         MMCode mmCode1 = new MMCodeImpl(MMCodeValue.IMSIAttach);

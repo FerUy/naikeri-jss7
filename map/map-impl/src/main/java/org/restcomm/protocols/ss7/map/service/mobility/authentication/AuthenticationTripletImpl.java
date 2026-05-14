@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.authentication;
 
 import java.io.IOException;

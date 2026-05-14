@@ -2,6 +2,7 @@ package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
+
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -10,7 +11,6 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.primitives.OctetStringBase;
 import org.restcomm.protocols.ss7.map.primitives.TbcdString;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 
 /**
@@ -23,7 +23,7 @@ public class NRTAIdImpl extends OctetStringBase implements NRTAId {
     private static final String TAC = "tac";
 
     private static final String DATA = "data";
-    private static final String DEFAULT_VALUE = null;
+    private static final int DEFAULT_INT_VALUE = 0;
     private static final String _PrimitiveName = "NRTrackingAreaId";
 
     public NRTAIdImpl() { super(6,6, _PrimitiveName);}
@@ -173,20 +173,32 @@ public class NRTAIdImpl extends OctetStringBase implements NRTAId {
         return sb.toString();
     }
 
-    protected static final XMLFormat<NRTAIdImpl> NR_TA_ID_XML = new XMLFormat<>(NRTAIdImpl.class) {
+    /**
+     * XML Serialization/Deserialization
+     */
+    protected static final XMLFormat<NRTAIdImpl> TA_ID_5GS_XML = new XMLFormat<>(NRTAIdImpl.class) {
 
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, NRTAIdImpl taId) throws XMLStreamException {
-            String s = xml.getAttribute(DATA, DEFAULT_VALUE);
-            if (s != null) {
-                taId.data = DatatypeConverter.parseHexBinary(s);
+            int mcc = xml.getAttribute(MCC, DEFAULT_INT_VALUE);
+            int mnc = xml.getAttribute(MNC, DEFAULT_INT_VALUE);
+            int tac = xml.getAttribute(TAC, DEFAULT_INT_VALUE);
+
+            try {
+                taId.setData(mcc, mnc, tac);
+            } catch (MAPException e) {
+                throw new XMLStreamException("MAPException when deserializing TrackingAreaId5GSImpl", e);
             }
         }
 
         @Override
         public void write(NRTAIdImpl taId, javolution.xml.XMLFormat.OutputElement xml) throws XMLStreamException {
-            if (taId.data != null) {
-                xml.setAttribute(DATA, DatatypeConverter.printHexBinary(taId.data));
+            try {
+                xml.setAttribute(MCC, taId.getMCC());
+                xml.setAttribute(MNC, taId.getMNC());
+                xml.setAttribute(TAC, taId.getNrTAC());
+            } catch (MAPException e) {
+                throw new XMLStreamException("MAPException when serializing TrackingAreaId5GSImpl", e);
             }
         }
     };

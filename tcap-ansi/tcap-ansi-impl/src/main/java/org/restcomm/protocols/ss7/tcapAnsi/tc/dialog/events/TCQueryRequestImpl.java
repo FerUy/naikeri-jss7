@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcapAnsi.tc.dialog.events;
 
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;

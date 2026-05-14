@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.oam;
 
 import org.restcomm.protocols.ss7.map.api.service.mobility.MobilityMessage;

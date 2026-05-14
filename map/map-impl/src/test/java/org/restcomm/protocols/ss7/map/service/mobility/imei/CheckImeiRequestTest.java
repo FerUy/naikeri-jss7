@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.imei;
 
 import static org.testng.Assert.assertEquals;
@@ -15,20 +14,18 @@ import org.restcomm.protocols.ss7.map.api.primitives.MAPExtensionContainer;
 import org.restcomm.protocols.ss7.map.primitives.IMEIImpl;
 import org.restcomm.protocols.ss7.map.primitives.IMSIImpl;
 import org.restcomm.protocols.ss7.map.primitives.MAPExtensionContainerTest;
-import org.restcomm.protocols.ss7.map.service.mobility.imei.CheckImeiRequestImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.imei.RequestedEquipmentInfoImpl;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author normandes
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com">Fernando Mendioroz</a>
  */
 public class CheckImeiRequestTest {
 
     // Real Trace
     private byte[] getEncodedDataV2() {
-        return new byte[] { 0x04, 0x08, 0x53, 0x08, 0x19, 0x10, (byte) 0x86, 0x35, 0x55, (byte) 0xf0 };
+        return new byte[]{0x04, 0x0a, 0x04, 0x08, 0x53, 0x08, 0x19, 0x10, (byte) 0x86, 0x35, 0x55, (byte) 0xf0};
     }
 
     private byte[] getEncodedDataV3() {
@@ -45,12 +42,12 @@ public class CheckImeiRequestTest {
 
     // Huawei trace with IMSI
     private byte[] getEncodedDataV2_Huawei() {
-        return new byte[] { 0x04, 0x08, 0x53, 0x46, 0x76, 0x40, (byte) 0x94, (byte) 0x98, 0x19, (byte) 0xf0, 0x00, 0x08, 0x27,
+        return new byte[] { 0x04, 0x00, 0x04, 0x08, 0x53, 0x46, 0x76, 0x40, (byte) 0x94, (byte) 0x98, 0x19, (byte) 0xf0, 0x00, 0x08, 0x27,
                 0x34, 0x04, 0x03, 0x30, 0x58, 0x67, (byte) 0xf3 };
     }
 
     private byte[] getEncodedDataImeiLengthLessThan15() {
-        return new byte[] { 4, 1, -15 };
+        return new byte[] { 4, 3, 4, 1, -15 };
     }
 
     @Test(groups = { "functional.decode", "imei" })
@@ -65,7 +62,7 @@ public class CheckImeiRequestTest {
         CheckImeiRequestImpl checkImeiImpl = new CheckImeiRequestImpl(3);
         checkImeiImpl.decodeAll(asnIS);
 
-        assertTrue(checkImeiImpl.getIMEI().getIMEI().equals("358091016853550"));
+        assertEquals(checkImeiImpl.getIMEI().getIMEI(), "358091016853550");
         assertTrue(checkImeiImpl.getRequestedEquipmentInfo().getEquipmentStatus());
         assertFalse(checkImeiImpl.getRequestedEquipmentInfo().getBmuef());
         assertNull(checkImeiImpl.getIMSI());
@@ -80,7 +77,7 @@ public class CheckImeiRequestTest {
         checkImeiImpl = new CheckImeiRequestImpl(3);
         checkImeiImpl.decodeAll(asnIS);
 
-        assertTrue(checkImeiImpl.getIMEI().getIMEI().equals("358091016853550"));
+        assertEquals(checkImeiImpl.getIMEI().getIMEI(), "358091016853550");
         assertTrue(checkImeiImpl.getRequestedEquipmentInfo().getEquipmentStatus());
         assertFalse(checkImeiImpl.getRequestedEquipmentInfo().getBmuef());
         assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(checkImeiImpl.getExtensionContainer()));
@@ -95,7 +92,7 @@ public class CheckImeiRequestTest {
         checkImeiImpl = new CheckImeiRequestImpl(2);
         checkImeiImpl.decodeAll(asnIS);
 
-        assertTrue(checkImeiImpl.getIMEI().getIMEI().equals("358091016853550"));
+        assertEquals(checkImeiImpl.getIMEI().getIMEI(), "358091016853550");
         assertNull(checkImeiImpl.getIMSI());
 
         // Testing version 1 and 2 with Huawei trace
@@ -107,8 +104,8 @@ public class CheckImeiRequestTest {
         checkImeiImpl = new CheckImeiRequestImpl(2);
         checkImeiImpl.decodeAll(asnIS);
 
-        assertTrue(checkImeiImpl.getIMEI().getIMEI().equals("356467044989910"));
-        assertTrue(checkImeiImpl.getIMSI().getData().equals("724340300385763"));
+        assertEquals(checkImeiImpl.getIMEI().getIMEI(), "356467044989910");
+        assertEquals(checkImeiImpl.getIMSI().getData(), "724340300385763");
 
         // Testing IMEI length != 15
         rawData = getEncodedDataImeiLengthLessThan15();
@@ -119,7 +116,7 @@ public class CheckImeiRequestTest {
         checkImeiImpl = new CheckImeiRequestImpl(2);
         checkImeiImpl.decodeAll(asnIS);
 
-        assertTrue(checkImeiImpl.getIMEI().getIMEI().equals("1"));
+        assertEquals(checkImeiImpl.getIMEI().getIMEI(), "1");
         assertNull(checkImeiImpl.getIMSI());
     }
 

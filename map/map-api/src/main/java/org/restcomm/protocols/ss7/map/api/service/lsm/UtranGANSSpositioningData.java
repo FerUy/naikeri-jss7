@@ -1,10 +1,9 @@
-
 package org.restcomm.protocols.ss7.map.api.service.lsm;
 
+import com.google.common.collect.Multimap;
 import org.restcomm.protocols.ss7.map.api.MAPException;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 /**
  <code>
@@ -48,5 +47,15 @@ public interface UtranGANSSpositioningData extends Serializable {
 
     byte[] getData();
 
-    HashMap<String, String> getLocationGeneratedMethodsAndGANSSId() throws MAPException;
+    Multimap<String, String> getUtranGANSSPositioningMethodsAndGANSSIds() throws MAPException;
+
+    Multimap<String, String> getLocationGeneratedMethodsAndGANSSIds() throws MAPException;
+
+    String getUtranGanssPositioningMethod(int code);
+
+    String getGANSSId(int code) throws MAPException;
+
+    String getUsage(byte[] data, int index);
+
+    int getUsageCode(byte[] data, int index);
 }

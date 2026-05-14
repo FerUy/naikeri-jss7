@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -11,7 +10,6 @@ Ext-SS-InfoFor-CSE ::= CHOICE {
   callBarringInfoFor-CSE  [1] Ext-CallBarringInfoFor-CSE
 }
 </code>
- *
  *
  * @author sergey vetyutnev
  *

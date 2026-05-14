@@ -1,10 +1,11 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl.router;
 
 import javolution.xml.XMLBinding;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.GlobalTitleIndicator;
 import org.restcomm.protocols.ss7.indicator.NatureOfAddress;
 import org.restcomm.protocols.ss7.indicator.NumberingPlan;
@@ -21,7 +22,6 @@ import org.restcomm.protocols.ss7.sccp.parameter.GlobalTitle0100;
 import org.restcomm.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
 import org.restcomm.protocols.ss7.sccpext.impl.SccpExtModuleImpl;
-import org.restcomm.protocols.ss7.sccpext.impl.router.RuleImpl;
 import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterface;
 import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterfaceImpl;
 import org.testng.annotations.AfterClass;
@@ -44,6 +44,9 @@ import static org.testng.Assert.assertTrue;
  * @author kulikov
  */
 public class RuleTest {
+
+    private static final Logger logger = LogManager.getLogger(RuleTest.class.getName());
+
     private static final String RULE = "1;pattern(ROUTING_BASED_ON_GLOBAL_TITLE#tt= #np= #noa=NATIONAL#digits=9023629581#ssn= #dpc=0#dpcProhibited=false);translation(ROUTING_BASED_ON_GLOBAL_TITLE#tt= #np= #noa=INTERNATIONAL#digits=79023629581#ssn= #dpc=345#dpcProhibited=false);\n";
     ParameterFactory factory = new ParameterFactoryImpl();
     XMLBinding binding = new XMLBinding();
@@ -482,7 +485,7 @@ public class RuleTest {
         writer.write(rule, "Rule", RuleImpl.class);
         writer.close();
 
-        System.out.println(output.toString());
+        logger.info(output);
 
         ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
         XMLObjectReader reader = XMLObjectReader.newInstance(input);
@@ -492,12 +495,12 @@ public class RuleTest {
         assertEquals(aiOut.getRuleType(), RuleType.SOLITARY);
         assertEquals(aiOut.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
         assertEquals(aiOut.getOriginationType(), OriginationType.ALL);
-        assertTrue(aiOut.getPattern().getGlobalTitle().getDigits().equals("441425/*"));
-        assertTrue(aiOut.getMask().equals("R/K"));
+        assertEquals(aiOut.getPattern().getGlobalTitle().getDigits(), "441425/*");
+        assertEquals(aiOut.getMask(), "R/K");
         assertEquals(aiOut.getPrimaryAddressId(), 1);
         assertEquals(aiOut.getSecondaryAddressId(), 0);
         assertNull(aiOut.getNewCallingPartyAddressId());
-        assertTrue( aiOut.getPatternCallingAddress().getGlobalTitle().getDigits().equals( "5678/92") );
+        assertEquals(aiOut.getPatternCallingAddress().getGlobalTitle().getDigits(), "5678/92");
 
         rule = new RuleImpl(RuleType.BROADCAST, LoadSharingAlgorithm.Bit2, OriginationType.LOCAL, pattern, "R/K", 0, patternDefaultCalling);
         rule.setPrimaryAddressId(11);
@@ -512,7 +515,7 @@ public class RuleTest {
         writer.write(rule, "Rule", RuleImpl.class);
         writer.close();
 
-        System.out.println(output.toString());
+        logger.info(output);
 
         input = new ByteArrayInputStream(output.toByteArray());
         reader = XMLObjectReader.newInstance(input);
@@ -522,12 +525,12 @@ public class RuleTest {
         assertEquals(aiOut.getRuleType(), RuleType.BROADCAST);
         assertEquals(aiOut.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Bit2);
         assertEquals(aiOut.getOriginationType(), OriginationType.LOCAL);
-        assertTrue(aiOut.getPattern().getGlobalTitle().getDigits().equals("441425/*"));
-        assertTrue(aiOut.getMask().equals("R/K"));
+        assertEquals(aiOut.getPattern().getGlobalTitle().getDigits(), "441425/*");
+        assertEquals(aiOut.getMask(), "R/K");
         assertEquals(aiOut.getPrimaryAddressId(), 11);
         assertEquals(aiOut.getSecondaryAddressId(), 12);
         assertEquals((int) aiOut.getNewCallingPartyAddressId(), 13);
-        assertTrue( aiOut.getPatternCallingAddress().getGlobalTitle().getDigits().equals( "5678/92") );
+        assertEquals(aiOut.getPatternCallingAddress().getGlobalTitle().getDigits(), "5678/92");
 
     }
 
@@ -548,7 +551,7 @@ public class RuleTest {
         writer.write(rule, "Rule", RuleImpl.class);
         writer.close();
 
-        System.out.println(output.toString());
+        logger.info(output);
 
         ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
         XMLObjectReader reader = XMLObjectReader.newInstance(input);
@@ -558,8 +561,8 @@ public class RuleTest {
         assertEquals(aiOut.getRuleType(), RuleType.SOLITARY);
         assertEquals(aiOut.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
         assertEquals(aiOut.getOriginationType(), OriginationType.ALL);
-        assertTrue(aiOut.getPattern().getGlobalTitle().getDigits().equals("441425/*"));
-        assertTrue(aiOut.getMask().equals("R/K"));
+        assertEquals(aiOut.getPattern().getGlobalTitle().getDigits(), "441425/*");
+        assertEquals(aiOut.getMask(), "R/K");
         assertEquals(aiOut.getPrimaryAddressId(), 1);
         assertEquals(aiOut.getSecondaryAddressId(), 0);
         assertNull(aiOut.getNewCallingPartyAddressId());
@@ -578,7 +581,7 @@ public class RuleTest {
         writer.write(rule, "Rule", RuleImpl.class);
         writer.close();
 
-        System.out.println(output.toString());
+        logger.info(output);
 
         input = new ByteArrayInputStream(output.toByteArray());
         reader = XMLObjectReader.newInstance(input);
@@ -588,8 +591,8 @@ public class RuleTest {
         assertEquals(aiOut.getRuleType(), RuleType.BROADCAST);
         assertEquals(aiOut.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Bit2);
         assertEquals(aiOut.getOriginationType(), OriginationType.LOCAL);
-        assertTrue(aiOut.getPattern().getGlobalTitle().getDigits().equals("441425/*"));
-        assertTrue(aiOut.getMask().equals("R/K"));
+        assertEquals(aiOut.getPattern().getGlobalTitle().getDigits(), "441425/*");
+        assertEquals(aiOut.getMask(), "R/K");
         assertEquals(aiOut.getPrimaryAddressId(), 11);
         assertEquals(aiOut.getSecondaryAddressId(), 12);
         assertEquals((int) aiOut.getNewCallingPartyAddressId(), 13);
@@ -611,7 +614,7 @@ public class RuleTest {
         rule.setPrimaryAddressId(1);
         rule.setSecondaryAddressId(2);
 
-        System.out.println(rule.toString());
+        logger.info(rule);
 
         // assertEquals( rule.toString(),RULE);
     }

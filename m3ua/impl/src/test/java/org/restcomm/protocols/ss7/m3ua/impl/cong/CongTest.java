@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl.cong;
 
 import static org.testng.Assert.assertNotNull;
@@ -22,9 +21,10 @@ public class CongTest {
 
     @Test
     public void MemoryCongestionMonitorTest() throws Exception {
-//        CongestionTicketImpl tik = new CongestionTicketImpl("QQQQ", 3);
-//        tik.setAttribute("a1", "vv1");
-//        tik.setAttribute("a2", null);
+
+        //        CongestionTicketImpl tik = new CongestionTicketImpl("QQQQ", 3);
+        //        tik.setAttribute("a1", "vv1");
+        //        tik.setAttribute("a2", null);
 
 
         TestCongestionMonitor monitor = new TestCongestionMonitor();
@@ -92,7 +92,7 @@ public class CongTest {
         assertEquals(listener.lstFinish.size(), 0);
     }
 
-    class TestCongestionMonitor extends BaseCongestionMonitor {
+    static class TestCongestionMonitor extends BaseCongestionMonitor {
         protected double[] alarmThreshold = new double[] { 5, 50, 500 };
         protected double[] backToNormalMemoryThreshold = new double[] { 2, 20, 200 };
         protected double testValue = 0;
@@ -129,10 +129,10 @@ public class CongTest {
         }
     }
 
-    class CongestionListenerProxy implements CongestionListener {
+    static class CongestionListenerProxy implements CongestionListener {
 
-        public ArrayList<CongestionTicket> lstCong = new ArrayList<CongestionTicket>();
-        public ArrayList<CongestionTicket> lstFinish = new ArrayList<CongestionTicket>();
+        public ArrayList<CongestionTicket> lstCong = new ArrayList<>();
+        public ArrayList<CongestionTicket> lstFinish = new ArrayList<>();
 
         @Override
         public void onCongestionStart(CongestionTicket ticket) {

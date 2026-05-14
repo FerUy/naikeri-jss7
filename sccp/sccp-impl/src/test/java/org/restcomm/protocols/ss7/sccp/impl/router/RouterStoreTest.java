@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.router;
 
 import static org.testng.Assert.assertEquals;
@@ -8,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.LongMessageRule;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.Mtp3Destination;
@@ -22,6 +23,8 @@ import org.testng.annotations.Test;
 *
 */
 public class RouterStoreTest {
+
+    private static final Logger logger = LogManager.getLogger(RouterStoreTest.class.getName());
 
     @Test
     public void testVer4() throws Exception {
@@ -47,7 +50,7 @@ public class RouterStoreTest {
 
         String fn = generatePath(name, "3");
         String content = new String(Files.readAllBytes(Paths.get(fn)));
-        System.out.println(content);
+        logger.info(content);
 
         router.removeAllResources();
         Files.write(Paths.get(fn), content.getBytes());
@@ -73,36 +76,34 @@ public class RouterStoreTest {
         router.start();
         router.removeAllResources();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
-        sb.append("<rule>\n");
-        sb.append("  <id value=\"3\"/>\n");
-        sb.append("  <value ruleType=\"Solitary\" loadSharingAlgo=\"Undefined\" originatingType=\"LocalOriginated\" mask=\"K\" paddress=\"1\" saddress=\"-1\" networkId=\"11\">\n");
-        sb.append("        <patternSccpAddress pc=\"0\" ssn=\"8\">\n");
-        sb.append("            <ai value=\"82\"/>\n");
-        sb.append("            <gt type=\"GT0100\" tt=\"0\" es=\"2\" np=\"1\" nai=\"4\" digits=\"888888\"/>\n");
-        sb.append("        </patternSccpAddress>\n");
-        sb.append("    </value>\n");
-        sb.append("    <id value=\"1\"/>\n");
-        sb.append("</rule>\n");
-        sb.append("<routingAddress>\n");
-        sb.append("    <id value=\"1\"/>\n");
-        sb.append("    <sccpAddress pc=\"1\" ssn=\"8\">\n");
-        sb.append("        <ai value=\"83\"/>\n");
-        sb.append("        <gt type=\"GT0100\" tt=\"0\" es=\"2\" np=\"1\" nai=\"4\" digits=\"000.\"/>\n");
-        sb.append("    </sccpAddress>\n");
-        sb.append("</routingAddress>\n");
-        sb.append("<longMessageRule/>\n");
-        sb.append("<sap>\n");
-        sb.append("    <id value=\"1\"/>\n");
-        sb.append("    <value mtp3Id=\"1\" opc=\"11\" ni=\"2\" networkId=\"11\">\n");
-        sb.append("        <mtp3DestinationMap>\n");
-        sb.append("            <id value=\"2\"/>\n");
-        sb.append("            <value firstDpc=\"1\" lastDpc=\"102\" firstSls=\"0\" lastSls=\"255\" slsMask=\"255\"/>\n");
-        sb.append("        </mtp3DestinationMap>\n");
-        sb.append("    </value>\n");
-        sb.append("</sap>;\n");
-        String content = sb.toString();
+        String content = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
+                "<rule>\n" +
+                "  <id value=\"3\"/>\n" +
+                "  <value ruleType=\"Solitary\" loadSharingAlgo=\"Undefined\" originatingType=\"LocalOriginated\" mask=\"K\" paddress=\"1\" saddress=\"-1\" networkId=\"11\">\n" +
+                "        <patternSccpAddress pc=\"0\" ssn=\"8\">\n" +
+                "            <ai value=\"82\"/>\n" +
+                "            <gt type=\"GT0100\" tt=\"0\" es=\"2\" np=\"1\" nai=\"4\" digits=\"888888\"/>\n" +
+                "        </patternSccpAddress>\n" +
+                "    </value>\n" +
+                "    <id value=\"1\"/>\n" +
+                "</rule>\n" +
+                "<routingAddress>\n" +
+                "    <id value=\"1\"/>\n" +
+                "    <sccpAddress pc=\"1\" ssn=\"8\">\n" +
+                "        <ai value=\"83\"/>\n" +
+                "        <gt type=\"GT0100\" tt=\"0\" es=\"2\" np=\"1\" nai=\"4\" digits=\"000.\"/>\n" +
+                "    </sccpAddress>\n" +
+                "</routingAddress>\n" +
+                "<longMessageRule/>\n" +
+                "<sap>\n" +
+                "    <id value=\"1\"/>\n" +
+                "    <value mtp3Id=\"1\" opc=\"11\" ni=\"2\" networkId=\"11\">\n" +
+                "        <mtp3DestinationMap>\n" +
+                "            <id value=\"2\"/>\n" +
+                "            <value firstDpc=\"1\" lastDpc=\"102\" firstSls=\"0\" lastSls=\"255\" slsMask=\"255\"/>\n" +
+                "        </mtp3DestinationMap>\n" +
+                "    </value>\n" +
+                "</sap>;\n";
 
         String fn2 = generatePath(name, "2");
         String fn3 = generatePath(name, "3");
@@ -120,10 +121,8 @@ public class RouterStoreTest {
     }
 
     private String generatePath(String name, String ver) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(System.getProperty("user.dir")).append(File.separator).append(name).append("_").append("sccprouter")
-                .append(ver).append(".xml");
-        return sb.toString();
+        return System.getProperty("user.dir") + File.separator + name + "_" + "sccprouter" +
+                ver + ".xml";
     }
 
 }

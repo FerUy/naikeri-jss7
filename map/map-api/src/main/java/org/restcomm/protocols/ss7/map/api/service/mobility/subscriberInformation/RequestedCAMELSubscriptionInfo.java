@@ -1,11 +1,20 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 /**
  *
- RequestedCAMEL-SubscriptionInfo ::= ENUMERATED { o-CSI (0), t-CSI (1), vt-CSI (2), tif-CSI (3), gprs-CSI (4), mo-sms-CSI (5),
- * ss-CSI (6), m-CSI (7), d-csi (8)}
- *
+ <code>
+ RequestedCAMEL-SubscriptionInfo ::= ENUMERATED {
+ o-CSI      (0),
+ t-CSI      (1),
+ vt-CSI     (2),
+ tif-CSI    (3),
+ gprs-CSI   (4),
+ mo-sms-CSI (5),
+ ss-CSI     (6),
+ m-CSI      (7),
+ d-csi      (8)
+ }
+ </code>
  *
  * @author sergey vetyutnev
  *
@@ -16,7 +25,7 @@ public enum RequestedCAMELSubscriptionInfo {
 
     private int code;
 
-    private RequestedCAMELSubscriptionInfo(int code) {
+    RequestedCAMELSubscriptionInfo(int code) {
         this.code = code;
     }
 

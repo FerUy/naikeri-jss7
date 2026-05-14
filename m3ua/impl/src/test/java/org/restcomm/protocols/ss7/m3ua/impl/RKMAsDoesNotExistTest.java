@@ -1,11 +1,9 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
 import static org.testng.Assert.assertEquals;
-import javolution.util.FastList;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.Management;
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
@@ -49,7 +47,7 @@ import com.sun.nio.sctp.SctpChannel;
 @SuppressWarnings("restriction")
 public class RKMAsDoesNotExistTest {
 
-    private static final Logger logger = Logger.getLogger(RKMAsDoesNotExistTest.class);
+    private static final Logger logger = LogManager.getLogger(RKMAsDoesNotExistTest.class);
     
     private MessageFactoryImpl messageFactory = new MessageFactoryImpl();
     private ParameterFactoryImpl parmFactory = new ParameterFactoryImpl();
@@ -175,7 +173,7 @@ public class RKMAsDoesNotExistTest {
                 ipChannelType = IpChannelType.SCTP;
 
             clientSctpManagement.addAssociation(CLIENT_HOST, CLIENT_PORT, SERVER_HOST, SERVER_PORT, CLIENT_ASSOCIATION_NAME,ipChannelType, null);
-            RoutingContext rc = factory.createRoutingContext(new long[] { 100l });
+            RoutingContext rc = factory.createRoutingContext(new long[] { 100 });
             TrafficModeType trafficModeType = factory.createTrafficModeType(TrafficModeType.Loadshare);
             localAs = (AsImpl) clientM3uaMgmt.createAs("client-testas", Functionality.IPSP, ExchangeType.SE, IPSPType.CLIENT, rc, trafficModeType, 1, null);
             localAspFactory = (AspFactoryImpl) clientM3uaMgmt.createAspFactory("client-testasp", CLIENT_ASSOCIATION_NAME, false);
@@ -232,7 +230,7 @@ public class RKMAsDoesNotExistTest {
             serverSctpManagement.addServer(SERVER_NAME, SERVER_HOST, SERVER_PORT, ipChannelType, null);
             serverSctpManagement.addServerAssociation(CLIENT_HOST, CLIENT_PORT, SERVER_NAME, SERVER_ASSOCIATION_NAME, ipChannelType);
             serverSctpManagement.startServer(SERVER_NAME);
-            RoutingContext rc = factory.createRoutingContext(new long[] { 100l });
+            RoutingContext rc = factory.createRoutingContext(new long[] { 100 });
             TrafficModeType trafficModeType = factory.createTrafficModeType(TrafficModeType.Loadshare);
             remAs = (AsImpl) serverM3uaMgmt.createAs("server-testas", Functionality.IPSP, ExchangeType.SE, IPSPType.SERVER, rc,
                     trafficModeType, 1, null);

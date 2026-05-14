@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.tcap;
 
 import static org.testng.Assert.*;
@@ -7,11 +6,12 @@ import java.util.Map;
 
 import javolution.util.FastMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.sccp.impl.SccpHarness;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
 import org.restcomm.protocols.ss7.statistics.api.LongValue;
-import org.restcomm.protocols.ss7.tcap.TCAPStackImpl;
 import org.restcomm.protocols.ss7.tcap.api.ComponentPrimitiveFactory;
 import org.restcomm.protocols.ss7.tcap.api.TCAPCounterProvider;
 import org.restcomm.protocols.ss7.tcap.api.TCListener;
@@ -49,6 +49,9 @@ import org.testng.annotations.Test;
  *
  */
 public class TCAPStatTest extends SccpHarness {
+
+    private static final Logger logger = LogManager.getLogger(TCAPStatTest.class.getName());
+
     public static final long WAIT_TIME = 500;
     private static final int _WAIT_TIMEOUT = 90000;
     private static final int _WAIT_REMOVE = 30000;
@@ -56,11 +59,8 @@ public class TCAPStatTest extends SccpHarness {
     public static final long[] _ACN_ = new long[] { 0, 4, 0, 0, 1, 0, 19, 2 };
     private TCAPStackImpl tcapStack1;
     private TCAPStackImpl tcapStack2;
-    private SccpAddress peer1Address;
-    private SccpAddress peer2Address;
     private Client client;
     private Server server;
-    private TCAPListenerWrapper tcapListenerWrapper;
 
     public TCAPStatTest() {
     }
@@ -69,12 +69,12 @@ public class TCAPStatTest extends SccpHarness {
     public void setUpClass() {
         this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
         this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
-        System.out.println("setUpClass");
+        logger.info("setUpClass");
     }
 
     @AfterClass
     public void tearDownClass() throws Exception {
-        System.out.println("tearDownClass");
+        logger.info("tearDownClass");
     }
 
     /*
@@ -84,16 +84,16 @@ public class TCAPStatTest extends SccpHarness {
      */
     @BeforeMethod
     public void setUp() throws Exception {
-        System.out.println("setUp");
+        logger.info("setUp");
         super.setUp();
 
-        peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
-        peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
+        SccpAddress peer1Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 1, 8);
+        SccpAddress peer2Address = super.parameterFactory.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 2, 8);
 
         this.tcapStack1 = new TCAPStackImpl("TCAPStatTest1", this.sccpProvider1, 8);
         this.tcapStack2 = new TCAPStackImpl("TCAPStatTest2", this.sccpProvider2, 8);
 
-        this.tcapListenerWrapper = new TCAPListenerWrapper();
+        TCAPListenerWrapper tcapListenerWrapper = new TCAPListenerWrapper();
         this.tcapStack1.getProvider().addTCListener(tcapListenerWrapper);
 
         this.tcapStack1.start();
@@ -141,7 +141,7 @@ public class TCAPStatTest extends SccpHarness {
         check2.check(this.tcapStack2.getCounterProvider());
 
         client.sendBegin();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check2.AllRemoteEstablishedDialogsCount++;
         check2.AllEstablishedDialogsCount++;
@@ -153,7 +153,7 @@ public class TCAPStatTest extends SccpHarness {
         check2.check(this.tcapStack2.getCounterProvider());
 
         server.sendContinue();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check2.TcContinueSentCount++;
         check1.TcContinueReceivedCount++;
@@ -165,7 +165,7 @@ public class TCAPStatTest extends SccpHarness {
         check2.check(this.tcapStack2.getCounterProvider());
 
         server.sendContinue();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check2.TcContinueSentCount++;
         check1.TcContinueReceivedCount++;
@@ -177,7 +177,7 @@ public class TCAPStatTest extends SccpHarness {
         check2.check(this.tcapStack2.getCounterProvider());
 
         client.sendEnd(TerminationType.Basic);
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check1.TcEndSentCount++;
         check2.TcEndReceivedCount++;
@@ -202,7 +202,7 @@ public class TCAPStatTest extends SccpHarness {
 
         client.startUniDialog();
         client.sendUni();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check1.TcUniSentCount++;
         check2.TcUniReceivedCount++;
@@ -327,19 +327,19 @@ public class TCAPStatTest extends SccpHarness {
         Invoke invoke = cpFactory.createTCInvokeRequest(InvokeClass.Class1);
         invoke.setInvokeId(client.dialog.getNewInvokeId());
         OperationCode oc = cpFactory.createOperationCode();
-        oc.setLocalOperationCode(new Long(12));
+        oc.setLocalOperationCode(12L);
         invoke.setOperationCode(oc);
         client.dialog.sendComponent(invoke);
 
         invoke = cpFactory.createTCInvokeRequest(InvokeClass.Class1);
         invoke.setInvokeId(client.dialog.getNewInvokeId());
         oc = cpFactory.createOperationCode();
-        oc.setLocalOperationCode(new Long(13));
+        oc.setLocalOperationCode(13L);
         invoke.setOperationCode(oc);
         client.dialog.sendComponent(invoke);
 
         client.sendBegin2();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check1.TcBeginSentCount++;
         check1.InvokeSentCount += 2;
@@ -387,7 +387,7 @@ public class TCAPStatTest extends SccpHarness {
         invoke = cpFactory.createTCInvokeRequest(InvokeClass.Class1);
         invoke.setInvokeId(client.dialog.getNewInvokeId());
         oc = cpFactory.createOperationCode();
-        oc.setLocalOperationCode(new Long(12));
+        oc.setLocalOperationCode(12L);
         invoke.setOperationCode(oc);
         client.dialog.sendComponent(invoke);
         long invokeId1 = invoke.getInvokeId();
@@ -395,13 +395,13 @@ public class TCAPStatTest extends SccpHarness {
         invoke = cpFactory.createTCInvokeRequest(InvokeClass.Class1);
         invoke.setInvokeId(client.dialog.getNewInvokeId());
         oc = cpFactory.createOperationCode();
-        oc.setLocalOperationCode(new Long(14));
+        oc.setLocalOperationCode(14L);
         invoke.setOperationCode(oc);
         client.dialog.sendComponent(invoke);
         long invokeId2 = invoke.getInvokeId();
 
         client.sendBegin2();
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check1.TcBeginSentCount++;
         check1.InvokeSentCount += 2;
@@ -455,7 +455,7 @@ public class TCAPStatTest extends SccpHarness {
         server.dialog.sendComponent(rej);
 
         server.sendContinue2();
-        server.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check2.TcContinueSentCount++;
         check2.ReturnResultSentCount += 1;
@@ -490,7 +490,7 @@ public class TCAPStatTest extends SccpHarness {
         userInformation.setAsn(true);
         userInformation.setEncodeType(new byte[] { 11, 22, 33 });
         client.sendAbort(null, userInformation, null);
-        client.waitFor(WAIT_TIME);
+        EventTestHarness.waitFor(WAIT_TIME);
 
         check1.TcUserAbortSentCount += 1;
         check2.TcUserAbortReceivedCount += 1;
@@ -526,7 +526,7 @@ public class TCAPStatTest extends SccpHarness {
         prov.getMaxDialogsCount(camp);
     }
 
-    class TCAPCounterProviderChecker {
+    static class TCAPCounterProviderChecker {
         public long TcUniReceivedCount;
         public long TcUniSentCount;
         public long TcBeginReceivedCount;
@@ -562,14 +562,14 @@ public class TCAPStatTest extends SccpHarness {
         public long MinDialogsCount;
         public long MaxDialogsCount;
 
-        public FastMap<String, LongValue> IncomingDialogsPerApplicationContextName = new FastMap<String, LongValue>();
-        public FastMap<String, LongValue> OutgoingDialogsPerApplicationContextName = new FastMap<String, LongValue>();
-        public FastMap<String, LongValue> IncomingInvokesPerOperationCode = new FastMap<String, LongValue>();
-        public FastMap<String, LongValue> OutgoingInvokesPerOperationCode = new FastMap<String, LongValue>();
-        public FastMap<String, LongValue> OutgoingErrorsPerErrorCode = new FastMap<String, LongValue>();
-        public FastMap<String, LongValue> IncomingErrorsPerErrorCode = new FastMap<String, LongValue>();
-        public FastMap<String, LongValue> OutgoingRejectPerProblem = new FastMap<String, LongValue>();
-        public FastMap<String, LongValue> IncomingRejectPerProblem = new FastMap<String, LongValue>();
+        public FastMap<String, LongValue> IncomingDialogsPerApplicationContextName = new FastMap<>();
+        public FastMap<String, LongValue> OutgoingDialogsPerApplicationContextName = new FastMap<>();
+        public FastMap<String, LongValue> IncomingInvokesPerOperationCode = new FastMap<>();
+        public FastMap<String, LongValue> OutgoingInvokesPerOperationCode = new FastMap<>();
+        public FastMap<String, LongValue> OutgoingErrorsPerErrorCode = new FastMap<>();
+        public FastMap<String, LongValue> IncomingErrorsPerErrorCode = new FastMap<>();
+        public FastMap<String, LongValue> OutgoingRejectPerProblem = new FastMap<>();
+        public FastMap<String, LongValue> IncomingRejectPerProblem = new FastMap<>();
 
         public void check(TCAPCounterProvider prov) {
             assertEquals(TcUniReceivedCount, prov.getTcUniReceivedCount());
@@ -636,7 +636,7 @@ public class TCAPStatTest extends SccpHarness {
         }
     }
 
-    private class TCAPListenerWrapper implements TCListener {
+    private static class TCAPListenerWrapper implements TCListener {
 
         @Override
         public void onTCUni(TCUniIndication ind) {

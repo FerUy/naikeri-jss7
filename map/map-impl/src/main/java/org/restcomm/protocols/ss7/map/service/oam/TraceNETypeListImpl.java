@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.oam;
 
 import org.restcomm.protocols.ss7.map.api.service.oam.TraceNETypeList;

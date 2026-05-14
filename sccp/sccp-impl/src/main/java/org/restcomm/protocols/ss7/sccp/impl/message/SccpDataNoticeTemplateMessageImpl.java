@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl.message;
 
 import java.io.ByteArrayOutputStream;
@@ -6,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.apache.log4j.Level;import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.sccp.LongMessageRuleType;
 import org.restcomm.protocols.ss7.sccp.SccpProtocolVersion;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
@@ -167,7 +166,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                         throw new IOException("Not enough data in buffer");
                     }
 
-                    int paramCode = 0;
+                    int paramCode;
                     // EOP
                     while ((paramCode = in.read() & 0xFF) != 0) {
                         len = in.read() & 0xff;
@@ -231,7 +230,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                         throw new IOException("Not enough data in buffer");
                     }
 
-                    int paramCode = 0;
+                    int paramCode;
                     // EOP
                     while ((paramCode = in.read() & 0xFF) != 0) {
                         len = in.read() & 0xff;
@@ -260,7 +259,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                 break;
 
             default:
-                throw new ParseException("Uknown optional parameter code: " + code);
+                throw new ParseException("Unknown optional parameter code: " + code);
         }
     }
 
@@ -311,7 +310,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
             if (useShortMessage) {
                 // use UDT / UDTS
                 if (bf.length > availLen) { // message is too long to encode UDT
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isWarnEnabled()) {
                         logger.warn(String.format(
                                 "Failure when sending a UDT message: message is too long. SccpMessageSegment=%s", this));
                     }
@@ -377,7 +376,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                     out.write(this.getSecondParameterData(removeSPC, sccpProtocolVersion));
                     out.write(this.hopCounter.getValue());
 
-                    // we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 4 octests than
+                    // we have 4 pointers, cdp,cnp,data and optional, cdp starts after 4 octets than
                     int len = 4;
                     out.write(len);
 
@@ -419,7 +418,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                 } else {
                     // several segments
                     if (bf.length > availLenXSegm * 16) {
-                        if (logger.isEnabledFor(Level.WARN)) {
+                        if (logger.isWarnEnabled()) {
                             logger.warn(String.format(
                                     "Failure when segmenting a message XUDT: message is too long. SccpMessageSegment=%s", this));
                         }
@@ -438,7 +437,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                         if (this.segmentation == null) {
                             // MTP3 originated message - we may make segmentation
                             // only if incoming message has a "Segmentation" field
-                            if (logger.isEnabledFor(Level.WARN)) {
+                            if (logger.isWarnEnabled()) {
                                 logger.warn(String
                                         .format("Failure when segmenting a message: message is not locally originated but \"segmentation\" field is absent. SccpMessageSegment=%s",
                                                 this));
@@ -459,7 +458,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                         importanceBuf = importance.encode(removeSPC, sccpProtocolVersion);
                     }
 
-                    ArrayList<byte[]> res = new ArrayList<byte[]>();
+                    ArrayList<byte[]> res = new ArrayList<>();
                     for (int num = 0; num < segmCount; num++) {
                         int fst = num * segmLen;
                         int last = fst + segmLen;
@@ -474,7 +473,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                         out.write(this.getSecondParameterData(removeSPC, sccpProtocolVersion));
                         out.write(this.hopCounter.getValue());
 
-                        // we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 4 octests than
+                        // we have 4 pointers, cdp,cnp,data and optional, cdp starts after 4 octets than
                         int len = 4;
                         out.write(len);
 
@@ -534,7 +533,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                         this.segmentation != null, this.importance != null);
                 availLen = maxMtp3UserDataLength - fieldsLenL;
                 if (bf.length > availLen) { // message is too long to encode LUDT
-                    if (logger.isEnabledFor(Level.WARN)) {
+                    if (logger.isWarnEnabled()) {
                         logger.warn(String.format(
                                 "Failure when sending a LUDT message: message is too long. SccpMessageSegment=%s", this));
                     }
@@ -548,7 +547,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
                 out.write(this.getSecondParameterData(removeSPC, sccpProtocolVersion));
                 out.write(this.hopCounter.getValue());
 
-                // we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 8 octests than
+                // we have 4 pointers, cdp,cnp,data and optional, cdp starts after 8 octets than
                 int len = 7;
                 out.write(len & 0xFF);
                 out.write((len >> 8) & 0xFF);

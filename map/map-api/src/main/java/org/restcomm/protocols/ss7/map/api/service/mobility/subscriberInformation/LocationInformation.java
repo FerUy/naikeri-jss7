@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 import java.io.Serializable;
@@ -30,8 +29,8 @@ LocationInformation ::= SEQUENCE {
 -- sai-Present indicates that the cellGlobalIdOrServiceAreaIdOrLAI parameter contains
 -- a Service Area Identity.
 -- currentLocationRetrieved shall be present
--- if the location information were retrieved after a successfull paging.
--- if the locationinformationEPS IE is present then the cellGlobalIdOrServiceAreaIdOrLAI IE,
+-- if the location information were retrieved after a successful paging.
+-- if the locationInformationEPS IE is present then the cellGlobalIdOrServiceAreaIdOrLAI IE,
 -- the ageOfLocationInformation IE, the geographicalInformation IE, the geodeticInformation IE
 -- and the currentLocationRetrieved IE (outside the locationInformationEPS IE) shall be
 -- absent.
@@ -47,7 +46,6 @@ AgeOfLocationInformation ::= INTEGER (0..32767)
 -- value 32767 indicates that the location information is at least
 -- 32767 minutes old
 </code>
- *
  *
  * @author sergey vetyutnev
  *

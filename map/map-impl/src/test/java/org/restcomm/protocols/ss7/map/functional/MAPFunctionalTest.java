@@ -1,9 +1,11 @@
-
 package org.restcomm.protocols.ss7.map.functional;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.BitSetStrictLength;
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
@@ -226,11 +228,8 @@ import org.restcomm.protocols.ss7.map.service.callhandling.RoutingInfoImpl;
 import org.restcomm.protocols.ss7.map.service.callhandling.SendRoutingInformationRequestImpl;
 import org.restcomm.protocols.ss7.map.service.callhandling.SendRoutingInformationResponseImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.authentication.TripletListTest;
-import org.restcomm.protocols.ss7.map.service.mobility.faultRecovery.RestoreDataRequestImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.imei.CheckImeiRequestImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.PurgeMSRequestImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.SendIdentificationRequestImpl;
-import org.restcomm.protocols.ss7.map.service.mobility.locationManagement.UpdateGprsLocationRequestImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation.CAMELSubscriptionInfoImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.InsertSubscriberDataRequestImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.InsertSubscriberDataResponseImpl;
@@ -238,10 +237,8 @@ import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OBcs
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OCSIImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.OfferedCamel4CSIsImpl;
 import org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement.SupportedCamelPhasesImpl;
-import org.restcomm.protocols.ss7.map.service.oam.SendImsiRequestImpl;
 import org.restcomm.protocols.ss7.map.service.sms.SmsSignalInfoImpl;
 import org.restcomm.protocols.ss7.map.service.supplementary.ProcessUnstructuredSSResponseImpl;
-import org.restcomm.protocols.ss7.map.service.supplementary.RegisterSSRequestImpl;
 import org.restcomm.protocols.ss7.sccp.impl.SccpHarness;
 import org.restcomm.protocols.ss7.sccp.impl.parameter.SccpAddressImpl;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
@@ -267,11 +264,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import static org.restcomm.protocols.ss7.sccp.LongMessageRuleType.XUDT_ENABLED;
 import static org.testng.Assert.assertEquals;
@@ -289,7 +286,8 @@ import static org.testng.Assert.fail;
  */
 public class MAPFunctionalTest extends SccpHarness {
 
-    private static Logger logger = Logger.getLogger(MAPFunctionalTest.class);
+    private static final Logger logger = LogManager.getLogger(MAPFunctionalTest.class.getName());
+
     protected static final String USSD_STRING = "*133#";
     protected static final String USSD_MENU = "Select 1)Wallpaper 2)Ringtone 3)Games";
     protected static final String USSD_RESPONSE = "1";
@@ -306,13 +304,12 @@ public class MAPFunctionalTest extends SccpHarness {
 
     @BeforeClass
     public void setUpClass() throws Exception {
-
-        System.out.println("setUpClass");
+        logger.info("setUpClass");
     }
 
     @AfterClass
     public void tearDownClass() throws Exception {
-        System.out.println("tearDownClass");
+        logger.info("tearDownClass");
     }
 
     /*
@@ -323,7 +320,7 @@ public class MAPFunctionalTest extends SccpHarness {
     @BeforeMethod
     public void setUp() throws Exception {
         // this.setupLog4j();
-        System.out.println("setUpTest");
+        logger.info("setUpTest");
 
         this.sccpStack1Name = "MAPFunctionalTestSccpStack1";
         this.sccpStack2Name = "MAPFunctionalTestSccpStack2";
@@ -352,24 +349,19 @@ public class MAPFunctionalTest extends SccpHarness {
 
     @AfterMethod
     public void tearDown() {
-        System.out.println("tearDownTest");
+        logger.info("tearDownTest");
         this.stack1.stop();
         this.stack2.stop();
         super.tearDown();
     }
 
-    private void setupLog4j() {
-
-        InputStream inStreamLog4j = getClass().getResourceAsStream("/log4j.properties");
-
-        Properties propertiesLog4j = new Properties();
-
-        try {
-            propertiesLog4j.load(inStreamLog4j);
-            PropertyConfigurator.configure(propertiesLog4j);
-        } catch (Exception e) {
-            e.printStackTrace();
-            BasicConfigurator.configure();
+    private void setupLog4j() throws URISyntaxException {
+        URL resourcePropertiesUrl = MAPFunctionalTest.class.getResource("/log4j2.properties");
+        if (resourcePropertiesUrl != null){
+            ConfigurationFactory.getInstance().getConfiguration(null, null, resourcePropertiesUrl.toURI());
+        } else {
+            Configurator.initialize(new DefaultConfiguration());
+            Configurator.setRootLevel(Level.INFO);
         }
 
         logger.debug("log4j configured");
@@ -392,18 +384,17 @@ public class MAPFunctionalTest extends SccpHarness {
             private int dialogStep;
 
             @Override
-            public void onUnstructuredSSRequest(UnstructuredSSRequest unstrReqInd) {
-                super.onUnstructuredSSRequest(unstrReqInd);
+            public void onUnstructuredSSRequest(UnstructuredSSRequest unstructuredSSRequest) {
+                super.onUnstructuredSSRequest(unstructuredSSRequest);
 
                 try {
-                    String ussdString = unstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = unstrReqInd.getMSISDNAddressString();
+                    String ussdString = unstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received UnstructuredSSRequestIndication " + ussdString);
 
-                    assertEquals(MAPFunctionalTest.USSD_MENU, ussdString);
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_MENU);
 
-                    MAPDialogSupplementary mapDialog = unstrReqInd.getMAPDialog();
-                    long invokeId = unstrReqInd.getInvokeId();
+                    MAPDialogSupplementary mapDialog = unstructuredSSRequest.getMAPDialog();
+                    long invokeId = unstructuredSSRequest.getInvokeId();
 
                     USSDString ussdStringObj = this.mapParameterFactory.createUSSDString(MAPFunctionalTest.USSD_RESPONSE);
                     mapDialog.addUnstructuredSSResponse(invokeId, new CBSDataCodingSchemeImpl(0x0f), ussdStringObj);
@@ -419,7 +410,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 this.dialogStep++;
                 try {
                     if (this.dialogStep == 1) {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSResponseIndication, null,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSResponseIndication, null,
                                 sequence++));
                         mapDialog.send();
                     }
@@ -439,18 +430,17 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             private int dialogStep;
-            private long processUnstructuredSSRequestInvokeId = 0l;
+            private long processUnstructuredSSRequestInvokeId = 0;
 
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
-                    processUnstructuredSSRequestInvokeId = procUnstrReqInd.getInvokeId();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
+                    processUnstructuredSSRequestInvokeId = processUnstructuredSSRequest.getInvokeId();
                     this.debug("InvokeId =  " + processUnstructuredSSRequestInvokeId);
                     USSDString ussdStringObj = this.mapParameterFactory.createUSSDString(MAPFunctionalTest.USSD_MENU);
                     mapDialog.addUnstructuredSSRequest(new CBSDataCodingSchemeImpl(0x0f), ussdStringObj, null, null);
@@ -461,13 +451,13 @@ public class MAPFunctionalTest extends SccpHarness {
             }
 
             @Override
-            public void onUnstructuredSSResponse(UnstructuredSSResponse unstrResInd) {
-                super.onUnstructuredSSResponse(unstrResInd);
+            public void onUnstructuredSSResponse(UnstructuredSSResponse unstructuredSSResponse) {
+                super.onUnstructuredSSResponse(unstructuredSSResponse);
                 try {
-                    String ussdString = unstrResInd.getUSSDString().getString(null);
+                    String ussdString = unstructuredSSResponse.getUSSDString().getString(null);
                     logger.debug("Received UnstructuredSSResponse " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_RESPONSE, ussdString);
-                    MAPDialogSupplementary mapDialog = unstrResInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_RESPONSE);
+                    MAPDialogSupplementary mapDialog = unstructuredSSResponse.getMAPDialog();
                     USSDString ussdStringObj = this.mapParameterFactory.createUSSDString(MAPFunctionalTest.USSD_FINAL_RESPONSE);
                     mapDialog.addProcessUnstructuredSSResponse(processUnstructuredSSRequestInvokeId,
                             new CBSDataCodingSchemeImpl(0x0f), ussdStringObj);
@@ -490,12 +480,12 @@ public class MAPFunctionalTest extends SccpHarness {
                 this.dialogStep++;
                 try {
                     if (this.dialogStep == 1) {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSRequestIndication, null,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSRequestIndication, null,
                                 sequence++));
                         mapDialog.setExtensionContainer(MAPExtensionContainerTest.GetTestExtensionContainer());
                         mapDialog.send();
                     } else {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication,
                                 null, sequence++));
                         mapDialog.close(false);
                     }
@@ -581,18 +571,17 @@ public class MAPFunctionalTest extends SccpHarness {
             private int dialogStep;
 
             @Override
-            public void onUnstructuredSSRequest(UnstructuredSSRequest unstrReqInd) {
-                super.onUnstructuredSSRequest(unstrReqInd);
+            public void onUnstructuredSSRequest(UnstructuredSSRequest unstructuredSSRequest) {
+                super.onUnstructuredSSRequest(unstructuredSSRequest);
 
                 try {
-                    String ussdString = unstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = unstrReqInd.getMSISDNAddressString();
+                    String ussdString = unstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received UnstructuredSSRequestIndication " + ussdString);
 
-                    assertEquals(MAPFunctionalTest.USSD_MENU, ussdString);
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_MENU);
 
-                    MAPDialogSupplementary mapDialog = unstrReqInd.getMAPDialog();
-                    long invokeId = unstrReqInd.getInvokeId();
+                    MAPDialogSupplementary mapDialog = unstructuredSSRequest.getMAPDialog();
+                    long invokeId = unstructuredSSRequest.getInvokeId();
 
                     USSDString ussdStringObj = this.mapParameterFactory.createUSSDString(MAPFunctionalTest.USSD_RESPONSE);
                     mapDialog.addUnstructuredSSResponse(invokeId, new CBSDataCodingSchemeImpl(0x0f), ussdStringObj);
@@ -608,7 +597,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 this.dialogStep++;
                 try {
                     if (this.dialogStep == 1) {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSResponseIndication, null,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSResponseIndication, null,
                                 sequence++));
                         mapDialog.close(true);
                     }
@@ -628,18 +617,17 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             private int dialogStep;
-            private long processUnstructuredSSRequestInvokeId = 0l;
+            private long processUnstructuredSSRequestInvokeId = 0;
 
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
-                    processUnstructuredSSRequestInvokeId = procUnstrReqInd.getInvokeId();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
+                    processUnstructuredSSRequestInvokeId = processUnstructuredSSRequest.getInvokeId();
                     this.debug("InvokeId =  " + processUnstructuredSSRequestInvokeId);
                     USSDString ussdStringObj = this.mapParameterFactory.createUSSDString(MAPFunctionalTest.USSD_MENU);
                     mapDialog.addUnstructuredSSRequest(new CBSDataCodingSchemeImpl(0x0f), ussdStringObj, null, null);
@@ -650,13 +638,13 @@ public class MAPFunctionalTest extends SccpHarness {
             }
 
             @Override
-            public void onUnstructuredSSResponse(UnstructuredSSResponse unstrResInd) {
-                super.onUnstructuredSSResponse(unstrResInd);
+            public void onUnstructuredSSResponse(UnstructuredSSResponse unstructuredSSResponse) {
+                super.onUnstructuredSSResponse(unstructuredSSResponse);
                 try {
-                    String ussdString = unstrResInd.getUSSDString().getString(null);
+                    String ussdString = unstructuredSSResponse.getUSSDString().getString(null);
                     logger.debug("Received UnstructuredSSResponse " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_RESPONSE, ussdString);
-                    MAPDialogSupplementary mapDialog = unstrResInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_RESPONSE);
+                    MAPDialogSupplementary mapDialog = unstructuredSSResponse.getMAPDialog();
                     USSDString ussdStringObj = this.mapParameterFactory.createUSSDString(MAPFunctionalTest.USSD_FINAL_RESPONSE);
                     mapDialog.addProcessUnstructuredSSResponse(processUnstructuredSSRequestInvokeId,
                             new CBSDataCodingSchemeImpl(0x0f), ussdStringObj);
@@ -679,14 +667,14 @@ public class MAPFunctionalTest extends SccpHarness {
                 this.dialogStep++;
                 try {
                     if (this.dialogStep == 1) {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSRequestIndication, null,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSRequestIndication, null,
                                 sequence++));
                         mapDialog.setExtensionContainer(MAPExtensionContainerTest.GetTestExtensionContainer());
                         mapDialog.send();
 
                         mapDialog.close(true);
 //                    } else {
-//                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication,
+//                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication,
 //                                null, sequence++));
 //                        mapDialog.close(false);
                     }
@@ -770,14 +758,13 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 String ussdString;
                 try {
-                    ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
                 } catch (MAPException e) {
                     this.error("Error while trying to parse ussdString", e);
                     fail("Error while trying to parse ussdString");
@@ -790,7 +777,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 super.onDialogDelimiter(mapDialog);
                 try {
                     mapDialog.setExtensionContainer(MAPExtensionContainerTest.GetTestExtensionContainer());
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.DialogUserAbort, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.DialogUserAbort, null, sequence++));
                     mapDialog.refuse(Reason.invalidDestinationReference);
                 } catch (MAPException e) {
                     this.error("Error while trying to send Refuse", e);
@@ -839,7 +826,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
     /**
      * Server reject a Dialog because ApplicationContextName is not supported (Bad ACN is simulated)
-     * TC-BEGIN + addProcessUnstructuredSSRequest TC-ABORT(Reason=ACN_Not_Supprted) + alternativeApplicationContextName
+     * TC-BEGIN + addProcessUnstructuredSSRequest TC-ABORT(Reason=ACN_Not_Supported) + alternativeApplicationContextName
      */
     @Test(groups = { "functional.flow", "dialog" })
     public void testInvalidApplicationContext() throws Exception {
@@ -890,7 +877,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
     /**
      * User-Abort as a response to TC-CONTINUE by a Client
-     *
+
      * TC-BEGIN + addProcessUnstructuredSSRequest TC-CONTINUE + addUnstructuredSSRequest TC-ABORT(MAP-UserAbortInfo) +
      * ExtensionContainer
      */
@@ -900,16 +887,15 @@ public class MAPFunctionalTest extends SccpHarness {
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
 
             @Override
-            public void onUnstructuredSSRequest(UnstructuredSSRequest unstrReqInd) {
-                super.onUnstructuredSSRequest(unstrReqInd);
+            public void onUnstructuredSSRequest(UnstructuredSSRequest unstructuredSSRequest) {
+                super.onUnstructuredSSRequest(unstructuredSSRequest);
 
                 String ussdString;
                 try {
-                    ussdString = unstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = unstrReqInd.getMSISDNAddressString();
+                    ussdString = unstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received UnstructuredSSRequestIndication " + ussdString);
 
-                    assertEquals(MAPFunctionalTest.USSD_MENU, ussdString);
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_MENU);
                 } catch (MAPException e) {
                     this.error("Error while trying to parse ussdString", e);
                     fail("Error while trying to parse ussdString");
@@ -924,7 +910,7 @@ public class MAPFunctionalTest extends SccpHarness {
                     mapDialog.setExtensionContainer(MAPExtensionContainerTest.GetTestExtensionContainer());
                     MAPUserAbortChoice choice = this.mapParameterFactory.createMAPUserAbortChoice();
                     choice.setProcedureCancellationReason(ProcedureCancellationReason.handoverCancellation);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.DialogUserAbort, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.DialogUserAbort, null, sequence++));
                     mapDialog.abort(choice);
                 } catch (MAPException e) {
                     this.error("Error while trying to send UserAbort", e);
@@ -935,17 +921,16 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
                     USSDString ussdStringObj = this.mapParameterFactory.createUSSDString(MAPFunctionalTest.USSD_MENU);
                     mapDialog.addUnstructuredSSRequest(new CBSDataCodingSchemeImpl(0x0f), ussdStringObj, null, null);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSRequestIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.UnstructuredSSRequestIndication, null,
                             sequence++));
                     mapDialog.send();
                 } catch (MAPException e) {
@@ -960,7 +945,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 super.onDialogUserAbort(mapDialog, userReason, extensionContainer);
                 assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(extensionContainer));
                 assertTrue(userReason.isProcedureCancellationReason());
-                assertEquals(ProcedureCancellationReason.handoverCancellation, userReason.getProcedureCancellationReason());
+                assertEquals(userReason.getProcedureCancellationReason(), ProcedureCancellationReason.handoverCancellation);
                 assertEquals(mapDialog.getTCAPMessageType(), MessageType.Abort);
             }
 
@@ -1097,14 +1082,13 @@ public class MAPFunctionalTest extends SccpHarness {
             }
 
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 String ussdString;
                 try {
-                    ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
                 } catch (MAPException e) {
                     this.error("Error while trying to parse ussdString", e);
                     fail("Error while trying to parse ussdString");
@@ -1115,7 +1099,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.DialogClose, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.DialogClose, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while trying to send empty response for received ProcessUnstructuredSSRequest", e);
@@ -1280,16 +1264,15 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
                     MAPErrorMessage msg = this.mapErrorMessageFactory.createMAPErrorMessageSystemFailure(2, null, null, null);
-                    mapDialog.sendErrorComponent(procUnstrReqInd.getInvokeId(), msg);
+                    mapDialog.sendErrorComponent(processUnstructuredSSRequest.getInvokeId(), msg);
                 } catch (MAPException e) {
                     this.error("Error while trying to add Error Component", e);
                     fail("Error while trying to add Error Component");
@@ -1300,7 +1283,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while trying to send Error Component", e);
@@ -1378,17 +1361,16 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
                     MAPErrorMessage msg = this.mapErrorMessageFactory.createMAPErrorMessageSMDeliveryFailure(3,
                             SMEnumeratedDeliveryFailureCause.scCongestion, null, null);
-                    mapDialog.sendErrorComponent(procUnstrReqInd.getInvokeId(), msg);
+                    mapDialog.sendErrorComponent(processUnstructuredSSRequest.getInvokeId(), msg);
                 } catch (MAPException e) {
                     this.error("Error while trying to add Error Component", e);
                     fail("Error while trying to add Error Component");
@@ -1399,7 +1381,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while trying to send Error Component", e);
@@ -1475,11 +1457,11 @@ public class MAPFunctionalTest extends SccpHarness {
             }
 
             @Override
-            public void onProcessUnstructuredSSResponse(ProcessUnstructuredSSResponse procUnstrResponse) {
-                super.onProcessUnstructuredSSResponse(procUnstrResponse);
+            public void onProcessUnstructuredSSResponse(ProcessUnstructuredSSResponse processUnstructuredSSResponse) {
+                super.onProcessUnstructuredSSResponse(processUnstructuredSSResponse);
                 String ussdString;
                 try {
-                    ussdString = procUnstrResponse.getUSSDString().getString(null);
+                    ussdString = processUnstructuredSSResponse.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
                     responseReceived++;
                     assertEquals(ussdString, "Your balance is 500");
@@ -1499,26 +1481,25 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
 
-            private long processUnstructuredSSRequestInvokeId = 0l;
+            private long processUnstructuredSSRequestInvokeId = 0;
             private int dialogStep;
 
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 String ussdString;
                 try {
-                    ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
                 } catch (MAPException e1) {
                     this.error("Error while trying to parse ussdString", e1);
                     fail("Error while trying to parse ussdString");
                 }
 
-                MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
 
-                processUnstructuredSSRequestInvokeId = procUnstrReqInd.getInvokeId();
+                processUnstructuredSSRequestInvokeId = processUnstructuredSSRequest.getInvokeId();
 
                 ReturnResult returnResult = ((MAPProviderImpl) this.mapProvider).getTCAPProvider()
                         .getComponentPrimitiveFactory().createTCResultRequest();
@@ -1560,11 +1541,11 @@ public class MAPFunctionalTest extends SccpHarness {
                 this.dialogStep++;
                 try {
                     if (this.dialogStep == 1) {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication,
                                 null, sequence++));
                         mapDialog.send();
                     } else {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication,
                                 null, sequence++));
                         USSDString ussdStrObj = this.mapProvider.getMAPParameterFactory().createUSSDString(
                                 "Your balance is 500");
@@ -1664,19 +1645,18 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
 
                     Problem problem = this.mapProvider.getMAPParameterFactory().createProblemInvoke(
                             InvokeProblemType.ResourceLimitation);
 
-                    mapDialog.sendRejectComponent(procUnstrReqInd.getInvokeId(), problem);
+                    mapDialog.sendRejectComponent(processUnstructuredSSRequest.getInvokeId(), problem);
                 } catch (MAPException e) {
                     this.error("Error while trying to send Duplicate InvokeId Component", e);
                     fail("Error while trying to add Duplicate InvokeId Component");
@@ -1687,7 +1667,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while trying to send Error Component", e);
@@ -1766,18 +1746,17 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
                     MAPErrorMessage msg = this.mapErrorMessageFactory.createMAPErrorMessageSMDeliveryFailure(3,
                             SMEnumeratedDeliveryFailureCause.scCongestion, null, null);
 
-                    mapDialog.sendErrorComponent(procUnstrReqInd.getInvokeId(), msg);
+                    mapDialog.sendErrorComponent(processUnstructuredSSRequest.getInvokeId(), msg);
                 } catch (MAPException e) {
                     this.error("Error while trying to add Error Component", e);
                     fail("Error while trying to add Error Component");
@@ -1788,7 +1767,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
                     mapDialog.close(true);
                 } catch (MAPException e) {
                     this.error("Error while trying to send Error Component", e);
@@ -1843,7 +1822,7 @@ public class MAPFunctionalTest extends SccpHarness {
     /**
      * Responses as Reject (ResourceLimitation without invokeId!) component from the Server as a response to
      * ProcessUnstructuredSSRequest
-     *
+
      * TC-BEGIN + addProcessUnstructuredSSRequest TC-END + Reject (invokeProblem-ResourceLimitation) without invokeId! - this
      * Reject is Invoked by MAP-user
      */
@@ -1870,14 +1849,13 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
 
                     Problem problem = this.mapProvider.getMAPParameterFactory().createProblemInvoke(
                             InvokeProblemType.ResourceLimitation);
@@ -1893,7 +1871,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.RejectComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.RejectComponent, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while trying to send Error Component", e);
@@ -1949,7 +1927,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
     /**
      * Rejecting an Invoke with a bad OperationCode==1000
-     *
+
      * TC-BEGIN + Invoke(bad opCode==1000) TC-END + Reject (generalProblem-UnrecognizedOperation) without invokeId!
      */
     @Test(groups = { "functional.flow", "dialog" })
@@ -1970,14 +1948,13 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
                 } catch (MAPException e) {
                     this.error("Error while trying to add Duplicate InvokeId Component", e);
                     fail("Error while trying to add Duplicate InvokeId Component");
@@ -2072,14 +2049,13 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
-                    assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    assertEquals(ussdString, MAPFunctionalTest.USSD_STRING);
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
                 } catch (MAPException e) {
                     this.error("Error while trying to add Duplicate InvokeId Component", e);
                     fail("Error while trying to add Duplicate InvokeId Component");
@@ -2235,37 +2211,34 @@ public class MAPFunctionalTest extends SccpHarness {
                     step++;
                     MAPDialogSms clientDialogSms = (MAPDialogSms) mapDialog;
 
-                    switch (step) {
-                        case 1:
+                    if (step == 1) {
+                        ISDNAddressString msisdn = this.mapParameterFactory.createISDNAddressString(
+                                AddressNature.international_number, NumberingPlan.ISDN, "11223344");
+                        // AddressString serviceCentreAddress =
+                        // this.mapParameterFactory.createAddressString(AddressNature.international_number,
+                        // NumberingPlan.ISDN, "1122334455");
+                        IMSI imsi = this.mapParameterFactory.createIMSI("777222");
+                        LocationInfoWithLMSI locationInfoWithLMSI = this.mapParameterFactory.createLocationInfoWithLMSI(
+                                msisdn, null, null, false, null, null, null, null, null, false, null,
+                                null, null, null, false, false);
+                        clientDialogSms.addSendRoutingInfoForSMResponse(invokeId1, imsi, locationInfoWithLMSI, null, null, null);
 
-                            ISDNAddressString msisdn = this.mapParameterFactory.createISDNAddressString(
-                                    AddressNature.international_number, NumberingPlan.ISDN, "11223344");
-                            // AddressString serviceCentreAddress =
-                            // this.mapParameterFactory.createAddressString(AddressNature.international_number,
-                            // NumberingPlan.ISDN, "1122334455");
-                            IMSI imsi = this.mapParameterFactory.createIMSI("777222");
-                            LocationInfoWithLMSI locationInfoWithLMSI = this.mapParameterFactory.createLocationInfoWithLMSI(
-                                    msisdn, null, null, false, null, null, null, null, null, false, null,
-                                    null, null, null, false, false);
-                            clientDialogSms.addSendRoutingInfoForSMResponse(invokeId1, imsi, locationInfoWithLMSI, null, null, null);
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForSMRespIndication,
+                                null, sequence++));
 
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForSMRespIndication,
-                                    null, sequence++));
+                        imsi = this.mapParameterFactory.createIMSI("777222222");
+                        clientDialogSms.addSendRoutingInfoForSMResponse(invokeId1, imsi, locationInfoWithLMSI, null, null, null);
 
-                            imsi = this.mapParameterFactory.createIMSI("777222222");
-                            clientDialogSms.addSendRoutingInfoForSMResponse(invokeId1, imsi, locationInfoWithLMSI, null, null, null);
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForSMRespIndication,
+                                null, sequence++));
 
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForSMRespIndication,
-                                    null, sequence++));
+                        MAPErrorMessage mapErrorMessage = this.mapErrorMessageFactory.createMAPErrorMessageSystemFailure(3,
+                                NetworkResource.hlr, null, null);
+                        clientDialogSms.sendErrorComponent(invokeId1, mapErrorMessage);
 
-                            MAPErrorMessage mapErrorMessage = this.mapErrorMessageFactory.createMAPErrorMessageSystemFailure(3,
-                                    NetworkResource.hlr, null, null);
-                            clientDialogSms.sendErrorComponent(invokeId1, mapErrorMessage);
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
 
-                            this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
-
-                            mapDialog.send();
-                            break;
+                        mapDialog.send();
                     }
 
                 } catch (MAPException e) {
@@ -2353,9 +2326,9 @@ public class MAPFunctionalTest extends SccpHarness {
     }
 
     /**
-     * Rejecting - an ReturtResult with a bad Parameter (decoding error) ReturtResultProblem.MistypedParameter - an ReturtError
-     * with a bad Parameter (decoding error) ReturtErrorProblem.MistypedParameter - an ReturtError with a bad code
-     * ReturtErrorProblem.UnrecognizedError
+     * Rejecting - an ReturnResult with a bad Parameter (decoding error) ReturnResultProblem.MistypedParameter - an ReturnError
+     * with a bad Parameter (decoding error) ReturnErrorProblem.MistypedParameter - an ReturnError with a bad code
+     * ReturnErrorProblem.UnrecognizedError
 
      * TC-BEGIN + addProcessUnstructuredSSRequest + addProcessUnstructuredSSRequest + addProcessUnstructuredSSRequest
      * TC-CONTINUE + ReturnResultLast with a bad Parameter + ReturnError with a bad Parameter + ReturnError with a bad errorCode
@@ -2418,15 +2391,14 @@ public class MAPFunctionalTest extends SccpHarness {
             private int rejectStep;
 
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest procUnstrReqInd) {
-                super.onProcessUnstructuredSSRequest(procUnstrReqInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
 
                 try {
-                    String ussdString = procUnstrReqInd.getUSSDString().getString(null);
-                    AddressString msisdn = procUnstrReqInd.getMSISDNAddressString();
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     this.debug("Received ProcessUnstructuredSSRequest " + ussdString);
                     assertEquals(MAPFunctionalTest.USSD_STRING, ussdString);
-                    MAPDialogSupplementary mapDialog = procUnstrReqInd.getMAPDialog();
+                    MAPDialogSupplementary mapDialog = processUnstructuredSSRequest.getMAPDialog();
                 } catch (MAPException e) {
                     this.error("Error while trying to add Duplicate InvokeId Component", e);
                     fail("Error while trying to add Duplicate InvokeId Component");
@@ -2435,13 +2407,13 @@ public class MAPFunctionalTest extends SccpHarness {
                 step++;
                 switch (step) {
                     case 1:
-                        invokeId1 = procUnstrReqInd.getInvokeId();
+                        invokeId1 = processUnstructuredSSRequest.getInvokeId();
                         break;
                     case 2:
-                        invokeId2 = procUnstrReqInd.getInvokeId();
+                        invokeId2 = processUnstructuredSSRequest.getInvokeId();
                         break;
                     case 3:
-                        invokeId3 = procUnstrReqInd.getInvokeId();
+                        invokeId3 = processUnstructuredSSRequest.getInvokeId();
                         break;
                 }
             }
@@ -2510,8 +2482,8 @@ public class MAPFunctionalTest extends SccpHarness {
                     rrl.setOperationCode(opCode);
                     ((MAPDialogImpl) mapDialog).getTcapDialog().sendComponent(err);
 
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ErrorComponent, null, sequence++));
 
                     mapDialog.send();
                 } catch (Exception e) {
@@ -2624,12 +2596,12 @@ public class MAPFunctionalTest extends SccpHarness {
             }
 
             @Override
-            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest unstrResInd) {
-                super.onProcessUnstructuredSSRequest(unstrResInd);
+            public void onProcessUnstructuredSSRequest(ProcessUnstructuredSSRequest processUnstructuredSSRequest) {
+                super.onProcessUnstructuredSSRequest(processUnstructuredSSRequest);
                 try {
-                    String ussdString = unstrResInd.getUSSDString().getString(null);
+                    String ussdString = processUnstructuredSSRequest.getUSSDString().getString(null);
                     logger.debug("Received UnstructuredSSResponse " + ussdString);
-                    invokeId = unstrResInd.getInvokeId();
+                    invokeId = processUnstructuredSSRequest.getInvokeId();
                 } catch (MAPException e) {
                     logger.error(e);
                     fail("Error while trying to add ProcessUnstructuredSSResponse");
@@ -2645,14 +2617,14 @@ public class MAPFunctionalTest extends SccpHarness {
                     Thread.sleep(_LITTLE_DELAY);
                 } catch (InterruptedException e1) {
                     // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                    logger.error(e1.getMessage());
                 }
                 try {
                     USSDString ussdStringObj = this.mapParameterFactory.createUSSDString(MAPFunctionalTest.USSD_FINAL_RESPONSE);
                     MAPDialogSupplementary mapDialogSupp = (MAPDialogSupplementary) mapDialog;
                     mapDialogSupp.addProcessUnstructuredSSResponse(invokeId, new CBSDataCodingSchemeImpl(0x0f), ussdStringObj);
 
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ProcessUnstructuredSSResponseIndication, null,
                             sequence++));
 
                     mapDialog.send();
@@ -2812,7 +2784,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -3037,7 +3009,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 try {
                     MAPUserAbortChoice choice = this.mapParameterFactory.createMAPUserAbortChoice();
                     choice.setProcedureCancellationReason(ProcedureCancellationReason.handoverCancellation);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.DialogUserAbort, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.DialogUserAbort, null, sequence++));
                     mapDialog.abort(choice);
                 } catch (MAPException e) {
                     this.error("Error while trying to send Abort", e);
@@ -3049,13 +3021,13 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onForwardShortMessageRequest(ForwardShortMessageRequest forwSmInd) {
-                super.onForwardShortMessageRequest(forwSmInd);
-                MAPDialogSms d = forwSmInd.getMAPDialog();
+            public void onForwardShortMessageRequest(ForwardShortMessageRequest forwardSmInd) {
+                super.onForwardShortMessageRequest(forwardSmInd);
+                MAPDialogSms mapDialogSms = forwardSmInd.getMAPDialog();
 
-                SM_RP_DA sm_RP_DA = forwSmInd.getSM_RP_DA();
-                SM_RP_OA sm_RP_OA = forwSmInd.getSM_RP_OA();
-                SmsSignalInfo sm_RP_UI = forwSmInd.getSM_RP_UI();
+                SM_RP_DA sm_RP_DA = forwardSmInd.getSM_RP_DA();
+                SM_RP_OA sm_RP_OA = forwardSmInd.getSM_RP_OA();
+                SmsSignalInfo sm_RP_UI = forwardSmInd.getSM_RP_UI();
 
                 Assert.assertNotNull(sm_RP_DA);
                 Assert.assertNotNull(sm_RP_DA.getIMSI());
@@ -3067,7 +3039,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 Assert.assertEquals(sm_RP_OA.getMsisdn().getAddress(), "111222333");
                 Assert.assertNotNull(sm_RP_UI);
                 Assert.assertTrue(Arrays.equals(sm_RP_UI.getData(), new byte[] { 21, 22, 23, 24, 25 }));
-                Assert.assertFalse(forwSmInd.getMoreMessagesToSend());
+                Assert.assertFalse(forwardSmInd.getMoreMessagesToSend());
 
             }
 
@@ -3183,7 +3155,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.AlertServiceCentreRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.AlertServiceCentreRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -3249,13 +3221,13 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onForwardShortMessageRequest(ForwardShortMessageRequest forwSmInd) {
-                super.onForwardShortMessageRequest(forwSmInd);
-                MAPDialogSms d = forwSmInd.getMAPDialog();
+            public void onForwardShortMessageRequest(ForwardShortMessageRequest forwardSmInd) {
+                super.onForwardShortMessageRequest(forwardSmInd);
+                MAPDialogSms d = forwardSmInd.getMAPDialog();
 
-                SM_RP_DA sm_RP_DA = forwSmInd.getSM_RP_DA();
-                SM_RP_OA sm_RP_OA = forwSmInd.getSM_RP_OA();
-                SmsSignalInfo sm_RP_UI = forwSmInd.getSM_RP_UI();
+                SM_RP_DA sm_RP_DA = forwardSmInd.getSM_RP_DA();
+                SM_RP_OA sm_RP_OA = forwardSmInd.getSM_RP_OA();
+                SmsSignalInfo sm_RP_UI = forwardSmInd.getSM_RP_UI();
 
                 Assert.assertNotNull(sm_RP_DA);
                 Assert.assertNotNull(sm_RP_DA.getIMSI());
@@ -3267,9 +3239,9 @@ public class MAPFunctionalTest extends SccpHarness {
                 Assert.assertEquals(sm_RP_OA.getMsisdn().getAddress(), "111222333");
                 Assert.assertNotNull(sm_RP_UI);
                 Assert.assertTrue(Arrays.equals(sm_RP_UI.getData(), new byte[] { 21, 22, 23, 24, 25 }));
-                Assert.assertTrue(forwSmInd.getMoreMessagesToSend());
+                Assert.assertTrue(forwardSmInd.getMoreMessagesToSend());
                 try {
-                    d.addForwardShortMessageResponse(forwSmInd.getInvokeId());
+                    d.addForwardShortMessageResponse(forwardSmInd.getInvokeId());
                 } catch (MAPException e) {
                     this.error("Error while adding ForwardShortMessageResponse", e);
                     fail("Error when adding ForwardShortMessageResponse");
@@ -3281,7 +3253,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ForwardShortMessageRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ForwardShortMessageRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -3346,10 +3318,10 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
             @Override
-            public void onMoForwardShortMessageResponse(MoForwardShortMessageResponse moForwSmRespInd) {
-                super.onMoForwardShortMessageResponse(moForwSmRespInd);
-                SmsSignalInfo sm_RP_UI = moForwSmRespInd.getSM_RP_UI();
-                MAPExtensionContainer extensionContainer = moForwSmRespInd.getExtensionContainer();
+            public void onMoForwardShortMessageResponse(MoForwardShortMessageResponse moForwardSmRespInd) {
+                super.onMoForwardShortMessageResponse(moForwardSmRespInd);
+                SmsSignalInfo sm_RP_UI = moForwardSmRespInd.getSM_RP_UI();
+                MAPExtensionContainer extensionContainer = moForwardSmRespInd.getExtensionContainer();
 
                 Assert.assertNotNull(sm_RP_UI);
                 Assert.assertTrue(Arrays.equals(sm_RP_UI.getData(), new byte[] { 21, 22, 23, 24, 25 }));
@@ -3361,15 +3333,15 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwSmInd) {
-                super.onMoForwardShortMessageRequest(moForwSmInd);
-                MAPDialogSms d = moForwSmInd.getMAPDialog();
+            public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwardSmInd) {
+                super.onMoForwardShortMessageRequest(moForwardSmInd);
+                MAPDialogSms d = moForwardSmInd.getMAPDialog();
 
-                SM_RP_DA sm_RP_DA = moForwSmInd.getSM_RP_DA();
-                SM_RP_OA sm_RP_OA = moForwSmInd.getSM_RP_OA();
-                SmsSignalInfo sm_RP_UI = moForwSmInd.getSM_RP_UI();
-                MAPExtensionContainer extensionContainer = moForwSmInd.getExtensionContainer();
-                IMSI imsi2 = moForwSmInd.getIMSI();
+                SM_RP_DA sm_RP_DA = moForwardSmInd.getSM_RP_DA();
+                SM_RP_OA sm_RP_OA = moForwardSmInd.getSM_RP_OA();
+                SmsSignalInfo sm_RP_UI = moForwardSmInd.getSM_RP_UI();
+                MAPExtensionContainer extensionContainer = moForwardSmInd.getExtensionContainer();
+                IMSI imsi2 = moForwardSmInd.getIMSI();
 
                 Assert.assertNotNull(sm_RP_DA);
                 Assert.assertNotNull(sm_RP_DA.getIMSI());
@@ -3407,7 +3379,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
                 SmsSignalInfo sm_RP_UI2 = new SmsSignalInfoImpl(new byte[] { 21, 22, 23, 24, 25 }, null);
                 try {
-                    d.addMoForwardShortMessageResponse(moForwSmInd.getInvokeId(), sm_RP_UI2,
+                    d.addMoForwardShortMessageResponse(moForwardSmInd.getInvokeId(), sm_RP_UI2,
                             MAPExtensionContainerTest.GetTestExtensionContainer());
                 } catch (MAPException e) {
                     this.error("Error while adding MoForwardShortMessageResponse", e);
@@ -3420,7 +3392,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.MoForwardShortMessageRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.MoForwardShortMessageRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -3485,10 +3457,10 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
             @Override
-            public void onMtForwardShortMessageResponse(MtForwardShortMessageResponse mtForwSmRespInd) {
-                super.onMtForwardShortMessageResponse(mtForwSmRespInd);
-                SmsSignalInfo sm_RP_UI = mtForwSmRespInd.getSM_RP_UI();
-                MAPExtensionContainer extensionContainer = mtForwSmRespInd.getExtensionContainer();
+            public void onMtForwardShortMessageResponse(MtForwardShortMessageResponse mtForwardSmRespInd) {
+                super.onMtForwardShortMessageResponse(mtForwardSmRespInd);
+                SmsSignalInfo sm_RP_UI = mtForwardSmRespInd.getSM_RP_UI();
+                MAPExtensionContainer extensionContainer = mtForwardSmRespInd.getExtensionContainer();
 
                 Assert.assertNotNull(sm_RP_UI);
                 Assert.assertTrue(Arrays.equals(sm_RP_UI.getData(), new byte[] { 21, 22, 23, 24, 25 }));
@@ -3500,16 +3472,16 @@ public class MAPFunctionalTest extends SccpHarness {
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
             @Override
-            public void onMtForwardShortMessageRequest(MtForwardShortMessageRequest mtForwSmInd) {
-                super.onMtForwardShortMessageRequest(mtForwSmInd);
+            public void onMtForwardShortMessageRequest(MtForwardShortMessageRequest mtForwardSmInd) {
+                super.onMtForwardShortMessageRequest(mtForwardSmInd);
 
-                MAPDialogSms d = mtForwSmInd.getMAPDialog();
+                MAPDialogSms d = mtForwardSmInd.getMAPDialog();
 
-                SM_RP_DA sm_RP_DA = mtForwSmInd.getSM_RP_DA();
-                SM_RP_OA sm_RP_OA = mtForwSmInd.getSM_RP_OA();
-                SmsSignalInfo sm_RP_UI = mtForwSmInd.getSM_RP_UI();
-                MAPExtensionContainer extensionContainer = mtForwSmInd.getExtensionContainer();
-                boolean moreMessagesToSend = mtForwSmInd.getMoreMessagesToSend();
+                SM_RP_DA sm_RP_DA = mtForwardSmInd.getSM_RP_DA();
+                SM_RP_OA sm_RP_OA = mtForwardSmInd.getSM_RP_OA();
+                SmsSignalInfo sm_RP_UI = mtForwardSmInd.getSM_RP_UI();
+                MAPExtensionContainer extensionContainer = mtForwardSmInd.getExtensionContainer();
+                boolean moreMessagesToSend = mtForwardSmInd.getMoreMessagesToSend();
 
                 Assert.assertNotNull(sm_RP_DA);
                 Assert.assertNotNull(sm_RP_DA.getLMSI());
@@ -3527,7 +3499,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 SmsSignalInfo sm_RP_UI2 = new SmsSignalInfoImpl(new byte[] { 21, 22, 23, 24, 25 }, null);
 
                 try {
-                    d.addMtForwardShortMessageResponse(mtForwSmInd.getInvokeId(), sm_RP_UI2,
+                    d.addMtForwardShortMessageResponse(mtForwardSmInd.getInvokeId(), sm_RP_UI2,
                             MAPExtensionContainerTest.GetTestExtensionContainer());
                 } catch (MAPException e) {
                     this.error("Error while adding MtForwardShortMessageResponse", e);
@@ -3540,7 +3512,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.MtForwardShortMessageRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.MtForwardShortMessageRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -3673,7 +3645,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -3804,7 +3776,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ReportSMDeliveryStatusRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -3978,7 +3950,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForSMRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForSMRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -4189,12 +4161,12 @@ public class MAPFunctionalTest extends SccpHarness {
             MAPApplicationContext appCnt;
             appCnt = MAPApplicationContext.getInstance(MAPApplicationContextName.shortMsgMORelayContext,
                     MAPApplicationContextVersion.version3);
-            AddressString orgiReference = this.mapParameterFactory.createAddressString(AddressNature.international_number,
+            AddressString origReference = this.mapParameterFactory.createAddressString(AddressNature.international_number,
                     NumberingPlan.ISDN, "31628968300");
             AddressString destReference = this.mapParameterFactory.createAddressString(AddressNature.international_number,
                     NumberingPlan.land_mobile, "204208300008002");
 
-            clientDialogSms = this.mapProvider.getMAPServiceSms().createNewDialog(appCnt, this.thisAddress, orgiReference,
+            clientDialogSms = this.mapProvider.getMAPServiceSms().createNewDialog(appCnt, this.thisAddress, origReference,
                     this.remoteAddress, destReference);
             clientDialogSms.setExtensionContainer(MAPExtensionContainerTest.GetTestExtensionContainer());
 
@@ -4222,7 +4194,7 @@ public class MAPFunctionalTest extends SccpHarness {
             if (curMsgLen > maxMsgLen)
                 dlg.cancelInvocation(invokeId);
             else {
-                this.observerdEvents
+                this.observedEvents
                         .add(TestEvent.createSentEvent(EventType.MoForwardShortMessageIndication, null, sequence++));
                 messageIsSent = true;
             }
@@ -4231,10 +4203,10 @@ public class MAPFunctionalTest extends SccpHarness {
         }
 
         @Override
-        public void onMoForwardShortMessageResponse(MoForwardShortMessageResponse moForwSmRespInd) {
-            super.onMoForwardShortMessageResponse(moForwSmRespInd);
-            SmsSignalInfo sm_RP_UI = moForwSmRespInd.getSM_RP_UI();
-            MAPExtensionContainer extensionContainer = moForwSmRespInd.getExtensionContainer();
+        public void onMoForwardShortMessageResponse(MoForwardShortMessageResponse moForwardSmRespInd) {
+            super.onMoForwardShortMessageResponse(moForwardSmRespInd);
+            SmsSignalInfo sm_RP_UI = moForwardSmRespInd.getSM_RP_UI();
+            MAPExtensionContainer extensionContainer = moForwardSmRespInd.getExtensionContainer();
 
             Assert.assertNotNull(sm_RP_UI);
             Assert.assertTrue(Arrays.equals(sm_RP_UI.getData(), new byte[] { 21, 22, 23, 24, 25 }));
@@ -4260,7 +4232,7 @@ public class MAPFunctionalTest extends SccpHarness {
         public void onDialogClose(MAPDialog mapDialog) {
             super.onDialogClose(mapDialog);
         }
-    };
+    }
 
     private class Server_TestMsgLength extends Server {
         Server_TestMsgLength(MAPStack mapStack, MAPFunctionalTest runningTestCase, SccpAddress thisAddress,
@@ -4272,15 +4244,15 @@ public class MAPFunctionalTest extends SccpHarness {
         protected boolean messageIsReceived = false;
 
         @Override
-        public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwSmInd) {
-            super.onMoForwardShortMessageRequest(moForwSmInd);
-            MAPDialogSms d = moForwSmInd.getMAPDialog();
+        public void onMoForwardShortMessageRequest(MoForwardShortMessageRequest moForwardSmInd) {
+            super.onMoForwardShortMessageRequest(moForwardSmInd);
+            MAPDialogSms d = moForwardSmInd.getMAPDialog();
 
-            SM_RP_DA sm_RP_DA = moForwSmInd.getSM_RP_DA();
-            SM_RP_OA sm_RP_OA = moForwSmInd.getSM_RP_OA();
-            SmsSignalInfo sm_RP_UI = moForwSmInd.getSM_RP_UI();
-            MAPExtensionContainer extensionContainer = moForwSmInd.getExtensionContainer();
-            IMSI imsi2 = moForwSmInd.getIMSI();
+            SM_RP_DA sm_RP_DA = moForwardSmInd.getSM_RP_DA();
+            SM_RP_OA sm_RP_OA = moForwardSmInd.getSM_RP_OA();
+            SmsSignalInfo sm_RP_UI = moForwardSmInd.getSM_RP_UI();
+            MAPExtensionContainer extensionContainer = moForwardSmInd.getExtensionContainer();
+            IMSI imsi2 = moForwardSmInd.getIMSI();
 
             Assert.assertNotNull(sm_RP_DA);
             Assert.assertNotNull(sm_RP_DA.getIMSI());
@@ -4298,7 +4270,7 @@ public class MAPFunctionalTest extends SccpHarness {
 
             SmsSignalInfo sm_RP_UI2 = new SmsSignalInfoImpl(new byte[] { 21, 22, 23, 24, 25 }, null);
             try {
-                d.addMoForwardShortMessageResponse(moForwSmInd.getInvokeId(), sm_RP_UI2,
+                d.addMoForwardShortMessageResponse(moForwardSmInd.getInvokeId(), sm_RP_UI2,
                         MAPExtensionContainerTest.GetTestExtensionContainer());
             } catch (MAPException e) {
                 this.error("Error while adding MoForwardShortMessageResponse", e);
@@ -4313,7 +4285,7 @@ public class MAPFunctionalTest extends SccpHarness {
             super.onDialogDelimiter(mapDialog);
             try {
                 if (messageIsReceived) {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.MoForwardShortMessageRespIndication, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.MoForwardShortMessageRespIndication, null,
                             sequence++));
                     mapDialog.close(false);
                 } else
@@ -4323,7 +4295,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 fail("Error while sending the empty ForwardShortMessageResponse");
             }
         }
-    };
+    }
 
     /**
      * TC-BEGIN + sendAuthenticationInfoRequest_V3 TC-END + sendAuthenticationInfoResponse_V3
@@ -4375,7 +4347,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 Assert.assertFalse(ind.getAdditionalVectorsAreForEPS());
                 Assert.assertFalse(ind.getUeUsageTypeRequestIndication());
 
-                ArrayList<AuthenticationTriplet> authenticationTriplets = new ArrayList<AuthenticationTriplet>();
+                ArrayList<AuthenticationTriplet> authenticationTriplets = new ArrayList<>();
                 AuthenticationTriplet at = this.mapParameterFactory.createAuthenticationTriplet(TripletListTest.getRandData(),
                         TripletListTest.getSresData(), TripletListTest.getKcData());
                 authenticationTriplets.add(at);
@@ -4394,7 +4366,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendAuthenticationInfoResp_V3, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendAuthenticationInfoResp_V3, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -4500,7 +4472,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 Assert.assertFalse(ind.getAdditionalVectorsAreForEPS());
                 Assert.assertFalse(ind.getUeUsageTypeRequestIndication());
 
-                ArrayList<AuthenticationTriplet> authenticationTriplets = new ArrayList<AuthenticationTriplet>();
+                ArrayList<AuthenticationTriplet> authenticationTriplets = new ArrayList<>();
                 AuthenticationTriplet at = this.mapParameterFactory.createAuthenticationTriplet(TripletListTest.getRandData(),
                         TripletListTest.getSresData(), TripletListTest.getKcData());
                 authenticationTriplets.add(at);
@@ -4519,7 +4491,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendAuthenticationInfoResp_V2, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendAuthenticationInfoResp_V2, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -4646,7 +4618,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.UpdateLocationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.UpdateLocationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty UpdateLocationResponse", e);
@@ -4766,7 +4738,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.AnyTimeInterrogationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.AnyTimeInterrogationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty AnyTimeInterrogationResponse", e);
@@ -4901,7 +4873,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 final OBcsmCamelTDPData tdpData = new OBcsmCamelTDPDataImpl(OBcsmTriggerDetectionPoint.collectedInfo, 3,
                         gsmSCFAddress, DefaultCallHandling.continueCall, null);
 
-                OCSI ocsi = new OCSIImpl(new ArrayList<OBcsmCamelTDPData>() {{add(tdpData);}}, null, null, false, true);
+                OCSI ocsi = new OCSIImpl(new ArrayList<>() {{add(tdpData);}}, null, null, false, true);
                 CAMELSubscriptionInfo camelSubscriptionInfo = new CAMELSubscriptionInfoImpl(ocsi, null, null, null, null,
                         null, null, false, false, null, null, null, null, null, null, null, null, null, null, null, null,
                         null, null);
@@ -4923,7 +4895,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.AnyTimeSubscriptionInterrogationRes,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.AnyTimeSubscriptionInterrogationRes,
                             null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -5049,7 +5021,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProvideSubscriberInfoResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ProvideSubscriberInfoResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty ProvideSubscriberInfoResponse", e);
@@ -5149,7 +5121,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProvideSubscriberLocationResp, null,
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ProvideSubscriberLocationResp, null,
                             sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -5250,7 +5222,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent
+                    this.observedEvents.add(TestEvent
                             .createSentEvent(EventType.SubscriberLocationReportResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
@@ -5307,10 +5279,10 @@ public class MAPFunctionalTest extends SccpHarness {
     }
 
     /**
-     * TC-BEGIN + sendRoutingInforForLCSRequest TC-END + sendRoutingInforForLCSResponse
+     * TC-BEGIN + sendRoutingInfoForLCSRequest TC-END + sendRoutingInfoForLCSResponse
      */
     @Test(groups = { "functional.flow", "dialog" })
-    public void testSendRoutingInforForLCS() throws Exception {
+    public void testSendRoutingInfoForLCS() throws Exception {
 
         Client client = new Client(stack1, this, peer1Address, peer2Address) {
             @Override
@@ -5337,7 +5309,7 @@ public class MAPFunctionalTest extends SccpHarness {
                 SubscriberIdentity targetMS = this.mapParameterFactory.createSubscriberIdentity(imsi);
                 ISDNAddressString networkNodeNumber = this.mapParameterFactory.createISDNAddressString(
                         AddressNature.international_number, NumberingPlan.ISDN, "11114444");
-                ;
+
                 LCSLocationInfo lcsLocationInfo = this.mapParameterFactory.createLCSLocationInfo(networkNodeNumber, null, null,
                         false, null, null, null, null, null, null, null);
 
@@ -5354,7 +5326,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForLCSResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForLCSResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending close()", e);
@@ -5419,11 +5391,11 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onCheckImeiResponse(CheckImeiResponse ind) {
                 super.onCheckImeiResponse(ind);
 
-                assertEquals(EquipmentStatus.blackListed, ind.getEquipmentStatus());
+                assertEquals(ind.getEquipmentStatus(), EquipmentStatus.blackListed);
                 Assert.assertTrue(ind.getBmuef().getUESBI_IuA().getData().get(0));
                 Assert.assertFalse(ind.getBmuef().getUESBI_IuB().getData().get(0));
                 Assert.assertTrue(MAPExtensionContainerTest.CheckTestExtensionContainer(ind.getExtensionContainer()));
-            };
+            }
         };
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
@@ -5459,7 +5431,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending close()", e);
@@ -5521,10 +5493,10 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onCheckImeiResponse(CheckImeiResponse ind) {
                 super.onCheckImeiResponse(ind);
 
-                assertEquals(EquipmentStatus.blackListed, ind.getEquipmentStatus());
+                assertEquals(ind.getEquipmentStatus(), EquipmentStatus.blackListed);
                 Assert.assertNull(ind.getBmuef());
                 Assert.assertNull(ind.getExtensionContainer());
-            };
+            }
         };
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
@@ -5550,7 +5522,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending close()", e);
@@ -5612,10 +5584,10 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onCheckImeiResponse(CheckImeiResponse ind) {
                 super.onCheckImeiResponse(ind);
 
-                assertEquals(EquipmentStatus.blackListed, ind.getEquipmentStatus());
+                assertEquals(ind.getEquipmentStatus(), EquipmentStatus.blackListed);
                 Assert.assertNull(ind.getBmuef());
                 Assert.assertNull(ind.getExtensionContainer());
-            };
+            }
         };
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
@@ -5643,7 +5615,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending close()", e);
@@ -5696,7 +5668,7 @@ public class MAPFunctionalTest extends SccpHarness {
     }
 
     /**
-     * Some not real test for testing: - sendDelayed() / closeDelayed() - getTCAPMessageType() - saving origReferense,
+     * Some not real test for testing: - sendDelayed() / closeDelayed() - getTCAPMessageType() - saving origReference,
      * destReference, extContainer in MAPDialog TC-BEGIN + extContainer + checkImeiRequest + checkImeiRequest TC-CONTINUE +
      * sendDelayed(checkImeiResponse) + sendDelayed(checkImeiResponse) TC-END + closeDelayed(checkImeiResponse) +
      * sendDelayed(checkImeiResponse)
@@ -5711,7 +5683,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onCheckImeiResponse(CheckImeiResponse ind) {
                 super.onCheckImeiResponse(ind);
 
-                assertEquals(EquipmentStatus.blackListed, ind.getEquipmentStatus());
+                assertEquals(ind.getEquipmentStatus(), EquipmentStatus.blackListed);
                 Assert.assertNull(ind.getBmuef());
                 Assert.assertNull(ind.getExtensionContainer());
 
@@ -5727,12 +5699,12 @@ public class MAPFunctionalTest extends SccpHarness {
                         d.sendDelayed();
                     }
                     dialogStep++;
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CheckImei, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CheckImei, null, sequence++));
                 } catch (MAPException e) {
                     this.error("Error while adding CheckImeiRequest/sending", e);
                     fail("Error while adding CheckImeiRequest/sending");
                 }
-            };
+            }
         };
 
         Server server = new Server(this.stack2, this, peer2Address, peer1Address) {
@@ -5781,7 +5753,7 @@ public class MAPFunctionalTest extends SccpHarness {
                     try {
                         d.addCheckImeiResponse(ind.getInvokeId(), EquipmentStatus.blackListed, null, null);
                         d.sendDelayed();
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
                     } catch (MAPException e) {
                         this.error("Error while adding CheckImeiResponse/sending", e);
                         fail("Error while adding CheckImeiResponse/sending");
@@ -5912,7 +5884,7 @@ public class MAPFunctionalTest extends SccpHarness {
                         d.sendDelayed();
                     else
                         d.closeDelayed(true);
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CheckImeiResp, null, sequence++));
                 } catch (MAPException e) {
                     this.error("Error while adding CheckImeiResponse/sending", e);
                     fail("Error while adding CheckImeiResponse/sending");
@@ -5973,7 +5945,7 @@ public class MAPFunctionalTest extends SccpHarness {
     }
 
     /**
-     * TC-BEGIN + cancelLocation MAV V3 TC-END + cancleLocationResponse
+     * TC-BEGIN + cancelLocation MAV V3 TC-END + cancelLocationResponse
      */
     @Test(groups = { "functional.flow", "dialog" })
     public void testCancelLocation() throws Exception {
@@ -6035,7 +6007,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelLocationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CancelLocationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty CancelLocationResponse", e);
@@ -6089,7 +6061,7 @@ public class MAPFunctionalTest extends SccpHarness {
     }
 
     /**
-     * TC-BEGIN + cancelLocationRequest MAV V2 TC-END + cancleLocationResponse
+     * TC-BEGIN + cancelLocationRequest MAV V2 TC-END + cancelLocationResponse
      */
     @Test(groups = { "functional.flow", "dialog" })
     public void testCancelLocation_V2() throws Exception {
@@ -6145,7 +6117,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.CancelLocationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.CancelLocationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty CancelLocationResponse", e);
@@ -6299,7 +6271,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProvideRoamingNumberResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ProvideRoamingNumberResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty CancelLocationResponse", e);
@@ -6447,7 +6419,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ProvideRoamingNumberResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ProvideRoamingNumberResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty CancelLocationResponse", e);
@@ -6546,7 +6518,7 @@ public class MAPFunctionalTest extends SccpHarness {
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.IstCommandResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.IstCommandResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty CancelLocationResponse", e);
@@ -6730,7 +6702,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.InsertSubscriberDataResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.InsertSubscriberDataResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty InsertSubscriberDataResponse", e);
@@ -6905,7 +6877,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.InsertSubscriberDataResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.InsertSubscriberDataResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty InsertSubscriberDataResponse", e);
@@ -7014,7 +6986,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.DeleteSubscriberDataResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.DeleteSubscriberDataResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty DeleteSubscriberDataResponse", e);
@@ -7117,7 +7089,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.DeleteSubscriberDataResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.DeleteSubscriberDataResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty DeleteSubscriberDataResponse", e);
@@ -7286,7 +7258,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInformationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInformationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty SendRoutingInformationResponse", e);
@@ -7426,7 +7398,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onSendRoutingInformationRequest(SendRoutingInformationRequest request) {
                 super.onSendRoutingInformationRequest(request);
 
-                MAPDialogCallHandling d = request.getMAPDialog();
+                MAPDialogCallHandling mapDialogCallHandling = request.getMAPDialog();
                 SendRoutingInformationRequestImpl ind = (SendRoutingInformationRequestImpl) request;
                 invokeId = ind.getInvokeId();
 
@@ -7456,7 +7428,7 @@ TC-END + InsertSubscriberDataRequestResponse
                     MAPDialogCallHandling d = (MAPDialogCallHandling)mapDialog;
 
                     if (dialogStep == 0) {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInformationResp, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInformationResp, null, sequence++));
 
                         IMSI imsi = this.mapParameterFactory.createIMSI("011220200198227");
 
@@ -7504,7 +7476,7 @@ TC-END + InsertSubscriberDataRequestResponse
                         d.send();
                         dialogStep++;
                     } else if (dialogStep == 1) {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInformationResp, null, sequence++));
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInformationResp, null, sequence++));
 
                         ISDNAddressString vmscAddress = this.mapParameterFactory.createISDNAddressString(
                                 AddressNature.international_number, NumberingPlan.ISDN, "22233300");
@@ -7649,7 +7621,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInformationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInformationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty SendRoutingInformationResponse", e);
@@ -7747,7 +7719,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendIdentificationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendIdentificationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the SendIdentificationResponse", e);
@@ -7841,7 +7813,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendIdentificationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendIdentificationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the SendIdentificationResponse", e);
@@ -7919,7 +7891,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onUpdateGprsLocationRequest(UpdateGprsLocationRequest ind) {
                 super.onUpdateGprsLocationRequest(ind);
 
-                MAPDialogMobility d = ((UpdateGprsLocationRequestImpl) ind).getMAPDialog();
+                MAPDialogMobility d = ind.getMAPDialog();
 
                 assertEquals(ind.getImsi().getData(), "111222");
                 assertEquals(ind.getSgsnNumber().getAddress(), "22228");
@@ -7945,7 +7917,7 @@ TC-END + InsertSubscriberDataRequestResponse
                         "22228");
 
                 try {
-                    d.addUpdateGprsLocationResponse(((UpdateGprsLocationRequestImpl) ind).getInvokeId(), hlrNumber, null, true,
+                    d.addUpdateGprsLocationResponse(ind.getInvokeId(), hlrNumber, null, true,
                             true, false);
                 } catch (MAPException e) {
                     this.error("Error while adding UpdateGprsLocationResponse", e);
@@ -7957,7 +7929,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.UpdateGprsLocationResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.UpdateGprsLocationResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty UpdateGprsLocationResponse", e);
@@ -8036,13 +8008,13 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onPurgeMSRequest(PurgeMSRequest request) {
                 super.onPurgeMSRequest(request);
 
-                MAPDialogMobility d = ((PurgeMSRequestImpl) request).getMAPDialog();
+                MAPDialogMobility d = request.getMAPDialog();
 
                 assertEquals(request.getImsi().getData(), "111222");
                 assertEquals(request.getSgsnNumber().getAddress(), "22228");
 
                 try {
-                    d.addPurgeMSResponse(((PurgeMSRequestImpl) request).getInvokeId(), true, true, null, true);
+                    d.addPurgeMSResponse(request.getInvokeId(), true, true, null, true);
 
                 } catch (MAPException e) {
                     this.error("Error while adding PurgeMSResponse", e);
@@ -8054,7 +8026,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.PurgeMSResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.PurgeMSResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty PurgeMSResponse", e);
@@ -8132,13 +8104,13 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onPurgeMSRequest(PurgeMSRequest request) {
                 super.onPurgeMSRequest(request);
 
-                MAPDialogMobility d = ((PurgeMSRequestImpl) request).getMAPDialog();
+                MAPDialogMobility d = request.getMAPDialog();
 
                 assertEquals(request.getImsi().getData(), "111222");
                 assertEquals(request.getVlrNumber().getAddress(), "22228");
 
                 try {
-                    d.addPurgeMSResponse(((PurgeMSRequestImpl) request).getInvokeId(), false, false, null, false);
+                    d.addPurgeMSResponse(request.getInvokeId(), false, false, null, false);
 
                 } catch (MAPException e) {
                     this.error("Error while adding PurgeMSResponse", e);
@@ -8150,7 +8122,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.PurgeMSResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.PurgeMSResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty PurgeMSResponse", e);
@@ -8349,14 +8321,14 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onRestoreDataRequest(RestoreDataRequest request) {
                 super.onRestoreDataRequest(request);
 
-                MAPDialogMobility d = ((RestoreDataRequestImpl) request).getMAPDialog();
+                MAPDialogMobility d = request.getMAPDialog();
 
                 assertEquals(request.getImsi().getData(), "00000222229999");
 
                 try {
                     ISDNAddressString hlrNumber = this.mapParameterFactory.createISDNAddressString(AddressNature.international_number, NumberingPlan.ISDN,
                             "9992222");
-                    d.addRestoreDataResponse(((RestoreDataRequestImpl) request).getInvokeId(), hlrNumber, false, null);
+                    d.addRestoreDataResponse(request.getInvokeId(), hlrNumber, false, null);
 
                 } catch (MAPException e) {
                     this.error("Error while adding RestoreDataResponse", e);
@@ -8368,7 +8340,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.RestoreDataResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.RestoreDataResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty RestoreDataResponse", e);
@@ -8448,13 +8420,13 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onSendImsiRequest(SendImsiRequest request) {
                 super.onSendImsiRequest(request);
 
-                MAPDialogOam d = ((SendImsiRequestImpl) request).getMAPDialog();
+                MAPDialogOam d = request.getMAPDialog();
 
                 assertEquals(request.getMsisdn().getAddress(), "9992222");
 
                 try {
                     IMSI imsi = this.mapParameterFactory.createIMSI("88888999991111");
-                    d.addSendImsiResponse(((SendImsiRequestImpl) request).getInvokeId(), imsi);
+                    d.addSendImsiResponse(request.getInvokeId(), imsi);
 
                 } catch (MAPException e) {
                     this.error("Error while adding SendImsiResponse", e);
@@ -8466,7 +8438,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendImsiResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendImsiResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty SendImsiResponse", e);
@@ -8551,7 +8523,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onRegisterSSRequest(RegisterSSRequest request) {
                 super.onRegisterSSRequest(request);
 
-                MAPDialogSupplementary d = ((RegisterSSRequestImpl) request).getMAPDialog();
+                MAPDialogSupplementary d = request.getMAPDialog();
 
                 assertEquals(request.getSsCode().getSupplementaryCodeValue(), SupplementaryCodeValue.cfu);
                 assertEquals(request.getBasicService().getBearerService().getBearerServiceCodeValue(), BearerServiceCodeValue.padAccessCA_9600bps);
@@ -8578,7 +8550,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.RegisterSSResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.RegisterSSResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty RegisterSSResponse", e);
@@ -8680,7 +8652,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.EraseSSResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.EraseSSResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty EraseSSResponse", e);
@@ -8791,7 +8763,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivateSSResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivateSSResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty ActivateSSResponse", e);
@@ -8893,7 +8865,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.DeactivateSSResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.DeactivateSSResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty DeactivateSSResponse", e);
@@ -9001,7 +8973,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.InterrogateSSResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.InterrogateSSResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty InterrogateSSResponse", e);
@@ -9101,7 +9073,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ReadyForSMResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ReadyForSMResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty ReadyForSMResponse", e);
@@ -9267,7 +9239,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForGprsResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.SendRoutingInfoForGprsResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty SendRoutingInfoForGprsResponse", e);
@@ -9370,7 +9342,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivateTraceModeResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivateTraceModeResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty addActivateTraceModeResponseResponse", e);
@@ -9473,7 +9445,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.ActivateTraceModeResp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.ActivateTraceModeResp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty addActivateTraceModeResponseResponse", e);
@@ -9564,7 +9536,7 @@ TC-END + InsertSubscriberDataRequestResponse
                     if (this.dialogStep == 1) {
                         Password password = this.mapParameterFactory.createPassword("9876");
                         ((MAPDialogSupplementary) mapDialog).addGetPasswordResponse(getPasswordInvokeId, password);
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.GetPasswordResp, null,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.GetPasswordResp, null,
                                 sequence++));
 
                         mapDialog.send();
@@ -9615,11 +9587,11 @@ TC-END + InsertSubscriberDataRequestResponse
                 this.dialogStep++;
                 try {
                     if (this.dialogStep == 1) {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.GetPassword, null,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.GetPassword, null,
                                 sequence++));
                         mapDialog.send();
                     } else {
-                        this.observerdEvents.add(TestEvent.createSentEvent(EventType.RegisterPasswordResp, null,
+                        this.observedEvents.add(TestEvent.createSentEvent(EventType.RegisterPasswordResp, null,
                                 sequence++));
                         mapDialog.close(false);
                     }
@@ -9756,7 +9728,7 @@ TC-END + InsertSubscriberDataRequestResponse
             public void onDialogDelimiter(MAPDialog mapDialog) {
                 super.onDialogDelimiter(mapDialog);
                 try {
-                    this.observerdEvents.add(TestEvent.createSentEvent(EventType.AuthenticationFailureReport_Resp, null, sequence++));
+                    this.observedEvents.add(TestEvent.createSentEvent(EventType.AuthenticationFailureReport_Resp, null, sequence++));
                     mapDialog.close(false);
                 } catch (MAPException e) {
                     this.error("Error while sending the empty addAuthenticationFailureReportResponse", e);

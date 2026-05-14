@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccpext.impl;
 
 import static org.testng.Assert.assertNotNull;

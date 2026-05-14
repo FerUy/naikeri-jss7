@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
 import java.io.IOException;
@@ -77,7 +76,7 @@ public class ExtSSDataImpl extends SequenceBase implements ExtSSData {
     }
 
     protected void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
-        ExtBasicServiceCode serviceItem;
+        ExtBasicServiceCodeImpl serviceItem;
         this.ssCode = null;
         this.ssStatus = null;
         this.ssSubscriptionOption = null;
@@ -141,17 +140,17 @@ public class ExtSSDataImpl extends SequenceBase implements ExtSSData {
                             switch (tag) {
                                 case Tag.SEQUENCE:
                                     AsnInputStream ais2 = ais.readSequenceStream();
-                                    this.basicServiceGroupList = new ArrayList<ExtBasicServiceCode>();
+                                    this.basicServiceGroupList = new ArrayList<>();
                                     while (true) {
                                         if (ais2.available() == 0)
                                             break;
 
                                         ais2.readTag();
                                         serviceItem = new ExtBasicServiceCodeImpl();
-                                        ((ExtBasicServiceCodeImpl) serviceItem).decodeAll(ais2);
+                                        serviceItem.decodeAll(ais2);
                                         this.basicServiceGroupList.add(serviceItem);
                                     }
-                                    if (this.basicServiceGroupList.size() < 1 && this.basicServiceGroupList.size() > 32) {
+                                    if (this.basicServiceGroupList.isEmpty() || this.basicServiceGroupList.size() > 32) {
                                         throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                                 + ": Parameter basicServiceGroupList size must be from 1 to 32, found: "
                                                 + this.basicServiceGroupList.size(),
@@ -198,7 +197,7 @@ public class ExtSSDataImpl extends SequenceBase implements ExtSSData {
             throw new MAPException("Error while encoding " + _PrimitiveName + ": ssStatus required.");
 
         if (this.basicServiceGroupList != null
-                && (this.basicServiceGroupList.size() < 1 || this.basicServiceGroupList.size() > 32)) {
+                && (this.basicServiceGroupList.isEmpty() || this.basicServiceGroupList.size() > 32)) {
             throw new MAPException("Error while encoding " + _PrimitiveName
                     + ": Parameter basicServiceGroupList size must be from 1 to 32, found: "
                     + this.basicServiceGroupList.size());
@@ -234,23 +233,23 @@ public class ExtSSDataImpl extends SequenceBase implements ExtSSData {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.ssCode != null) {
             sb.append("ssCode=");
-            sb.append(this.ssCode.toString());
+            sb.append(this.ssCode);
             sb.append(", ");
         }
 
         if (this.ssStatus != null) {
             sb.append("ssStatus=");
-            sb.append(this.ssStatus.toString());
+            sb.append(this.ssStatus);
             sb.append(", ");
         }
 
         if (this.ssSubscriptionOption != null) {
             sb.append("ssSubscriptionOption=");
-            sb.append(this.ssSubscriptionOption.toString());
+            sb.append(this.ssSubscriptionOption);
             sb.append(", ");
         }
 
@@ -262,14 +261,14 @@ public class ExtSSDataImpl extends SequenceBase implements ExtSSData {
                     firstItem = false;
                 else
                     sb.append(", ");
-                sb.append(be.toString());
+                sb.append(be);
             }
             sb.append("], ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
         }
 
         sb.append("]");

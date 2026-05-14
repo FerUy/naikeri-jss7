@@ -1,4 +1,3 @@
-
 package org.restcomm.ss7.management.console.impl;
 
 import org.restcomm.ss7.management.console.CommandContext;

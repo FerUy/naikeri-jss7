@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.mtp;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -9,8 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterface;
 import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterfaceDefault;
 import org.restcomm.ss7.congestion.ExecutorCongestionMonitor;
@@ -26,7 +25,7 @@ import org.restcomm.ss7.congestion.ExecutorCongestionMonitorImpl;
  */
 public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 
-    private static final Logger logger = Logger.getLogger(Mtp3UserPartBaseImpl.class);
+    private static final Logger logger = LogManager.getLogger(Mtp3UserPartBaseImpl.class);
 
     private static final String LICENSE_PRODUCT_NAME = "Restcomm-jSS7";
 

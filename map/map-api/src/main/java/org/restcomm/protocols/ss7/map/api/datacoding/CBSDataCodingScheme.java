@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.datacoding;
 
 import java.io.Serializable;

@@ -1,10 +1,8 @@
-
 package org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation;
 
 /**
  *
  ModificationInstruction ::= ENUMERATED { deactivate (0), activate (1)}
- *
  *
  * @author sergey vetyutnev
  *
@@ -15,7 +13,7 @@ public enum ModificationInstruction {
 
     private int code;
 
-    private ModificationInstruction(int code) {
+    ModificationInstruction(int code) {
         this.code = code;
     }
 

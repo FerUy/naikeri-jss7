@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.sccp.impl;
 
 import java.io.BufferedReader;
@@ -19,8 +18,8 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.sccp.ConcernedSignalingPointCode;
 import org.restcomm.protocols.ss7.sccp.RemoteSignalingPointCode;
 import org.restcomm.protocols.ss7.sccp.RemoteSubSystem;
@@ -32,7 +31,7 @@ import org.restcomm.protocols.ss7.sccp.impl.oam.SccpOAMMessage;
  */
 public class SccpResourceImpl implements SccpResource {
 
-    private static final Logger logger = Logger.getLogger(SccpResourceImpl.class);
+    private static final Logger logger = LogManager.getLogger(SccpResourceImpl.class);
 
     protected RemoteSubSystemMap<Integer, RemoteSubSystem> remoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystem>();
     protected RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> remoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode>();
@@ -363,7 +362,7 @@ public class SccpResourceImpl implements SccpResource {
 
     protected static class PersistentStorage {
 
-        private static final Logger logger = Logger.getLogger(SccpResourceImpl.class);
+        private static final Logger logger = LogManager.getLogger(SccpResourceImpl.class);
 
         private static final String SCCP_RESOURCE_PERSIST_DIR_KEY = "sccpresource.persist.dir";
         private static final String USER_DIR_KEY = "user.dir";

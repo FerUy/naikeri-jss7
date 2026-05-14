@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.isup.impl.stack.timers;
 
 import org.testng.annotations.Test;

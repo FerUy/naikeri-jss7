@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.api.primitives;
 
 import java.io.Serializable;
@@ -24,9 +23,9 @@ TBCD-STRING ::= OCTET STRING
 public interface IMSI extends Serializable {
 
     /**
-     * Returns all digits of IMSI (MCC+MNC+MSIN)
+     * Returns all digits of the IMSI (MCC+MNC+MSIN)
      *
-     * @return
+     * @return a String containing all digits of the IMSI
      */
     String getData();
 

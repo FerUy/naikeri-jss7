@@ -65,6 +65,19 @@ import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedSubscriptionInfo;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.SubscriberInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCFInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCBInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCSI;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForODBData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForIPSMGWData;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.RequestedServingNode;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCSG;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCWInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCLIPInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCLIRInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForCHInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ModificationRequestForECTInfo;
+import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberInformation.ExtSSInfoForCSE;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.AdjacentAccessRestrictionData;
 import org.restcomm.protocols.ss7.map.api.service.mobility.subscriberManagement.CSAllocationRetentionPriority;
@@ -262,8 +275,7 @@ public interface MAPDialogMobility extends MAPDialog {
     void addAnyTimeInterrogationResponse(long invokeId, SubscriberInfo subscriberInfo, MAPExtensionContainer extensionContainer)
             throws MAPException;
 
-    void addAnyTimeInterrogationResponse_NonLast(long invokeId, SubscriberInfo subscriberInfo,
-            MAPExtensionContainer extensionContainer) throws MAPException;
+    void addAnyTimeInterrogationResponse_NonLast(long invokeId, SubscriberInfo subscriberInfo, MAPExtensionContainer extensionContainer) throws MAPException;
 
     long addAnyTimeSubscriptionInterrogationRequest(SubscriberIdentity subscriberIdentity, RequestedSubscriptionInfo requestedSubscriptionInfo,
             ISDNAddressString gsmSCFAddress, MAPExtensionContainer extensionContainer, boolean isLongFTNSupported) throws MAPException;
@@ -282,6 +294,32 @@ public interface MAPDialogMobility extends MAPDialog {
             MAPExtensionContainer extensionContainer, OfferedCamel4CSIs offeredCamel4CSIsInVlr, OfferedCamel4CSIs offeredCamel4CSIsInSgsn,
             ArrayList<MSISDNBS> msisdnBsList, ArrayList<CSGSubscriptionData> csgSubscriptionDataList, CallWaitingData callWaitingData,
             CallHoldData callHoldData, ClipData clipData, ClirData clirData, EctData ectData) throws MAPException;
+
+    long addAnyTimeModificationRequest(SubscriberIdentity subscriberIdentity, ISDNAddressString gsmSCFAddress,
+            ModificationRequestForCFInfo modificationRequestForCFInfo, ModificationRequestForCBInfo modificationRequestForCBInfo,
+            ModificationRequestForCSI modificationRequestForCSI, MAPExtensionContainer extensionContainer, boolean longFTNSupported,
+            ModificationRequestForODBData modificationRequestForODBData, ModificationRequestForIPSMGWData modificationRequestForIPSMGWData,
+            RequestedServingNode activationRequestForUEReachability, ModificationRequestForCSG modificationRequestForCSG,
+            ModificationRequestForCWInfo modificationRequestForCWData, ModificationRequestForCLIPInfo modificationRequestForCLIPData,
+            ModificationRequestForCLIRInfo modificationRequestForCLIRData, ModificationRequestForCHInfo modificationRequestForHOLDData,
+            ModificationRequestForECTInfo modificationRequestForECTData) throws MAPException;
+
+    long addAnyTimeModificationRequest(long invokeId, SubscriberIdentity subscriberIdentity, ISDNAddressString gsmSCFAddress,
+            ModificationRequestForCFInfo modificationRequestForCFInfo, ModificationRequestForCBInfo modificationRequestForCBInfo,
+            ModificationRequestForCSI modificationRequestForCSI, MAPExtensionContainer extensionContainer, boolean longFTNSupported,
+            ModificationRequestForODBData modificationRequestForODBData, ModificationRequestForIPSMGWData modificationRequestForIPSMGWData,
+            RequestedServingNode activationRequestForUEReachability, ModificationRequestForCSG modificationRequestForCSG,
+            ModificationRequestForCWInfo modificationRequestForCWData, ModificationRequestForCLIPInfo modificationRequestForCLIPData,
+            ModificationRequestForCLIRInfo modificationRequestForCLIRData, ModificationRequestForCHInfo modificationRequestForHOLDData,
+            ModificationRequestForECTInfo modificationRequestForECTData) throws MAPException;
+
+    void addAnyTimeModificationResponse(long invokeId, ExtSSInfoForCSE ssInfoForCSE, CAMELSubscriptionInfo camelSubscriptionInfo,
+            MAPExtensionContainer extensionContainer, ODBInfo odbInfo, CallWaitingData cwData, CallHoldData chData, ClipData clipData,
+            ClirData clirData, EctData ectData, AddressString serviceCentreAddress) throws MAPException;
+
+    void addAnyTimeModificationResponse_NonLast(long invokeId, ExtSSInfoForCSE ssInfoForCSE, CAMELSubscriptionInfo camelSubscriptionInfo,
+            MAPExtensionContainer extensionContainer, ODBInfo odbInfo, CallWaitingData cwData, CallHoldData chData, ClipData clipData, ClirData clirData,
+            EctData ectData, AddressString serviceCentreAddress) throws MAPException;
 
     long addProvideSubscriberInfoRequest(IMSI imsi, LMSI lmsi, RequestedInfo requestedInfo, MAPExtensionContainer extensionContainer, EMLPPPriority callPriority)
             throws MAPException;

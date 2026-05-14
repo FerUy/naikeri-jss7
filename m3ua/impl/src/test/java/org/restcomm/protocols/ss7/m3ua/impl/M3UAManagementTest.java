@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.m3ua.impl;
 
 import static org.testng.Assert.assertEquals;
@@ -29,9 +28,6 @@ import org.restcomm.protocols.ss7.m3ua.ExchangeType;
 import org.restcomm.protocols.ss7.m3ua.Functionality;
 import org.restcomm.protocols.ss7.m3ua.RouteAs;
 import org.restcomm.protocols.ss7.m3ua.Util;
-import org.restcomm.protocols.ss7.m3ua.impl.AsImpl;
-import org.restcomm.protocols.ss7.m3ua.impl.AspFactoryImpl;
-import org.restcomm.protocols.ss7.m3ua.impl.M3UAManagementImpl;
 import org.restcomm.protocols.ss7.m3ua.impl.parameter.ParameterFactoryImpl;
 import org.restcomm.protocols.ss7.m3ua.parameter.NetworkAppearance;
 import org.restcomm.protocols.ss7.m3ua.parameter.RoutingContext;
@@ -51,7 +47,7 @@ public class M3UAManagementTest {
 
     private M3UAManagementImpl m3uaMgmt = null;
     private NettyTransportManagement transportManagement = null;
-    private ParameterFactoryImpl factory = new ParameterFactoryImpl();
+    private final ParameterFactoryImpl factory = new ParameterFactoryImpl();
 
     /**
 	 *
@@ -90,7 +86,7 @@ public class M3UAManagementTest {
         Association association = this.transportManagement.addAssociation(null, 0, null, 0, "ASPAssoc1");
 
         RoutingContext rc = factory.createRoutingContext(new long[] { 1 });
-        NetworkAppearance na = factory.createNetworkAppearance(12l);
+        NetworkAppearance na = factory.createNetworkAppearance(12);
         AsImpl as1 = (AsImpl) this.m3uaMgmt.createAs("AS1", Functionality.AS, ExchangeType.SE, null, rc, null, 1, na);
 
         AspFactoryImpl aspFactoryImpl = (AspFactoryImpl) this.m3uaMgmt.createAspFactory("ASP1", "ASPAssoc1", false);
@@ -139,16 +135,16 @@ public class M3UAManagementTest {
     }
 
     @Test
-    public void testSerializationFromOldVerToNewVers() throws Exception {
+    public void testSerializationFromOldVerToNewVersion() throws Exception {
         // Prepare path for file
         
         String M3UA_PERSIST_DIR_KEY = "m3ua.persist.dir";
         String USER_DIR_KEY = "user.dir";
         String PERSIST_FILE_NAME = "m3ua.xml";
-        String name = this.m3uaMgmt.getName()+"_OldVerToNewVers";
+        String name = this.m3uaMgmt.getName()+"_OldVerToNewVersion";
 
         String persistDir = this.m3uaMgmt.getPersistDir();
-        StringBuffer persistFile = new StringBuffer();
+        StringBuilder persistFile = new StringBuilder();
         
         if (persistDir != null) {
             persistFile.append(persistDir).append(File.separator).append(name).append("_").append(PERSIST_FILE_NAME);
@@ -172,7 +168,7 @@ public class M3UAManagementTest {
         Association association = this.transportManagement.addAssociation(null, 0, null, 0, "test");
         association = this.transportManagement.addAssociation(null, 0, null, 0, "test1");
         
-        //now start M3UA again and it should read from old data file
+        //now start M3UA again, and it should read from old data file
         M3UAManagementImpl m3uaMgmt1 = new M3UAManagementImpl(name, null, null);
         m3uaMgmt1.setPersistDir(Util.getTmpTestDir());
         m3uaMgmt1.setTransportManagement(this.transportManagement);
@@ -201,11 +197,11 @@ public class M3UAManagementTest {
 
     }
 
-    class TestAssociation implements Association {
+    static class TestAssociation implements Association {
 
         private int noOfTimeStartCalled = 0;
         private AssociationListener associationListener = null;
-        private String name = null;
+        private final String name;
 
         TestAssociation(String name) {
             this.name = name;
@@ -349,7 +345,7 @@ public class M3UAManagementTest {
 
     class NettyTransportManagement implements Management {
 
-        private FastMap<String, TestAssociation> associations = new FastMap<String, TestAssociation>();
+        private FastMap<String, TestAssociation> associations = new FastMap<>();
 
         @Override
         public Association addAssociation(String hostAddress, int hostPort, String peerAddress, int peerPort, String assocName)

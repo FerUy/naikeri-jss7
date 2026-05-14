@@ -27,15 +27,12 @@ public class SubscriberIdentityImpl implements SubscriberIdentity, MAPAsnPrimiti
     private IMSI imsi = null;
     private ISDNAddressString msisdn = null;
 
-    /**
-     *
-     */
     public SubscriberIdentityImpl() {
         super();
     }
 
     /**
-     * @param imsi
+     * @param imsi        International Mobile Subscriber Identity (IMSI), ITU-T recommendation E.212
      */
     public SubscriberIdentityImpl(IMSI imsi) {
         super();
@@ -44,7 +41,7 @@ public class SubscriberIdentityImpl implements SubscriberIdentity, MAPAsnPrimiti
     }
 
     /**
-     * @param msisdn
+     * @param msisdn       Mobile Subscriber ISDN Number (MSISDN), ITU-T recommendation E.164
      */
     public SubscriberIdentityImpl(ISDNAddressString msisdn) {
         super();
@@ -156,7 +153,7 @@ public class SubscriberIdentityImpl implements SubscriberIdentity, MAPAsnPrimiti
                 break;
             default:
                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
-                        + ": Expexted imsi [0] IMSI or msisdn [1] ISDN-AddressString, but found " + asnInputStream.getTag(),
+                        + ": Expected imsi [0] IMSI or msisdn [1] ISDN-AddressString, but found " + asnInputStream.getTag(),
                         MAPParsingComponentExceptionReason.MistypedParameter);
         }
     }
@@ -232,11 +229,8 @@ public class SubscriberIdentityImpl implements SubscriberIdentity, MAPAsnPrimiti
         } else if (!imsi.equals(other.imsi))
             return false;
         if (msisdn == null) {
-            if (other.msisdn != null)
-                return false;
-        } else if (!msisdn.equals(other.msisdn))
-            return false;
-        return true;
+            return other.msisdn == null;
+        } else return msisdn.equals(other.msisdn);
     }
 
     @Override

@@ -1,4 +1,3 @@
-
 package org.restcomm.protocols.ss7.map.service.supplementary;
 
 import static org.testng.Assert.assertTrue;
@@ -6,7 +5,8 @@ import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.service.supplementary.ForwardingReason;
@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
  */
 public class ForwardingOptionsTest {
 
-    Logger logger = Logger.getLogger(ForwardingOptionsTest.class);
+    Logger logger = LogManager.getLogger(ForwardingOptionsTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
