@@ -65,14 +65,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>admin</id>
+			<id>naikeri</id>
 			<name>localhost-releases</name>
-			<url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com:8082/artifactory/libs-release-local</url>
+			<url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local</url>
 		</repository>
 		<snapshotRepository>
-			<id>admin</id>
+			<id>naikeri</id>
 			<name>localhost-snapshots</name>
-			<url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com:8082/artifactory/libs-release-local</url>
+			<url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local</url>
 		</snapshotRepository>
 	</distributionManagement>
 
