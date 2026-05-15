@@ -55,6 +55,7 @@ pipeline {
                 }
             }
         }
+
 		stage('Save Artifacts') {
             steps {
                 echo "Archiving Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
