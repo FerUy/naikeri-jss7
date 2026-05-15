@@ -68,7 +68,7 @@
 		<pathelement location="${assemble.dir}/commons-email.jar" />
 
 		<!-- lic dep -->
-		<pathelement location="${assemble.dir}/NaikeriLicensor-1.0.0-SNAPSHOT.jar" />
+		<pathelement location="${assemble.dir}/NaikeriLicensor-1.0.0-3.jar" />
 		<pathelement location="${assamble.dir}/license4j-runtime-library-4.7.3.jar" />
 
 		<!-- Stats -->
