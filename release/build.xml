@@ -20,13 +20,13 @@
     <property name="checkout.sctp.version" value="2.0.0-39"/>
 
 	<property name="github.url" value="https://github.com/RestComm" />
-    <property name="naikeri.url" value="https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local/com/naikeri" />
+    <property name="naikeri-sctp.url" value="https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local/com/naikeri/sctp/Naikeri-SCTP/2.1.0-32" />
 
 	<property name="jasn.download.distro.file" value="restcomm-jasn-${asn.version}.zip" />
 	<property name="jasn.download.url" value="${github.url}/jasn/releases/download/${asn.version}/${jasn.download.distro.file}" />
 	<property name="jasn.distro.zip.path" value="${checkout.dir}/${jasn.download.distro.file}" />
 	<property name="sctp.download.distro.file" value="Naikeri-SCTP-${sctp.version}.zip" />
-	<property name="sctp.download.url" value="${naikeri.url}/sctp/${sctp.download.distro.file}" />
+	<property name="sctp.download.url" value="${naikeri-sctp.url}/${sctp.download.distro.file}" />
 	<property name="sctp.distro.zip.path" value="${checkout.dir}/${sctp.download.distro.file}" />
 
     <condition property="mvn.executable" value="${sys.M2_HOME}\bin\mvn.bat" else="mvn">
