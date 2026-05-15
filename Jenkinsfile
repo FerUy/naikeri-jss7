@@ -39,19 +39,22 @@ pipeline {
 		}
 
 		stage("Ant") {
-		    // when { expression { params.BUILD_ANT.toBoolean() == true}}
-			steps {
+            steps {
                 script {
                     NAIKERI_SCTP_VERSION = "${params.SCTP_MAJOR_VERSION_NUMBER}-${params.SCTP_BUILD}"
                 }
-				echo "Starting ant build for version #${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
-				withAnt(installation: 'Ant_1.10.15') {
- 				   dir('release') {
- 				      sh "ant -f build.xml -Drelease.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} -Dsctp.version=${NAIKERI_SCTP_VERSION}"
- 				   }
-				}
-			}
-		}
+                echo "Starting ant build for version #${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
+                withCredentials([usernamePassword(credentialsId: '426e8cfb-a47c-4fd2-96ae-713c541dc3f6',
+                                                  usernameVariable: 'ART_USER',
+                                                  passwordVariable: 'ART_PASS')]) {
+                    withAnt(installation: 'Ant_1.10.15') {
+                        dir('release') {
+                            sh "ant -f build.xml -Drelease.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} -Dsctp.version=${NAIKERI_SCTP_VERSION} -Dartifactory.user=${ART_USER} -Dartifactory.password=${ART_PASS}"
+                        }
+                    }
+                }
+            }
+        }
 		stage('Save Artifacts') {
             steps {
                 echo "Archiving Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"

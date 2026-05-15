@@ -77,8 +77,8 @@
 			<arg value="${jasn.download.url}" />
 		    <arg value="--output-document=${jasn.download.distro.file}" />
 		    <arg value="--no-check-certificate" />
-            <arg value="--user=admin" />
-            <arg value="--password=cHN3ZE5haWtlcmlKZnJvZw==4dm!n" />
+            <arg value="--user=${artifactory.user}" />
+            <arg value="--password=${artifactory.password}" />
 		</exec>
 		<move file="${base.dir}/${jasn.download.distro.file}" todir="${checkout.dir}"/>
 	</target>
@@ -94,8 +94,8 @@
             <arg value="${sctp.download.url}" />
             <arg value="--output-document=${sctp.download.distro.file}" />
             <arg value="--no-check-certificate" />
-            <arg value="--user=admin" />
-            <arg value="--password=cHN3ZE5haWtlcmlKZnJvZw==4dm!n" />
+            <arg value="--user=${artifactory.user}" />
+            <arg value="--password=${artifactory.password}" />
         </exec>
         <move file="${base.dir}/${sctp.download.distro.file}" todir="${checkout.dir}"/>
     </target>
