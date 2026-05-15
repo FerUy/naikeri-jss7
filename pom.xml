@@ -568,5 +568,19 @@
 		</repository>
 
 		<!-- the place to extra repos -->
+		<repository>
+			<id>naikeri</id>
+			<name>Naikeri Artifactory</name>
+			<url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</repository>
 	</repositories>
 </project>
