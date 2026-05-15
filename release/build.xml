@@ -77,6 +77,8 @@
 			<arg value="${jasn.download.url}" />
 		    <arg value="--output-document=${jasn.download.distro.file}" />
 		    <arg value="--no-check-certificate" />
+            <arg value="--user=admin" />
+            <arg value="--password=cHN3ZE5haWtlcmlKZnJvZw==4dm!n" />
 		</exec>
 		<move file="${base.dir}/${jasn.download.distro.file}" todir="${checkout.dir}"/>
 	</target>
@@ -86,15 +88,17 @@
 		<move file="${checkout.asn.dir}/jasn-${asn.version}-restcomm" tofile="${checkout.asn.dir}/jasn-${asn.version}" failonerror="false"/>
 	</target>
 
-	<target name="get-sctp" unless="got.sctp">
-		<echo>Downloading RestComm SCTP version: ${sctp.version}</echo>
-		<exec failonerror="true" executable="wget">
-			<arg value="${sctp.download.url}" />
-		    <arg value="--output-document=${sctp.download.distro.file}" />
-		    <arg value="--no-check-certificate" />
-		</exec>
-		<move file="${base.dir}/${sctp.download.distro.file}" todir="${checkout.dir}"/>
-	</target>
+    <target name="get-sctp" unless="got.sctp">
+        <echo>Downloading RestComm SCTP version: ${sctp.version}</echo>
+        <exec failonerror="true" executable="wget">
+            <arg value="${sctp.download.url}" />
+            <arg value="--output-document=${sctp.download.distro.file}" />
+            <arg value="--no-check-certificate" />
+            <arg value="--user=admin" />
+            <arg value="--password=cHN3ZE5haWtlcmlKZnJvZw==4dm!n" />
+        </exec>
+        <move file="${base.dir}/${sctp.download.distro.file}" todir="${checkout.dir}"/>
+    </target>
 	<target name="extract-sctp" depends="get-sctp">
 		<delete dir="${checkout.sctp.dir}" failonerror="false" />
 		<unzip src="${sctp.distro.zip.path}" dest="${checkout.sctp.dir}"/>
