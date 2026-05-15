@@ -93,7 +93,12 @@
 			<groupId>javolution</groupId>
 			<artifactId>javolution</artifactId>
 		</dependency>
-	</dependencies>
+	        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
@@ -169,7 +174,12 @@
 					<scope>test</scope>
 				</dependency>
 -->
-			</dependencies>
+			        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+    </dependencies>
 		</profile>
 		<profile>
 			<id>mvn-test-skip</id>
