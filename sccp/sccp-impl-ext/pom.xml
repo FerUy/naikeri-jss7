@@ -155,11 +155,11 @@
 					<type>test-jar</type>
 					<scope>test</scope>
 				</dependency>
-			<dependency>
-				<groupId>org.restcomm.protocols.ss7.ss7ext</groupId>
-				<artifactId>ss7-ext-api</artifactId>
-				<version>${project.version}</version>
-			</dependency>
+				<dependency>
+					<groupId>org.restcomm.protocols.ss7.ss7ext</groupId>
+					<artifactId>ss7-ext-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
 <!--
 				<dependency>
 					<groupId>org.restcomm.protocols.ss7.sccp</groupId>
@@ -174,12 +174,12 @@
 					<scope>test</scope>
 				</dependency>
 -->
-			        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-        </dependency>
-    </dependencies>
+				<dependency>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+					<version>${junit.version}</version>
+				</dependency>
+			</dependencies>
 		</profile>
 		<profile>
 			<id>mvn-test-skip</id>

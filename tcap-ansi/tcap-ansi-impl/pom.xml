@@ -69,6 +69,11 @@
 			<groupId>org.restcomm.protocols.ss7.sccp</groupId>
 			<artifactId>sccp-api</artifactId>
 		</dependency>
+	        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -138,6 +143,11 @@
 					<artifactId>mtp-api</artifactId>
 					<scope>test</scope>
 				</dependency>
+			        <dependency>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+						<version>${junit.version}</version>
+					</dependency>
 			</dependencies>
 		</profile>
 		<profile>

@@ -81,6 +81,11 @@
 			<artifactId>javolution</artifactId>
 			<version>${javolution.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+        </dependency>
 	</dependencies>
 
 
@@ -178,6 +183,11 @@
 					<groupId>org.restcomm.protocols.ss7.statistics</groupId>
 					<version>${project.version}</version>
 				</dependency>	
+			        <dependency>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+						<version>${junit.version}</version>
+					</dependency>
 			</dependencies>
 		</profile>
 		<profile>

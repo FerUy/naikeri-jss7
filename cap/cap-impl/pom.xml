@@ -12,6 +12,11 @@
 	<name>Restcomm jSS7 :: CAP :: Impl :: ${project.artifactId}</name>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<properties>
@@ -86,7 +91,12 @@
 			<groupId>org.restcomm.protocols.ss7.inap</groupId>
 			<artifactId>inap-impl</artifactId>
 		</dependency>
-	</dependencies>
+	        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
@@ -138,7 +148,12 @@
                     <groupId>org.restcomm.protocols.ss7.statistics</groupId>
                     <artifactId>statistics-api</artifactId>
                 </dependency>
-			</dependencies>
+			        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+    </dependencies>
 		</profile>
 		<profile>
 			<activation>
