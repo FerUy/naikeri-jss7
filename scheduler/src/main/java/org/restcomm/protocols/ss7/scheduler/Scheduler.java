@@ -1,6 +1,7 @@
 package org.restcomm.protocols.ss7.scheduler;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -65,7 +66,7 @@ public class Scheduler implements SchedulerMBean {
     // flag indicating state of the scheduler
     private boolean isActive;
 
-    private Logger logger = Logger.getLogger(Scheduler.class);
+    private Logger logger = LogManager.getLogger(Scheduler.class);
 
     /**
      * Creates new instance of scheduler.

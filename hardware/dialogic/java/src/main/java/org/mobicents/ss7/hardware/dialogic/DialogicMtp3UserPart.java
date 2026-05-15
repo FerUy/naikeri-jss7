@@ -6,7 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.mtp.Mtp3PausePrimitive;
 import org.restcomm.protocols.ss7.mtp.Mtp3ResumePrimitive;
 import org.restcomm.protocols.ss7.mtp.Mtp3StatusCause;
@@ -26,7 +27,7 @@ import com.dialogic.signaling.gct.GctMsg;
  */
 public class DialogicMtp3UserPart extends Mtp3UserPartBaseImpl {
 
-    private static final Logger logger = Logger.getLogger(DialogicMtp3UserPart.class);
+    private static final Logger logger = LogManager.getLogger(DialogicMtp3UserPart.class);
 
     // Header Type of message received (from Dialogic)
     private static final int DIALOGIC_MESSAGE_TYPE_API_MSG_TX_REQ = 0xcf00;

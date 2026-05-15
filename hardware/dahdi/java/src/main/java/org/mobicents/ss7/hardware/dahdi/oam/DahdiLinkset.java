@@ -9,7 +9,8 @@ import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.restcomm.protocols.ss7.mtp.Mtp3;
 import org.restcomm.protocols.ss7.mtp.Mtp3Listener;
 import org.restcomm.protocols.ss7.scheduler.Scheduler;
@@ -44,7 +45,7 @@ import org.mobicents.ss7.linkset.oam.LinksetStream;
  */
 public class DahdiLinkset extends Linkset implements Mtp3Listener {
 
-    private static final Logger logger = Logger.getLogger(DahdiLinkset.class);
+    private static final Logger logger = LogManager.getLogger(DahdiLinkset.class);
 
     private Mtp3 mtp3 = null;
     private ConcurrentLinkedQueue<byte[]> queue = new ConcurrentLinkedQueue<byte[]>();

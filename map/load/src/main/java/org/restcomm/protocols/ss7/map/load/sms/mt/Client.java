@@ -1049,7 +1049,7 @@ public class Client extends TestHarnessSmsMt {
                     smDeliveryStartTime = new TimeImpl(2024, 12, 19, 10, 7, 21);
                     smsOverIPOnlyIndicator = true;
                     ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number,
-                            org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan.ISDN, "59899077937");
+                            NumberingPlan.ISDN, "59899077937");
                     String uriA = msisdn.getAddress() + "@restcomm.org";
                     SipUri sipUriA;
                     SipUri sipUriB;
@@ -1208,7 +1208,7 @@ public class Client extends TestHarnessSmsMt {
                     clientSccpAddress, originAddressString, serverSccpAddress, destinationAddressString);
 
             ISDNAddressString msisdn = new ISDNAddressStringImpl(AddressNature.international_number,
-                    org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan.ISDN, "59899077937");
+                    NumberingPlan.ISDN, "59899077937");
             AddressString serviceCentreAddress = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, "5989900123");
             SMDeliveryOutcome sMDeliveryOutcome = SMDeliveryOutcome.absentSubscriber;
             Integer absentSubscriberDiagnosticSM = AbsentSubscriberDiagnosticSM.NoPagingResponseViaTheMSC.getCode();

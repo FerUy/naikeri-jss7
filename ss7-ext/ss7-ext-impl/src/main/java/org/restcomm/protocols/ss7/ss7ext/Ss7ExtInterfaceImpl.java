@@ -1,7 +1,8 @@
 
 package org.restcomm.protocols.ss7.ss7ext;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -11,7 +12,7 @@ import org.apache.log4j.Logger;
 */
 public class Ss7ExtInterfaceImpl implements Ss7ExtInterface {
 
-    protected final Logger logger = Logger.getLogger(Ss7ExtInterfaceImpl.class);
+    protected final Logger logger = LogManager.getLogger(Ss7ExtInterfaceImpl.class);
     private Ss7ExtSccpInterface ss7ExtSccpInterface;
 
     @Override
