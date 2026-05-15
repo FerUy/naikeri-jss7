@@ -45,7 +45,7 @@ pipeline {
                     NAIKERI_SCTP_VERSION = "${params.SCTP_MAJOR_VERSION_NUMBER}-${params.SCTP_BUILD}"
                 }
 				echo "Starting ant build for version #${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
-				withAnt(installation: 'Ant_1.10.12') {
+				withAnt(installation: 'Ant_1.10.15') {
  				   dir('release') {
  				      sh "ant -f build.xml -Drelease.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} -Dsctp.version=${NAIKERI_SCTP_VERSION}"
  				   }
