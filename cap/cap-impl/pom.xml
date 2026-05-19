@@ -10,21 +10,7 @@
 	<artifactId>cap-impl</artifactId>
 
 	<name>Restcomm jSS7 :: CAP :: Impl :: ${project.artifactId}</name>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-			</dependency>
-		        <dependency>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-core</artifactId>
-					<version>${log4j.version}</version>
-					<scope>test</scope>
-				</dependency>
-		</dependencies>
-	</dependencyManagement>
+
 	<properties>
 		<log.file.name>tests.log</log.file.name>
 	</properties>
@@ -35,16 +21,6 @@
 			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-		<!--dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency-->
 		<dependency>
 			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
@@ -71,8 +47,6 @@
 			<artifactId>cap-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.restcomm.protocols.ss7.map</groupId>
 			<artifactId>map-api</artifactId>
@@ -97,18 +71,25 @@
 			<groupId>org.restcomm.protocols.ss7.inap</groupId>
 			<artifactId>inap-impl</artifactId>
 		</dependency>
-	        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-        </dependency>
-            <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<version>${log4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
@@ -116,10 +97,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>
-					${maven-surefire-plugin.version}
-				</version>
-
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<suiteXmlFiles>
 						<!-- <suiteXmlFile>testng-methods.xml</suiteXmlFile> <suiteXmlFile>testng-classes.xml</suiteXmlFile> -->
@@ -128,6 +106,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<profiles>
 		<profile>
 			<id>test</id>
@@ -156,24 +135,14 @@
 					<artifactId>mtp-api</artifactId>
 					<scope>test</scope>
 				</dependency>
-                <dependency>
-                    <groupId>org.restcomm.protocols.ss7.statistics</groupId>
-                    <artifactId>statistics-api</artifactId>
-                </dependency>
-			        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-        </dependency>
-            <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+				<dependency>
+					<groupId>org.restcomm.protocols.ss7.statistics</groupId>
+					<artifactId>statistics-api</artifactId>
+				</dependency>
+			</dependencies>
 		</profile>
 		<profile>
+			<id>skip-tests</id>
 			<activation>
 				<property>
 					<name>maven.test.skip</name>

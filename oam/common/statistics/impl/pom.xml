@@ -11,9 +11,7 @@
 	<name>Restcomm jSS7 :: Statistic-oam :: Impl :: ${project.artifactId}</name>
 
 	<properties>
-		<tool.directory>
-			${project.build.directory}/release
-		</tool.directory>
+		<tool.directory>${project.build.directory}/release</tool.directory>
 		<tool.directory.lib>${tool.directory}/lib</tool.directory.lib>
 	</properties>
 
@@ -28,28 +26,17 @@
 			<artifactId>statistics-oam-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<!-- non restcomm -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-		<!--dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency-->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -66,12 +53,7 @@
 			<artifactId>netty-all</artifactId>
 			<version>${netty.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-		</dependency>
 	</dependencies>
-
 
 	<build>
 		<resources>
@@ -84,9 +66,7 @@
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<groupId>org.mobicents.tools</groupId>
-				<version>
-					${restcomm.tools.mavenplugin.eclipse.version}
-				</version>
+				<version>${restcomm.tools.mavenplugin.eclipse.version}</version>
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
@@ -94,20 +74,16 @@
 						<exclude>xml-apis:xml-apis</exclude>
 						<exclude>jtidy:jtidy</exclude>
 					</classpathExcludes>
-					<resolveTransitiveDependencies>
-						true
-					</resolveTransitiveDependencies>
-					<eclipseProjectName>
-						statistics-oam
-					</eclipseProjectName>
+					<resolveTransitiveDependencies>true</resolveTransitiveDependencies>
+					<eclipseProjectName>statistics-oam</eclipseProjectName>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<excludes>
-						<!-- Exclude load tests, they are suppose to be done manually -->
 						<exclude>**/*LoadTest.java</exclude>
 					</excludes>
 				</configuration>

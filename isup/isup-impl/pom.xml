@@ -10,12 +10,13 @@
 	<artifactId>isup-impl</artifactId>
 
 	<name>Restcomm jSS7 :: ISUP :: Impl :: ${project.artifactId}</name>
-	
+
 	<dependencies>
-		<!-- TESTs, req to enable concurrent! not used now -->
+		<!-- TESTs, required to enable concurrent! not used now -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -25,6 +26,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
+			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -55,6 +57,18 @@
 			<version>3.0.0</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<version>${log4j.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -63,10 +77,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>
-					${maven-surefire-plugin.version}
-				</version>
-
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<suiteXmlFiles>
 						<suiteXmlFile>testng-methods.xml</suiteXmlFile>
@@ -81,9 +92,7 @@
 				<configuration>
 					<source>${compile.source}</source>
 					<target>${compile.source}</target>
-					<compilerArgument>
-						-XDignore.symbol.file=true
-					</compilerArgument>
+					<compilerArgument>-XDignore.symbol.file=true</compilerArgument>
 				</configuration>
 			</plugin>
 		</plugins>

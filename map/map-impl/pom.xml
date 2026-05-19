@@ -10,6 +10,7 @@
 	<artifactId>map-impl</artifactId>
 
 	<name>Restcomm jSS7 :: MAP :: Impl :: ${project.artifactId}</name>
+
 	<properties>
 		<log.file.name>tests.log</log.file.name>
 	</properties>
@@ -20,17 +21,6 @@
 			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-		<!--dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency-->
-
 		<dependency>
 			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
@@ -57,8 +47,6 @@
 			<artifactId>map-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.restcomm.protocols.ss7.mtp</groupId>
 			<artifactId>mtp</artifactId>
@@ -86,22 +74,29 @@
 			<version>3.0.0</version>
 			<scope>runtime</scope>
 		</dependency>
-        <dependency>
-            <groupId>sun-jaxb</groupId>
-            <artifactId>jaxb-api</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>sun-jaxb</groupId>
+			<artifactId>jaxb-api</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
-        </dependency>
-            <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<version>${log4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
@@ -109,15 +104,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>
-					${maven-surefire-plugin.version}
-				</version>
-
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<suiteXmlFiles>
-						<!-- -->
 						<suiteXmlFile>testng-methods.xml</suiteXmlFile>
-
 						<suiteXmlFile>testng-classes.xml</suiteXmlFile>
 					</suiteXmlFiles>
 				</configuration>
@@ -153,20 +143,10 @@
 					<artifactId>mtp-api</artifactId>
 					<scope>test</scope>
 				</dependency>
-			        <dependency>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-						<version>${junit.version}</version>
-					</dependency>
-			        <dependency>
-						<groupId>org.apache.logging.log4j</groupId>
-						<artifactId>log4j-core</artifactId>
-						<version>${log4j.version}</version>
-						<scope>test</scope>
-					</dependency>
 			</dependencies>
 		</profile>
 		<profile>
+			<id>skip-tests</id>
 			<activation>
 				<property>
 					<name>maven.test.skip</name>

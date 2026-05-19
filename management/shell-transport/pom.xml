@@ -33,21 +33,18 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-		</dependency>
-		<!--dependency>
-			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.17.2</version>
-            <scope>compile</scope>
-        </dependency-->
-    </dependencies>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<version>${log4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<resources>
 			<resource>
@@ -56,35 +53,5 @@
 			</resource>
 		</resources>
 	</build>
-
-<!--
-	<profiles>
-		<profile>
-			<id>restcomm</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<cli.name>Restcomm jSS7 CLI</cli.name>
-				<cli.vendor>TeleStax</cli.vendor>
-				<cli.version>${project.version}</cli.version>
-				<cli.prefix>restcomm</cli.prefix>
-			</properties>
-		</profile>
-		
-		<profile>
-			<id>telscale</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>			
-			<properties>
-				<cli.name>TelScale CLI</cli.name>
-				<cli.vendor>TeleStax</cli.vendor>
-				<cli.version>${project.version}</cli.version>
-				<cli.prefix>telscale</cli.prefix>
-			</properties>
-		</profile>
-	</profiles>
--->
 
 </project>

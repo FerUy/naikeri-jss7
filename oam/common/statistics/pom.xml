@@ -16,7 +16,6 @@
 		<module>impl</module>
 	</modules>
 
-
 	<build>
 		<resources>
 			<resource>
@@ -28,9 +27,7 @@
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<groupId>org.mobicents.tools</groupId>
-				<version>
-					${restcomm.tools.mavenplugin.eclipse.version}
-				</version>
+				<version>${restcomm.tools.mavenplugin.eclipse.version}</version>
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
@@ -38,23 +35,16 @@
 						<exclude>xml-apis:xml-apis</exclude>
 						<exclude>jtidy:jtidy</exclude>
 					</classpathExcludes>
-					<resolveTransitiveDependencies>
-						true
-					</resolveTransitiveDependencies>
-					<eclipseProjectName>
-						statistics-oam
-					</eclipseProjectName>
+					<resolveTransitiveDependencies>true</resolveTransitiveDependencies>
+					<eclipseProjectName>statistics-oam</eclipseProjectName>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>
-					${maven-surefire-plugin.version}
-				</version>
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<excludes>
-						<!-- Exclude load tests, they are suppose to be done manually -->
 						<exclude>**/*LoadTest.java</exclude>
 					</excludes>
 				</configuration>
