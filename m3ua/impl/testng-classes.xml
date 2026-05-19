@@ -1,0 +1,30 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<!-- on my machine with higher thread count tests fail due to race and MTP 
+	issues it seems -->
+<suite name="Classes" parallel="classes" thread-count="1" verbose="1">
+
+	<test name="mgmt">
+		<classes>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.AspTransitionStateTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.GatewayTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.IPSPClientFSMTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.IPSPServerFSMTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.M3UAErrorManagementStateTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.M3UAManagementTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.RemSgFSMTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.RKMAsDoesNotExistTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.SgFSMTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.cong.CongTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.fsm.FSMTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.message.AspFactoryPayloadTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.message.ByteBufTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.message.MessageFactoryTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.message.MessageTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.oam.M3UAShellExecutorTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.oam.SCTPShellExecutorTest"/>
+			<class name="org.restcomm.protocols.ss7.m3ua.impl.parameter.ParameterTest"/>
+		</classes>
+	</test>
+
+
+</suite>

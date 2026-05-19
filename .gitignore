@@ -287,8 +287,6 @@ m3ua/impl/RKMTest-client_sctp.xml
 m3ua/impl/RKMTest-server_m3ua1.xml
 m3ua/impl/RKMTest-server_sctp.xml
 m3ua/impl/SgFSMTest_m3ua1.xml
-m3ua/impl/testng-classes.xml
-m3ua/impl/testng-methods.xml
 m3ua/impl/TestSCTP1_sctp.xml
 m3ua/impl/TestSCTP2_sctp.xml
 m3ua/impl/M3ua_ManagementMessageHandler.xml

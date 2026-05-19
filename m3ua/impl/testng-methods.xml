@@ -1,0 +1,23 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Methods" parallel="methods" thread-count="1"  verbose="1">
+	<test name="simple">
+		<!-- 
+	    <groups>
+		    <run>
+		      <include name="encode"  />
+		      <include name="asn"  />
+		    </run>
+	  	</groups>
+	  	 -->
+	  	 <!-- 
+	  	<packages>
+			 <package name="org.restcomm.protocols.ss7.m3ua.impl"/>
+			 <package name="org.restcomm.protocols.ss7.m3ua.impl.cong"/>
+			 <package name="org.restcomm.protocols.ss7.m3ua.impl.fsm"/>
+			 <package name="org.restcomm.protocols.ss7.m3ua.impl.message"/>
+			 <package name="org.restcomm.protocols.ss7.m3ua.impl.oam"/>
+			 <package name="org.restcomm.protocols.ss7.m3ua.impl.parameter"/>
+  		 </packages>
+  		  -->
+	</test>
+</suite>
