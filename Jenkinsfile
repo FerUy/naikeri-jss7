@@ -9,7 +9,6 @@ pipeline {
 	    string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '9.0.0', description: 'The major version for Naikeri jSS7')
 	    string(name: 'SCTP_MAJOR_VERSION_NUMBER', defaultValue: '2.1.0', description: 'The major version of Naikeri SCTP for Naikeri jSS7')
 	    string(name: 'SCTP_BUILD', defaultValue: '32', description: 'The build number of Naikeri SCTP for Naikeri jSS7 to use for the build')
-	    // booleanParam(name: 'BUILD_ANT', defaultValue: true, description: 'Enable if Binary needs to be generated')
 	}
 
 	stages {
@@ -33,12 +32,19 @@ pipeline {
                     currentBuild.description = "Naikeri jSS7 build"
                 }
 				echo "Building Naikeri jSS7 version (#${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER})"
-				sh "mvn clean install -Dsctp.version=${NAIKERI_SCTP_VERSION} -Dss7.restcomm.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} -DskipTests"
+				script {
+                    if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'release') {
+                        sh "mvn clean install -Dsctp.version=${NAIKERI_SCTP_VERSION} -Dss7.restcomm.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
+                    } else {
+                        sh "mvn clean install -Dsctp.version=${NAIKERI_SCTP_VERSION} -Dss7.restcomm.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} -DskipTests"
+                    }
+                }
 				echo "Maven build completed."
 			}
 		}
 
 		stage("Ant") {
+            when { anyOf { branch 'master'; branch 'release' } }
             steps {
                 script {
                     NAIKERI_SCTP_VERSION = "${params.SCTP_MAJOR_VERSION_NUMBER}-${params.SCTP_BUILD}"
@@ -57,25 +63,23 @@ pipeline {
         }
 
 		stage('Save Artifacts') {
+            when { anyOf { branch 'master'; branch 'release' } }
             steps {
                 echo "Archiving Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
                 archiveArtifacts artifacts: "release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip", followSymlinks: false, onlyIfSuccessful: true
             }
         }
+
         stage('Push to Repo') {
             when { anyOf { branch 'master'; branch 'release' } }
 		    steps {
 		        sh "mkdir -p /var/www/html/NAIKERI/jss7/${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}/"
 		        sh "cp release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip /var/www/html/NAIKERI/jss7/${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}/"
-		        /*sshagent (credentials: ['4e708f2a-8b37-414f-a6d4-787690b87738']) {
-		            sh 'ssh -o StrictHostKeyChecking=no -l fer 127.0.0.1 uname -a'
-				    sh "scp release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip fer@127.0.0.1:/var/www/html/NAIKERI/jss7/"
-	  	        }*/
 		    }
 	    }
 
 	    stage('Push to jFrog') {
-	        when {anyOf {branch 'master'; branch 'release'}}
+	        when { anyOf { branch 'master'; branch 'release' } }
 	        steps {
 	            sh 'mvn deploy -DskipTests'
 	        }
