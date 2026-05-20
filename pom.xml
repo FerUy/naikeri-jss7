@@ -47,6 +47,7 @@
 		<maven-install-plugin.version>3.0.1</maven-install-plugin.version>
 		<maven-assembly-plugin.version>2.2.1</maven-assembly-plugin.version>
 		<maven-war-plugin.version>3.5.1</maven-war-plugin.version>
+		<maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
 		<compile.source>11</compile.source>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
@@ -556,6 +557,12 @@
 				</executions>
 				<configuration combine.self="override">
 				</configuration>
+			</plugin>
+			<!-- Override inherited maven-bundle-plugin to fix Java 11+ class file compatibility -->
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>${maven-bundle-plugin.version}</version>
 			</plugin>
 		</plugins>
 	</build>
