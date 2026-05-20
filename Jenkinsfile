@@ -8,7 +8,7 @@ pipeline {
 	parameters {
 	    string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '9.0.0', description: 'The major version for Naikeri jSS7')
 	    string(name: 'SCTP_MAJOR_VERSION_NUMBER', defaultValue: '2.1.0', description: 'The major version of Naikeri SCTP for Naikeri jSS7')
-	    string(name: 'SCTP_BUILD', defaultValue: '32', description: 'The build number of Naikeri SCTP for Naikeri jSS7 to use for the build')
+	    string(name: 'SCTP_BUILD', defaultValue: '33', description: 'The build number of Naikeri SCTP for Naikeri jSS7 to use for the build')
 	}
 
 	stages {
@@ -25,37 +25,34 @@ pipeline {
 		}
 
 		stage("Build") {
-			steps {
-				script {
-                    NAIKERI_SCTP_VERSION = "${params.SCTP_MAJOR_VERSION_NUMBER}-${params.SCTP_BUILD}"
+            steps {
+                script {
+                    def NAIKERI_SCTP_VERSION = "${params.SCTP_MAJOR_VERSION_NUMBER}-${params.SCTP_BUILD}"
                     currentBuild.displayName = "#${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
                     currentBuild.description = "Naikeri jSS7 build"
-                }
-				echo "Building Naikeri jSS7 version (#${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER})"
-				script {
                     if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'release') {
                         sh "mvn clean install -Dsctp.version=${NAIKERI_SCTP_VERSION} -Dss7.restcomm.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
                     } else {
                         sh "mvn clean install -Dsctp.version=${NAIKERI_SCTP_VERSION} -Dss7.restcomm.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} -DskipTests"
                     }
                 }
-				echo "Maven build completed."
-			}
-		}
+                echo "Maven build completed."
+            }
+        }
 
 		stage("Ant") {
             when { anyOf { branch 'master'; branch 'release' } }
             steps {
                 script {
-                    NAIKERI_SCTP_VERSION = "${params.SCTP_MAJOR_VERSION_NUMBER}-${params.SCTP_BUILD}"
-                }
-                echo "Starting ant build for version #${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
-                withCredentials([usernamePassword(credentialsId: '426e8cfb-a47c-4fd2-96ae-713c541dc3f6',
-                                                  usernameVariable: 'ART_USER',
-                                                  passwordVariable: 'ART_PASS')]) {
-                    withAnt(installation: 'Ant_1.10.15') {
-                        dir('release') {
-                            sh "ant -f build.xml -Drelease.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} -Dsctp.version=${NAIKERI_SCTP_VERSION} -Dartifactory.user=${ART_USER} -Dartifactory.password=${ART_PASS}"
+                    def NAIKERI_SCTP_VERSION = "${params.SCTP_MAJOR_VERSION_NUMBER}-${params.SCTP_BUILD}"
+                    echo "Starting ant build for version #${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
+                    withCredentials([usernamePassword(credentialsId: '426e8cfb-a47c-4fd2-96ae-713c541dc3f6',
+                                                      usernameVariable: 'ART_USER',
+                                                      passwordVariable: 'ART_PASS')]) {
+                        withAnt(installation: 'Ant_1.10.15') {
+                            dir('release') {
+                                sh "ant -f build.xml -Drelease.version=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} -Dsctp.version=${NAIKERI_SCTP_VERSION} -Dartifactory.user=${ART_USER} -Dartifactory.password=${ART_PASS}"
+                            }
                         }
                     }
                 }
