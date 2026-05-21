@@ -33,28 +33,33 @@
 		<xmltask source="${jboss.modules.path}/sun/jdk/main/module.xml" dest="${jboss.modules.path}/sun/jdk/main/module.xml">
 			<remove path="/:module/:dependencies/:system/:paths/:path[@name='com/sun/nio/sctp']"/>
 			<insert path="/:module/:dependencies/:system/:paths/:path[last()]" position="after">
-				<![CDATA[<path xmlns="urn:jboss:module:1.3" name="com/sun/nio/sctp"/>]]> 
+				<![CDATA[<path xmlns="urn:jboss:module:1.3" name="com/sun/nio/sctp"/>]]>
 			</insert>
-		</xmltask> 
+		</xmltask>
 
-		<!-- adding of "org.restcomm.ss7.modules" name="com/sun/nio/sctp"/>" into /org/restcomm/slee/container/lib/main/module.xml -->
-		<xmltask source="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml" dest="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml">
-			<remove path="/:module/:dependencies/:module[@name='org.restcomm.ss7.modules']"/>
-			<insert path="/:module/:dependencies/:module[last()]" position="after">
-				<![CDATA[<module xmlns="urn:jboss:module:1.0" name="org.restcomm.ss7.modules" export="true"/>]]> 
-			</insert>
-		</xmltask> 
+		<!-- adding of "org.restcomm.ss7.modules" into /org/restcomm/slee/container/lib/main/module.xml (only if Restcomm SLEE is present) -->
+		<if>
+			<available file="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml"/>
+			<then>
+				<xmltask source="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml" dest="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml">
+					<remove path="/:module/:dependencies/:module[@name='org.restcomm.ss7.modules']"/>
+					<insert path="/:module/:dependencies/:module[last()]" position="after">
+						<![CDATA[<module xmlns="urn:jboss:module:1.0" name="org.restcomm.ss7.modules" export="true"/>]]>
+					</insert>
+				</xmltask>
+			</then>
+		</if>
 
 		<!-- adding of a security domain into standalone.xml -->
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<remove path="/:server/:profile/*[local-name()='subsystem']/*[local-name()='security-domains']/*[local-name()='security-domain' and @name='jmx-console']"/>
 			<insert path="/:server/:profile/*[local-name()='subsystem']/*[local-name()='security-domains']/*[local-name()='security-domain'][last()]" position="after" file="template/security-domains.txt"></insert>
-		</xmltask> 
+		</xmltask>
 
 		<!-- adding of "<extension module="org.restcomm.ss7.extension"/>" into standalone.xml -->
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<insert path="/:server/:extensions/:extension[last()]" position="after">
-				<![CDATA[<extension xmlns="urn:jboss:domain:4.2" module="org.restcomm.ss7.extension"/>]]> 
+				<![CDATA[<extension xmlns="urn:jboss:domain:4.2" module="org.restcomm.ss7.extension"/>]]>
 			</insert>
 		</xmltask>
 
@@ -62,7 +67,7 @@
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<remove path="/:server/:profile/*[local-name()='subsystem'][*[local-name()='mbean'][namespace-uri()='urn:org.restcomm:ss7-wildfly:1.0'][@reflection]]"/>
 			<insert path="/:server/:profile/*[local-name()='subsystem'][last()]" position="after" file="template/wildfly-jss7-subsystem.txt"></insert>
-		</xmltask> 
+		</xmltask>
 
 		<!-- Copy jSS7 Extension with Modules -->
 		<copy overwrite="true" todir="${restcomm-ss7.path}">
@@ -74,21 +79,21 @@
 		<copy overwrite="true" todir="${jboss.home}/bin">
 			<fileset dir="${basedir}/../ss7/shell/bin">
 				<include name="**" />
-			</fileset>			
+			</fileset>
 		</copy>
 
 		<copy overwrite="true" todir="${jboss.home}/lib">
 			<fileset dir="${basedir}/../ss7/shell/lib">
 				<include name="**" />
-			</fileset>			
+			</fileset>
 		</copy>
-	
+
 		<copy overwrite="true" todir="${jboss.home}/key">
                         <fileset dir="${basedir}/../key">
                                 <include name="**" />
                         </fileset>
                 </copy>
-	
+
 		<copy overwrite="true" todir="${jboss.deploy}">
                         <fileset dir="${basedir}/../oam/new-ui">
                                 <include name="**" />
@@ -105,7 +110,7 @@
 			<fileset dir="${basedir}/template">
 				<include name="jmx-roles.properties" />
 				<include name="jmx-users.properties" />
-			</fileset>			
+			</fileset>
 		</copy>
 
 	</target>
@@ -114,15 +119,20 @@
 
 		<xmltask source="${jboss.modules.path}/sun/jdk/main/module.xml" dest="${jboss.modules.path}/sun/jdk/main/module.xml">
 			<remove path="/:module/:dependencies/:system/:paths/:path[@name='com/sun/nio/sctp']"/>
-		</xmltask> 
+		</xmltask>
 
-		<xmltask source="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml" dest="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml">
-			<remove path="/:module/:dependencies/:module[@name='org.restcomm.ss7.modules']"/>
-		</xmltask> 
+		<if>
+			<available file="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml"/>
+			<then>
+				<xmltask source="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml" dest="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml">
+					<remove path="/:module/:dependencies/:module[@name='org.restcomm.ss7.modules']"/>
+				</xmltask>
+			</then>
+		</if>
 
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<remove path="/:server/:profile/*[local-name()='subsystem']/*[local-name()='security-domains']/*[local-name()='security-domain' and @name='jmx-console']"/>
-		</xmltask> 
+		</xmltask>
 
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<remove path="/:server/:extensions/:extension[@module='org.restcomm.ss7.extension']"/>
@@ -159,7 +169,7 @@
 		<delete file="${jboss.standalone.path}/configuration/jmx-roles.properties" />
 		<delete file="${jboss.standalone.path}/configuration/jmx-users.properties" />
 	</target>
-	
+
 	<target name="deploy-commons">
 		<copy overwrite="true" todir="${restcomm-ss7.path}/commons">
 			<fileset dir="${basedir}/restcomm-ss7-service/commons">
@@ -167,16 +177,16 @@
 			</fileset>
 		</copy>
 	</target>
-		
+
 	<target name="undeploy-commons">
 		<delete dir="${restcomm-ss7.path}/commons" />
 	</target>
-	
+
 	<target name="deploy-with-logging" depends="deploy">
 			<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 				<remove path="/:server/:profile/*[local-name()='subsystem'][*[namespace-uri()='urn:jboss:domain:logging:3.0']]" />
 				<insert path="/:server/:profile/*[local-name()='subsystem'][last()]" position="after" file="template/ss7-logging-subsystem.txt" />
 			</xmltask>
 	</target>
-	
+
 </project>
