@@ -1,0 +1,106 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'jdk-11'
+    }
+
+    parameters {
+        string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '9.0.0', description: 'The major version for Naikeri jSS7')
+        string(name: 'jSS7_BUILD', defaultValue: '', description: 'The build number of Naikeri jSS7 to use (leave empty for last successful)')
+        string(name: 'WILDFLY_VERSION', defaultValue: '24.0.1.Final', description: 'WildFly version to use')
+    }
+
+    stages {
+        stage('Get jSS7 Artifact') {
+            steps {
+                script {
+                    def buildNumber = params.jSS7_BUILD?.trim() ? params.jSS7_BUILD : ''
+                    def selector = buildNumber ? "specific build ${buildNumber}" : "last successful build"
+                    echo "Copying jSS7 artifact from ${selector}"
+                    copyArtifacts(
+                        projectName: 'Naikeri-jSS7/master',
+                        selector: buildNumber ? specific(buildNumber) : lastSuccessful(),
+                        filter: "release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-*.zip",
+                        flatten: true
+                    )
+                    // Find the actual filename
+                    def zipFile = sh(script: "ls Naikeri-jSS7-*.zip", returnStdout: true).trim()
+                    env.JSS7_ZIP = zipFile
+                    env.JSS7_VERSION = zipFile.replace('Naikeri-jSS7-', '').replace('.zip', '')
+                    echo "Using jSS7 artifact: ${env.JSS7_ZIP}"
+                }
+            }
+        }
+
+        stage('Get WildFly') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: '426e8cfb-a47c-4fd2-96ae-713c541dc3f6',
+                                                  usernameVariable: 'ART_USER',
+                                                  passwordVariable: 'ART_PASS')]) {
+                    sh """
+                        wget -q --user=\${ART_USER} --password=\${ART_PASS} --no-check-certificate \
+                        'https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local/com/naikeri/wildfly/wildfly/${params.WILDFLY_VERSION}/wildfly-${params.WILDFLY_VERSION}.zip' \
+                        -O wildfly-${params.WILDFLY_VERSION}.zip
+                        echo "WildFly downloaded successfully"
+                    """
+                }
+            }
+        }
+
+        stage('Prepare WildFly') {
+            steps {
+                sh """
+                    unzip -q wildfly-${params.WILDFLY_VERSION}.zip
+                    unzip -q \${JSS7_ZIP} -d jss7-dist
+                    echo "WildFly and jSS7 extracted"
+                """
+            }
+        }
+
+        stage('Deploy jSS7 into WildFly') {
+            steps {
+                withAnt(installation: 'Ant_1.10.15') {
+                    sh """
+                        export JBOSS_HOME=\$(pwd)/wildfly-${params.WILDFLY_VERSION}
+                        cd jss7-dist/Naikeri-jSS7-\${JSS7_VERSION}/ss7-wildfly
+                        ant -f build.xml deploy
+                        echo "jSS7 deployed into WildFly"
+                    """
+                }
+            }
+        }
+
+        stage('Package WildFly+jSS7') {
+            steps {
+                script {
+                    def packageName = "Naikeri-jSS7-WildFly-${env.JSS7_VERSION}.zip"
+                    env.PACKAGE_NAME = packageName
+                    sh """
+                        zip -qr ${packageName} wildfly-${params.WILDFLY_VERSION}/
+                        echo "Package created: ${packageName}"
+                    """
+                }
+            }
+        }
+
+        stage('Save Artifacts') {
+            steps {
+                echo "Archiving ${env.PACKAGE_NAME}"
+                archiveArtifacts artifacts: "Naikeri-jSS7-WildFly-*.zip", followSymlinks: false, onlyIfSuccessful: true
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Successfully built Naikeri jSS7 WildFly package: ${env.PACKAGE_NAME}"
+        }
+        failure {
+            echo "Build failed"
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
