@@ -254,6 +254,8 @@
               failonerror="true"/>
     	<copy file="${jss7.dir}/release/xmltask.jar" tofile="${restcomm.jss7.dist}/ss7-wildfly/xmltask.jar"
               failonerror="true"/>
+        <copy file="${jss7.dir}/release/ant-contrib-1.0b3.jar" tofile="${restcomm.jss7.dist}/ss7-wildfly/ant-contrib-1.0b3.jar"
+              failonerror="true"/>
     	<copy file="${jss7.dir}/release/ss7-logging-subsystem.txt" tofile="${restcomm.jss7.dist}/ss7-wildfly/template/ss7-logging-subsystem.txt"
     	              failonerror="true"/>
     		
