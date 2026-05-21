@@ -17,14 +17,14 @@ pipeline {
                 script {
                     def buildNumber = params.jSS7_BUILD?.trim() ? params.jSS7_BUILD : ''
                     def selector = buildNumber ? "specific build ${buildNumber}" : "last successful build"
-                    echo "Copying jSS7 artifact from ${selector}"
+                    def projectName = "Naikeri-jSS7/${env.BRANCH_NAME}"
+                    echo "Copying jSS7 artifact from ${selector} of ${projectName}"
                     copyArtifacts(
-                        projectName: 'Naikeri-jSS7/master',
+                        projectName: projectName,
                         selector: buildNumber ? specific(buildNumber) : lastSuccessful(),
                         filter: "release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-*.zip",
                         flatten: true
                     )
-                    // Find the actual filename
                     def zipFile = sh(script: "ls Naikeri-jSS7-*.zip", returnStdout: true).trim()
                     env.JSS7_ZIP = zipFile
                     env.JSS7_VERSION = zipFile.replace('Naikeri-jSS7-', '').replace('.zip', '')
