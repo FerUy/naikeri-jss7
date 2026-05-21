@@ -2,9 +2,14 @@
 <project name="Release_build" default="deploy">
 
 	<path id="xmltask.path">
-	    <pathelement path="${basedir}/xmltask.jar" />
+		<pathelement path="${basedir}/xmltask.jar" />
 	</path>
 	<taskdef name="xmltask" classpathref="xmltask.path" classname="com.oopsconsultancy.xmltask.ant.XmlTask" />
+
+	<path id="ant-contrib.path">
+		<pathelement path="${basedir}/ant-contrib-1.0b3.jar" />
+	</path>
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="ant-contrib.path"/>
 
 	<property name="home" value="${ant.file.Release_build}/../" />
 
@@ -89,22 +94,22 @@
 		</copy>
 
 		<copy overwrite="true" todir="${jboss.home}/key">
-                        <fileset dir="${basedir}/../key">
-                                <include name="**" />
-                        </fileset>
-                </copy>
+			<fileset dir="${basedir}/../key">
+				<include name="**" />
+			</fileset>
+		</copy>
 
 		<copy overwrite="true" todir="${jboss.deploy}">
-                        <fileset dir="${basedir}/../oam/new-ui">
-                                <include name="**" />
-                        </fileset>
-                </copy>
+			<fileset dir="${basedir}/../oam/new-ui">
+				<include name="**" />
+			</fileset>
+		</copy>
 
 		<copy overwrite="true" todir="${jboss.deploy}">
-                        <fileset dir="${basedir}/../sniffer/sniffer-metrics">
-                                <include name="**" />
-                        </fileset>
-                </copy>
+			<fileset dir="${basedir}/../sniffer/sniffer-metrics">
+				<include name="**" />
+			</fileset>
+		</copy>
 
 		<copy overwrite="true" todir="${jboss.standalone.path}/configuration">
 			<fileset dir="${basedir}/template">
@@ -183,10 +188,10 @@
 	</target>
 
 	<target name="deploy-with-logging" depends="deploy">
-			<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
-				<remove path="/:server/:profile/*[local-name()='subsystem'][*[namespace-uri()='urn:jboss:domain:logging:3.0']]" />
-				<insert path="/:server/:profile/*[local-name()='subsystem'][last()]" position="after" file="template/ss7-logging-subsystem.txt" />
-			</xmltask>
+		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
+			<remove path="/:server/:profile/*[local-name()='subsystem'][*[namespace-uri()='urn:jboss:domain:logging:3.0']]" />
+			<insert path="/:server/:profile/*[local-name()='subsystem'][last()]" position="after" file="template/ss7-logging-subsystem.txt" />
+		</xmltask>
 	</target>
 
 </project>
