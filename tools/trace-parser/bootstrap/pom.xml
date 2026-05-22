@@ -151,7 +151,6 @@
 						<descriptor>src/main/assembly/descriptor.xml</descriptor>
 					</descriptors>
 					<finalName>traceparser</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
