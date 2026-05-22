@@ -61,8 +61,6 @@
              	<include>org.restcomm.protocols.ss7.statistics:statistics-api</include>
                 <include>org.restcomm.protocols.ss7.statistics:statistics-impl</include>
 
-				<!-- lic dep -->
-
 			</includes>
 		</dependencySet>
 	</dependencySets>

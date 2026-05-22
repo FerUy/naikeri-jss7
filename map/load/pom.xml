@@ -157,18 +157,6 @@
 			<version>3.12.0</version>
 		</dependency>
 
-		<!-- lic dep -->
-		<dependency>
-			<groupId>com.license4j</groupId>
-			<artifactId>license4j-runtime-library</artifactId>
-			<version>4.7.3</version>
-		</dependency>
-		<dependency>
-			<groupId>com.naikeri.licensor</groupId>
-			<artifactId>NaikeriLicensor</artifactId>
-			<version>1.0.0-3</version>
-		</dependency>
-
 		<!-- SS7 stats -->
 		<dependency>
 			<artifactId>statistics-api</artifactId>
@@ -626,32 +614,6 @@
 											</destFileName>
 										</artifactItem>
 
-										<!-- license dependencies -->
-										<artifactItem>
-											<groupId>com.license4j</groupId>
-											<artifactId>license4j-runtime-library</artifactId>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>
-												${assemble.dir}
-											</outputDirectory>
-											<destFileName>
-												license4j-runtime-library-4.7.3.jar
-											</destFileName>
-										</artifactItem>
-										<artifactItem>
-											<groupId>com.naikeri.licensor</groupId>
-											<artifactId>NaikeriLicensor</artifactId>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>
-												${assemble.dir}
-											</outputDirectory>
-											<destFileName>
-												NaikeriLicensor-1.0.0-3.jar
-											</destFileName>
-										</artifactItem>
-
 										<artifactItem>
 											<groupId>org.apache.commons</groupId>
 											<artifactId>commons-lang3</artifactId>
@@ -665,20 +627,18 @@
 											</destFileName>
 										</artifactItem>
 
-										<!-- lic dep 2 -->
-																				
-										<!-- <artifactItem> <groupId>org.mobicents.external.appframework</groupId> 
-											<artifactId>appframework</artifactId> <type>jar</type> <overWrite>true</overWrite> 
-											<outputDirectory> ${assemble.dir}/lib </outputDirectory> <destFileName> appframework.jar 
-											</destFileName> </artifactItem> <artifactItem> <groupId>org.mobicents.external.appframework</groupId> 
-											<artifactId>swing-layout</artifactId> <type>jar</type> <overWrite>true</overWrite> 
-											<outputDirectory> ${assemble.dir}/lib </outputDirectory> <destFileName> swing-layout.jar 
-											</destFileName> </artifactItem> <artifactItem> <groupId>org.mobicents.external.appframework</groupId> 
-											<artifactId>swing-worker</artifactId> <type>jar</type> <overWrite>true</overWrite> 
-											<outputDirectory> ${assemble.dir}/lib </outputDirectory> <destFileName> swing-worker.jar 
-											</destFileName> </artifactItem> <artifactItem> <groupId>org.mobicents.external.opencsv</groupId> 
-											<artifactId>opencsv</artifactId> <type>jar</type> <overWrite>true</overWrite> 
-											<outputDirectory> ${assemble.dir}/lib </outputDirectory> <destFileName> opencsv.jar 
+										<!-- <artifactItem> <groupId>org.mobicents.external.appframework</groupId>
+											<artifactId>appframework</artifactId> <type>jar</type> <overWrite>true</overWrite>
+											<outputDirectory> ${assemble.dir}/lib </outputDirectory> <destFileName> appframework.jar
+											</destFileName> </artifactItem> <artifactItem> <groupId>org.mobicents.external.appframework</groupId>
+											<artifactId>swing-layout</artifactId> <type>jar</type> <overWrite>true</overWrite>
+											<outputDirectory> ${assemble.dir}/lib </outputDirectory> <destFileName> swing-layout.jar
+											</destFileName> </artifactItem> <artifactItem> <groupId>org.mobicents.external.appframework</groupId>
+											<artifactId>swing-worker</artifactId> <type>jar</type> <overWrite>true</overWrite>
+											<outputDirectory> ${assemble.dir}/lib </outputDirectory> <destFileName> swing-worker.jar
+											</destFileName> </artifactItem> <artifactItem> <groupId>org.mobicents.external.opencsv</groupId>
+											<artifactId>opencsv</artifactId> <type>jar</type> <overWrite>true</overWrite>
+											<outputDirectory> ${assemble.dir}/lib </outputDirectory> <destFileName> opencsv.jar
 											</destFileName> </artifactItem> -->
 									</artifactItems>
 								</configuration>

@@ -15,8 +15,6 @@ import org.restcomm.protocols.ss7.ss7ext.Ss7ExtInterfaceDefault;
 import org.restcomm.ss7.congestion.ExecutorCongestionMonitor;
 import org.restcomm.ss7.congestion.ExecutorCongestionMonitorImpl;
 
-// lic dep 1
-
 /**
  *
  * @author amit bhayani
@@ -146,9 +144,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
     }
 
     public void start() throws Exception {
-        // lic dep 2
         ss7ExtInterface.startMtpSs7Ext(this.productName);
-
         startNoLce();
     }
 

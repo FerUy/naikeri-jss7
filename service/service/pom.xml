@@ -12,7 +12,7 @@
 
 	<properties>
 		<restcomm.name>restcomm-ss7</restcomm.name>
-		<restcomm.vendor>TeleStax</restcomm.vendor>
+		<restcomm.vendor>Restcomm</restcomm.vendor>
 		<restcomm.version>${project.version}</restcomm.version>
 	</properties>
 

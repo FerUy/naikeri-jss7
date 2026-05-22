@@ -72,10 +72,6 @@
 				<!-- Google Guava for Multimap -->
 				<include>com.google.guava:guava</include>
 
-				<!-- lic dep -->
-				<!--include>com.paic.licenser:PAiClicenser</include>
-				<include>LICENSE4J-Runtime-Library:LICENSE4J-Runtime-Library</include-->
-
 			</includes>
 		</dependencySet>
 	</dependencySets>

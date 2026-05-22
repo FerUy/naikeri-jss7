@@ -67,17 +67,6 @@
             <groupId>org.restcomm.protocols.ss7.statistics</groupId>
             <artifactId>statistics-impl</artifactId>
         </dependency>
-        <!-- Naikeri License Enforcer -->
-        <dependency>
-            <groupId>com.license4j</groupId>
-            <artifactId>license4j-runtime-library</artifactId>
-            <version>4.7.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.naikeri.licensor</groupId>
-            <artifactId>NaikeriLicensor</artifactId>
-            <version>1.0.0-3</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>

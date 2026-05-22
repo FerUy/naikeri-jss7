@@ -66,10 +66,6 @@
 		<pathelement location="${assemble.dir}/restcomm-congestion.jar" />
 		<pathelement location="${assemble.dir}/commons.jar" />
 
-		<!-- lic dep -->
-		<pathelement location="${assemble.dir}/NaikeriLicensor-1.0.0-3.jar" />
-		<pathelement location="${assamble.dir}/license4j-runtime-library-4.7.3.jar" />
-
 		<!-- Stats -->
 		<pathelement location="${assemble.dir}/statistics-api.jar" />
 		<pathelement location="${assemble.dir}/statistics-impl.jar" />

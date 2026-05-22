@@ -54,11 +54,7 @@ public class SS7Service extends ServiceMBeanSupport implements SS7ServiceMBean {
 
     public String getSS7Vendor() {
         String vendor = Version.instance.getProperty("vendor");
-        if (vendor != null) {
-            return vendor;
-        } else {
-            return "PAiC Business Development";
-        }
+        return vendor != null ? vendor : "Unknown";
     }
 
     public String getSS7Version() {
