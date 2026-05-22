@@ -82,12 +82,13 @@
 						<descriptor>src/main/assembly/descriptor.xml</descriptor>
 					</descriptors>
 					<finalName>simulator</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
-							<goal>directory-inline</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>

@@ -48,12 +48,9 @@
 					${maven-surefire-plugin.version}
 				</version>
 				<configuration>
-					<systemProperties>
-						<property>
-							<name>file.name</name>
-							<value>target/log4j.log</value>
-						</property>
-					</systemProperties>
+					<systemPropertyVariables>
+						<file.name>target/log4j.log</file.name>
+					</systemPropertyVariables>
 					<includes>
 						<include>**/*Test.java</include>
 					</includes>
