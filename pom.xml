@@ -61,7 +61,6 @@
 		<version.wildfly.as>24.0.1.Final</version.wildfly.as>
 		<version.wildfly.core>16.0.1.Final</version.wildfly.core>
 		<dialogic.version>6.7.1</dialogic.version>
-		<!-- lic dep -->
 	</properties>
 
 	<distributionManagement>

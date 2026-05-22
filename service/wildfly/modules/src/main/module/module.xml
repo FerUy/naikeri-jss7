@@ -4,7 +4,6 @@
     <resources>
         <resource-root path="netty-all-${netty.version}.jar"/>
         <resource-root path="stream-${stream.version}.jar"/>
-        <resource-root path="commons-email-1.6.0.jar"/>
         <resource-root path="guava-${guava.version}.jar"/>
         <resource-root path="log4j-api-${log4j.version}.jar"/>
         <resource-root path="log4j-core-${log4j.version}.jar"/>

@@ -151,13 +151,6 @@
 			<artifactId>javolution</artifactId>
 			<version>${javolution.version}</version>
 		</dependency>
-		
-		
-		<dependency>
-		   <groupId>org.apache.commons</groupId>
-		   <artifactId>commons-email</artifactId>
-		   <version>1.3.2</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -605,19 +598,6 @@
 												log4j-api-${log4j.version}.jar
 											</destFileName>
 										</artifactItem-->
-
-										<artifactItem>
-											<groupId>org.apache.commons</groupId>
-											<artifactId>commons-email</artifactId>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>
-												${assemble.dir}
-											</outputDirectory>
-											<destFileName>
-												commons-email.jar
-											</destFileName>
-										</artifactItem>		
 										
 										<!-- Stats jars -->	
 										<artifactItem>

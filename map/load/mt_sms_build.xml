@@ -65,7 +65,6 @@
         <pathelement location="${assemble.dir}/mtp.jar" />
         <pathelement location="${assemble.dir}/restcomm-congestion.jar" />
         <pathelement location="${assemble.dir}/commons.jar" />
-        <pathelement location="${assemble.dir}/commons-email.jar" />
 
         <!-- lic dep -->
 

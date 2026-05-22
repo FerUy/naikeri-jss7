@@ -66,7 +66,6 @@
               	<include>org.restcomm.protocols.ss7.statistics:statistics-impl</include>
               	<include>org.restcomm.protocols.ss7.ss7ext:ss7-ext-api</include>
 				<include>org.restcomm.protocols.ss7.ss7ext:ss7-ext-impl</include>
-			    <include>org.apache.commons:commons-email</include>
 				<include>org.apache.commons:commons</include>
 				<include>org.apache.commons:commons-lang3</include>
 				<include>jakarta.xml.bind:jakarta.xml.bind-api</include>
