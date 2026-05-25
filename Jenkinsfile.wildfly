@@ -9,6 +9,7 @@ pipeline {
         string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '9.0.0', description: 'The major version for Naikeri jSS7')
         string(name: 'jSS7_BUILD', defaultValue: '', description: 'The build number of Naikeri jSS7 to use (leave empty for last successful)')
         string(name: 'WILDFLY_VERSION', defaultValue: '24.0.1.Final', description: 'WildFly version to use')
+        string(name: 'jSS7_PROJECT_PATH', defaultValue: 'SS7/Naikeri-jSS7', description: 'Jenkins folder path for the upstream Naikeri-jSS7 multibranch pipeline')
     }
 
     stages {
@@ -17,7 +18,8 @@ pipeline {
                 script {
                     def buildNumber = params.jSS7_BUILD?.trim() ? params.jSS7_BUILD : ''
                     def selector = buildNumber ? "specific build ${buildNumber}" : "last successful build"
-                    def projectName = "${params.jSS7_PROJECT_PATH}/${env.BRANCH_NAME.replace('/', '%2F')}"
+                    def projectPath = params.jSS7_PROJECT_PATH ?: 'SS7/Naikeri-jSS7'
+                    def projectName = "${projectPath}/${env.BRANCH_NAME.replace('/', '%2F')}"
                     echo "Copying jSS7 artifact from ${selector} of ${projectName}"
                     copyArtifacts(
                         projectName: projectName,
