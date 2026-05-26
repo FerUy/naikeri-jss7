@@ -227,7 +227,7 @@
               failonerror="true"/>
         <copy file="${jss7.dir}/sccp/sccp-cli/target/sccp-cli.jar" todir="${restcomm.jss7.dist}/ss7/shell/lib"
               failonerror="true"/>
-	<copy file="${jss7.dir}/sccp/sccp-cli-ext/target/sccp-cli-ext.jar" todir="${restcomm.jss7.dist}/ss7/shell/lib"
+	    <copy file="${jss7.dir}/sccp/sccp-cli-ext/target/sccp-cli-ext.jar" todir="${restcomm.jss7.dist}/ss7/shell/lib"
               failonerror="true"/>
         <copy file="${jss7.dir}/tcap/tcap-cli/target/tcap-cli.jar" todir="${restcomm.jss7.dist}/ss7/shell/lib"
               failonerror="true"/>
