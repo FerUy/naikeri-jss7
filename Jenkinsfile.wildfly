@@ -77,9 +77,11 @@ pipeline {
             steps {
                 script {
                     def packageName = "Naikeri-jSS7-WildFly-${env.JSS7_VERSION}.zip"
+                    def packageDir = "Naikeri-jSS7-WildFly-${env.JSS7_VERSION}"
                     env.PACKAGE_NAME = packageName
                     sh """
-                        zip -qr ${packageName} wildfly-${params.WILDFLY_VERSION}/
+                        mv wildfly-${params.WILDFLY_VERSION}/ ${packageDir}/
+                        zip -qr ${packageName} ${packageDir}/
                         echo "Package created: ${packageName}"
                     """
                 }

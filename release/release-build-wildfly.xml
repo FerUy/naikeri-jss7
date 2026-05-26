@@ -64,7 +64,7 @@
 		<!-- adding of "<extension module="org.restcomm.ss7.extension"/>" into standalone.xml -->
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<insert path="/:server/:extensions/:extension[last()]" position="after">
-				<![CDATA[<extension module="org.restcomm.ss7.extension"/>]]>
+				<![CDATA[<extension xmlns="urn:jboss:domain:17.0" module="org.restcomm.ss7.extension"/>]]>
 			</insert>
 		</xmltask>
 
