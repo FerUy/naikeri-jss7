@@ -55,11 +55,19 @@
 			</then>
 		</if>
 
-		<!-- adding of a security domain into standalone.xml -->
+		<!-- adding of a security domain into standalone.xml.
+             DISABLED for WildFly 24. The legacy security subsystem
+             (urn:jboss:domain:security:1.2) was removed in WildFly 18+
+             and replaced by Elytron. The template/security-domains.txt
+             content uses the legacy schema and breaks standalone.xml
+             parsing on WildFly 24. Re-enabling requires rewriting
+             security-domains.txt to use Elytron schema; tracked as future work. -->
+		<!--
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<remove path="/:server/:profile/*[local-name()='subsystem']/*[local-name()='security-domains']/*[local-name()='security-domain' and @name='jmx-console']"/>
 			<insert path="/:server/:profile/*[local-name()='subsystem']/*[local-name()='security-domains']/*[local-name()='security-domain'][last()]" position="after" file="template/security-domains.txt"></insert>
 		</xmltask>
+		-->
 
 		<!-- adding of "<extension module="org.restcomm.ss7.extension"/>" into standalone.xml -->
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
@@ -135,9 +143,12 @@
 			</then>
 		</if>
 
+		<!-- DISABLED: see comment in deploy target above. -->
+		<!--
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<remove path="/:server/:profile/*[local-name()='subsystem']/*[local-name()='security-domains']/*[local-name()='security-domain' and @name='jmx-console']"/>
 		</xmltask>
+		-->
 
 		<xmltask source="${jboss.standalone.path}/configuration/standalone.xml" dest="${jboss.standalone.path}/configuration/standalone.xml">
 			<remove path="/:server/:extensions/:extension[@module='org.restcomm.ss7.extension']"/>
