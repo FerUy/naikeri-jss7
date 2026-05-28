@@ -1,0 +1,27 @@
+# Offline CLI script: define a standard Elytron security domain named "jmx-console"
+# backed by properties files, for the jSS7 management console WAR (jboss-web.xml
+# declares <security-domain>jmx-console</security-domain>).
+#
+# Uses only stock WildFly 24 Elytron components (properties-realm, the existing
+# groups-to-roles role-decoder, and default-permission-mapper). No proprietary
+# dependencies, so the configuration is portable to any platform that bundles
+# jSS7 into WildFly (GMLC, SMSC, USSD Gateway, etc.).
+#
+# Idempotent: each add is guarded by an existence check so re-running (e.g. when
+# a downstream platform's deploy re-applies jSS7 config) does not fail.
+
+embed-server --std-out=echo
+
+if (outcome != success) of /subsystem=elytron/properties-realm=jmx-console:read-resource
+    /subsystem=elytron/properties-realm=jmx-console:add(users-properties={path=jmx-users.properties, relative-to=jboss.server.config.dir, plain-text=true}, groups-properties={path=jmx-roles.properties, relative-to=jboss.server.config.dir})
+end-if
+
+if (outcome != success) of /subsystem=elytron/security-domain=jmx-console:read-resource
+    /subsystem=elytron/security-domain=jmx-console:add(default-realm=jmx-console, permission-mapper=default-permission-mapper, realms=[{realm=jmx-console, role-decoder=groups-to-roles}])
+end-if
+
+if (outcome != success) of /subsystem=undertow/application-security-domain=jmx-console:read-resource
+    /subsystem=undertow/application-security-domain=jmx-console:add(security-domain=jmx-console)
+end-if
+
+stop-embedded-server

@@ -317,19 +317,24 @@
         <echo>Copy Modified Jolokia War</echo>
         <copy file="./jolokia.war" todir="${restcomm.jss7.dist}/oam/new-ui" failonerror="true"/>
 
-	<echo>Copy SNIFFER ENDPOINT</echo>
-	<copy todir="${restcomm.jss7.dist}/sniffer/sniffer-metrics" failonerror="true">
+	    <echo>Copy SNIFFER ENDPOINT</echo>
+	    <copy todir="${restcomm.jss7.dist}/sniffer/sniffer-metrics" failonerror="true">
             <fileset dir="${jss7.dir}/sniffer/sniffer-metrics/target/">
                 <include name="*.war"/>
             </fileset>
         </copy>
 
-	<echo>Copy a license key</echo>
+	    <echo>Copy a license key</echo>
         <copy todir="${restcomm.jss7.dist}/key" failonerror="true">
             <fileset dir="${jss7.dir}/release/key">
                 <include name="**"/>
             </fileset>
         </copy>
+
+        <echo>Copy JBoss CLI</echo>
+        <copy file="${jss7.dir}/release/elytron-jmx-console.cli"
+              tofile="${restcomm.jss7.dist}/ss7-wildfly/elytron-jmx-console.cli"
+              failonerror="true"/>
 
     </target>
 

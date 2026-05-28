@@ -126,6 +126,14 @@
 			</fileset>
 		</copy>
 
+		<!-- Define the jmx-console Elytron security domain for the management console WAR.
+		     Uses offline CLI (embed-server) to modify standalone.xml at deploy time with
+		     only stock WildFly 24 components. Idempotent; safe for downstream platforms
+		     (GMLC/SMSC/USSD) that bundle jSS7. -->
+		<exec failonerror="true" executable="${jboss.home}/bin/jboss-cli.sh">
+			<arg value="--file=elytron-jmx-console.cli"/>
+		</exec>
+
 	</target>
 
 	<target name="undeploy">
