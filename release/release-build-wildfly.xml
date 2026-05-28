@@ -82,6 +82,14 @@
 			<insert path="/:server/:profile/*[local-name()='subsystem'][last()]" position="after" file="template/wildfly-jss7-subsystem.txt"></insert>
 		</xmltask>
 
+		<!-- Define the jmx-console Elytron security domain for the management console WAR.
+		     Uses offline CLI (embed-server) to modify standalone.xml at deploy time with
+		     only stock WildFly 24 components. Idempotent; safe for downstream platforms
+		     (GMLC/SMSC/USSD) that bundle jSS7. -->
+		<exec failonerror="true" executable="${jboss.home}/bin/jboss-cli.sh">
+			<arg value="--file=elytron-jmx-console.cli"/>
+		</exec>
+
 		<!-- Copy jSS7 Extension with Modules -->
 		<copy overwrite="true" todir="${restcomm-ss7.path}">
 			<fileset dir="${basedir}/restcomm-ss7-service">
