@@ -17,11 +17,6 @@ pipeline {
 	stages {
 		stage('Set Version') {
 			steps {
-			    script {
-                    if (BUILD_NUMBER == "1") {
-                        error "Building for the first time"
-                    }
-                }
 				sh "mvn versions:set -DnewVersion=${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}"
 				echo "Setting version to ${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER} completed"
 			}
