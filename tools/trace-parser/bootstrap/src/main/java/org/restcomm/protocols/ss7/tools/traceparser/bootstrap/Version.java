@@ -1,5 +1,6 @@
 package org.restcomm.protocols.ss7.tools.traceparser.bootstrap;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
@@ -34,7 +35,7 @@ public final class Version {
     /**
      * Returns an unmodifiable map of version properties.
      *
-     * @return
+     * @return map of version properties.
      */
     public Map getProperties() {
         return Collections.unmodifiableMap(props);
@@ -56,7 +57,7 @@ public final class Version {
      * @return Basic information as a string.
      */
     public String toString() {
-        StringBuilder sb = new StringBuilder("Mobicents Trace Parser: ");
+        StringBuilder sb = new StringBuilder("Naikeri jSS7 Trace Parser: ");
         boolean first = true;
         for (Object key : props.keySet()) {
             if (first) {
@@ -76,12 +77,13 @@ public final class Version {
 
         props = new Properties();
 
-        try {
-            InputStream in = Version.class.getResourceAsStream("version.properties");
+        try (InputStream in = Version.class.getResourceAsStream("version.properties")) {
+            if (in == null) {
+                throw new Error("Missing version.properties");
+            }
             props.load(in);
-            in.close();
-        } catch (Exception e) {
-            throw new Error("Missing version.properties");
+        } catch (IOException e) {
+            throw new Error("Failed to load version.properties", e);
         }
 
         return props;
