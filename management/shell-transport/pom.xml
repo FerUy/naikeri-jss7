@@ -11,8 +11,8 @@
 	<name>Restcomm jSS7 :: Management :: ${project.artifactId}</name>
 
 	<properties>
-		<cli.name>Naikeri ICT jSS7 CLI</cli.name>
-		<cli.vendor>Naikeri ICT</cli.vendor>
+		<cli.name>Naikeri jSS7 CLI</cli.name>
+		<cli.vendor>Naikeri</cli.vendor>
 		<cli.version>${project.version}</cli.version>
 		<cli.prefix>naikeri-jss7</cli.prefix>
 	</properties>
