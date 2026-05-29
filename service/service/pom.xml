@@ -11,8 +11,8 @@
 	<name>Restcomm jSS7 :: Service :: Service :: ${project.artifactId}</name>
 
 	<properties>
-		<restcomm.name>restcomm-ss7</restcomm.name>
-		<restcomm.vendor>Restcomm</restcomm.vendor>
+		<restcomm.name>Naikeri jSS7</restcomm.name>
+		<restcomm.vendor>Naikeri</restcomm.vendor>
 		<restcomm.version>${project.version}</restcomm.version>
 	</properties>
 
@@ -151,6 +151,12 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 	</build>
 
