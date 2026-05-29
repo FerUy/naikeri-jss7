@@ -244,10 +244,6 @@
               failonerror="true"/>
         <copy file="${jss7.dir}/release/wildfly-jss7-subsystem.txt" tofile="${restcomm.jss7.dist}/ss7-wildfly/template/wildfly-jss7-subsystem.txt"
               failonerror="true"/>
-        <copy file="${jss7.dir}/release/security-domains.txt" tofile="${restcomm.jss7.dist}/ss7-wildfly/template/security-domains.txt"
-              failonerror="true"/>
-        <copy file="${jss7.dir}/release/deployment_manual.txt" tofile="${restcomm.jss7.dist}/ss7-wildfly/deployment_manual.txt"
-              failonerror="true"/>
         <copy file="${jss7.dir}/release/jmx-roles.properties" tofile="${restcomm.jss7.dist}/ss7-wildfly/template/jmx-roles.properties"
               failonerror="true"/>
         <copy file="${jss7.dir}/release/jmx-users.properties" tofile="${restcomm.jss7.dist}/ss7-wildfly/template/jmx-users.properties"
@@ -256,8 +252,6 @@
               failonerror="true"/>
         <copy file="${jss7.dir}/release/ant-contrib-1.0b3.jar" tofile="${restcomm.jss7.dist}/ss7-wildfly/ant-contrib-1.0b3.jar"
               failonerror="true"/>
-    	<copy file="${jss7.dir}/release/ss7-logging-subsystem.txt" tofile="${restcomm.jss7.dist}/ss7-wildfly/template/ss7-logging-subsystem.txt"
-    	              failonerror="true"/>
     		
         <!-- Copy templates for JBoss 5 -->
 <!--
