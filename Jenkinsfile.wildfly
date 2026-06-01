@@ -52,45 +52,11 @@ pipeline {
 
         stage('Prepare WildFly') {
             steps {
-                withCredentials([usernamePassword(credentialsId: '426e8cfb-a47c-4fd2-96ae-713c541dc3f6',
-                                                  usernameVariable: 'ART_USER',
-                                                  passwordVariable: 'ART_PASS')]) {
-                    sh """
-                        unzip -q wildfly-${params.WILDFLY_VERSION}.zip
-                        unzip -q \${JSS7_ZIP} -d jss7-dist
-
-                        # Install org.apache.logging.log4j WildFly module so the jSS7 modules' log4j2
-                        # dependency resolves at server startup. Vanilla WildFly 24 only ships
-                        # org.apache.logging.log4j.api (API-only); the jSS7 module.xml templates
-                        # declare a dependency on org.apache.logging.log4j (API + implementation).
-                        LOG4J_VERSION=2.26.0
-                        ART_BASE='https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local/org/apache/logging/log4j'
-                        LOG4J_MOD_DIR=wildfly-${params.WILDFLY_VERSION}/modules/system/layers/base/org/apache/logging/log4j/main
-
-                        mkdir -p \$LOG4J_MOD_DIR
-                        wget -q --user=\${ART_USER} --password=\${ART_PASS} --no-check-certificate \
-                            "\$ART_BASE/log4j-api/\$LOG4J_VERSION/log4j-api-\$LOG4J_VERSION.jar" \
-                            -O \$LOG4J_MOD_DIR/log4j-api-\$LOG4J_VERSION.jar
-                        wget -q --user=\${ART_USER} --password=\${ART_PASS} --no-check-certificate \
-                            "\$ART_BASE/log4j-core/\$LOG4J_VERSION/log4j-core-\$LOG4J_VERSION.jar" \
-                            -O \$LOG4J_MOD_DIR/log4j-core-\$LOG4J_VERSION.jar
-
-                        echo '<?xml version="1.0" encoding="UTF-8"?>' > \$LOG4J_MOD_DIR/module.xml
-                        echo '<module xmlns="urn:jboss:module:1.9" name="org.apache.logging.log4j">' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '    <resources>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '        <resource-root path="log4j-api-2.26.0.jar"/>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '        <resource-root path="log4j-core-2.26.0.jar"/>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '    </resources>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '    <dependencies>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '        <module name="java.logging"/>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '        <module name="java.desktop"/>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '        <module name="java.management"/>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '    </dependencies>' >> \$LOG4J_MOD_DIR/module.xml
-                        echo '</module>' >> \$LOG4J_MOD_DIR/module.xml
-
-                        echo "WildFly and jSS7 extracted; log4j2 \$LOG4J_VERSION module installed"
-                    """
-                }
+                sh """
+                    unzip -q wildfly-${params.WILDFLY_VERSION}.zip
+                    unzip -q \${JSS7_ZIP} -d jss7-dist
+                    echo "WildFly and jSS7 extracted"
+                """
             }
         }
 
