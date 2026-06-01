@@ -5,8 +5,6 @@
         <resource-root path="netty-all-${netty.version}.jar"/>
         <resource-root path="stream-${stream.version}.jar"/>
         <resource-root path="guava-${guava.version}.jar"/>
-        <resource-root path="log4j-api-${log4j.version}.jar"/>
-        <resource-root path="log4j-core-${log4j.version}.jar"/>
 
         <resource-root path="congestion-${project.version}.jar"/>
         <resource-root path="statistics-api-${project.version}.jar"/>
