@@ -11,7 +11,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class CAPStackConfigurationManagement {
+
+    private static final Logger logger = LogManager.getLogger(CAPStackConfigurationManagement.class);
+
     private static final String PERSIST_FILE_NAME = "management.xml";
     private static final String CAP_MANAGEMENT_PERSIST_DIR_KEY = "capmanagement.persist.dir";
     private static final String USER_DIR_KEY = "user.dir";
@@ -80,8 +86,7 @@ public class CAPStackConfigurationManagement {
 
             writer.close();
         } catch (Exception e) {
-            System.err.println(String.format("Error while persisting the CAP Resource state in file=%s", persistFile.toString()));
-            e.printStackTrace();
+            logger.error("Failed to persist CAP state to file={}", persistFile, e);
         }
     }
 
@@ -96,9 +101,10 @@ public class CAPStackConfigurationManagement {
             XMLObjectReader reader = XMLObjectReader.newInstance(new FileInputStream(persistFile.toString()));
             reader.setBinding(binding);
             load(reader);
-        } catch (XMLStreamException | FileNotFoundException e) {
-            System.err.println(String.format("Error while load the CAP Resource state from file=%s", persistFile.toString()));
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            logger.info("No prior CAP state to load; initializing fresh state. File: {}", persistFile);
+        } catch (XMLStreamException e) {
+            logger.error("Failed to parse CAP state file={}; continuing with current in-memory state", persistFile, e);
         }
     }
 
