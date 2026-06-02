@@ -25,7 +25,7 @@ public class CAPStackConfigurationManagement {
     private static final String TIMER_GPRS_SHORT = "timergprsshort";
 
     private static final XMLBinding binding = new XMLBinding();
-    private static CAPStackConfigurationManagement instance = new CAPStackConfigurationManagement();
+    private static final CAPStackConfigurationManagement instance = new CAPStackConfigurationManagement();
 
     private final TextBuilder persistFile = TextBuilder.newInstance();
     private String configFileName = DEFAULT_CONFIG_FILE_NAME;

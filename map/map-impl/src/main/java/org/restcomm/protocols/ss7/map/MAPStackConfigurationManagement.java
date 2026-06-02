@@ -26,7 +26,7 @@ public class MAPStackConfigurationManagement {
     private static final String LONG_TIMER_VALUE = "longtimervalue";
 
     private static final XMLBinding binding = new XMLBinding();
-    private static MAPStackConfigurationManagement instance = new MAPStackConfigurationManagement();
+    private static final MAPStackConfigurationManagement instance = new MAPStackConfigurationManagement();
 
     private final TextBuilder persistFile = TextBuilder.newInstance();
     private String configFileName = DEFAULT_CONFIG_FILE_NAME;
