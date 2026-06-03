@@ -117,20 +117,16 @@
 					${maven-surefire-plugin.version}
 				</version>
 				<configuration>
-					<forkMode>once</forkMode>
+					<forkCount>1</forkCount>
+					<reuseForks>true</reuseForks>
 					<environmentVariables>
 						<LD_LIBRARY_PATH>
 							${project.build.directory}
 						</LD_LIBRARY_PATH>
-						<systemProperties>
-							<property>
-								<name>lib_schannel</name>
-								<value>
-									${project.build.directory}
-								</value>
-							</property>
-						</systemProperties>
 					</environmentVariables>
+					<systemPropertyVariables>
+						<lib_schannel>${project.build.directory}</lib_schannel>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 		</plugins>
