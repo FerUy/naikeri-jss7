@@ -75,6 +75,7 @@
 		<pathelement location="${assemble.dir}/stream.jar" />
 		<!-- real 3rd party -->
 		<pathelement location="${assemble.dir}/log4j.jar" />
+		<pathelement location="${assemble.dir}/log4j-core.jar" />
 		<pathelement location="${assemble.dir}/javolution.jar" />
 		<pathelement location="${assemble.dir}/concurrent.jar" />
 		<pathelement location="${assemble.dir}/guava.jar" />
