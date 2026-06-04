@@ -14,7 +14,6 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<guava.version>18.0</guava.version>
 		<assemble.dir>${project.build.directory}/load</assemble.dir>
 	</properties>
 
@@ -149,7 +148,6 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.12.0</version>
 		</dependency>
 
 		<!-- SS7 stats -->
