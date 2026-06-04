@@ -10,6 +10,7 @@ pipeline {
         string(name: 'jSS7_BUILD', defaultValue: '', description: 'The build number of Naikeri jSS7 to use (leave empty for last successful)')
         string(name: 'WILDFLY_VERSION', defaultValue: '24.0.1.Final', description: 'WildFly version to use')
         string(name: 'jSS7_PROJECT_PATH', defaultValue: 'SS7/Naikeri-jSS7', description: 'Jenkins folder path for the upstream Naikeri-jSS7 multibranch pipeline')
+        string(name: 'NAIKERI_ARTIFACTORY_URL', defaultValue: 'https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local', description: 'Base URL of the Naikeri Artifactory libs-release-local repository')
     }
 
     stages {
@@ -42,7 +43,7 @@ pipeline {
                                                   passwordVariable: 'ART_PASS')]) {
                     sh """
                         wget -q --user=\${ART_USER} --password=\${ART_PASS} --no-check-certificate \
-                        'https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local/com/naikeri/wildfly/wildfly/${params.WILDFLY_VERSION}/wildfly-${params.WILDFLY_VERSION}.zip' \
+                        '${params.NAIKERI_ARTIFACTORY_URL}/com/naikeri/wildfly/wildfly/${params.WILDFLY_VERSION}/wildfly-${params.WILDFLY_VERSION}.zip' \
                         -O wildfly-${params.WILDFLY_VERSION}.zip
                         echo "WildFly downloaded successfully"
                     """

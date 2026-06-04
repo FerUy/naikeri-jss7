@@ -18,6 +18,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+		<!-- Naikeri Artifactory base URL; override via -Dnaikeri.artifactory.url=... or settings.xml -->
+		<naikeri.artifactory.url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local</naikeri.artifactory.url>
+
 		<!-- maven.test.skip>false</maven.test.skip -->
 		<restcomm.tools.mavenplugin.eclipse.version>
 			1.0.0.FINAL
@@ -67,12 +70,12 @@
 		<repository>
 			<id>naikeri</id>
 			<name>localhost-releases</name>
-			<url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local</url>
+			<url>${naikeri.artifactory.url}</url>
 		</repository>
 		<snapshotRepository>
 			<id>naikeri</id>
 			<name>localhost-snapshots</name>
-			<url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local</url>
+			<url>${naikeri.artifactory.url}</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -592,7 +595,7 @@
 		<repository>
 			<id>naikeri</id>
 			<name>Naikeri Artifactory</name>
-			<url>https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local</url>
+			<url>${naikeri.artifactory.url}</url>
 			<layout>default</layout>
 			<releases>
 				<enabled>true</enabled>
