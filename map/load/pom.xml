@@ -136,16 +136,11 @@
 			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-		<!--dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency-->
 		<dependency>
 			<groupId>javolution</groupId>
 			<artifactId>javolution</artifactId>
@@ -562,7 +557,7 @@
 												log4j.jar
 											</destFileName>
 										</artifactItem>
-										<!--artifactItem>
+										<artifactItem>
 											<groupId>org.apache.logging.log4j</groupId>
 											<artifactId>log4j-core</artifactId>
 											<type>jar</type>
@@ -571,21 +566,9 @@
 												${assemble.dir}
 											</outputDirectory>
 											<destFileName>
-												log4j-core-${log4j.version}.jar
+												log4j-core.jar
 											</destFileName>
 										</artifactItem>
-										<artifactItem>
-											<groupId>org.apache.logging.log4j</groupId>
-											<artifactId>log4j-api</artifactId>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>
-												${assemble.dir}
-											</outputDirectory>
-											<destFileName>
-												log4j-api-${log4j.version}.jar
-											</destFileName>
-										</artifactItem-->
 										
 										<!-- Stats jars -->	
 										<artifactItem>
