@@ -1,6 +1,6 @@
 Here is the list of commands you need to run for building Mobicents jSS7 from the source
 
-1. Clone jSS7 Repo : `git clone https://github.com/RestComm/jss7.git`
+1. Clone jSS7 Repo : `git clone https://github.com/FerUy/naikeri-jss7.git`
 2. Download Dialogic dependencies from Dialogic website. This is required to build the hardware part of jSS7 to have support for Dialogic boards in case you can't use SIGTRAN directly : `wget https://www.dialogic.com/files/DSI/developmentpackages/linux/dpklnx.Z`
 3. Unpack the contents of the Dialogic SS7 dependencies : `tar --no-same-owner -zxvf dpklnx.Z`
 4. Install the Dialogic SS7 Java Dependency in your local maven repository : `mvn install:install-file -DgroupId=com.vendor.dialogic -DartifactId=gctapi -Dversion=6.7.1 -Dpackaging=jar -Dfile=./JAVA/gctApi.jar`
