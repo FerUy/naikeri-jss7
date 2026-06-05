@@ -1,0 +1,26 @@
+// .asciidoctorconfig
+//
+// IntelliJ-only AsciiDoc attributes for editor preview and warning suppression.
+// At build time, the asciidoctor-maven-plugin (configured in
+// docs/userguide/sources-asciidoc/pom.xml and
+// docs/installationguide/sources-asciidoc/pom.xml) substitutes these from
+// the Maven properties declared in docs/pom.xml. This file mirrors those
+// values purely for the editing experience.
+//
+// Values reflect the post-rebrand state (Naikeri). When the actual rebrand
+// commit lands in docs/pom.xml, no update to this file is needed.
+//
+// Per-file attributes ({configtxt}, {path}, {systemtxt}, {toclevels-value})
+// are NOT mirrored here, since they have intentional per-file scope and are
+// declared inline in the .adoc files that use them.
+
+:project-version: 9.0.0-SNAPSHOT
+:this-application: jSS7
+:this-platform: Naikeri
+:this-folder: naikeri
+:jee-platform: JBoss Application Server
+:this-issue-tracker-url: https://github.com/FerUy/naikeri-jss7/issues
+:this-release-source-code-url: https://github.com/FerUy/naikeri-jss7
+:this-release-binary-url: https://github.com/FerUy/naikeri-jss7/releases/latest
+:slee2-binary-url: https://github.com/RestComm/jain-slee/releases/tag/2.8.0.FINAL
+:slee7-binary-url: https://github.com/RestComm/jain-slee/releases/latest
