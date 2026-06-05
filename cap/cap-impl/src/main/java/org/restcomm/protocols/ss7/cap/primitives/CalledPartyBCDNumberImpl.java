@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
@@ -92,12 +91,8 @@ public class CalledPartyBCDNumberImpl extends OctetStringBase implements CalledP
                 byte[] data = new byte[dataLength];
                 bb.get(data);
                 stm.write(data);
-            } catch (CharacterCodingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new CAPException("Error encoding GSM 7-bit address: " + address, e);
             }
         } else {
             try {

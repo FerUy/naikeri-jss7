@@ -11,10 +11,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * read/write MAP layer configuration *.xml file
  */
 public class MAPStackConfigurationManagement {
+
+    private static final Logger logger = LogManager.getLogger(MAPStackConfigurationManagement.class);
 
     private static final String PERSIST_FILE_NAME = "management.xml";
     private static final String MAP_MANAGEMENT_PERSIST_DIR_KEY = "mapmanagement.persist.dir";
@@ -77,8 +82,7 @@ public class MAPStackConfigurationManagement {
 
             writer.close();
         } catch (Exception e) {
-            System.err.println(String.format("Error while persisting the MAP Resource state in file=%s", persistFile.toString()));
-            e.printStackTrace();
+            logger.error("Failed to persist MAP state to file={}", persistFile, e);
         }
     }
 
@@ -93,9 +97,10 @@ public class MAPStackConfigurationManagement {
             XMLObjectReader reader = XMLObjectReader.newInstance(new FileInputStream(persistFile.toString()));
             reader.setBinding(binding);
             load(reader);
-        } catch (XMLStreamException | FileNotFoundException e) {
-            System.err.println(String.format("Error while load the MAP Resource state from file=%s", persistFile.toString()));
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            logger.info("No prior MAP state to load; initializing fresh state. File: {}", persistFile);
+        } catch (XMLStreamException e) {
+            logger.error("Failed to parse MAP state file={}; continuing with current in-memory state", persistFile, e);
         }
     }
 
