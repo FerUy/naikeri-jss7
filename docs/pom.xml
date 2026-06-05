@@ -19,9 +19,9 @@
 		<docs.this.folder>restcomm</docs.this.folder>
 		<docs.this.application>jSS7</docs.this.application>
 		<docs.project.version>${project.version}</docs.project.version>
-		<docs.this.issue.tracker.url>https://github.com/Restcomm/jss7/issues</docs.this.issue.tracker.url>
-		<docs.this.release.source.code.url>https://github.com/Restcomm/jss7</docs.this.release.source.code.url>
-		<docs.this.release.binary.url>https://github.com/RestComm/jss7/releases/latest</docs.this.release.binary.url>
+		<docs.this.issue.tracker.url>https://github.com/FerUy/naikeri-jss7/issues</docs.this.issue.tracker.url>
+		<docs.this.release.source.code.url>https://github.com/FerUy/naikeri-jss7</docs.this.release.source.code.url>
+		<docs.this.release.binary.url>https://github.com/FerUy/naikeri-jss7/releases/latest</docs.this.release.binary.url>
 		<docs.slee2.binary.url>https://github.com/RestComm/jain-slee/releases/tag/2.8.0.FINAL</docs.slee2.binary.url>
 		<docs.slee7.binary.url>https://github.com/RestComm/jain-slee/releases/latest</docs.slee7.binary.url>
 		<docs.jee.platform>JBoss Application Server</docs.jee.platform>
