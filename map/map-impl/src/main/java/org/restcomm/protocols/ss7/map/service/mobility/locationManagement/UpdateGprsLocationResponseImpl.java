@@ -219,7 +219,6 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
         try {
             this.encodeAll(asnOutputStream, this.getTagClass(), this.getTag());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new MAPException(e);
         }
     }
@@ -233,10 +232,8 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
             asnOutputStream.FinalizeContent(pos);
 
         } catch (AsnException e) {
-            e.printStackTrace();
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new MAPException("Exception when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
     }

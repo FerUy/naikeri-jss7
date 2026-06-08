@@ -1,5 +1,7 @@
 package org.restcomm.protocols.ss7.map.smstpdu;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import org.restcomm.protocols.ss7.map.api.smstpdu.UserData;
  *
  */
 public class SmsDeliverTpduImpl extends SmsTpduImpl implements SmsDeliverTpdu {
+
+    private static final Logger logger = LogManager.getLogger(SmsDeliverTpduImpl.class);
 
     private boolean moreMessagesToSend;
     private boolean forwardedOrSpawned;
@@ -246,8 +250,8 @@ public class SmsDeliverTpduImpl extends SmsTpduImpl implements SmsDeliverTpdu {
             try {
                 this.userData.decode();
             } catch (MAPException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.warn("Failed to decode userData during toString rendering", e);
+                sb.append("<decode error: ").append(e.getMessage()).append(">");
             }
             sb.append(this.userData.toString());
             sb.append("]");

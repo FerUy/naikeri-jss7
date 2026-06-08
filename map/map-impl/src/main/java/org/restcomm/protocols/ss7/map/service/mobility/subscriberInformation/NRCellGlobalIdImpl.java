@@ -1,5 +1,7 @@
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
@@ -17,6 +19,8 @@ import java.io.IOException;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalId {
+
+    private static final Logger logger = LogManager.getLogger(NRCellGlobalIdImpl.class);
 
     private static final String MCC = "mcc";
     private static final String MNC = "mnc";
@@ -155,12 +159,12 @@ public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalI
                 mcc = this.getMCC();
                 mnc = this.getMNC();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("Failed to decode MCC/MNC; continuing best-effort", e);
             }
             nci = this.getNCI();
             correctData = true;
         } catch (MAPException e) {
-            e.printStackTrace();
+            logger.warn("Failed to decode NCI; marking data as incomplete", e);
         }
 
         StringBuilder sb = new StringBuilder();

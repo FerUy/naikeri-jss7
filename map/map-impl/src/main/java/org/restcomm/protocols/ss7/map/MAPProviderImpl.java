@@ -500,8 +500,7 @@ public class MAPProviderImpl implements MAPProvider, TCListener {
                 eriMsisdn = mapOpenInfoImpl.getEricssonMsisdn();
                 eriVlrNo = mapOpenInfoImpl.getEricssonVlrNo();
             } catch (AsnException e) {
-                e.printStackTrace();
-                loger.error("AsnException when parsing MAP-OPEN Pdu: " + e.getMessage(), e);
+                loger.error("AsnException when parsing MAP-OPEN PDU", e);
                 try {
                     this.fireTCAbortProvider(tcBeginIndication.getDialog(), MAPProviderAbortReason.invalidPDU, null, false);
                 } catch (MAPException e1) {
@@ -509,8 +508,7 @@ public class MAPProviderImpl implements MAPProvider, TCListener {
                 }
                 return;
             } catch (IOException e) {
-                e.printStackTrace();
-                loger.error("IOException when parsing MAP-OPEN Pdu: " + e.getMessage());
+                loger.error("IOException when parsing MAP-OPEN PDU", e);
                 try {
                     this.fireTCAbortProvider(tcBeginIndication.getDialog(), MAPProviderAbortReason.invalidPDU, null, false);
                 } catch (MAPException e1) {
@@ -518,8 +516,7 @@ public class MAPProviderImpl implements MAPProvider, TCListener {
                 }
                 return;
             } catch (MAPParsingComponentException e) {
-                e.printStackTrace();
-                loger.error("MAPException when parsing MAP-OPEN Pdu: " + e.getMessage());
+                loger.error("MAPException when parsing MAP-OPEN PDU", e);
                 try {
                     this.fireTCAbortProvider(tcBeginIndication.getDialog(), MAPProviderAbortReason.invalidPDU, null, false);
                 } catch (MAPException e1) {
@@ -720,15 +717,12 @@ public class MAPProviderImpl implements MAPProvider, TCListener {
                                     extensionContainer = mapAcceptInfoImpl.getExtensionContainer();
                                 }
                             } catch (AsnException e) {
-                                e.printStackTrace();
-                                loger.error("AsnException when parsing MAP-ACCEPT Pdu: " + e.getMessage(), e);
+                                loger.error("AsnException when parsing MAP-ACCEPT PDU", e);
                                 return;
                             } catch (IOException e) {
-                                e.printStackTrace();
-                                loger.error("IOException when parsing MAP-ACCEPT Pdu: " + e.getMessage(), e);
+                                loger.error("IOException when parsing MAP-ACCEPT PDU", e);
                             } catch (MAPParsingComponentException e) {
-                                e.printStackTrace();
-                                loger.error("MAPException when parsing MAP-ACCEPT Pdu: " + e.getMessage(), e);
+                                loger.error("MAPException when parsing MAP-ACCEPT PDU", e);
                             }
                         }
                     }
@@ -834,15 +828,12 @@ public class MAPProviderImpl implements MAPProvider, TCListener {
                                         extensionContainer = mapAcceptInfoImpl.getExtensionContainer();
                                     }
                                 } catch (AsnException e) {
-                                    e.printStackTrace();
-                                    loger.error("AsnException when parsing MAP-ACCEPT Pdu: " + e.getMessage(), e);
+                                    loger.error("AsnException when parsing MAP-ACCEPT PDU", e);
                                     return;
                                 } catch (IOException e) {
-                                    e.printStackTrace();
-                                    loger.error("IOException when parsing MAP-ACCEPT Pdu: " + e.getMessage(), e);
+                                    loger.error("IOException when parsing MAP-ACCEPT PDU", e);
                                 } catch (MAPParsingComponentException e) {
-                                    e.printStackTrace();
-                                    loger.error("MAPException when parsing MAP-ACCEPT Pdu: " + e.getMessage(), e);
+                                    loger.error("MAPException when parsing MAP-ACCEPT PDU", e);
                                 }
                             }
                         }
@@ -937,15 +928,12 @@ public class MAPProviderImpl implements MAPProvider, TCListener {
                                     extensionContainer = mapCloseInfoImpl.getExtensionContainer();
                                 }
                             } catch (AsnException e) {
-                                e.printStackTrace();
-                                loger.error("AsnException when parsing MAP-ACCEPT/MAP-CLOSE Pdu: " + e.getMessage(), e);
+                                loger.error("AsnException when parsing MAP-ACCEPT/MAP-CLOSE PDU", e);
                                 return;
                             } catch (IOException e) {
-                                e.printStackTrace();
-                                loger.error("IOException when parsing MAP-ACCEPT/MAP-CLOSE Pdu: " + e.getMessage(), e);
+                                loger.error("IOException when parsing MAP-ACCEPT/MAP-CLOSE PDU", e);
                             } catch (MAPParsingComponentException e) {
-                                e.printStackTrace();
-                                loger.error("MAPException when parsing MAP-ACCEPT/MAP-CLOSE Pdu: " + e.getMessage(), e);
+                                loger.error("MAPException when parsing MAP-ACCEPT/MAP-CLOSE PDU", e);
                             }
                         }
                     }
@@ -1060,15 +1048,12 @@ public class MAPProviderImpl implements MAPProvider, TCListener {
                                         extensionContainer = mapCloseInfoImpl.getExtensionContainer();
                                     }
                                 } catch (AsnException e) {
-                                    e.printStackTrace();
-                                    loger.error("AsnException when parsing MAP-ACCEPT/MAP-CLOSE Pdu: " + e.getMessage(), e);
+                                    loger.error("AsnException when parsing MAP-ACCEPT/MAP-CLOSE PDU", e);
                                     return;
                                 } catch (IOException e) {
-                                    e.printStackTrace();
-                                    loger.error("IOException when parsing MAP-ACCEPT/MAP-CLOSE Pdu: " + e.getMessage(), e);
+                                    loger.error("IOException when parsing MAP-ACCEPT/MAP-CLOSE PDU", e);
                                 } catch (MAPParsingComponentException e) {
-                                    e.printStackTrace();
-                                    loger.error("MAPException when parsing MAP-ACCEPT/MAP-CLOSE Pdu: " + e.getMessage(), e);
+                                    loger.error("MAPException when parsing MAP-ACCEPT/MAP-CLOSE PDU", e);
                                 }
                             }
                         }
