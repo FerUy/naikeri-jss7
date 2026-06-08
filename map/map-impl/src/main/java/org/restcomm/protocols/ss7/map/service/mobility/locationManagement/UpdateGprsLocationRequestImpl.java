@@ -543,7 +543,7 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                             + ".ePLMNList: Parameter is primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 AsnInputStream ais3 = ais.readSequenceStream();
-                                PlmnId plmnId;
+                                PlmnIdImpl plmnId;
                                 this.ePLMNList = new ArrayList<>();
                                 while (true) {
                                     if (ais3.available() == 0)
@@ -555,7 +555,7 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                                 + ": bad tag or tagClass or is not primitive when decoding trackingAreaIdList",
                                                 MAPParsingComponentExceptionReason.MistypedParameter);
                                     plmnId = new PlmnIdImpl();
-                                    ((PlmnIdImpl) plmnId).decodeAll(ais3);
+                                    plmnId.decodeAll(ais3);
                                     this.ePLMNList.add(plmnId);
                                 }
                                 break;
@@ -621,7 +621,7 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                             + ".adjacentPLMNList: Parameter is primitive",
                                             MAPParsingComponentExceptionReason.MistypedParameter);
                                 AsnInputStream ais4= ais.readSequenceStream();
-                                PlmnId adjPlmnId;
+                                PlmnIdImpl adjPlmnId;
                                 this.adjacentPLMNList = new ArrayList<>();
                                 while (true) {
                                     if (ais4.available() == 0)
@@ -633,7 +633,7 @@ public class UpdateGprsLocationRequestImpl extends MobilityMessageImpl implement
                                                 + ": bad tag or tagClass or is not primitive when decoding trackingAreaIdList",
                                                 MAPParsingComponentExceptionReason.MistypedParameter);
                                     adjPlmnId = new PlmnIdImpl();
-                                    ((PlmnIdImpl) adjPlmnId).decodeAll(ais4);
+                                    adjPlmnId.decodeAll(ais4);
                                     this.adjacentPLMNList.add(adjPlmnId);
                                 }
                                 break;

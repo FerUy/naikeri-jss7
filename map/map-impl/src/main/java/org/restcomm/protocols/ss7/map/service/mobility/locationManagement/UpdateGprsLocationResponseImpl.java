@@ -273,13 +273,13 @@ public class UpdateGprsLocationResponseImpl extends MobilityMessageImpl implemen
 
         if (this.hlrNumber != null) {
             sb.append("hlrNumber=");
-            sb.append(this.hlrNumber.toString());
+            sb.append(this.hlrNumber);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(", ");
         }
 

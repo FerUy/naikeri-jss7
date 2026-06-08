@@ -26,7 +26,7 @@ public class APNImpl extends OctetStringBase implements APN {
 
     private static final String DEFAULT_VALUE = null;
 
-    private static Charset ascii = StandardCharsets.US_ASCII;
+    private static final Charset ascii = StandardCharsets.US_ASCII;
 
     public APNImpl() {
         super(2, 63, "APN");
@@ -77,7 +77,7 @@ public class APNImpl extends OctetStringBase implements APN {
         if (data.length < 2 || data.length > 63)
             throw new MAPException("Can not decode: data array must have length 2-63, found: " + data.length);
 
-        ArrayList<String> ress = new ArrayList<String>();
+        ArrayList<String> ress = new ArrayList<>();
 
         int i1 = 0;
         while (true) {
@@ -113,12 +113,10 @@ public class APNImpl extends OctetStringBase implements APN {
         try {
             String s = this.getApn();
 
-            StringBuilder sb = new StringBuilder();
-            sb.append(_PrimitiveName);
-            sb.append(" [apn=");
-            sb.append(s);
-            sb.append("]");
-            return sb.toString();
+            return _PrimitiveName +
+                " [apn=" +
+                s +
+                "]";
         } catch (MAPException e) {
             return super.toString();
         }
@@ -127,7 +125,7 @@ public class APNImpl extends OctetStringBase implements APN {
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<APNImpl> APN_XML = new XMLFormat<APNImpl>(APNImpl.class) {
+    protected static final XMLFormat<APNImpl> APN_XML = new XMLFormat<>(APNImpl.class) {
 
         @Override
         public void read(javolution.xml.XMLFormat.InputElement xml, APNImpl apn) throws XMLStreamException {

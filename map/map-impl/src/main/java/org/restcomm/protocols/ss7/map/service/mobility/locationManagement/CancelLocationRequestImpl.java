@@ -53,7 +53,7 @@ public class CancelLocationRequestImpl extends MobilityMessageImpl implements Ca
     private ISDNAddressString newMSCNumber;
     private ISDNAddressString newVLRNumber;
     private LMSI newLmsi;
-    private long mapProtocolVersion;
+    private final long mapProtocolVersion;
 
     private boolean reattachRequired;
 
