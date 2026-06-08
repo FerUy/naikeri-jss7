@@ -1,5 +1,7 @@
 package org.restcomm.protocols.ss7.map.service.mobility.subscriberManagement;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import org.restcomm.protocols.ss7.map.primitives.OctetStringBase;
  *
  */
 public class APNImpl extends OctetStringBase implements APN {
+
+    private static final Logger logger = LogManager.getLogger(APNImpl.class);
 
     private static final String DATA = "data";
 
@@ -132,7 +136,7 @@ public class APNImpl extends OctetStringBase implements APN {
                 try {
                     apn.setApnString(s);
                 } catch (MAPException e) {
-                    e.printStackTrace();
+                    logger.warn("Failed to parse persisted APN string: {}", s, e);
                 }
             }
         }
@@ -143,7 +147,7 @@ public class APNImpl extends OctetStringBase implements APN {
                 try {
                     xml.setAttribute(DATA, apn.getApn());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.warn("Failed to serialize APN to XML attribute", e);
                 }
             }
         }

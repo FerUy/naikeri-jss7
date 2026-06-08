@@ -85,16 +85,13 @@ public class ProvideRoamingNumberResponseImpl extends CallHandlingMessageImpl im
             int length = asnInputStream.readLength();
             this._decode(asnInputStream, length);
         } catch (IOException e) {
-            e.printStackTrace();
             throw new MAPParsingComponentException("IOException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
                     MAPParsingComponentExceptionReason.MistypedParameter);
         } catch (AsnException e) {
-            e.printStackTrace();
             throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
                     MAPParsingComponentExceptionReason.MistypedParameter);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
+            throw new MAPParsingComponentException("Exception when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
                     MAPParsingComponentExceptionReason.MistypedParameter);
         }
 
@@ -105,17 +102,15 @@ public class ProvideRoamingNumberResponseImpl extends CallHandlingMessageImpl im
         try {
             this._decode(asnInputStream, length);
         } catch (IOException e) {
-            e.printStackTrace();
             throw new MAPParsingComponentException("IOException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
                     MAPParsingComponentExceptionReason.MistypedParameter);
         } catch (AsnException e) {
-            e.printStackTrace();
             throw new MAPParsingComponentException("AsnException when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
                     MAPParsingComponentExceptionReason.MistypedParameter);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new MAPParsingComponentException("Exception when decoding " + _PrimitiveName + ": " + e.getMessage(), e,
+                MAPParsingComponentExceptionReason.MistypedParameter);
         }
-
     }
 
     private void _decode(AsnInputStream asnInputStream, int length) throws MAPParsingComponentException, IOException, AsnException {
@@ -178,7 +173,6 @@ public class ProvideRoamingNumberResponseImpl extends CallHandlingMessageImpl im
         try {
             this.encodeAll(asnOutputStream, this.getTagClass(), this.getTag());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new MAPException(e);
 
         }

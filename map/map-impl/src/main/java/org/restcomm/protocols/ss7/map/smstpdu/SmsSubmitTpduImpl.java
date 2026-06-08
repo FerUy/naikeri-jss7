@@ -1,5 +1,7 @@
 package org.restcomm.protocols.ss7.map.smstpdu;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -23,6 +25,8 @@ import org.restcomm.protocols.ss7.map.api.smstpdu.ValidityPeriodFormat;
  *
  */
 public class SmsSubmitTpduImpl extends SmsTpduImpl implements SmsSubmitTpdu {
+
+    private static final Logger logger = LogManager.getLogger(SmsSubmitTpduImpl.class);
 
     private boolean rejectDuplicates;
     private ValidityPeriodFormat validityPeriodFormat;
@@ -297,8 +301,8 @@ public class SmsSubmitTpduImpl extends SmsTpduImpl implements SmsSubmitTpdu {
             try {
                 this.userData.decode();
             } catch (MAPException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.warn("Failed to decode userData during toString rendering", e);
+                sb.append("<decode error: ").append(e.getMessage()).append(">");
             }
             sb.append(this.userData.toString());
             sb.append("]");

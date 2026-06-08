@@ -500,7 +500,6 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
         try {
             this.encodeAll(asnOutputStream, this.getTagClass(), this.getTag());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new MAPException(e);
         }
     }
@@ -514,13 +513,10 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
             asnOutputStream.FinalizeContent(pos);
 
         } catch (AsnException e) {
-            e.printStackTrace();
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
-
     }
 
     @Override

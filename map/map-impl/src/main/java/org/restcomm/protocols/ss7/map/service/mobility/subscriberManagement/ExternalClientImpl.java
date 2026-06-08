@@ -169,7 +169,7 @@ public class ExternalClientImpl extends SequenceBase implements ExternalClient {
                 throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new MAPException("Exception when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
     }
 
