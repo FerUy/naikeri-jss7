@@ -176,29 +176,29 @@ public class ExternalClientImpl extends SequenceBase implements ExternalClient {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.clientIdentity != null) {
             sb.append("clientIdentity=");
-            sb.append(this.clientIdentity.toString());
+            sb.append(this.clientIdentity);
             sb.append(", ");
         }
 
         if (this.gmlcRestriction != null) {
             sb.append("gmlcRestriction=");
-            sb.append(this.gmlcRestriction.toString());
+            sb.append(this.gmlcRestriction);
             sb.append(", ");
         }
 
         if (this.notificationToMSUser != null) {
             sb.append("notificationToMSUser=");
-            sb.append(this.notificationToMSUser.toString());
+            sb.append(this.notificationToMSUser);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(", ");
         }
 

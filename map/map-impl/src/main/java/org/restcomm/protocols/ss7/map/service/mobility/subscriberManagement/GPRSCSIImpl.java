@@ -98,7 +98,7 @@ public class GPRSCSIImpl extends SequenceBase implements GPRSCSI {
                                 throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                         + ".gprsCamelTDPDataList: Parameter is primitive",
                                         MAPParsingComponentExceptionReason.MistypedParameter);
-                            this.gprsCamelTDPDataList = new ArrayList<GPRSCamelTDPData>();
+                            this.gprsCamelTDPDataList = new ArrayList<>();
 
                             AsnInputStream ais2 = ais.readSequenceStream();
 
@@ -114,10 +114,10 @@ public class GPRSCSIImpl extends SequenceBase implements GPRSCSI {
                                             MAPParsingComponentExceptionReason.MistypedParameter);
 
                                 GPRSCamelTDPDataImpl elem = new GPRSCamelTDPDataImpl();
-                                ((GPRSCamelTDPDataImpl) elem).decodeAll(ais2);
+                                elem.decodeAll(ais2);
                                 this.gprsCamelTDPDataList.add(elem);
 
-                                if (this.gprsCamelTDPDataList.size() < 1 || this.gprsCamelTDPDataList.size() > 10)
+                                if (this.gprsCamelTDPDataList.size() > 10)
                                     throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                             + " : gprsCamelTDPDataList elements count must be from 1 to 10, found: "
                                             + this.gprsCamelTDPDataList.size(),
@@ -173,7 +173,7 @@ public class GPRSCSIImpl extends SequenceBase implements GPRSCSI {
         try {
 
             if (this.gprsCamelTDPDataList != null
-                    && (this.gprsCamelTDPDataList.size() < 1 || this.gprsCamelTDPDataList.size() > 10))
+                    && (this.gprsCamelTDPDataList.isEmpty() || this.gprsCamelTDPDataList.size() > 10))
                 throw new MAPException("Error while encoding" + _PrimitiveName
                         + ": gprsCamelTDPDataList size must be from 1 to 10, found: " + this.gprsCamelTDPDataList.size());
 
@@ -212,7 +212,7 @@ public class GPRSCSIImpl extends SequenceBase implements GPRSCSI {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(_PrimitiveName + " [");
+        sb.append(_PrimitiveName).append(" [");
 
         if (this.gprsCamelTDPDataList != null) {
             sb.append("gprsCamelTDPDataList=[");
@@ -229,13 +229,13 @@ public class GPRSCSIImpl extends SequenceBase implements GPRSCSI {
 
         if (this.camelCapabilityHandling != null) {
             sb.append("camelCapabilityHandling=");
-            sb.append(this.camelCapabilityHandling.toString());
+            sb.append(this.camelCapabilityHandling);
             sb.append(", ");
         }
 
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(this.extensionContainer.toString());
+            sb.append(this.extensionContainer);
             sb.append(", ");
         }
 

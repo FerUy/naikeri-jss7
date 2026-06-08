@@ -28,7 +28,7 @@ public class ProvideRoamingNumberResponseImpl extends CallHandlingMessageImpl im
     public MAPExtensionContainer extensionContainer;
     public boolean releaseResourcesSupported;
     public ISDNAddressString vmscAddress;
-    private long mapProtocolVersion;
+    private final long mapProtocolVersion;
     public static final String _PrimitiveName = "ProvideRoamingNumberResponse";
 
     public ProvideRoamingNumberResponseImpl(ISDNAddressString roamingNumber, MAPExtensionContainer extensionContainer,
@@ -257,12 +257,12 @@ public class ProvideRoamingNumberResponseImpl extends CallHandlingMessageImpl im
 
         if (this.roamingNumber != null) {
             sb.append("roamingNumber=");
-            sb.append(roamingNumber.toString());
+            sb.append(roamingNumber);
             sb.append(", ");
         }
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
         if (this.releaseResourcesSupported) {
@@ -270,7 +270,7 @@ public class ProvideRoamingNumberResponseImpl extends CallHandlingMessageImpl im
         }
         if (this.vmscAddress != null) {
             sb.append("vmscAddress=");
-            sb.append(vmscAddress.toString());
+            sb.append(vmscAddress);
             sb.append(", ");
         }
 

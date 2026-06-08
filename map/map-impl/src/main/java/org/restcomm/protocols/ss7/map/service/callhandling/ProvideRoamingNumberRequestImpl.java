@@ -94,7 +94,7 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
     private EMLPPPriority callPriority;
     private boolean mtrfIndicator;
     private ISDNAddressString oldMSCNumber;
-    private long mapProtocolVersion;
+    private final long mapProtocolVersion;
 
     public ProvideRoamingNumberRequestImpl(IMSI imsi, ISDNAddressString mscNumber, ISDNAddressString msisdn, LMSI lmsi,
             ExternalSignalInfo gsmBearerCapability, ExternalSignalInfo networkSignalInfo, boolean suppressionOfAnnouncement,
@@ -515,7 +515,7 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
         } catch (AsnException e) {
             throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new MAPException("AsnException when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
+            throw new MAPException("Exception when encoding " + _PrimitiveName + ": " + e.getMessage(), e);
         }
     }
 
@@ -715,7 +715,7 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
                 } catch (IOException e) {
                     throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter callPriority", e);
                 } catch (AsnException e) {
-                    throw new MAPException("IOException while encoding " + _PrimitiveName + " parameter callPriority", e);
+                    throw new MAPException("AsnException while encoding " + _PrimitiveName + " parameter callPriority", e);
                 }
             }
 
@@ -872,37 +872,37 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this._PrimitiveName);
+        sb.append(_PrimitiveName);
         sb.append(" [");
 
         if (this.imsi != null) {
             sb.append("imsi=");
-            sb.append(imsi.toString());
+            sb.append(imsi);
             sb.append(", ");
         }
         if (this.mscNumber != null) {
             sb.append("mscNumber=");
-            sb.append(mscNumber.toString());
+            sb.append(mscNumber);
             sb.append(", ");
         }
         if (this.msisdn != null) {
             sb.append("msisdn=");
-            sb.append(msisdn.toString());
+            sb.append(msisdn);
             sb.append(", ");
         }
         if (this.lmsi != null) {
             sb.append("lmsi=");
-            sb.append(lmsi.toString());
+            sb.append(lmsi);
             sb.append(", ");
         }
         if (this.gsmBearerCapability != null) {
             sb.append("gsmBearerCapability=");
-            sb.append(gsmBearerCapability.toString());
+            sb.append(gsmBearerCapability);
             sb.append(", ");
         }
         if (this.networkSignalInfo != null) {
             sb.append("networkSignalInfo=");
-            sb.append(networkSignalInfo.toString());
+            sb.append(networkSignalInfo);
             sb.append(", ");
         }
         if (this.suppressionOfAnnouncement) {
@@ -910,12 +910,12 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
         }
         if (this.gmscAddress != null) {
             sb.append("gmscAddress=");
-            sb.append(gmscAddress.toString());
+            sb.append(gmscAddress);
             sb.append(", ");
         }
         if (this.callReferenceNumber != null) {
             sb.append("callReferenceNumber=");
-            sb.append(callReferenceNumber.toString());
+            sb.append(callReferenceNumber);
             sb.append(", ");
         }
         if (this.orInterrogation) {
@@ -923,12 +923,12 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
         }
         if (this.extensionContainer != null) {
             sb.append("extensionContainer=");
-            sb.append(extensionContainer.toString());
+            sb.append(extensionContainer);
             sb.append(", ");
         }
         if (this.alertingPattern != null) {
             sb.append("alertingPattern=");
-            sb.append(alertingPattern.toString());
+            sb.append(alertingPattern);
             sb.append(", ");
         }
         if (this.ccbsCall) {
@@ -936,12 +936,12 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
         }
         if (this.supportedCamelPhasesInInterrogatingNode != null) {
             sb.append("supportedCamelPhasesInInterrogatingNode=");
-            sb.append(supportedCamelPhasesInInterrogatingNode.toString());
+            sb.append(supportedCamelPhasesInInterrogatingNode);
             sb.append(", ");
         }
         if (this.additionalSignalInfo != null) {
             sb.append("additionalSignalInfo=");
-            sb.append(additionalSignalInfo.toString());
+            sb.append(additionalSignalInfo);
             sb.append(", ");
         }
         if (this.orNotSupportedInGMSC) {
@@ -958,7 +958,7 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
         }
         if (this.offeredCamel4CSIsInInterrogatingNode != null) {
             sb.append("offeredCamel4CSIsInInterrogatingNode=");
-            sb.append(offeredCamel4CSIsInInterrogatingNode.toString());
+            sb.append(offeredCamel4CSIsInInterrogatingNode);
             sb.append(", ");
         }
         if (this.mtRoamingRetrySupported) {
@@ -966,12 +966,12 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
         }
         if (this.pagingArea != null) {
             sb.append("pagingArea=");
-            sb.append(pagingArea.toString());
+            sb.append(pagingArea);
             sb.append(", ");
         }
         if (this.callPriority != null) {
             sb.append("callPriority=");
-            sb.append(callPriority.toString());
+            sb.append(callPriority);
             sb.append(", ");
         }
         if (this.mtrfIndicator) {
@@ -979,7 +979,7 @@ public class ProvideRoamingNumberRequestImpl extends CallHandlingMessageImpl imp
         }
         if (this.oldMSCNumber != null) {
             sb.append("oldMSCNumber=");
-            sb.append(oldMSCNumber.toString());
+            sb.append(oldMSCNumber);
             sb.append(", ");
         }
 
