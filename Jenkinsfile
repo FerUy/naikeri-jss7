@@ -8,7 +8,7 @@ pipeline {
 	parameters {
 	    string(name: 'jSS7_MAJOR_VERSION_NUMBER', defaultValue: '9.0.0', description: 'The major version for Naikeri jSS7')
 	    string(name: 'SCTP_MAJOR_VERSION_NUMBER', defaultValue: '2.1.0', description: 'The major version of Naikeri SCTP for Naikeri jSS7')
-	    string(name: 'SCTP_BUILD', defaultValue: '35', description: 'The build number of Naikeri SCTP for Naikeri jSS7 to use for the build')
+	    string(name: 'SCTP_BUILD', defaultValue: '39', description: 'The build number of Naikeri SCTP for Naikeri jSS7 to use for the build')
 	    string(name: 'jSS7_PROJECT_PATH',
                defaultValue: 'SS7/Naikeri-jSS7',
                description: 'Jenkins folder path for the upstream Naikeri-jSS7 multibranch pipeline')
