@@ -75,6 +75,21 @@ pipeline {
             }
         }
 
+        stage('Push Zip to Artifactory') {
+            when { anyOf { branch 'master'; branch 'release' } }
+            steps {
+                withCredentials([usernamePassword(credentialsId: '426e8cfb-a47c-4fd2-96ae-713c541dc3f6',
+                                                  usernameVariable: 'ART_USER', passwordVariable: 'ART_PASS')]) {
+                    sh """
+                        curl -fk -u \${ART_USER}:\${ART_PASS} -X PUT \
+                        'https://ec2-56-126-119-82.sa-east-1.compute.amazonaws.com/artifactory/libs-release-local/NAIKERI/jss7/${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip' \
+                        -T release/Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip
+                    """
+                }
+                echo "Pushed Naikeri-jSS7-${params.jSS7_MAJOR_VERSION_NUMBER}-${BUILD_NUMBER}.zip to Artifactory"
+            }
+        }
+
         stage('Push to Repo') {
             when { anyOf { branch 'master'; branch 'release' } }
 		    steps {
