@@ -93,18 +93,34 @@ To generate a WildFly version of Naikeri jSS7 use the following steps.
 
 ## Build Docker
 
-To build a docker image you can use the script below. The script below only serves as a guide, and you can modify it by adding or removing as per your
-requirements. It assumes you have already installed jSS7 into a WildFly (see the previous
-section) and that the resulting directory sits next to your `Dockerfile`.
+A `Dockerfile` is provided in the root of this repository. It expects the WildFly bundle
+produced by the `Naikeri-jSS7-WildFly` Jenkins job — `Naikeri-jSS7-WildFly-<version>.zip`,
+which unpacks to `Naikeri-jSS7-WildFly-<version>/` and already contains the WildFly install
+with jSS7 deployed into it — to be unpacked next to the `Dockerfile`. Adjust the version in
+the `COPY` line to match the bundle you are building from.
+
+Note this is the WildFly bundle, not the `Naikeri-jSS7-<version>.zip` produced by
+`release/build.xml`; the latter contains the stack but no application server.
 
 ```dockerfile
 FROM amazoncorretto:11-alpine
-RUN apk add net-tools lksctp-tools supervisor lksctp-tools-dev
+
+LABEL maintainer="Fernando Mendioroz <fernando.mendioroz@gmail.com>"
+
+# install dependencies (bash is required by WildFly's standalone.sh)
+RUN apk add --no-cache bash net-tools lksctp-tools supervisor lksctp-tools-dev
+
+# create and set workspace
 RUN mkdir -p /opt/naikeri/jss7
 WORKDIR /opt/naikeri/jss7
-COPY Naikeri-jSS7-9.0.0-SNAPSHOT/. .
+
+# produced by the Naikeri-jSS7-WildFly Jenkins job; version subject to change
+COPY Naikeri-jSS7-WildFly-9.0.0-1557/. .
+
 RUN chmod +x wildfly-24.0.1.Final/bin/standalone.sh
-ENTRYPOINT ["sh", "wildfly-24.0.1.Final/bin/standalone.sh"]
+
+# run application
+ENTRYPOINT ["/opt/naikeri/jss7/wildfly-24.0.1.Final/bin/standalone.sh"]
 CMD ["-b", "0.0.0.0"]
 ```
 
