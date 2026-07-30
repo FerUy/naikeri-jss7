@@ -70,7 +70,7 @@ public class UtranAdditionalPositioningDataImplTester {
         for (Map.Entry<String, String> entry : methodsAndAddPosIds.entries()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            logger.debug("Method={}, AddPosId={}, usage={} ({})", key, value, utranAdditionalPositioningData.getUsageCode(utranAdditionalPositioningData.getData(), i), utranAdditionalPositioningData.getUsage(utranAdditionalPositioningData.getData(), i));
+            logger.info("Method={}, AddPosId={}, usage={} ({})", key, value, utranAdditionalPositioningData.getUsageCode(utranAdditionalPositioningData.getData(), i), utranAdditionalPositioningData.getUsage(utranAdditionalPositioningData.getData(), i));
             i++;
         }
 
@@ -84,6 +84,6 @@ public class UtranAdditionalPositioningDataImplTester {
             i++;
         }
         sb.append("]");
-        logger.debug(sb);
+        logger.info(sb);
     }
 }
