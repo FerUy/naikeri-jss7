@@ -47,7 +47,7 @@ public class ProvideRoamingNumberResponseImpl extends CallHandlingMessageImpl im
 
     @Override
     public MAPMessageType getMessageType() {
-        return MAPMessageType.privideRoamingNumber_Response;
+        return MAPMessageType.provideRoamingNumber_Response;
     }
 
     @Override

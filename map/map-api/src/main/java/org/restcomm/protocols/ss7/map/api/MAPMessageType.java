@@ -38,7 +38,7 @@ public enum MAPMessageType {
     subscriberLocationReport_Request, subscriberLocationReport_Response,
 
     // -- call handling
-    sendRoutingInfo_Request, sendRoutingInfo_Response, provideRoamingNumber_Request, privideRoamingNumber_Response, istCommand_Request,
+    sendRoutingInfo_Request, sendRoutingInfo_Response, provideRoamingNumber_Request, provideRoamingNumber_Response, istCommand_Request,
     istCommand_Response,
 
     // -- oam
