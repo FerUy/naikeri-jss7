@@ -106,8 +106,8 @@ public class TestUssdServerConfigurationData {
         this.oneNotificationFor100Dialogs = oneNotificationFor100Dialogs;
     }
 
-    protected static final XMLFormat<TestUssdServerConfigurationData> XML = new XMLFormat<TestUssdServerConfigurationData>(
-            TestUssdServerConfigurationData.class) {
+    protected static final XMLFormat<TestUssdServerConfigurationData> XML = new XMLFormat<>(
+        TestUssdServerConfigurationData.class) {
 
         public void write(TestUssdServerConfigurationData srv, OutputElement xml) throws XMLStreamException {
             xml.setAttribute(DATA_CODING_SCHEME, srv.dataCodingScheme);
@@ -128,15 +128,15 @@ public class TestUssdServerConfigurationData {
             srv.alertingPattern = xml.getAttribute(ALERTING_PATTERN).toInt();
             srv.oneNotificationFor100Dialogs = xml.getAttribute(ONE_NOTIFICATION_FOR_100_DIALOGS).toBoolean();
 
-            srv.msisdnAddress = (String) xml.get(MSISDN_ADDRESS, String.class);
-            srv.autoResponseString = (String) xml.get(AUTO_RESPONSE_STRING, String.class);
-            srv.autoUnstructured_SS_RequestString = (String) xml.get(AUTO_UNSTRUCTURED_SS_REQUEST_STRING, String.class);
+            srv.msisdnAddress = xml.get(MSISDN_ADDRESS, String.class);
+            srv.autoResponseString = xml.get(AUTO_RESPONSE_STRING, String.class);
+            srv.autoUnstructured_SS_RequestString = xml.get(AUTO_UNSTRUCTURED_SS_REQUEST_STRING, String.class);
 
-            String an = (String) xml.get(MSISDN_ADDRESS_NATURE, String.class);
+            String an = xml.get(MSISDN_ADDRESS_NATURE, String.class);
             srv.msisdnAddressNature = AddressNature.valueOf(an);
-            String np = (String) xml.get(MSISDN_NUMBERING_PLAN, String.class);
+            String np = xml.get(MSISDN_NUMBERING_PLAN, String.class);
             srv.msisdnNumberingPlan = NumberingPlan.valueOf(np);
-            String ss_act = (String) xml.get(PROCESS_SS_REQUEST_ACTION, String.class);
+            String ss_act = xml.get(PROCESS_SS_REQUEST_ACTION, String.class);
             srv.processSsRequestAction = ProcessSsRequestAction.createInstance(ss_act);
         }
     };

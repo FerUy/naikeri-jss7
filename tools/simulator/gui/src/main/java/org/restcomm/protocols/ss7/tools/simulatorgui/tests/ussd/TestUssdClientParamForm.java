@@ -55,6 +55,9 @@ public class TestUssdClientParamForm extends JDialog {
     private JTextField tbSRIResponseVlr;
     private JComboBox cbSRIReaction;
     private JCheckBox cbReturn20PersDeliveryErrors;
+    private JCheckBox cbEricssonData;
+    private JTextField tbEricssonMsisdn;
+    private JTextField tbEricssonVlrNumber;
 
     public TestUssdClientParamForm(JFrame owner) {
         super(owner, true);
@@ -210,14 +213,14 @@ public class TestUssdClientParamForm extends JDialog {
 
         cbAutoResponseOnUnstructuredSSRequests = new JCheckBox("Auto response to incoming UnstructuredSS requests");
         cbAutoResponseOnUnstructuredSSRequests.setBounds(10, 372, 511, 23);
-        cbAutoResponseOnUnstructuredSSRequests.addItemListener(new ItemListener(){
+        cbAutoResponseOnUnstructuredSSRequests.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == ItemEvent.SELECTED){
+                if (e.getStateChange() == ItemEvent.SELECTED) {
                     tbResponseString.setEnabled(true);
                     //tbResponseString.setText("Please enter response string");
                 }
-                else if(e.getStateChange() == ItemEvent.DESELECTED){
+                else if (e.getStateChange() == ItemEvent.DESELECTED) {
                     tbResponseString.setEnabled(false);
                 }
                 validate();
@@ -269,6 +272,45 @@ public class TestUssdClientParamForm extends JDialog {
         cbReturn20PersDeliveryErrors = new JCheckBox("Return 20% delivery errors for SRI or MtForwardSM Requests");
         cbReturn20PersDeliveryErrors.setBounds(10, 100, 511, 23);
         panel_sri.add(cbReturn20PersDeliveryErrors);
+
+        JPanel panel_eri = new JPanel();
+        tabbedPane.addTab("Ericsson", null, panel_eri, null);
+        panel_eri.setLayout(null);
+
+        cbEricssonData = new JCheckBox("Add Ericsson MAP-OPEN data (MSISDN, VLR number) to ProcessUnstructuredSS requests");
+        cbEricssonData.setBounds(10, 10, 609, 23);
+        // anonymous class rather than a lambda: the checkstyle version used by the build cannot parse lambdas
+        cbEricssonData.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateEricssonFields();
+            }
+        });
+        panel_eri.add(cbEricssonData);
+
+        JLabel lblEricssonMsisdn = new JLabel("Ericsson MSISDN (international number, ISDN)");
+        lblEricssonMsisdn.setBounds(10, 45, 361, 14);
+        panel_eri.add(lblEricssonMsisdn);
+
+        tbEricssonMsisdn = new JTextField();
+        tbEricssonMsisdn.setColumns(10);
+        tbEricssonMsisdn.setBounds(482, 42, 137, 20);
+        panel_eri.add(tbEricssonMsisdn);
+
+        JLabel lblEricssonVlrNumber = new JLabel("Ericsson VLR number (international number, ISDN; optional)");
+        lblEricssonVlrNumber.setBounds(10, 76, 400, 14);
+        panel_eri.add(lblEricssonVlrNumber);
+
+        tbEricssonVlrNumber = new JTextField();
+        tbEricssonVlrNumber.setColumns(10);
+        tbEricssonVlrNumber.setBounds(482, 73, 137, 20);
+        panel_eri.add(tbEricssonVlrNumber);
+    }
+
+    private void updateEricssonFields() {
+        boolean enabled = cbEricssonData.isSelected();
+        tbEricssonMsisdn.setEnabled(enabled);
+        tbEricssonVlrNumber.setEnabled(enabled);
     }
 
     public void setData(TestUssdClientManMBean ussdClient) {
@@ -301,6 +343,11 @@ public class TestUssdClientParamForm extends JDialog {
         tbSRIResponseVlr.setText(this.ussdClient.getSRIResponseVlr());
         M3uaForm.setEnumeratedBaseComboBox(cbSRIReaction, this.ussdClient.getSRIReaction());
         cbReturn20PersDeliveryErrors.setSelected(this.ussdClient.isReturn20PersDeliveryErrors());
+
+        cbEricssonData.setSelected(this.ussdClient.isEricssonData());
+        tbEricssonMsisdn.setText(this.ussdClient.getEricssonMsisdn());
+        tbEricssonVlrNumber.setText(this.ussdClient.getEricssonVlrNumber());
+        updateEricssonFields();
     }
 
     private void loadDataA() {
@@ -324,6 +371,11 @@ public class TestUssdClientParamForm extends JDialog {
         tbSRIResponseVlr.setText("");
         M3uaForm.setEnumeratedBaseComboBox(cbSRIReaction, new SRIReaction(SRIReaction.VAL_RETURN_SUCCESS));
         cbReturn20PersDeliveryErrors.setSelected(false);
+
+        cbEricssonData.setSelected(false);
+        tbEricssonMsisdn.setText("");
+        tbEricssonVlrNumber.setText("");
+        updateEricssonFields();
     }
 
     private void loadDataB() {
@@ -352,6 +404,10 @@ public class TestUssdClientParamForm extends JDialog {
             JOptionPane.showMessageDialog(this, "Exception when parsing MaxConcurrentDialogs value: " + e.toString());
             return false;
         }
+        if (cbEricssonData.isSelected() && tbEricssonMsisdn.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ericsson data is enabled: the Ericsson MSISDN must be set");
+            return false;
+        }
 
         this.ussdClient.setMsisdnAddressNature((AddressNatureType) cbAddressNature.getSelectedItem());
         this.ussdClient.setMsisdnNumberingPlan((NumberingPlanMapType) cbNumberingPlan.getSelectedItem());
@@ -371,6 +427,10 @@ public class TestUssdClientParamForm extends JDialog {
         this.ussdClient.setSRIResponseVlr(tbSRIResponseVlr.getText());
         this.ussdClient.setSRIReaction((SRIReaction) cbSRIReaction.getSelectedItem());
         this.ussdClient.setReturn20PersDeliveryErrors(cbReturn20PersDeliveryErrors.isSelected());
+
+        this.ussdClient.setEricssonData(cbEricssonData.isSelected());
+        this.ussdClient.setEricssonMsisdn(tbEricssonMsisdn.getText().trim());
+        this.ussdClient.setEricssonVlrNumber(tbEricssonVlrNumber.getText().trim());
 
         return true;
     }

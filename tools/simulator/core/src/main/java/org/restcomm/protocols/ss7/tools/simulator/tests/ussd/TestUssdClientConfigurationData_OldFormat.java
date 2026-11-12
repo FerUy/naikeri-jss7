@@ -13,8 +13,8 @@ import org.restcomm.protocols.ss7.map.api.primitives.NumberingPlan;
  */
 public class TestUssdClientConfigurationData_OldFormat extends TestUssdClientConfigurationData {
 
-    protected static final XMLFormat<TestUssdClientConfigurationData_OldFormat> XML = new XMLFormat<TestUssdClientConfigurationData_OldFormat>(
-            TestUssdClientConfigurationData_OldFormat.class) {
+    protected static final XMLFormat<TestUssdClientConfigurationData_OldFormat> XML = new XMLFormat<>(
+        TestUssdClientConfigurationData_OldFormat.class) {
 
         public void write(TestUssdClientConfigurationData_OldFormat clt, OutputElement xml) throws XMLStreamException {
         }
@@ -25,15 +25,15 @@ public class TestUssdClientConfigurationData_OldFormat extends TestUssdClientCon
             clt.maxConcurrentDialogs = xml.getAttribute(MAX_CONCURENT_DIALOGS).toInt();
             clt.oneNotificationFor100Dialogs = xml.getAttribute(ONE_NOTIFICATION_FOR_100_DIALOGS).toBoolean();
 
-            clt.msisdnAddress = (String) xml.get(MSISDN_ADDRESS, String.class);
-            String an = (String) xml.get(MSISDN_ADDRESS_NATURE, String.class);
+            clt.msisdnAddress = xml.get(MSISDN_ADDRESS, String.class);
+            String an = xml.get(MSISDN_ADDRESS_NATURE, String.class);
             clt.msisdnAddressNature = AddressNature.valueOf(an);
-            String np = (String) xml.get(MSISDN_NUMBERING_PLAN, String.class);
+            String np = xml.get(MSISDN_NUMBERING_PLAN, String.class);
             clt.msisdnNumberingPlan = NumberingPlan.valueOf(np);
 
-            String uca = (String) xml.get(USSD_CLIENT_ACTION, String.class);
+            String uca = xml.get(USSD_CLIENT_ACTION, String.class);
             clt.ussdClientAction = UssdClientAction.createInstance(uca);
-            clt.autoRequestString = (String) xml.get(AUTO_REQUEST_STRING, String.class);
+            clt.autoRequestString = xml.get(AUTO_REQUEST_STRING, String.class);
         }
     };
 

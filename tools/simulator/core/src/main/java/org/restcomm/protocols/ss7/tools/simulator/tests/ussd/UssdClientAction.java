@@ -15,8 +15,8 @@ public class UssdClientAction extends EnumeratedBase {
     public static final int VAL_MANUAL_OPERATION = 1;
     public static final int VAL_AUTO_SendProcessUnstructuredSSRequest = 2;
 
-    private static Hashtable<String, Integer> stringMap = new Hashtable<String, Integer>();
-    private static Hashtable<Integer, String> intMap = new Hashtable<Integer, String>();
+    private static final Hashtable<String, Integer> stringMap = new Hashtable<>();
+    private static final Hashtable<Integer, String> intMap = new Hashtable<>();
 
     static {
         intMap.put(VAL_MANUAL_OPERATION, "Manual operation");

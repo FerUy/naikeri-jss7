@@ -71,6 +71,18 @@ public interface TestUssdClientManMBean {
 
     void setReturn20PersDeliveryErrors(boolean val);
 
+    boolean isEricssonData();
+
+    void setEricssonData(boolean val);
+
+    String getEricssonMsisdn();
+
+    void setEricssonMsisdn(String val);
+
+    String getEricssonVlrNumber();
+
+    void setEricssonVlrNumber(String val);
+
 
     String getCurrentRequestDef();
 

@@ -30,6 +30,9 @@ public class TestUssdClientConfigurationData {
     protected static final String SRI_RESPONSE_VLR = "sriResponseVlr";
     protected static final String SRI_REACTION = "sriReaction";
     protected static final String RETURN_20_PERS_DELIVERY_ERRORS = "return20PersDeliveryErrors";
+    protected static final String ERICSSON_DATA = "ericssonData";
+    protected static final String ERICSSON_MSISDN = "ericssonMsisdn";
+    protected static final String ERICSSON_VLR_NUMBER = "ericssonVlrNumber";
 
     protected String msisdnAddress = "";
     protected AddressNature msisdnAddressNature = AddressNature.international_number;
@@ -47,6 +50,11 @@ public class TestUssdClientConfigurationData {
     protected int maxConcurrentDialogs = 10;
     protected boolean oneNotificationFor100Dialogs = false;
     protected boolean autoResponseOnUnstructuredSSRequests = false;
+
+    // Ericsson-style dialogue: MSISDN and VLR number in the MAP-OPEN of ProcessUnstructuredSS requests (off by default)
+    protected boolean ericssonData = false;
+    protected String ericssonMsisdn = "";
+    protected String ericssonVlrNumber = "";
 
     public String getMsisdnAddress() {
         return msisdnAddress;
@@ -168,6 +176,30 @@ public class TestUssdClientConfigurationData {
         this.return20PersDeliveryErrors = val;
     }
 
+    public boolean isEricssonData() {
+        return ericssonData;
+    }
+
+    public void setEricssonData(boolean ericssonData) {
+        this.ericssonData = ericssonData;
+    }
+
+    public String getEricssonMsisdn() {
+        return ericssonMsisdn;
+    }
+
+    public void setEricssonMsisdn(String ericssonMsisdn) {
+        this.ericssonMsisdn = ericssonMsisdn;
+    }
+
+    public String getEricssonVlrNumber() {
+        return ericssonVlrNumber;
+    }
+
+    public void setEricssonVlrNumber(String ericssonVlrNumber) {
+        this.ericssonVlrNumber = ericssonVlrNumber;
+    }
+
     protected static final XMLFormat<TestUssdClientConfigurationData> XML = new XMLFormat<TestUssdClientConfigurationData>(
             TestUssdClientConfigurationData.class) {
 
@@ -178,6 +210,7 @@ public class TestUssdClientConfigurationData {
             xml.setAttribute(ONE_NOTIFICATION_FOR_100_DIALOGS, clt.oneNotificationFor100Dialogs);
             xml.setAttribute(AUTO_RESPONSE_ON_UNSTRUCTURED_SS_REQUESTS, clt.autoResponseOnUnstructuredSSRequests);
             xml.setAttribute(RETURN_20_PERS_DELIVERY_ERRORS, clt.return20PersDeliveryErrors);
+            xml.setAttribute(ERICSSON_DATA, clt.ericssonData);
 
             xml.add(clt.msisdnAddress, MSISDN_ADDRESS, String.class);
             xml.add(clt.msisdnAddressNature.toString(), MSISDN_ADDRESS_NATURE, String.class);
@@ -189,6 +222,8 @@ public class TestUssdClientConfigurationData {
             xml.add(clt.ussdClientAction.toString(), USSD_CLIENT_ACTION, String.class);
             xml.add(clt.autoRequestString, AUTO_REQUEST_STRING, String.class);
             xml.add(clt.autoResponseString, AUTO_RESPONSE_STRING, String.class);
+            xml.add(clt.ericssonMsisdn, ERICSSON_MSISDN, String.class);
+            xml.add(clt.ericssonVlrNumber, ERICSSON_VLR_NUMBER, String.class);
         }
 
         public void read(InputElement xml, TestUssdClientConfigurationData clt) throws XMLStreamException {
@@ -202,21 +237,31 @@ public class TestUssdClientConfigurationData {
             chArr = xml.getAttribute(RETURN_20_PERS_DELIVERY_ERRORS);
             if (chArr != null)
                 clt.return20PersDeliveryErrors = chArr.toBoolean();
+            chArr = xml.getAttribute(ERICSSON_DATA);
+            if (chArr != null)
+                clt.ericssonData = chArr.toBoolean();
 
-            clt.msisdnAddress = (String) xml.get(MSISDN_ADDRESS, String.class);
-            String an = (String) xml.get(MSISDN_ADDRESS_NATURE, String.class);
+            clt.msisdnAddress = xml.get(MSISDN_ADDRESS, String.class);
+            String an = xml.get(MSISDN_ADDRESS_NATURE, String.class);
             clt.msisdnAddressNature = AddressNature.valueOf(an);
-            String np = (String) xml.get(MSISDN_NUMBERING_PLAN, String.class);
+            String np = xml.get(MSISDN_NUMBERING_PLAN, String.class);
             clt.msisdnNumberingPlan = NumberingPlan.valueOf(np);
-            clt.sriResponseImsi = (String) xml.get(SRI_RESPONSE_IMSI, String.class);
-            clt.sriResponseVlr = (String) xml.get(SRI_RESPONSE_VLR, String.class);
-            String sriR = (String) xml.get(SRI_REACTION, String.class);
+            clt.sriResponseImsi = xml.get(SRI_RESPONSE_IMSI, String.class);
+            clt.sriResponseVlr = xml.get(SRI_RESPONSE_VLR, String.class);
+            String sriR = xml.get(SRI_REACTION, String.class);
             clt.sriReaction = SRIReaction.createInstance(sriR);
 
-            String uca = (String) xml.get(USSD_CLIENT_ACTION, String.class);
+            String uca = xml.get(USSD_CLIENT_ACTION, String.class);
             clt.ussdClientAction = UssdClientAction.createInstance(uca);
-            clt.autoRequestString = (String) xml.get(AUTO_REQUEST_STRING, String.class);
-            clt.autoResponseString = (String) xml.get(AUTO_RESPONSE_STRING, String.class);
+            clt.autoRequestString = xml.get(AUTO_REQUEST_STRING, String.class);
+            clt.autoResponseString = xml.get(AUTO_RESPONSE_STRING, String.class);
+            // absent in files saved by earlier versions: keep the defaults
+            String eriMsisdn = xml.get(ERICSSON_MSISDN, String.class);
+            if (eriMsisdn != null)
+                clt.ericssonMsisdn = eriMsisdn;
+            String eriVlrNumber = xml.get(ERICSSON_VLR_NUMBER, String.class);
+            if (eriVlrNumber != null)
+                clt.ericssonVlrNumber = eriVlrNumber;
         }
     };
 

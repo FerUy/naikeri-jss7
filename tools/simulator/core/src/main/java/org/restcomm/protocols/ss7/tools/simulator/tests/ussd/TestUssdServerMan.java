@@ -4,6 +4,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
@@ -59,6 +61,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
         MAPServiceSupplementaryListener {
 
     public static String SOURCE_NAME = "TestUssdServer";
+    private static final Logger logger = LogManager.getLogger(TestUssdServerMan.class);
 
     private final String name;
     // private TesterHost testerHost;
@@ -71,7 +74,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
     private int countUnstResp = 0;
     private int countUnstNotifReq = 0;
     private MAPDialogSupplementary currentDialog = null;
-    private Queue<MAPDialogSupplementary> currentDialogQuere = new ConcurrentLinkedQueue<>();
+    private final Queue<MAPDialogSupplementary> currentDialogQuere = new ConcurrentLinkedQueue<>();
     private boolean isStarted = false;
     private String currentRequestDef = "";
     private boolean needSendSend = false;
@@ -358,8 +361,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
                     new CBSDataCodingSchemeImpl(this.testerHost.getConfigurationData().getTestUssdServerConfigurationData()
                             .getDataCodingScheme()), null);
         } catch (MAPException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            logger.error("Failed to encode the USSD string", e1);
         }
 
         try {
@@ -404,12 +406,11 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
                     new CBSDataCodingSchemeImpl(this.testerHost.getConfigurationData().getTestUssdServerConfigurationData()
                             .getDataCodingScheme()), null);
         } catch (MAPException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            logger.error("Failed to encode the USSD string", e1);
         }
         ISDNAddressString msisdn = null;
         if (this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnAddress() != null
-                && !this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnAddress().equals("")) {
+                && !this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnAddress().isEmpty()) {
             msisdn = mapProvider.getMAPParameterFactory().createISDNAddressString(
                     this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnAddressNature(),
                     this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnNumberingPlan(),
@@ -458,7 +459,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
             return "No pending dialog. Open a dialog by UssdClient";
         long invokeId = dd.invokeId;
 
-        if (msg == null || msg.equals(""))
+        if (msg == null || msg.isEmpty())
             return "USSD message is empty";
 
         String res = this.sendProcessUnstructuredResponse(curDialog, msg, invokeId);
@@ -478,7 +479,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
         if (!isStarted)
             return "The tester is not started";
 
-        if (msg == null || msg.equals(""))
+        if (msg == null || msg.isEmpty())
             return "USSD message is empty";
 
         MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
@@ -516,7 +517,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
             return "The tester is not started";
 
         MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
-        if (msg == null || msg.equals(""))
+        if (msg == null || msg.isEmpty())
             return "USSD message is empty";
 
         USSDString ussdString = null;
@@ -526,13 +527,12 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
                     new CBSDataCodingSchemeImpl(this.testerHost.getConfigurationData().getTestUssdServerConfigurationData()
                             .getDataCodingScheme()), null);
         } catch (MAPException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Error creating USSDString", e);
         }
 
         ISDNAddressString msisdn = null;
         if (this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnAddress() != null
-                && !this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnAddress().equals("")) {
+                && !this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnAddress().isEmpty()) {
             msisdn = mapProvider.getMAPParameterFactory().createISDNAddressString(
                     this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnAddressNature(),
                     this.testerHost.getConfigurationData().getTestUssdServerConfigurationData().getMsisdnNumberingPlan(),
@@ -598,8 +598,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
         try {
             dd.currentRequestDef += "procUnstrSsReq=\"" + ind.getUSSDString().getString(null) + "\";";
         } catch (MAPException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Error creating USSDString", e);
         }
         String pref = "PendingDialog: ";
         if (this.currentDialog == ind.getMAPDialog()
@@ -614,8 +613,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
             try {
                 this.sendRcvdNotice("Rcvd: procUnstrSsReq: " + ind.getUSSDString().getString(null), pref, uData);
             } catch (MAPException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("Error sending USSDString", e);
             }
         }
 
@@ -627,7 +625,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
 
             case ProcessSsRequestAction.VAL_AUTO_ProcessUnstructuredSSResponse: {
                 String msg = this.getAutoResponseString();
-                if (msg == null || msg.equals(""))
+                if (msg == null || msg.isEmpty())
                     msg = "???";
                 this.sendProcessUnstructuredResponse(ind.getMAPDialog(), msg, ind.getInvokeId());
                 this.needSendClose = true;
@@ -636,7 +634,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
 
             case ProcessSsRequestAction.VAL_AUTO_Unstructured_SS_Request_Then_ProcessUnstructuredSSResponse: {
                 String msg = this.getAutoUnstructured_SS_RequestString();
-                if (msg == null || msg.equals(""))
+                if (msg == null || msg.isEmpty())
                     msg = "???";
                 this.sendUnstructuredRequest(ind.getMAPDialog(), msg);
                 this.needSendSend = true;
@@ -677,8 +675,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
                 str = ind.getUSSDString().getString(null);
             dd.currentRequestDef += "unstrSsResp=\"" + str + "\";";
         } catch (MAPException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Error creating USSDString", e);
         }
         if (this.currentDialog == ind.getMAPDialog())
             currentRequestDef = dd.currentRequestDef;
@@ -704,7 +701,7 @@ public class TestUssdServerMan extends TesterBase implements TestUssdServerManMB
 
             case ProcessSsRequestAction.VAL_AUTO_Unstructured_SS_Request_Then_ProcessUnstructuredSSResponse: {
                 String msg = this.getAutoResponseString();
-                if (msg == null || msg.equals(""))
+                if (msg == null || msg.isEmpty())
                     msg = "???";
                 this.sendProcessUnstructuredResponse(ind.getMAPDialog(), msg, ind.getInvokeId());
                 this.needSendClose = true;

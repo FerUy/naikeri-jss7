@@ -18,8 +18,7 @@ import org.restcomm.protocols.ss7.tools.simulator.tests.sms.SRIReaction;
  */
 public class TestUssdClientStandardManMBean extends StandardMBean {
 
-    public TestUssdClientStandardManMBean(TestUssdClientMan impl, Class<TestUssdClientManMBean> intf)
-            throws NotCompliantMBeanException {
+    public TestUssdClientStandardManMBean(TestUssdClientMan impl, Class<TestUssdClientManMBean> intf) throws NotCompliantMBeanException {
         super(impl, intf);
     }
 
@@ -69,6 +68,12 @@ public class TestUssdClientStandardManMBean extends StandardMBean {
                         "Auto response to incoming Unstructured SS requests", true, true, true),
                 new MBeanAttributeInfo("AutoResponseString", String.class.getName(),
                         "Value of auto ProcessSsUnstructured request", true, true, false),
+                new MBeanAttributeInfo("EricssonData", boolean.class.getName(),
+                        "Add Ericsson MAP-OPEN data (MSISDN, VLR number) to ProcessUnstructuredSS requests", true, true, true),
+                new MBeanAttributeInfo("EricssonMsisdn", String.class.getName(),
+                        "Ericsson MAP-OPEN MSISDN (international, ISDN)", true, true, false),
+                new MBeanAttributeInfo("EricssonVlrNumber", String.class.getName(),
+                        "Ericsson MAP-OPEN VLR number (international, ISDN); empty: not sent", true, true, false),
         };
 
         MBeanParameterInfo[] signString = new MBeanParameterInfo[] { new MBeanParameterInfo("val", String.class.getName(),

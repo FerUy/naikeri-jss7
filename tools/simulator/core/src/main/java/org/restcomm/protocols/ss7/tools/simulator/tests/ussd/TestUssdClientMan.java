@@ -4,6 +4,8 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContext;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextName;
 import org.restcomm.protocols.ss7.map.api.MAPApplicationContextVersion;
@@ -87,6 +89,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
         MAPServiceSupplementaryListener, MAPServiceSmsListener {
 
     public static String SOURCE_NAME = "TestUssdClient";
+    private static final Logger logger = LogManager.getLogger(TestUssdClientMan.class);
 
     private final String name;
     // private TesterHost testerHost;
@@ -336,6 +339,39 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
     }
 
     @Override
+    public boolean isEricssonData() {
+        return this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().isEricssonData();
+    }
+
+    @Override
+    public void setEricssonData(boolean val) {
+        this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().setEricssonData(val);
+        this.testerHost.markStore();
+    }
+
+    @Override
+    public String getEricssonMsisdn() {
+        return this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getEricssonMsisdn();
+    }
+
+    @Override
+    public void setEricssonMsisdn(String val) {
+        this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().setEricssonMsisdn(val);
+        this.testerHost.markStore();
+    }
+
+    @Override
+    public String getEricssonVlrNumber() {
+        return this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getEricssonVlrNumber();
+    }
+
+    @Override
+    public void setEricssonVlrNumber(String val) {
+        this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().setEricssonVlrNumber(val);
+        this.testerHost.markStore();
+    }
+
+    @Override
     public void putSRIReaction(String val) {
         SRIReaction x = SRIReaction.createInstance(val);
         this.setSRIReaction(x);
@@ -417,13 +453,11 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
         if (this.sender != null) {
             this.sender.stop();
-            try {
-                this.sender.notify();
-            } catch (Exception e) {
-            }
+            this.sender.wakeUp();
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
             this.sender = null;
         }
@@ -478,8 +512,11 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
         MAPDialogSupplementary curDialog = currentDialog;
         if (curDialog != null)
             return "The current dialog exists. Finish it previousely";
-        if (msg == null || msg.equals(""))
+        if (msg == null || msg.isEmpty())
             return "USSD message is empty";
+        TestUssdClientConfigurationData cfg = this.testerHost.getConfigurationData().getTestUssdClientConfigurationData();
+        if (cfg.isEricssonData() && (cfg.getEricssonMsisdn() == null || cfg.getEricssonMsisdn().isEmpty()))
+            return "Ericsson data is enabled but the Ericsson MSISDN is empty";
 
         currentRequestDef = "";
 
@@ -488,6 +525,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
     private String doPerformProcessUnstructuredRequest(String msg, boolean manualMode) {
 
+        TestUssdClientConfigurationData cfg = this.testerHost.getConfigurationData().getTestUssdClientConfigurationData();
         MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
         USSDString ussdString = null;
         try {
@@ -496,8 +534,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
                     new CBSDataCodingSchemeImpl(this.testerHost.getConfigurationData().getTestUssdClientConfigurationData()
                             .getDataCodingScheme()), null);
         } catch (MAPException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Failed to encode the USSD string", e);
         }
         MAPApplicationContext mapUssdAppContext = MAPApplicationContext.getInstance(
                 MAPApplicationContextName.networkUnstructuredSsContext, MAPApplicationContextVersion.version2);
@@ -510,20 +547,19 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
                 currentDialog = curDialog;
             invokeId = null;
 
-            boolean eriExtTest = false;
-//            eriExtTest = true;
-            if (eriExtTest) {
+            if (cfg.isEricssonData() && cfg.getEricssonMsisdn() != null && !cfg.getEricssonMsisdn().isEmpty()) {
+                // Ericsson-style dialogue: MSISDN and, when set, VLR number in the MAP-OPEN
                 AddressString eriMsisdn = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                        "99000000000001");
-                AddressString eriVlrNo = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN,
-                        "99000000000002");
+                        cfg.getEricssonMsisdn());
+                String vlrNumber = cfg.getEricssonVlrNumber();
+                AddressString eriVlrNo = vlrNumber == null || vlrNumber.isEmpty() ? null
+                        : new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, vlrNumber);
                 curDialog.addEricssonData(eriMsisdn, eriVlrNo);
             }
 
             ISDNAddressString msisdn = null;
             if (this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getMsisdnAddress() != null
-                    && !this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getMsisdnAddress()
-                            .equals("")) {
+                    && !this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getMsisdnAddress().isEmpty()) {
                 msisdn = mapProvider.getMAPParameterFactory().createISDNAddressString(
                         this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getMsisdnAddressNature(),
                         this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getMsisdnNumberingPlan(),
@@ -596,16 +632,13 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
             return "No pending unstructured request";
 
         MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
-//        if (msg == null || msg.equals(""))
-//            return "USSD message is empty";
         USSDString ussdString = null;
-        if (msg != null && !msg.equals("")) {
+        if (msg != null && !msg.isEmpty()) {
             try {
                 ussdString = mapProvider.getMAPParameterFactory().createUSSDString(msg,
                         new CBSDataCodingSchemeImpl(this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getDataCodingScheme()), null);
             } catch (MAPException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("Failed to encode the USSD string", e);
             }
         }
 
@@ -645,10 +678,6 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
         MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
 
         try {
-//            MAPUserAbortChoice mapUserAbortChoice = new MAPUserAbortChoiceImpl();
-//            mapUserAbortChoice.setUserSpecificReason();
-//            curDialog.abort(mapUserAbortChoice);
-
             MAPErrorMessage mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageExtensionContainer(
                 (long) MAPErrorCode.ussdBusy, null);
             curDialog.sendErrorComponent(invokeId, mapErrorMessage);
@@ -694,8 +723,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
             try {
                 currentRequestDef += "procUnstrSsResp=\"" + ind.getUSSDString().getString(null) + "\";";
             } catch (MAPException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("Failed to decode the received USSD string", e);
             }
         }
 
@@ -707,8 +735,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
                 this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: procUnstrSsResp: " + ind.getUSSDString().getString(null), uData,
                         Level.DEBUG);
             } catch (MAPException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("Failed to decode the received USSD string", e);
             }
         }
 
@@ -734,8 +761,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
         try {
             currentRequestDef += "Rcvd: unstrSsReq=\"" + ind.getUSSDString().getString(null) + "\";";
         } catch (MAPException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            logger.error("Failed to decode the received USSD string", e1);
         }
         this.countUnstReq++;
         String uData = this
@@ -744,11 +770,10 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
             this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: unstrSsReq: " + ind.getUSSDString().getString(null), uData,
                     Level.DEBUG);
         } catch (MAPException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Failed to decode the received USSD string", e);
         }
 
-        if(this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().isAutoResponseOnUnstructuredSSRequests()) {
+        if (this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().isAutoResponseOnUnstructuredSSRequests()) {
             performUnstructuredResponse(this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getAutoResponseString());
         }
     }
@@ -781,8 +806,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
             this.testerHost.sendNotif(SOURCE_NAME, "Rcvd: unstrSsNotify: " + ind.getUSSDString().getString(null), uData,
                     Level.DEBUG);
         } catch (MAPException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            logger.error("Failed to decode the received USSD string", e1);
         }
 
         try {
@@ -843,16 +867,26 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
         if (this.sender != null) {
             if (nbConcurrentDialogs.get() < this.testerHost.getConfigurationData().getTestUssdClientConfigurationData()
                     .getMaxConcurrentDialogs() / 2)
-                this.sender.notify();
+                this.sender.wakeUp();
         }
     }
 
     private class MessageSender implements Runnable {
 
-        private boolean needStop = false;
+        // set from the GUI/JMX thread, read by the sender thread
+        private volatile boolean needStop = false;
 
         public void stop() {
             needStop = true;
+        }
+
+        /**
+         * Wakes the sender if it is waiting for dialogs to be released. wait()/notify() need the object's monitor:
+         * without it both threw IllegalMonitorStateException, so the sender never waited (busy loop at the
+         * concurrency limit) and onDialogRelease() threw on every release.
+         */
+        public synchronized void wakeUp() {
+            this.notifyAll();
         }
 
         @Override
@@ -860,8 +894,8 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
             try {
                 Thread.sleep(20000);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
+                return;
             }
 
             while (true) {
@@ -877,9 +911,13 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
                 if (nbConcurrentDialogs.get() >= testerHost.getConfigurationData().getTestUssdClientConfigurationData()
                         .getMaxConcurrentDialogs()) {
-                    try {
-                        this.wait(100);
-                    } catch (Exception ex) {
+                    synchronized (this) {
+                        try {
+                            this.wait(100);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
                     }
                 }
             }
@@ -1013,17 +1051,6 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
         this.countSriReq++;
 
-//        try {
-//            FileOutputStream fios = new FileOutputStream("aaa.txt");
-//            PrintWriter pw = new PrintWriter(fios);
-//            pw.write("");
-//            fios.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-//        ((MAPDialogImpl)ind.getMAPDialog()).getTcapDialog().setRemoteAddress(remoteAddress);
-
         MAPProvider mapProvider = this.mapMan.getMAPStack().getMAPProvider();
         MAPDialogSms curDialog = ind.getMAPDialog();
         long invokeId = ind.getInvokeId();
@@ -1044,6 +1071,7 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
 
         try {
             SRIReaction sriReaction = this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().getSRIReaction();
+            MAPErrorMessage mapErrorMessage;
             Random rnd = new Random();
             if (this.testerHost.getConfigurationData().getTestUssdClientConfigurationData().isReturn20PersDeliveryErrors()) {
                 int n = rnd.nextInt(5);
@@ -1071,7 +1099,6 @@ public class TestUssdClientMan extends TesterBase implements TestUssdClientManMB
                 break;
 
             case SRIReaction.VAL_ERROR_ABSENT_SUBSCRIBER:
-                MAPErrorMessage mapErrorMessage;
                 switch (curDialog.getApplicationContext().getApplicationContextVersion()) {
                 case version1:
                     Boolean mwdSet = null;
