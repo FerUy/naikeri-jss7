@@ -17,7 +17,6 @@ import org.restcomm.protocols.ss7.oam.common.statistics.api.CounterDefSet;
 import org.restcomm.protocols.ss7.oam.common.statistics.api.CounterMediator;
 import org.restcomm.protocols.ss7.oam.common.statistics.api.CounterValue;
 import org.restcomm.protocols.ss7.oam.common.statistics.api.CounterValueSet;
-import org.restcomm.protocols.ss7.oam.common.tcap.TcapManagementJmx;
 import org.restcomm.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.restcomm.protocols.ss7.sccp.parameter.SccpAddress;
 import org.restcomm.protocols.ss7.tcap.TCAPCounterProviderImpl;
@@ -85,7 +84,7 @@ public class RegistrationTest {
 
     }
 
-    @Test(groups = { "confuguration" })
+    @Test(groups = { "configuration" })
     public void counterProviderStartsLastTest() throws Exception {
 
         ss7Man.start();
@@ -146,7 +145,7 @@ public class RegistrationTest {
 
     }
 
-    @Test(groups = { "confuguration" })
+    @Test(groups = { "configuration" })
     public void counterProviderStartsFirstTest() throws Exception {
 
         ss7Man.start();
@@ -202,7 +201,7 @@ public class RegistrationTest {
 
     }
 
-    @Test(groups = { "confuguration" })
+    @Test(groups = { "configuration" })
     public void processingStatDataTest() throws Exception {
 
         ss7Man.start();
@@ -223,7 +222,6 @@ public class RegistrationTest {
         SccpAddress localAddress = sccpStack.getSccpProvider().getParameterFactory().createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 20, 8);
         tcapStack1.getProvider().getNewDialog(localAddress, localAddress);
 
-        Thread.sleep(500);
         CounterValueSet cvs1 = counterProvider.getLastCounterValues("camp_01");
         counterProvider.processCampaign("camp_01", tm1);
 
@@ -238,18 +236,16 @@ public class RegistrationTest {
         cp.updateDialogReleaseCount(d2);
         cp.updateOutgoingDialogsPerApplicationContextName("20.1");
 
-        Thread.sleep(500);
         CounterValueSet cvs2 = counterProvider.getLastCounterValues("camp_01");
         counterProvider.processCampaign("camp_01", tm2);
 
-        Thread.sleep(500);
         CounterValueSet cvs3 = counterProvider.getLastCounterValues("camp_01");
 
         assertNull(cvs1);
         assertNull(cvs2);
         assertNotNull(cvs3);
-        assertTrue(cvs3.getStartTime().equals(tm1));
-        assertTrue(cvs3.getEndTime().equals(tm2));
+        assertEquals(tm1, cvs3.getStartTime());
+        assertEquals(tm2, cvs3.getEndTime());
         for (CounterValue cv : cvs3.getCounterValues()) {
             if (cv.getCounterDef().getCounterName().equals("MinDialogsCount")) {
                 assertEquals(cv.getLongValue(), 1);
