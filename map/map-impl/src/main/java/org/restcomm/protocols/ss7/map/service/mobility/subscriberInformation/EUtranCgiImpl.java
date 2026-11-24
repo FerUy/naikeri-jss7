@@ -220,18 +220,14 @@ public class EUtranCgiImpl extends OctetStringBase implements EUtranCgi {
         boolean correctData = false;
 
         try {
-            try {
-                mcc = this.getMCC();
-                mnc = this.getMNC();
-            } catch (Exception e) {
-                logger.error("Exception while retrieving MCC/MNC at the toString method of EUtranCgiImpl: " + e.getMessage());
-            }
+            mcc = this.getMCC();
+            mnc = this.getMNC();
             eci = this.getEci();
             enb = this.getENodeBId();
             ci = this.getCi();
             correctData = true;
-        } catch (MAPException e) {
-            logger.error("Exception while getting retrieving ECI/eNBId/CI at the toString method of EUtranCgiImpl: " + e.getMessage());
+        } catch (Exception e) {
+            logger.debug("Exception while decoding EUtranCgi at toString(): {}", e.getMessage());
         }
 
         StringBuilder sb = new StringBuilder();

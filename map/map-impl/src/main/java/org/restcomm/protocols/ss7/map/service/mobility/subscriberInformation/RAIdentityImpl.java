@@ -3,6 +3,8 @@ package org.restcomm.protocols.ss7.map.service.mobility.subscriberInformation;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.restcomm.protocols.ss7.map.api.MAPException;
@@ -17,6 +19,8 @@ import java.io.IOException;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
+
+    private static final Logger logger = LogManager.getLogger(RAIdentityImpl.class);
 
     private static final String MCC = "mcc";
     private static final String MNC = "mnc";
@@ -43,6 +47,10 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
             throw new MAPException("Bad MCC value");
         if (mnc < 0 || mnc > 999)
             throw new MAPException("Bad MNC value");
+        if (lac < 0 || lac > 0xFFFF)
+            throw new MAPException("Bad LAC value");
+        if (rac < 0 || rac > 0xFF)
+            throw new MAPException("Bad RAC value");
 
         this.data = new byte[6];
 
@@ -87,7 +95,7 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
             throw new MAPException("Data length must equal 6");
 
         AsnInputStream ansIS = new AsnInputStream(data);
-        String res = null;
+        String res;
         try {
             res = TbcdString.decodeString(ansIS, 3);
         } catch (IOException e) {
@@ -111,7 +119,7 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
             throw new MAPException("Data length must equal 6");
 
         AsnInputStream ansIS = new AsnInputStream(data);
-        String res = null;
+        String res;
         try {
             res = TbcdString.decodeString(ansIS, 3);
         } catch (IOException e) {
@@ -127,7 +135,7 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
         if (res.length() == 5) {
             sMnc = res.substring(3);
         } else {
-            sMnc = res.substring(4) + res.substring(3, 4);
+            sMnc = res.substring(4) + res.charAt(3);
         }
 
         return Integer.parseInt(sMnc);
@@ -139,8 +147,7 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
         if (data.length != 6)
             throw new MAPException("Data length must equal 6");
 
-        int lac = (data[3] & 0xFF) * 256 + (data[4] & 0xFF);
-        return lac;
+        return (data[3] & 0xFF) * 256 + (data[4] & 0xFF);
     }
 
     public int getRAC() throws MAPException {
@@ -149,8 +156,7 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
         if (data.length != 6)
             throw new MAPException("Data length must equal 6");
 
-        int rac = (data[5] & 0xFF) /** 256 + (data[6] & 0xFF)*/;
-        return rac;
+        return (data[5] & 0xFF);
     }
 
     @Override
@@ -169,6 +175,7 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
             rac = this.getRAC();
             correctData = true;
         } catch (MAPException e) {
+            logger.error(e.getMessage());
         }
 
         StringBuilder sb = new StringBuilder();
@@ -180,7 +187,7 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
             sb.append(mnc);
             sb.append(", "+LAC+"=");
             sb.append(lac);
-            sb.append(", "+RAC+"");
+            sb.append(", "+RAC+"=");
             sb.append(rac);
         } else {
             sb.append("Data=");
@@ -194,12 +201,11 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
     /**
      * XML Serialization/Deserialization
      */
-    protected static final XMLFormat<RAIdentityImpl> ROUTING_AREA_ID_XML = new XMLFormat<RAIdentityImpl>(
+    protected static final XMLFormat<RAIdentityImpl> ROUTING_AREA_ID_XML = new XMLFormat<>(
         RAIdentityImpl.class) {
 
         @Override
-        public void read(javolution.xml.XMLFormat.InputElement xml,
-                         RAIdentityImpl routingAreaId) throws XMLStreamException {
+        public void read(javolution.xml.XMLFormat.InputElement xml, RAIdentityImpl routingAreaId) throws XMLStreamException {
             int mcc = xml.getAttribute(MCC, DEFAULT_INT_VALUE);
             int mnc = xml.getAttribute(MNC, DEFAULT_INT_VALUE);
             int lac = xml.getAttribute(LAC, DEFAULT_INT_VALUE);
@@ -213,8 +219,7 @@ public class RAIdentityImpl extends OctetStringBase implements RAIdentity {
         }
 
         @Override
-        public void write(RAIdentityImpl routingAreaId,
-                          javolution.xml.XMLFormat.OutputElement xml) throws XMLStreamException {
+        public void write(RAIdentityImpl routingAreaId, javolution.xml.XMLFormat.OutputElement xml) throws XMLStreamException {
             try {
                 xml.setAttribute(MCC, routingAreaId.getMCC());
                 xml.setAttribute(MNC, routingAreaId.getMNC());

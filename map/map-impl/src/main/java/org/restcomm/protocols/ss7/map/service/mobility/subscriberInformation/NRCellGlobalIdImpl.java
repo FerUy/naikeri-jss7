@@ -25,8 +25,9 @@ public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalI
     private static final String MCC = "mcc";
     private static final String MNC = "mnc";
     private static final String NCI = "nci";
-    private static final String DATA = "data";
+
     private static final int DEFAULT_INT_VALUE = 0;
+    private static final long DEFAULT_LONG_VALUE = 0;
     private static final String _PrimitiveName = "NRCellGlobalId";
 
     public NRCellGlobalIdImpl() {
@@ -46,6 +47,8 @@ public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalI
             throw new MAPException("Bad MCC value");
         if (mnc < 0 || mnc > 999)
             throw new MAPException("Bad MNC value");
+        if (nci < 0 || nci > 0xFFFFFFFFFL)
+            throw new MAPException("Bad NCI value");
 
         this.data = new byte[8];
 
@@ -155,16 +158,12 @@ public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalI
         boolean correctData = false;
 
         try {
-            try {
-                mcc = this.getMCC();
-                mnc = this.getMNC();
-            } catch (Exception e) {
-                logger.warn("Failed to decode MCC/MNC; continuing best-effort", e);
-            }
+            mcc = this.getMCC();
+            mnc = this.getMNC();
             nci = this.getNCI();
             correctData = true;
-        } catch (MAPException e) {
-            logger.warn("Failed to decode NCI; marking data as incomplete", e);
+        } catch (Exception e) {
+            logger.debug(e.getMessage());
         }
 
         StringBuilder sb = new StringBuilder();
@@ -195,7 +194,7 @@ public class NRCellGlobalIdImpl extends OctetStringBase implements NRCellGlobalI
         public void read(javolution.xml.XMLFormat.InputElement xml, NRCellGlobalIdImpl nrCgi) throws XMLStreamException {
             int mcc = xml.getAttribute(MCC, DEFAULT_INT_VALUE);
             int mnc = xml.getAttribute(MNC, DEFAULT_INT_VALUE);
-            int nci = xml.getAttribute(NCI, DEFAULT_INT_VALUE);
+            long nci = xml.getAttribute(NCI, DEFAULT_LONG_VALUE);
 
             try {
                 nrCgi.setData(mcc, mnc, nci);
