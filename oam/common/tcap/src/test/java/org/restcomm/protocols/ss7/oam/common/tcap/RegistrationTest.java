@@ -7,6 +7,8 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import org.restcomm.protocols.ss7.indicator.RoutingIndicator;
 import org.restcomm.protocols.ss7.oam.common.alarm.AlarmProvider;
@@ -215,8 +217,9 @@ public class RegistrationTest {
         CounterDefSet cds = tcapManagement.getCounterDefSet(csName);
 
         counterProvider.createCampaign("camp_01", csName, 60, 1);
-        Date tm1 = new Date(2010, 1, 1, 10, 0, 0);
-        Date tm2 = new Date(2010, 1, 1, 11, 0, 0);
+        // Same instants as the original deprecated new Date(2010, 1, 1, ...) (year + 1900, month 0-based)
+        Date tm1 = Date.from(LocalDateTime.of(3910, 2, 1, 10, 0).atZone(ZoneId.systemDefault()).toInstant());
+        Date tm2 = Date.from(LocalDateTime.of(3910, 2, 1, 11, 0).atZone(ZoneId.systemDefault()).toInstant());
 
         TCAPCounterProviderImpl cp = tcapStack1.getCounterProviderImpl();
         SccpAddress localAddress = sccpStack.getSccpProvider().getParameterFactory().createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, null, 20, 8);
